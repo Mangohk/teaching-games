@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teaching Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --ink: #0f172a;
+      --panel: rgba(255, 255, 255, 0.96);
+      --shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Nunito', system-ui, sans-serif;
+      font-weight: 700;
+      color: var(--ink);
+      background: linear-gradient(165deg, #e0f2fe 0%, #fce7f3 45%, #fef9c3 100%);
+      padding: clamp(1rem, 4vw, 2.5rem);
+    }
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    }
+    h1 {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      letter-spacing: 0.03em;
+      margin: 0 0 0.35rem;
+      color: #0c4a6e;
+      text-shadow: 2px 2px 0 #fff;
+    }
+    .sub {
+      margin: 0;
+      font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+      color: #475569;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: clamp(1rem, 3vw, 1.5rem);
+    }
+    .game-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      background: var(--panel);
+      border-radius: 24px;
+      padding: 1.75rem 1.25rem;
+      border: 3px solid rgba(14, 165, 233, 0.35);
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .game-link:hover,
+    .game-link:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+      border-color: #38bdf8;
+      outline: none;
+    }
+    .game-link:active {
+      transform: translateY(-1px);
+    }
+    .icon {
+      font-size: 3.5rem;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.08));
+    }
+    .game-link h2 {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: 1.35rem;
+      margin: 0 0 0.4rem;
+      color: #0369a1;
+    }
+    .game-link p {
+      margin: 0;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.35;
+    }
+    .hint {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Teaching Games</h1>
+      <p class="sub">Pick a game — each opens its own page in the folder below.</p>
+    </header>
+    <nav class="grid" aria-label="Games">
+      <a class="game-link" href="balloon-time/">
+        <span class="icon" aria-hidden="true">🎈</span>
+        <h2>Time Garden</h2>
+        <p>Pop balloons to match clocks and phrases.</p>
+      </a>
+      <a class="game-link" href="cap-book/">
+        <span class="icon" aria-hidden="true">📒</span>
+        <h2>Cap Book</h2>
+        <p>Record trades, holdings, and backup JSON.</p>
+      </a>
+    </nav>
+    <p class="hint">Links go to each folder; the browser loads that folder’s <code>index.html</code> automatically.</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Transactions — Prototype</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --border: #2d3a4d;
+      --text: #e7ecf3;
+      --muted: #8b9cb3;
+      --accent: #3d8bfd;
+      --buy: #34c759;
+      --sell: #ff453a;
+      --radius: 10px;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    header p {
+      margin: 0.35rem 0 0;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    section h2 {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    input, select, textarea, button {
+      font: inherit;
+      color: var(--text);
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+    textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, monospace; font-size: 0.8rem; }
+    textarea#export-preview {
+      min-height: 16rem;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+    @media (min-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+    .field { flex: 1; min-width: 120px; }
+    .field-grow { flex: 2; min-width: 160px; }
+    .trade-side-field {
+      max-width: 140px;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 0.55rem 1rem;
+      font-weight: 500;
+      background: var(--accent);
+      color: #fff;
+    }
+    button:hover { filter: brightness(1.08); }
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    button.danger { background: var(--sell); }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    tr:last-child td { border-bottom: none; }
+    .tag-buy { color: var(--buy); font-weight: 600; }
+    .tag-sell { color: var(--sell); font-weight: 600; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .empty {
+      color: var(--muted);
+      font-size: 0.875rem;
+      padding: 1rem 0;
+    }
+    .msg {
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+    }
+    .msg.ok { background: rgba(52, 199, 89, 0.15); color: var(--buy); }
+    .msg.err { background: rgba(255, 69, 58, 0.15); color: #ff8a80; }
+    .filters .field { min-width: 100px; }
+    /* Desktop: "Record a trade" above "Transaction list" (see order rules below). */
+    @media (min-width: 769px) {
+      .tab-panel[data-tab-panel="trades"].active .trades-form-section {
+        order: 1;
+      }
+      .tab-panel[data-tab-panel="trades"].active .trades-list-section {
+        order: 2;
+      }
+    }
+    .portfolio-summary {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+    .portfolio-summary dl {
+      margin: 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.25rem 1rem;
+      align-items: baseline;
+    }
+    .portfolio-summary dt { color: var(--muted); margin: 0; }
+    .portfolio-summary dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+    .input-quote {
+      max-width: 7.5rem;
+      margin-left: auto;
+      display: block;
+    }
+    td .input-quote { margin-left: auto; }
+    .note-inline { font-size: 0.8125rem; color: var(--muted); margin-top: 0.5rem; }
+    .edit-state {
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--accent);
+    }
+
+    .tabs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      position: relative;
+    }
+    .tab-btn .tab-icon {
+      display: none;
+      line-height: 1;
+    }
+    .tab-btn .tab-label-short {
+      display: none;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    #lang-toggle {
+      margin-left: auto;
+    }
+    .tab-panel {
+      display: none;
+      gap: 1.5rem;
+    }
+    .tab-panel.active {
+      display: grid;
+    }
+    @media (max-width: 768px) {
+      html,
+      body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+      main {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.85rem;
+        padding-top: calc(2.9rem + env(safe-area-inset-top));
+        gap: 0.9rem;
+        padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+      }
+      section {
+        padding: 0.9rem;
+      }
+      section h2 {
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+      }
+      .row {
+        gap: 0.55rem;
+      }
+      .field,
+      .field-grow {
+        min-width: 100%;
+      }
+      .row > * {
+        min-width: 0;
+      }
+      input,
+      select,
+      textarea {
+        font-size: 16px;
+        padding: 0.66rem 0.75rem;
+        max-width: 100%;
+      }
+      label {
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+      }
+      .btn-row > button {
+        flex: 1 1 100%;
+        min-height: 2.75rem;
+        max-width: 100%;
+      }
+      #trade-form .row {
+        flex-direction: column;
+        align-items: stretch;
+        flex-wrap: nowrap;
+      }
+      #trade-form .row > .field,
+      #trade-form .row > .field-grow {
+        flex: 1 1 auto;
+        min-width: 0 !important;
+        max-width: none !important;
+        width: 100%;
+      }
+      form#filter-form.filters.row {
+        flex-direction: column;
+        align-items: stretch;
+        flex-wrap: nowrap;
+        gap: 0.65rem;
+      }
+      form#filter-form.filters.row .field {
+        flex: 1 1 auto;
+        min-width: 0 !important;
+        max-width: 100%;
+        width: 100%;
+      }
+      form#filter-form.filters.row #filter-clear {
+        align-self: stretch;
+        width: 100%;
+      }
+      .tabs-nav {
+        position: fixed;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        padding: 0.4rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        gap: 0.35rem;
+        box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.25);
+      }
+      .tab-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 44px;
+        border: none;
+        padding: 0.4rem 0.3rem;
+        flex-direction: column;
+        gap: 0.18rem;
+        font-size: 0.76rem;
+      }
+      .tab-btn .tab-icon {
+        display: inline;
+        font-size: 1.1rem;
+      }
+      .tab-btn .tab-label-long {
+        display: none;
+      }
+      .tab-btn .tab-label-short {
+        display: inline;
+      }
+      .tab-btn.active {
+        background: rgba(61, 139, 253, 0.2);
+      }
+      .tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -0.35rem;
+        left: 18%;
+        right: 18%;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+      #lang-toggle {
+        position: fixed;
+        top: calc(0.45rem + env(safe-area-inset-top));
+        right: 0.55rem;
+        z-index: 25;
+        margin-left: 0;
+        min-height: 2.1rem;
+        padding: 0.3rem 0.52rem !important;
+        border-radius: 999px;
+        background: rgba(26, 35, 50, 0.92);
+        backdrop-filter: blur(2px);
+      }
+      table.data-table {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        border-collapse: separate;
+      }
+      table.data-table thead {
+        display: none;
+      }
+      table.data-table tbody {
+        display: grid;
+        gap: 0.6rem;
+      }
+      table.data-table tr {
+        display: block;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(15, 20, 25, 0.55);
+        padding: 0.5rem 0.6rem;
+      }
+      table.data-table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.7rem;
+        padding: 0.38rem 0;
+        border-bottom: 1px dashed rgba(139, 156, 179, 0.24);
+        white-space: normal;
+        text-align: right;
+      }
+      table.data-table td:last-child {
+        border-bottom: none;
+      }
+      table.data-table td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 0.72rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        text-align: left;
+        flex: 0 0 auto;
+      }
+      table.data-table td.num {
+        font-variant-numeric: tabular-nums;
+      }
+      table.data-table td .input-quote {
+        width: min(12rem, 55vw);
+        margin-left: 0;
+      }
+      table.data-table td .edit-transaction {
+        width: 100%;
+      }
+      .portfolio-summary {
+        padding: 0.75rem 0.8rem;
+      }
+      .portfolio-summary dl {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+      }
+      .portfolio-summary dd {
+        text-align: left;
+        margin-bottom: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="tabs-nav" aria-label="Page sections">
+      <button type="button" class="tab-btn" data-tab-btn="positions" aria-selected="false">
+        <span class="tab-icon" aria-hidden="true">💼</span>
+        <span class="tab-label-long">Holdings / Portfolio</span>
+        <span class="tab-label-short">Holdings</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab-btn="trades" aria-selected="false">
+        <span class="tab-icon" aria-hidden="true">🧾</span>
+        <span class="tab-label-long">Record a trade / Transaction list</span>
+        <span class="tab-label-short">Trade</span>
+      </button>
+      <button type="button" class="tab-btn active" data-tab-btn="data" aria-selected="true">
+        <span class="tab-icon" aria-hidden="true">💾</span>
+        <span class="tab-label-long">Backup and restore / Live report</span>
+        <span class="tab-label-short">Backup</span>
+      </button>
+      <button type="button" id="lang-toggle" class="secondary" title="Switch language" aria-label="Switch language" style="padding:0.45rem 0.7rem;line-height:1;">🌐</button>
+    </nav>
+
+    <div class="tab-panel" data-tab-panel="trades">
+          <section class="trades-list-section" aria-labelledby="list-title">
+      <h2 id="list-title">Transaction list</h2>
+      <form id="filter-form" class="filters row" style="margin-bottom: 1rem;">
+        <div class="field">
+          <label for="filter-symbol">Symbol</label>
+          <input id="filter-symbol" type="text" placeholder="All" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="filter-side">Side</label>
+          <select id="filter-side">
+            <option value="">All</option>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-from">From</label>
+          <input id="filter-from" type="date" />
+        </div>
+        <div class="field">
+          <label for="filter-to">To</label>
+          <input id="filter-to" type="date" />
+        </div>
+        <button type="button" class="secondary" id="filter-clear">Clear filters</button>
+      </form>
+      <div id="transactions-container"></div>
+    </section>
+
+          <section class="trades-form-section" aria-labelledby="add-title">
+      <h2 id="add-title">Record a trade</h2>
+      <form id="trade-form" class="grid">
+        <div class="row">
+          <div class="field trade-side-field">
+            <label for="side">Side</label>
+            <select id="side" name="side">
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
+          </div>
+          <div class="field-grow">
+            <label for="symbol">Symbol</label>
+            <input id="symbol" name="symbol" type="text" placeholder="e.g. AAPL" autocomplete="off" required />
+          </div>
+          <div class="field">
+            <label for="quantity">Quantity</label>
+            <input id="quantity" name="quantity" type="number" inputmode="decimal" min="0" step="any" placeholder="0" required />
+          </div>
+          <div class="field">
+            <label for="price">Price / share</label>
+            <input id="price" name="price" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00" required />
+          </div>
+          <div class="field">
+            <label for="fees">Fees</label>
+            <input id="fees" name="fees" type="number" inputmode="decimal" min="0" step="any" placeholder="0" value="0" />
+          </div>
+          <div class="field">
+            <label for="date">Date</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+          <div class="field-grow">
+            <label for="account">Account (optional)</label>
+            <input id="account" name="account" type="text" placeholder="e.g. IRA" autocomplete="off" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="submit" id="trade-submit">Add transaction</button>
+          <button type="button" id="trade-cancel" class="secondary" style="display:none;">Cancel edit</button>
+        </div>
+        <input type="hidden" id="edit-id" value="" />
+        <p id="edit-state" class="edit-state" style="display:none;">Editing transaction</p>
+      </form>
+    </section>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="positions">
+          <section aria-labelledby="holdings-title">
+      <h2 id="holdings-title">Holdings</h2>
+      <div id="holdings-container"></div>
+    </section>
+
+          <section aria-labelledby="portfolio-title">
+      <h2 id="portfolio-title">Portfolio (current value)</h2>
+      <p id="portfolio-help" style="margin: 0 0 1rem; font-size: 0.875rem; color: var(--muted);">
+        Enter today’s price per share for each holding. Market value and unrealized P&amp;L update from your inputs (not live quotes).
+      </p>
+      <div id="portfolio-container"></div>
+    </section>
+    </div>
+
+    <div class="tab-panel active" data-tab-panel="data">
+          <section aria-labelledby="io-title">
+      <h2 id="io-title">Backup &amp; restore</h2>
+      <p id="io-help" style="margin: 0 0 1rem; font-size: 0.875rem; color: var(--muted);">
+        Export downloads transactions and your entered <strong>current prices</strong> as JSON. Import replaces all in-memory data with the pasted file contents.
+      </p>
+      <div class="btn-row" style="margin-bottom: 1rem;">
+        <button type="button" id="export-json">Export as JSON</button>
+        <button type="button" id="export-txt" class="secondary">Export as TXT</button>
+      </div>
+      <label for="import-text">Paste exported JSON here</label>
+      <textarea id="import-text" placeholder='{"version":1,"transactions":[...]}'></textarea>
+      <div class="btn-row">
+        <button type="button" id="import-btn">Import (replace all data)</button>
+      </div>
+      <div id="io-message" aria-live="polite"></div>
+    </section>
+
+          <section aria-labelledby="export-preview-title">
+      <h2 id="export-preview-title">Live report (copy JSON)</h2>
+      <p id="export-help" style="margin: 0 0 0.75rem; font-size: 0.875rem; color: var(--muted);">
+        Same data as <strong>Export as JSON</strong> — updates when you change trades or portfolio prices. Select all and copy to save without downloading a file.
+      </p>
+      <textarea id="export-preview" readonly spellcheck="false" aria-label="Current export JSON for copying"></textarea>
+      <div class="btn-row">
+        <button type="button" id="copy-export-preview" class="secondary">Copy JSON</button>
+      </div>
+    </section>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const STORAGE_VERSION = 2;
+
+      /** @type {{ id: string, side: 'buy'|'sell', symbol: string, quantity: number, pricePerShare: number, fees: number, date: string, account: string }} */
+      let transactions = [];
+
+      /** User-entered last price per symbol (string from inputs; normalized keys). */
+      let currentPrices = {};
+
+
+      let currentLang = "en";
+      const LOCALES = {
+        en: {
+          title: "Stock transactions", subtitle: "Prototype — data lives in this page until you export it. Use import to restore a previous session.",
+          tabTrades: "Record a trade / Transaction list", tabPositions: "Holdings / Portfolio", tabData: "Backup and restore / Live report",
+          tabTradesShort: "Trade", tabPositionsShort: "Holdings", tabDataShort: "Backup",
+          addTitle: "Record a trade", listTitle: "Transaction list", holdingsTitle: "Holdings", portfolioTitle: "Portfolio (current value)",
+          ioTitle: "Backup & restore", reportTitle: "Live report (copy JSON)",
+          side: "Side", buy: "Buy", sell: "Sell", symbol: "Symbol", qty: "Quantity", pps: "Price / share", fees: "Fees", date: "Date", account: "Account (optional)",
+          addBtn: "Add transaction", updateBtn: "Update transaction", cancelEdit: "Cancel edit", editing: "Editing transaction",
+          filterSymbol: "Symbol", filterSide: "Side", from: "From", to: "To", all: "All", clear: "Clear filters",
+          portfolioHelp: "Enter today’s price per share for each holding. Market value and unrealized P&L update from your inputs (not live quotes).",
+          ioHelp: "Export downloads transactions and your entered <strong>current prices</strong> as JSON. Import replaces all in-memory data with the pasted file contents.",
+          exportJson: "Export as JSON", exportTxt: "Export as TXT", importLabel: "Paste exported JSON here", importBtn: "Import (replace all data)",
+          reportHelp: "Same data as <strong>Export as JSON</strong> — updates when you change trades or portfolio prices. Select all and copy to save without downloading a file.",
+          copyJson: "Copy JSON", switchLang: "Switch language",
+          phSymbol: "e.g. AAPL", phPrice: "Price", phAll: "All", phImport: '{"version":2,"transactions":[...]}', phAccount: "e.g. IRA",
+          emptyPositionsValue: "No open positions. Add buy trades to value your portfolio.",
+          emptyPositions: "No open positions. Add buy trades to see holdings.",
+          emptyTx: "No transactions match the filters (or the list is empty).",
+          noteMissing: "position(s) have no price — market value and unrealized P&L totals include <strong>priced</strong> lines only.",
+          costAll: "Cost basis (all positions)", marketPriced: "Market value (priced positions)", unrealPriced: "Unrealized P&L (priced positions)",
+          thSymbol: "Symbol", thShares: "Shares", thAvg: "Avg cost", thCost: "Cost basis", thCur: "Current price", thMarket: "Market value", thUnreal: "Unrealized P&L",
+          thDate: "Date", thSide: "Side", thQty: "Qty", thPrice: "Price", thFees: "Fees", thAccount: "Account", thActions: "Actions", edit: "Edit",
+          errInvalid: "Invalid transaction object", errSide: "side must be buy or sell", errSymbol: "symbol required", errQty: "quantity must be a positive number", errPps: "pricePerShare must be a non-negative number", errFees: "fees must be non-negative", errDate: "date must be YYYY-MM-DD",
+          errRoot: "Root must be a JSON object.", errTxArray: 'Missing "transactions" array.', errTxPrefix: "Transaction",
+          errSellLedger: "Invalid ledger: sell of", errSellLedger2: "exceeds open position",
+          errCannotSell: "Cannot sell", errOnlyHeld: "only", errHeldSuffix: "shares are held (average-cost view).",
+          errEditGone: "The transaction being edited no longer exists.",
+          msgCopyFail: "Copy failed. Please select the text and copy manually.", msgCopied: "Copied JSON to clipboard.",
+          msgExport: "Export downloaded.", msgExportTxt: "Export downloaded as .txt (same JSON content).", msgPasteFirst: "Paste JSON first.",
+          confirmReplace: "Replace all current transactions with imported data?", msgImported: "Imported"
+        },
+        zh: {
+          title: "股票交易紀錄", subtitle: "原型應用程式：資料僅存在此頁面，請匯出以保存。若要還原上次工作階段，請使用匯入。",
+          tabTrades: "記錄交易 / 交易列表", tabPositions: "持股 / 投資組合", tabData: "備份與還原 / 即時報表",
+          tabTradesShort: "交易", tabPositionsShort: "持股", tabDataShort: "備份",
+          addTitle: "記錄一筆交易", listTitle: "交易列表", holdingsTitle: "持股", portfolioTitle: "投資組合（目前價值）",
+          ioTitle: "備份與還原", reportTitle: "即時報表（複製 JSON）",
+          side: "買賣別", buy: "買入", sell: "賣出", symbol: "股票代號", qty: "股數", pps: "每股價格", fees: "手續費", date: "日期", account: "帳戶（選填）",
+          addBtn: "新增交易", updateBtn: "更新交易", cancelEdit: "取消編輯", editing: "編輯中",
+          filterSymbol: "代號", filterSide: "買賣別", from: "起日", to: "迄日", all: "全部", clear: "清除篩選",
+          portfolioHelp: "請為每檔持股輸入目前每股價格。市值與未實現損益將依您的輸入計算（非即時行情）。",
+          ioHelp: "匯出會將交易紀錄與您輸入的<strong>目前股價</strong>下載為 JSON。匯入會以貼上的內容<strong>完全取代</strong>目前頁面中的資料。",
+          exportJson: "匯出為 JSON", exportTxt: "匯出為 TXT", importLabel: "將匯出的 JSON 貼在下方", importBtn: "匯入（取代全部資料）",
+          reportHelp: "內容與<strong>匯出為 JSON</strong>相同，會在您變更交易或投組股價時自動更新。可全選後複製，無須下載檔案。",
+          copyJson: "複製 JSON", switchLang: "切換語言",
+          phSymbol: "例：2330", phPrice: "股價", phAll: "全部", phImport: '{"version":2,"transactions":[...]}', phAccount: "例：複委託、證券戶",
+          emptyPositionsValue: "目前無持股。請新增買入交易以估算投資組合價值。",
+          emptyPositions: "目前無持股。請新增買入交易以檢視持股。",
+          emptyTx: "沒有符合篩選條件的交易，或尚無任何交易。",
+          noteMissing: "檔持股尚未輸入股價；上方市值與未實現損益合計僅包含<strong>已輸入股價</strong>的列。",
+          costAll: "成本基礎（全部持股）", marketPriced: "市值（已輸入股價者）", unrealPriced: "未實現損益（已輸入股價者）",
+          thSymbol: "代號", thShares: "股數", thAvg: "平均成本", thCost: "成本基礎", thCur: "目前股價", thMarket: "市值", thUnreal: "未實現損益",
+          thDate: "日期", thSide: "買賣", thQty: "股數", thPrice: "價格", thFees: "手續費", thAccount: "帳戶", thActions: "操作", edit: "編輯",
+          errInvalid: "無效的交易物件", errSide: "買賣別須為 buy（買入）或 sell（賣出）", errSymbol: "必須填寫股票代號", errQty: "股數必須為正數", errPps: "每股價格須為非負數", errFees: "手續費須為非負數", errDate: "日期須為 YYYY-MM-DD 格式",
+          errRoot: "根節點必須為 JSON 物件。", errTxArray: '缺少 "transactions" 陣列。', errTxPrefix: "第",
+          errSellLedger: "帳務無效：", errSellLedger2: "超過當時持股",
+          errCannotSell: "無法賣出", errOnlyHeld: "目前僅持有", errHeldSuffix: "股（平均成本法）。",
+          errEditGone: "要編輯的交易已不存在。",
+          msgCopyFail: "複製失敗，請手動全選後複製。", msgCopied: "已將 JSON 複製到剪貼簿。",
+          msgExport: "已下載匯出檔案。", msgExportTxt: "已下載為 .txt（內容與 JSON 相同）。", msgPasteFirst: "請先貼上 JSON。",
+          confirmReplace: "確定要以匯入資料取代目前所有交易與股價資料？", msgImported: "已匯入"
+        }
+      };
+      function tr(k){ return (LOCALES[currentLang] && LOCALES[currentLang][k]) || k; }
+
+      function applyLanguage() {
+        document.documentElement.lang = currentLang === "zh" ? "zh-Hant" : "en";
+        document.title = currentLang === "zh" ? "股票交易紀錄 — 原型" : "Stock Transactions — Prototype";
+        document.getElementById("lang-toggle").title = tr("switchLang");
+        document.getElementById("lang-toggle").setAttribute("aria-label", tr("switchLang"));
+        const tradesBtn = document.querySelector('[data-tab-btn="trades"]');
+        const positionsBtn = document.querySelector('[data-tab-btn="positions"]');
+        const dataBtn = document.querySelector('[data-tab-btn="data"]');
+        tradesBtn.querySelector(".tab-label-long").textContent = tr("tabTrades");
+        positionsBtn.querySelector(".tab-label-long").textContent = tr("tabPositions");
+        dataBtn.querySelector(".tab-label-long").textContent = tr("tabData");
+        tradesBtn.querySelector(".tab-label-short").textContent = tr("tabTradesShort");
+        positionsBtn.querySelector(".tab-label-short").textContent = tr("tabPositionsShort");
+        dataBtn.querySelector(".tab-label-short").textContent = tr("tabDataShort");
+        tradesBtn.setAttribute("aria-label", tr("tabTrades"));
+        positionsBtn.setAttribute("aria-label", tr("tabPositions"));
+        dataBtn.setAttribute("aria-label", tr("tabData"));
+        document.getElementById("add-title").textContent = tr("addTitle");
+        document.getElementById("list-title").textContent = tr("listTitle");
+        document.getElementById("holdings-title").textContent = tr("holdingsTitle");
+        document.getElementById("portfolio-title").textContent = tr("portfolioTitle");
+        document.getElementById("io-title").textContent = tr("ioTitle");
+        document.getElementById("export-preview-title").textContent = tr("reportTitle");
+        document.getElementById("portfolio-help").textContent = tr("portfolioHelp");
+        document.getElementById("io-help").innerHTML = tr("ioHelp");
+        document.getElementById("export-help").innerHTML = tr("reportHelp");
+        document.querySelector('label[for="side"]').textContent = tr("side");
+        document.querySelector('label[for="symbol"]').textContent = tr("symbol");
+        document.querySelector('label[for="quantity"]').textContent = tr("qty");
+        document.querySelector('label[for="price"]').textContent = tr("pps");
+        document.querySelector('label[for="fees"]').textContent = tr("fees");
+        document.querySelector('label[for="date"]').textContent = tr("date");
+        document.querySelector('label[for="account"]').textContent = tr("account");
+        document.querySelector('#side option[value="buy"]').textContent = tr("buy");
+        document.querySelector('#side option[value="sell"]').textContent = tr("sell");
+        document.getElementById("symbol").placeholder = tr("phSymbol");
+        document.getElementById("account").placeholder = tr("phAccount");
+        document.querySelector('label[for="filter-symbol"]').textContent = tr("filterSymbol");
+        document.querySelector('label[for="filter-side"]').textContent = tr("filterSide");
+        document.querySelector('label[for="filter-from"]').textContent = tr("from");
+        document.querySelector('label[for="filter-to"]').textContent = tr("to");
+        document.getElementById("filter-symbol").placeholder = tr("phAll");
+        document.querySelector('#filter-side option[value=""]').textContent = tr("all");
+        document.querySelector('#filter-side option[value="buy"]').textContent = tr("buy");
+        document.querySelector('#filter-side option[value="sell"]').textContent = tr("sell");
+        document.getElementById("filter-clear").textContent = tr("clear");
+        document.getElementById("export-json").textContent = tr("exportJson");
+        document.getElementById("export-txt").textContent = tr("exportTxt");
+        document.querySelector('label[for="import-text"]').textContent = tr("importLabel");
+        document.getElementById("import-text").placeholder = tr("phImport");
+        document.getElementById("import-btn").textContent = tr("importBtn");
+        document.getElementById("copy-export-preview").textContent = tr("copyJson");
+        document.getElementById("export-preview").setAttribute("aria-label", tr("reportTitle"));
+        document.getElementById("edit-state").textContent = tr("editing");
+        const editId = document.getElementById("edit-id").value;
+        document.getElementById("trade-submit").textContent = editId ? tr("updateBtn") : tr("addBtn");
+        document.getElementById("trade-cancel").textContent = tr("cancelEdit");
+      }
+
+      function uid() {
+        return crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+      }
+
+      function normalizeSymbol(s) {
+        return String(s || "").trim().toUpperCase();
+      }
+
+      function sortedTransactions() {
+        return [...transactions].sort((a, b) => {
+          if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+          return a.id < b.id ? -1 : 1;
+        });
+      }
+
+      /**
+       * @param {{ id: string, side: string, symbol: string, quantity: number, pricePerShare: number, fees: number, date: string }[]} list
+       * @returns {string|null}
+       */
+      function ledgerErrorIfInvalid(list) {
+        const bySymbol = new Map();
+        const ordered = [...list].sort((a, b) => {
+          if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+          return String(a.id).localeCompare(String(b.id));
+        });
+        for (const t of ordered) {
+          const sym = normalizeSymbol(t.symbol);
+          if (!sym) continue;
+          let row = bySymbol.get(sym);
+          if (!row) {
+            row = { shares: 0, totalCost: 0 };
+            bySymbol.set(sym, row);
+          }
+          const qty = Number(t.quantity);
+          const price = Number(t.pricePerShare);
+          const fees = Number(t.fees) || 0;
+          if (!Number.isFinite(qty) || qty <= 0) continue;
+          if (t.side === "buy") {
+            row.totalCost += qty * price + fees;
+            row.shares += qty;
+          } else {
+            if (row.shares + 1e-9 < qty) {
+              return currentLang === "zh" ? `帳務無效：${t.date} 賣出 ${qty} 股 ${sym} 超過當時持股（${formatShares(row.shares)} 股）。` : `Invalid ledger: sell of ${qty} ${sym} on ${t.date} exceeds open position (${formatShares(row.shares)}).`;
+            }
+            const avg = row.totalCost / row.shares;
+            row.totalCost -= qty * avg;
+            row.shares -= qty;
+            if (row.shares < 1e-10) {
+              row.shares = 0;
+              row.totalCost = 0;
+            }
+          }
+        }
+        return null;
+      }
+
+      function computeHoldingsFromList(list) {
+        const bySymbol = new Map();
+        for (const t of list) {
+          const sym = normalizeSymbol(t.symbol);
+          if (!sym) continue;
+          let row = bySymbol.get(sym);
+          if (!row) {
+            row = { shares: 0, totalCost: 0 };
+            bySymbol.set(sym, row);
+          }
+          const qty = Number(t.quantity);
+          const price = Number(t.pricePerShare);
+          const fees = Number(t.fees) || 0;
+          if (!Number.isFinite(qty) || qty <= 0) continue;
+
+          if (t.side === "buy") {
+            const addCost = qty * price + fees;
+            row.totalCost += addCost;
+            row.shares += qty;
+          } else {
+            if (row.shares <= 0) continue;
+            const avg = row.totalCost / row.shares;
+            const sellQty = Math.min(qty, row.shares);
+            row.totalCost -= sellQty * avg;
+            row.shares -= sellQty;
+            if (row.shares < 1e-10) {
+              row.shares = 0;
+              row.totalCost = 0;
+            }
+          }
+        }
+        const out = new Map();
+        for (const [sym, row] of bySymbol) {
+          if (row.shares <= 0) continue;
+          const avgCost = row.shares > 0 ? row.totalCost / row.shares : 0;
+          out.set(sym, { shares: row.shares, avgCost, totalCost: row.totalCost });
+        }
+        return out;
+      }
+
+      function computeHoldings() {
+        return computeHoldingsFromList(sortedTransactions());
+      }
+
+      function setEditMode(tx) {
+        const form = document.getElementById("trade-form");
+        const submitBtn = document.getElementById("trade-submit");
+        const cancelBtn = document.getElementById("trade-cancel");
+        const editId = document.getElementById("edit-id");
+        const editState = document.getElementById("edit-state");
+
+        if (!tx) {
+          editId.value = "";
+          form.reset();
+          document.getElementById("date").value = new Date().toISOString().slice(0, 10);
+          submitBtn.textContent = tr("addBtn");
+          cancelBtn.style.display = "none";
+          editState.style.display = "none";
+          return;
+        }
+
+        editId.value = tx.id;
+        document.getElementById("side").value = tx.side;
+        document.getElementById("symbol").value = tx.symbol;
+        document.getElementById("quantity").value = tx.quantity;
+        document.getElementById("price").value = tx.pricePerShare;
+        document.getElementById("fees").value = tx.fees;
+        document.getElementById("date").value = tx.date;
+        document.getElementById("account").value = tx.account || "";
+        submitBtn.textContent = tr("updateBtn");
+        cancelBtn.style.display = "inline-block";
+        editState.style.display = "block";
+      }
+
+      function formatMoney(n) {
+        if (!Number.isFinite(n)) return "—";
+        return n.toLocaleString(currentLang === "zh" ? "zh-Hant" : undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+      }
+
+      function formatShares(n) {
+        if (!Number.isFinite(n)) return "—";
+        return n.toLocaleString(currentLang === "zh" ? "zh-Hant" : undefined, { maximumFractionDigits: 6 });
+      }
+
+      function parseQuoteForSymbol(sym) {
+        const raw = currentPrices[sym];
+        if (raw == null) return NaN;
+        const s = String(raw).trim();
+        if (s === "") return NaN;
+        const n = Number(s);
+        return Number.isFinite(n) && n >= 0 ? n : NaN;
+      }
+
+      function renderPortfolio() {
+        const el = document.getElementById("portfolio-container");
+        const active = document.activeElement;
+        let refSym = null;
+        let refSelStart = 0;
+        let refSelEnd = 0;
+        if (active && active.matches && active.matches("input[data-quote-symbol]")) {
+          refSym = active.getAttribute("data-quote-symbol");
+          refSelStart = active.selectionStart;
+          refSelEnd = active.selectionEnd;
+        }
+
+        const holdings = computeHoldings();
+        if (holdings.size === 0) {
+          el.innerHTML =
+            `<p class="empty">${tr("emptyPositionsValue")}</p>`;
+          return;
+        }
+
+        let totalCostAll = 0;
+        let totalMarketPriced = 0;
+        let totalCostPriced = 0;
+        let missingPrice = 0;
+        let pricedCount = 0;
+
+        const rows = [...holdings.entries()]
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([sym, h]) => {
+            totalCostAll += h.totalCost;
+            const quote = parseQuoteForSymbol(sym);
+            const hasPrice = Number.isFinite(quote);
+            if (!hasPrice) missingPrice += 1;
+            else pricedCount += 1;
+
+            const market = hasPrice ? h.shares * quote : NaN;
+            if (hasPrice) {
+              totalMarketPriced += market;
+              totalCostPriced += h.totalCost;
+            }
+            const unreal = hasPrice ? market - h.totalCost : NaN;
+            const unrealClass =
+              !Number.isFinite(unreal) ? "" : unreal >= 0 ? "tag-buy" : "tag-sell";
+
+            const priceVal =
+              currentPrices[sym] != null && String(currentPrices[sym]).length > 0
+                ? escapeHtml(String(currentPrices[sym]))
+                : "";
+
+            return `<tr>
+              <td data-label="${tr("thSymbol")}"><strong>${escapeHtml(sym)}</strong></td>
+              <td class="num" data-label="${tr("thShares")}">${formatShares(h.shares)}</td>
+              <td class="num" data-label="${tr("thAvg")}">${formatMoney(h.avgCost)}</td>
+              <td class="num" data-label="${tr("thCost")}">${formatMoney(h.totalCost)}</td>
+              <td class="num" data-label="${tr("thCur")}">
+                <input class="input-quote" type="text" inputmode="decimal" data-quote-symbol="${escapeHtml(sym)}" placeholder="${tr("phPrice")}" value="${priceVal}" aria-label="${tr("thCur")} ${escapeHtml(sym)}" />
+              </td>
+              <td class="num" data-label="${tr("thMarket")}">${hasPrice ? formatMoney(market) : "—"}</td>
+              <td class="num" data-label="${tr("thUnreal")}"><span class="${unrealClass}">${hasPrice ? formatMoney(unreal) : "—"}</span></td>
+            </tr>`;
+          })
+          .join("");
+
+        const unrealTotal = totalMarketPriced - totalCostPriced;
+        const unrealTotalClass =
+          pricedCount === 0 ? "" : unrealTotal >= 0 ? "tag-buy" : "tag-sell";
+
+        const note =
+          missingPrice > 0
+            ? `<p class="note-inline">${missingPrice} ${tr("noteMissing")}</p>`
+            : "";
+
+        el.innerHTML = `
+          <div class="portfolio-summary">
+            <dl>
+              <dt>${tr("costAll")}</dt>
+              <dd>${formatMoney(totalCostAll)}</dd>
+              <dt>${tr("marketPriced")}</dt>
+              <dd>${pricedCount > 0 ? formatMoney(totalMarketPriced) : "—"}</dd>
+              <dt>${tr("unrealPriced")}</dt>
+              <dd><span class="${unrealTotalClass}">${pricedCount > 0 ? formatMoney(unrealTotal) : "—"}</span></dd>
+            </dl>
+            ${note}
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>${tr("thSymbol")}</th>
+                <th class="num">${tr("thShares")}</th>
+                <th class="num">${tr("thAvg")}</th>
+                <th class="num">${tr("thCost")}</th>
+                <th class="num">${tr("thCur")}</th>
+                <th class="num">${tr("thMarket")}</th>
+                <th class="num">${tr("thUnreal")}</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+
+        if (refSym) {
+          const next = el.querySelector('input[data-quote-symbol="' + refSym.replace(/"/g, "") + '"]');
+          if (next) {
+            next.focus();
+            try {
+              if (typeof refSelStart === "number" && typeof refSelEnd === "number") {
+                next.setSelectionRange(refSelStart, refSelEnd);
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
+      function renderHoldings() {
+        const el = document.getElementById("holdings-container");
+        const holdings = computeHoldings();
+        if (holdings.size === 0) {
+          el.innerHTML = `<p class="empty">${tr("emptyPositions")}</p>`;
+          return;
+        }
+        const rows = [...holdings.entries()]
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(
+            ([sym, h]) =>
+              `<tr><td data-label="${tr("thSymbol")}"><strong>${escapeHtml(sym)}</strong></td><td class="num" data-label="${tr("thShares")}">${formatShares(h.shares)}</td><td class="num" data-label="${tr("thAvg")}">${formatMoney(h.avgCost)}</td><td class="num" data-label="${tr("thCost")}">${formatMoney(h.totalCost)}</td></tr>`
+          )
+          .join("");
+        el.innerHTML = `
+          <table class="data-table">
+            <thead><tr><th>${tr("thSymbol")}</th><th class="num">${tr("thShares")}</th><th class="num">${tr("thAvg")}</th><th class="num">${tr("thCost")}</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      }
+
+      function escapeHtml(s) {
+        const d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      function getFilters() {
+        return {
+          symbol: normalizeSymbol(document.getElementById("filter-symbol").value),
+          side: document.getElementById("filter-side").value,
+          from: document.getElementById("filter-from").value,
+          to: document.getElementById("filter-to").value,
+        };
+      }
+
+      function filterList(list) {
+        const f = getFilters();
+        return list.filter((t) => {
+          if (f.symbol && normalizeSymbol(t.symbol) !== f.symbol) return false;
+          if (f.side && t.side !== f.side) return false;
+          if (f.from && t.date < f.from) return false;
+          if (f.to && t.date > f.to) return false;
+          return true;
+        });
+      }
+
+      function renderTransactions() {
+        const el = document.getElementById("transactions-container");
+        const list = filterList(sortedTransactions());
+        if (list.length === 0) {
+          el.innerHTML =
+            `<p class="empty">${tr("emptyTx")}</p>`;
+          return;
+        }
+        const rows = list
+          .map((tx) => {
+            const sideClass = tx.side === "buy" ? "tag-buy" : "tag-sell";
+            const sideLabel = tx.side === "buy" ? tr("buy") : tr("sell");
+            return `<tr>
+              <td data-label="${tr("thDate")}">${escapeHtml(tx.date)}</td>
+              <td data-label="${tr("thSide")}"><span class="${sideClass}">${sideLabel}</span></td>
+              <td data-label="${tr("thSymbol")}"><strong>${escapeHtml(normalizeSymbol(tx.symbol))}</strong></td>
+              <td class="num" data-label="${tr("thQty")}">${formatShares(Number(tx.quantity))}</td>
+              <td class="num" data-label="${tr("thPrice")}">${formatMoney(Number(tx.pricePerShare))}</td>
+              <td class="num" data-label="${tr("thFees")}">${formatMoney(Number(tx.fees) || 0)}</td>
+              <td data-label="${tr("thAccount")}">${escapeHtml(tx.account || "—")}</td>
+              <td data-label="${tr("thActions")}"><button type="button" class="secondary edit-transaction" data-edit-id="${escapeHtml(tx.id)}">${tr("edit")}</button></td>
+            </tr>`;
+          })
+          .join("");
+        el.innerHTML = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>${tr("thDate")}</th><th>${tr("thSide")}</th><th>${tr("thSymbol")}</th>
+                <th class="num">${tr("thQty")}</th><th class="num">${tr("thPrice")}</th><th class="num">${tr("thFees")}</th><th>${tr("thAccount")}</th><th>${tr("thActions")}</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      }
+
+      function renderAll() {
+        pruneQuotesForHoldings();
+        renderHoldings();
+        renderPortfolio();
+        renderTransactions();
+        refreshExportPreview();
+      }
+
+      /** Drop stored prices for symbols you no longer hold (keeps export tidy). */
+      function pruneQuotesForHoldings() {
+        const held = computeHoldings();
+        for (const k of Object.keys(currentPrices)) {
+          const sym = normalizeSymbol(k);
+          if (!held.has(sym)) delete currentPrices[sym];
+        }
+      }
+
+      function serializeApp() {
+        const pricesOut = {};
+        for (const sym of Object.keys(currentPrices)) {
+          const n = normalizeSymbol(sym);
+          if (!n) continue;
+          const v = currentPrices[sym];
+          if (v != null && String(v).trim() !== "") pricesOut[n] = v;
+        }
+        return {
+          version: STORAGE_VERSION,
+          transactions: sortedTransactions(),
+          currentPrices: pricesOut,
+        };
+      }
+
+      function downloadBlob(filename, text, mime) {
+        const blob = new Blob([text], { type: mime });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      function showIoMessage(text, ok) {
+        const box = document.getElementById("io-message");
+        box.innerHTML = text
+          ? `<div class="msg ${ok ? "ok" : "err"}">${escapeHtml(text)}</div>`
+          : "";
+      }
+
+      function validateTransaction(tx) {
+        if (!tx || typeof tx !== "object") return tr("errInvalid");
+        if (tx.side !== "buy" && tx.side !== "sell") return tr("errSide");
+        if (!normalizeSymbol(tx.symbol)) return tr("errSymbol");
+        const q = Number(tx.quantity);
+        if (!Number.isFinite(q) || q <= 0) return tr("errQty");
+        const p = Number(tx.pricePerShare);
+        if (!Number.isFinite(p) || p < 0) return tr("errPps");
+        const fees = Number(tx.fees);
+        if (tx.fees != null && (!Number.isFinite(fees) || fees < 0)) return tr("errFees");
+        if (typeof tx.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(tx.date)) return tr("errDate");
+        return null;
+      }
+
+      function importPayload(data) {
+        if (!data || typeof data !== "object") throw new Error(tr("errRoot"));
+        const txs = data.transactions;
+        if (!Array.isArray(txs)) throw new Error(tr("errTxArray"));
+        const next = [];
+        for (let i = 0; i < txs.length; i++) {
+          const err = validateTransaction(txs[i]);
+          if (err) throw new Error((currentLang === "zh" ? `${tr("errTxPrefix")} ${i + 1} 筆交易：${err}` : `${tr("errTxPrefix")} ${i + 1}: ${err}`));
+          next.push({
+            id: typeof txs[i].id === "string" ? txs[i].id : uid(),
+            side: txs[i].side,
+            symbol: normalizeSymbol(txs[i].symbol),
+            quantity: Number(txs[i].quantity),
+            pricePerShare: Number(txs[i].pricePerShare),
+            fees: Number(txs[i].fees) || 0,
+            date: txs[i].date,
+            account: txs[i].account != null ? String(txs[i].account) : "",
+          });
+        }
+        const seqErr = ledgerErrorIfInvalid(next);
+        if (seqErr) throw new Error(seqErr);
+        transactions = next;
+        if (data.currentPrices && typeof data.currentPrices === "object") {
+          currentPrices = {};
+          for (const [k, v] of Object.entries(data.currentPrices)) {
+            const sym = normalizeSymbol(k);
+            if (!sym) continue;
+            if (v != null && String(v).trim() !== "") currentPrices[sym] = String(v).trim();
+          }
+        } else {
+          currentPrices = {};
+        }
+        renderAll();
+      }
+
+      document.getElementById("trade-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const editId = document.getElementById("edit-id").value;
+        const symbol = normalizeSymbol(document.getElementById("symbol").value);
+        const quantity = Number(document.getElementById("quantity").value);
+        const pricePerShare = Number(document.getElementById("price").value);
+        const fees = Number(document.getElementById("fees").value) || 0;
+        const date = document.getElementById("date").value;
+        const side = document.getElementById("side").value;
+        const account = document.getElementById("account").value.trim();
+        const t = { id: editId || uid(), side, symbol, quantity, pricePerShare, fees, date, account };
+        const err = validateTransaction(t);
+        if (err) {
+          alert(err);
+          return;
+        }
+
+        const baseList = editId ? sortedTransactions().filter((x) => x.id !== editId) : sortedTransactions();
+        if (side === "sell") {
+          const held = computeHoldingsFromList(baseList).get(symbol)?.shares ?? 0;
+          if (quantity > held + 1e-9) {
+            alert(
+              `${tr("errCannotSell")} ${quantity} ${currentLang === "zh" ? "股" : "shares"} ${symbol}：${tr("errOnlyHeld")} ${formatShares(held)} ${tr("errHeldSuffix")}`
+            );
+            return;
+          }
+        }
+
+        if (editId) {
+          const idx = transactions.findIndex((x) => x.id === editId);
+          if (idx < 0) {
+            alert(tr("errEditGone"));
+            setEditMode(null);
+            return;
+          }
+          transactions[idx] = t;
+        } else {
+          transactions.push(t);
+        }
+
+        setEditMode(null);
+        renderAll();
+      });
+
+      document.getElementById("trade-cancel").addEventListener("click", function () {
+        setEditMode(null);
+      });
+
+      ["filter-symbol", "filter-side", "filter-from", "filter-to"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", renderTransactions);
+        document.getElementById(id).addEventListener("change", renderTransactions);
+      });
+      document.getElementById("transactions-container").addEventListener("click", function (e) {
+        const btn = e.target.closest("button.edit-transaction");
+        if (!btn) return;
+        const id = btn.getAttribute("data-edit-id");
+        const tx = transactions.find((x) => x.id === id);
+        if (!tx) return;
+        setEditMode(tx);
+      });
+
+      document.getElementById("filter-clear").addEventListener("click", function () {
+        document.getElementById("filter-symbol").value = "";
+        document.getElementById("filter-side").value = "";
+        document.getElementById("filter-from").value = "";
+        document.getElementById("filter-to").value = "";
+        renderTransactions();
+      });
+
+      document.getElementById("portfolio-container").addEventListener("input", function (e) {
+        const inp = e.target.closest("input[data-quote-symbol]");
+        if (!inp) return;
+        const sym = normalizeSymbol(inp.getAttribute("data-quote-symbol"));
+        const raw = inp.value.trim();
+        if (raw === "") delete currentPrices[sym];
+        else currentPrices[sym] = inp.value;
+        renderPortfolio();
+        refreshExportPreview();
+      });
+
+      function exportText() {
+        return JSON.stringify(serializeApp(), null, 2);
+      }
+
+      function refreshExportPreview() {
+        const ta = document.getElementById("export-preview");
+        if (!ta) return;
+        ta.value = exportText();
+      }
+
+      function fileTimestamp() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        const h = String(d.getHours()).padStart(2, "0");
+        const min = String(d.getMinutes()).padStart(2, "0");
+        const s = String(d.getSeconds()).padStart(2, "0");
+        return `${y}-${m}-${day}_${h}${min}${s}`;
+      }
+
+      function initTabs() {
+        const buttons = Array.from(document.querySelectorAll("[data-tab-btn]"));
+        const panels = Array.from(document.querySelectorAll("[data-tab-panel]"));
+        function setActive(tabId) {
+          buttons.forEach((btn) => {
+            const active = btn.getAttribute("data-tab-btn") === tabId;
+            btn.classList.toggle("active", active);
+            btn.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          panels.forEach((panel) => {
+            const active = panel.getAttribute("data-tab-panel") === tabId;
+            panel.classList.toggle("active", active);
+          });
+        }
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            setActive(btn.getAttribute("data-tab-btn"));
+          });
+        });
+        setActive("data");
+      }
+
+      async function copyExportPreviewToClipboard() {
+        const ta = document.getElementById("export-preview");
+        if (!ta) return;
+        const text = ta.value || "";
+        if (!text) {
+          showIoMessage(tr("msgCopyFail"), false);
+          return;
+        }
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            ta.focus();
+            ta.select();
+            const ok = document.execCommand("copy");
+            if (!ok) throw new Error("copy failed");
+          }
+          showIoMessage(tr("msgCopied"), true);
+        } catch (_) {
+          ta.focus();
+          ta.select();
+          showIoMessage(tr("msgCopyFail"), false);
+        }
+      }
+
+      document.getElementById("export-json").addEventListener("click", function () {
+        const text = exportText();
+        const stamp = fileTimestamp();
+        downloadBlob(`stock-transactions-${stamp}.json`, text, "application/json;charset=utf-8");
+        showIoMessage(tr("msgExport"), true);
+      });
+
+      document.getElementById("copy-export-preview").addEventListener("click", function () {
+        copyExportPreviewToClipboard();
+      });
+
+      document.getElementById("export-txt").addEventListener("click", function () {
+        const text = exportText();
+        const stamp = fileTimestamp();
+        downloadBlob(`stock-transactions-${stamp}.txt`, text, "text/plain;charset=utf-8");
+        showIoMessage(tr("msgExportTxt"), true);
+      });
+
+      document.getElementById("import-btn").addEventListener("click", function () {
+        const raw = document.getElementById("import-text").value.trim();
+        showIoMessage("");
+        if (!raw) {
+          showIoMessage(tr("msgPasteFirst"), false);
+          return;
+        }
+        if (!confirm(tr("confirmReplace"))) return;
+        try {
+          const data = JSON.parse(raw);
+          importPayload(data);
+          showIoMessage(currentLang === "zh" ? `${tr("msgImported")} ${transactions.length} 筆交易。` : `${tr("msgImported")} ${transactions.length} transaction(s).`, true);
+        } catch (err) {
+          showIoMessage(err.message || String(err), false);
+        }
+      });
+
+      document.getElementById("lang-toggle").addEventListener("click", function () {
+        currentLang = currentLang === "en" ? "zh" : "en";
+        applyLanguage();
+        renderAll();
+      });
+      setEditMode(null);
+      initTabs();
+      applyLanguage();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>

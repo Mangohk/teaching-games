@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Garden — Time Hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --sky-top: #7dd3fc;
+      --sky-mid: #38bdf8;
+      --grass: #4ade80;
+      --grass-dark: #22c55e;
+      --ink: #0f172a;
+      --panel: rgba(255, 255, 255, 0.96);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', system-ui, sans-serif;
+      font-weight: 700;
+      background: #ecfdf5;
+      color: var(--ink);
+      overflow: hidden;
+      touch-action: manipulation;
+      min-height: 100vh;
+    }
+
+    .game-font { font-family: 'Luckiest Guy', cursive; font-weight: 400; letter-spacing: 0.02em; }
+
+    /* ——— Playfield ——— */
+    #gameArea {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-top) 62%, var(--grass) 62%, var(--grass-dark) 100%);
+      overflow: hidden;
+    }
+
+    .ground-flower {
+      position: absolute;
+      bottom: -6px;
+      width: 36px;
+      height: 36px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.9;
+    }
+
+    /* ——— Balloons (no transform transition — only animation) ——— */
+    .balloon {
+      position: absolute;
+      bottom: 0;
+      left: var(--lane-x, 10%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      z-index: 20;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .balloon:active .balloon-body { filter: brightness(0.92); }
+
+    .balloon-body {
+      width: 96px;
+      height: 128px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid #fff;
+      box-shadow: inset 0 -12px 24px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .balloon-knot {
+      width: 14px;
+      height: 14px;
+      background: inherit;
+      margin-top: -4px;
+      clip-path: polygon(50% 100%, 0 0, 100% 0);
+      border-radius: 2px;
+    }
+
+    .balloon-string {
+      width: 3px;
+      height: 72px;
+      background: rgba(255,255,255,0.55);
+      border-radius: 2px;
+    }
+
+    .digital-box {
+      background: #1e293b;
+      color: #4ade80;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 1.15rem;
+      border: 2px solid #94a3b8;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    }
+
+    .text-box {
+      background: #fef08a;
+      color: #1e293b;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      text-align: center;
+      max-width: 100px;
+      line-height: 1.15;
+      border: 2px solid #ca8a04;
+    }
+
+    @keyframes balloon-rise {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(0, calc(-100vh - 180px), 0); }
+    }
+
+    .balloon.rising {
+      animation-name: balloon-rise;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      will-change: transform;
+    }
+
+    @keyframes burst {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25) rotate(12deg); opacity: 0.85; }
+      100% { transform: scale(0.75) rotate(20deg); opacity: 0.6; }
+    }
+
+    @keyframes fall {
+      to {
+        transform: translate3d(0, 40vh, 0) scale(0.5) rotate(90deg);
+        opacity: 0;
+      }
+    }
+
+    .balloon.popped {
+      pointer-events: none;
+      animation: burst 0.22s ease-out forwards, fall 0.85s ease-in 0.18s forwards;
+    }
+
+    @keyframes flower-pop {
+      0% { transform: scale(0); opacity: 1; }
+      40% { transform: scale(1.35); opacity: 1; }
+      100% { transform: scale(1) translateY(-72px); opacity: 0; }
+    }
+
+    .fx-flower {
+      position: absolute;
+      z-index: 30;
+      width: 48px;
+      height: 48px;
+      pointer-events: none;
+      animation: flower-pop 0.65s ease-out forwards;
+    }
+
+    /* ——— HUD ——— */
+    .hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 12px clamp(8px, 2vw, 16px);
+      display: grid;
+      grid-template-columns: 1fr minmax(200px, 1.2fr) 1fr;
+      gap: 8px;
+      align-items: start;
+      pointer-events: none;
+    }
+
+    .hud > * { pointer-events: auto; }
+
+    .hud-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .hud-right { justify-self: end; text-align: right; }
+
+    .panel {
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 8px 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      border: 2px solid rgba(14, 165, 233, 0.35);
+    }
+
+    .panel.timer { border-color: rgba(239, 68, 68, 0.45); }
+    .panel .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: #0369a1; }
+    .panel.timer .label { color: #dc2626; }
+
+    .hud-btns { display: flex; flex-direction: column; gap: 6px; }
+    .icon-btn {
+      width: 44px;
+      height: 40px;
+      border-radius: 14px;
+      border: 2px solid #cbd5e1;
+      background: var(--panel);
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .icon-btn:hover { background: #f8fafc; }
+
+    .hud-center { text-align: center; min-width: 0; }
+
+    .stage-pill {
+      display: inline-block;
+      background: #ec4899;
+      color: #fff;
+      padding: 4px 18px 6px;
+      border-radius: 14px 14px 0 0;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .prompt-box {
+      background: #fff;
+      border: 4px solid #facc15;
+      border-radius: 18px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.35;
+    }
+
+    .progress-line {
+      margin-top: 6px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #166534;
+    }
+
+    .score-big { font-size: 1.75rem; line-height: 1.1; color: #0f172a; }
+    .timer-big { font-size: 1.75rem; line-height: 1.1; }
+
+    /* Analog clock in prompt */
+    .analog-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 6px; }
+    .clock-face {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid #334155;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .clock-num {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 800;
+      color: #475569;
+      transform: translate(-50%, -50%);
+    }
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+    }
+    .hand-hour {
+      width: 5px;
+      height: 26px;
+      margin-left: -2.5px;
+      background: #334155;
+    }
+    .hand-minute {
+      width: 3px;
+      height: 38px;
+      margin-left: -1.5px;
+      background: #ef4444;
+    }
+    .hand-hub {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #0f172a;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Overlays */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(6px);
+    }
+
+    .overlay[hidden] { display: none !important; }
+
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.25);
+      border: 8px solid #f9a8d4;
+    }
+
+    .modal.win { border-color: #facc15; }
+    .modal h1 {
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      color: #ec4899;
+      margin: 0 0 8px;
+    }
+    .modal.win h1 { color: #ca8a04; }
+    .modal p { color: #64748b; margin: 0 0 20px; }
+    .modal input {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      border: 4px solid #e2e8f0;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      font-family: inherit;
+    }
+    .modal input:focus {
+      outline: none;
+      border-color: #f472b6;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.5rem;
+      font-family: 'Luckiest Guy', cursive;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #fff;
+      background: #22c55e;
+      box-shadow: 0 6px 0 #15803d;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #15803d;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.2rem;
+      font-family: 'Luckiest Guy', cursive;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #fff;
+      background: #3b82f6;
+      box-shadow: 0 4px 0 #1d4ed8;
+    }
+    .btn-secondary:active { transform: translateY(2px); }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .accent { color: #db2777; font-size: 1.25em; }
+    .mono-pill {
+      display: inline-block;
+      background: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 1.15rem;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 720px) {
+      .hud {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+      .hud-left, .hud-right { justify-self: center; text-align: center; }
+      .hud-left { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hud">
+    <div class="hud-left">
+      <div class="panel">
+        <span class="label" id="playerNameDisplay">Hero</span>
+        <div class="score-big game-font" id="scoreDisplay">0</div>
+      </div>
+      <div class="hud-btns">
+        <button type="button" class="icon-btn" id="soundBtn" title="Sound">🔊</button>
+        <button type="button" class="icon-btn" id="musicBtn" title="Music">🎵</button>
+      </div>
+    </div>
+    <div class="hud-center">
+      <div class="stage-pill" id="stageIndicator">Phase 1</div>
+      <div class="prompt-box" id="sentenceDisplay">Welcome!</div>
+      <div class="progress-line" id="progressText">Stars: 0 / 10</div>
+    </div>
+    <div class="hud-right">
+      <div class="panel timer">
+        <span class="label">Timer</span>
+        <div class="timer-big game-font" id="timerDisplay">45</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameArea" aria-hidden="true"></div>
+
+  <div class="overlay" id="startOverlay" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+    <div class="modal">
+      <h1 class="game-font" id="startTitle">Time Garden</h1>
+      <p>Pop the balloons that match the clue. Grow your garden!</p>
+      <label class="visually-hidden" for="playerNameInput">Your name</label>
+      <input type="text" id="playerNameInput" placeholder="Your name (optional)" maxlength="24" autocomplete="nickname">
+      <button type="button" class="btn-primary" id="startBtn">Start!</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="scoreOverlay" hidden role="dialog" aria-modal="true">
+    <div class="modal win" id="scoreModal">
+      <h1 class="game-font" id="scoreboardTitle">Great job!</h1>
+      <p id="finalScoreText"></p>
+      <button type="button" class="btn-secondary" id="playAgainBtn">Play again</button>
+    </div>
+  </div>
+
+  <script>
+(function () {
+  'use strict';
+
+  const gameArea = document.getElementById('gameArea');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const timerDisplay = document.getElementById('timerDisplay');
+  const sentenceDisplay = document.getElementById('sentenceDisplay');
+  const stageIndicator = document.getElementById('stageIndicator');
+  const progressText = document.getElementById('progressText');
+  const startOverlay = document.getElementById('startOverlay');
+  const scoreOverlay = document.getElementById('scoreOverlay');
+  const scoreModal = document.getElementById('scoreModal');
+  const playerNameInput = document.getElementById('playerNameInput');
+  const playerNameDisplay = document.getElementById('playerNameDisplay');
+  const soundBtn = document.getElementById('soundBtn');
+  const musicBtn = document.getElementById('musicBtn');
+  const startBtn = document.getElementById('startBtn');
+  const playAgainBtn = document.getElementById('playAgainBtn');
+
+  const timeData = [
+    { h: 1, m: 0, digital: '1:00', text: "one o'clock" },
+    { h: 2, m: 30, digital: '2:30', text: 'half past two' },
+    { h: 3, m: 0, digital: '3:00', text: "three o'clock" },
+    { h: 4, m: 30, digital: '4:30', text: 'half past four' },
+    { h: 5, m: 0, digital: '5:00', text: "five o'clock" },
+    { h: 6, m: 30, digital: '6:30', text: 'half past six' },
+    { h: 7, m: 0, digital: '7:00', text: "seven o'clock" },
+    { h: 8, m: 30, digital: '8:30', text: 'half past eight' },
+    { h: 9, m: 0, digital: '9:00', text: "nine o'clock" },
+    { h: 10, m: 30, digital: '10:30', text: 'half past ten' },
+    { h: 11, m: 0, digital: '11:00', text: "eleven o'clock" },
+    { h: 12, m: 30, digital: '12:30', text: 'half past twelve' }
+  ];
+
+  const BALLOON_COLORS = ['#f9a8d4', '#fbbf24', '#c084fc', '#60a5fa', '#4ade80'];
+  const LANES = 6;
+  const LANE_PCTS = [7, 23, 39, 55, 71, 87];
+  const STARS_PHASE_1 = 10;
+  const STARS_PHASE_2 = 8;
+  const STARS_PHASE_3 = 8;
+  const TIMER_START = 45;
+  const SPAWN_MS = 750;
+  const BALLOON_MAX_MS = 7500;
+  const POINTS_CORRECT = 10;
+  const POINTS_WRONG = 5;
+  /** If no matching balloon is visible this long, spawn the correct answer next. */
+  const MAX_WAIT_MS_NO_TARGET = 1500;
+  /** On queue refill, move current clue into one of the first N pops (0 .. N-1). */
+  const QUEUE_BIAS_FIRST = 8;
+
+  let score = 0;
+  let timeLeft = TIMER_START;
+  let currentStage = 1;
+  let gameActive = false;
+  let soundEnabled = true;
+  let musicEnabled = true;
+  let currentTarget = null;
+  let questionsInStage = 0;
+  const activeLanes = Array(LANES).fill(false);
+  let balloonQueue = [];
+  /** Clock for fairness: reset when the clue changes or a matching balloon spawns. */
+  let lastTargetSeenAt = 0;
+
+  let spawnIntervalId = null;
+  let tickIntervalId = null;
+  let melodyIntervalId = null;
+  let musicTick = 0;
+
+  let audioCtx = null;
+
+  const melodyNotes = [523.25, 587.33, 659.25, 783.99, 880.00];
+  const drumFreq = 100;
+
+  function starsRequiredForPhase(stage) {
+    if (stage === 1) return STARS_PHASE_1;
+    if (stage === 2) return STARS_PHASE_2;
+    return STARS_PHASE_3;
+  }
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playPopSound(isCorrect) {
+    if (!soundEnabled) return;
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = isCorrect ? 'sine' : 'square';
+    osc.frequency.setValueAtTime(isCorrect ? 620 : 140, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(12, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.12);
+  }
+
+  function playLivelyBeat() {
+    if (!musicEnabled || !gameActive) return;
+    initAudio();
+    const t0 = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const noteIdx = Math.floor(Math.random() * melodyNotes.length);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(melodyNotes[noteIdx], t0);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(0.07, t0 + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.38);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + 0.45);
+
+    if (musicTick % 2 === 0) {
+      const dOsc = audioCtx.createOscillator();
+      const dGain = audioCtx.createGain();
+      dOsc.frequency.setValueAtTime(drumFreq, t0);
+      dOsc.frequency.exponentialRampToValueAtTime(45, t0 + 0.08);
+      dGain.gain.setValueAtTime(0.045, t0);
+      dGain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.1);
+      dOsc.connect(dGain);
+      dGain.connect(audioCtx.destination);
+      dOsc.start(t0);
+      dOsc.stop(t0 + 0.1);
+    }
+    musicTick++;
+  }
+
+  function startMusic() {
+    if (melodyIntervalId) clearInterval(melodyIntervalId);
+    musicTick = 0;
+    melodyIntervalId = setInterval(playLivelyBeat, 500);
+  }
+
+  function stopMusic() {
+    if (melodyIntervalId) {
+      clearInterval(melodyIntervalId);
+      melodyIntervalId = null;
+    }
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function refillBalloonQueue() {
+    balloonQueue = shuffle(timeData.slice());
+    if (!currentTarget || QUEUE_BIAS_FIRST < 1) return;
+    const idx = balloonQueue.findIndex(function (d) {
+      return d.digital === currentTarget.digital && d.text === currentTarget.text;
+    });
+    if (idx < 0) return;
+    const swapTo = Math.floor(Math.random() * Math.min(QUEUE_BIAS_FIRST, balloonQueue.length));
+    const t = balloonQueue[idx];
+    balloonQueue[idx] = balloonQueue[swapTo];
+    balloonQueue[swapTo] = t;
+  }
+
+  function flowerSVG(fill) {
+    return '<svg viewBox="0 0 100 100" width="48" height="48" aria-hidden="true">' +
+      '<circle cx="50" cy="50" r="14" fill="#fde047"/>' +
+      '<circle cx="50" cy="28" r="17" fill="' + fill + '"/>' +
+      '<circle cx="72" cy="50" r="17" fill="' + fill + '"/>' +
+      '<circle cx="50" cy="72" r="17" fill="' + fill + '"/>' +
+      '<circle cx="28" cy="50" r="17" fill="' + fill + '"/>' +
+      '</svg>';
+  }
+
+  function addGroundFlowers() {
+    for (let i = 0; i < 14; i++) {
+      const el = document.createElement('div');
+      el.className = 'ground-flower';
+      el.innerHTML = flowerSVG('#f472b6');
+      el.style.left = (i * 6.8 + Math.random() * 4) + '%';
+      el.style.transform = 'scale(' + (0.45 + Math.random() * 0.5) + ')';
+      gameArea.appendChild(el);
+    }
+  }
+
+  function analogClockHTML(h, m) {
+    const hRot = h * 30 + m * 0.5;
+    const mRot = m * 6;
+    let nums = '';
+    for (let i = 1; i <= 12; i++) {
+      const ang = (i * 30 * Math.PI) / 180;
+      const lx = 50 + 36 * Math.sin(ang);
+      const ly = 50 - 36 * Math.cos(ang);
+      nums += '<span class="clock-num" style="left:' + lx + '%;top:' + ly + '%">' + i + '</span>';
+    }
+    return (
+      '<div class="clock-face">' + nums +
+      '<div class="hand hand-hour" style="transform:rotate(' + hRot + 'deg)"></div>' +
+      '<div class="hand hand-minute" style="transform:rotate(' + mRot + 'deg)"></div>' +
+      '<div class="hand-hub"></div></div>'
+    );
+  }
+
+  /** Phase 1: digital on balloon. Phases 2–3: phrase on balloon. */
+  function balloonMarkupForStage(stage, data) {
+    if (stage === 1) {
+      return '<div class="digital-box">' + data.digital + '</div>';
+    }
+    return '<div class="text-box">' + data.text + '</div>';
+  }
+
+  /** Phase 1: match digital. Phases 2–3: match spoken phrase text. */
+  function answerMatchesTarget(stage, data, target) {
+    if (!data || !target) return false;
+    if (stage === 1) return data.digital === target.digital;
+    if (stage === 2 || stage === 3) return data.text === target.text;
+    return false;
+  }
+
+  function hasTargetBalloonOnScreen() {
+    if (!gameActive || !currentTarget) return false;
+    const nodes = gameArea.querySelectorAll('.balloon.rising');
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const payload = { digital: n.dataset.digital, text: n.dataset.text };
+      if (answerMatchesTarget(currentStage, payload, currentTarget)) return true;
+    }
+    return false;
+  }
+
+  function promptHTMLPhase3(target) {
+    return (
+      '<div>Find the <strong>words</strong> for this clock:</div>' +
+      '<div class="analog-wrap">' + analogClockHTML(target.h, target.m) + '</div>'
+    );
+  }
+
+  function setNewTarget() {
+    if (!gameActive) return;
+    const prev = currentTarget;
+    let candidates = timeData.filter(function (d) {
+      return !prev || d.digital !== prev.digital || d.text !== prev.text;
+    });
+    if (!candidates.length) candidates = timeData;
+    currentTarget = candidates[Math.floor(Math.random() * candidates.length)];
+    if (currentStage === 1) {
+      sentenceDisplay.innerHTML =
+        'Find the <strong>digital</strong> time for:<br>' +
+        '<span class="accent">“It is ' + currentTarget.text + '.”</span>';
+    } else if (currentStage === 2) {
+      sentenceDisplay.innerHTML =
+        'Find the <strong>words</strong> for:<br>' +
+        '<span class="mono-pill">' + currentTarget.digital + '</span>';
+    } else if (currentStage === 3) {
+      sentenceDisplay.innerHTML = promptHTMLPhase3(currentTarget);
+    } else {
+      console.warn('TimeGarden: unexpected currentStage', currentStage);
+      sentenceDisplay.innerHTML = promptHTMLPhase3(currentTarget);
+    }
+    lastTargetSeenAt = Date.now();
+  }
+
+  function spawnOneBalloon() {
+    if (!gameActive) return false;
+    let free = [];
+    for (let i = 0; i < LANES; i++) if (!activeLanes[i]) free.push(i);
+    if (!free.length) return false;
+    const lane = free[Math.floor(Math.random() * free.length)];
+    activeLanes[lane] = true;
+
+    let data;
+    if (
+      currentTarget &&
+      !hasTargetBalloonOnScreen() &&
+      Date.now() - lastTargetSeenAt > MAX_WAIT_MS_NO_TARGET
+    ) {
+      data = currentTarget;
+    } else {
+      if (!balloonQueue.length) refillBalloonQueue();
+      data = balloonQueue.pop();
+    }
+
+    const isCorrectBalloon = answerMatchesTarget(currentStage, data, currentTarget);
+    const riseSec = (isCorrectBalloon
+      ? Math.random() * 4 + 9
+      : Math.random() * 6 + 7).toFixed(2);
+    const color = BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)];
+
+    const inner = balloonMarkupForStage(currentStage, data);
+
+    const el = document.createElement('div');
+    el.className = 'balloon rising';
+    el.dataset.digital = data.digital;
+    el.dataset.text = data.text;
+    el.style.setProperty('--lane-x', LANE_PCTS[lane] + '%');
+    el.style.animationDuration = riseSec + 's';
+    el._laneIndex = lane;
+    el._laneReleased = false;
+    el._releaseBalloonLane = function () {
+      if (el._laneReleased) return;
+      el._laneReleased = true;
+      activeLanes[el._laneIndex] = false;
+    };
+    el.innerHTML =
+      '<div class="balloon-body" style="background:' + color + '">' + inner + '</div>' +
+      '<div class="balloon-knot" style="background:' + color + '"></div>' +
+      '<div class="balloon-string"></div>';
+
+    if (isCorrectBalloon) lastTargetSeenAt = Date.now();
+
+    el.addEventListener('click', onBalloonClick);
+    el.addEventListener('touchstart', onTouchBalloon, { passive: false });
+
+    function onTouchBalloon(e) {
+      e.preventDefault();
+      onBalloonClick(e);
+    }
+
+    function onBalloonClick(e) {
+      e.stopPropagation();
+      el.removeEventListener('click', onBalloonClick);
+      el.removeEventListener('touchstart', onTouchBalloon);
+      handleBalloonPop(el);
+    }
+
+    gameArea.appendChild(el);
+
+    el._maxLifeTimeoutId = setTimeout(function () {
+      if (el.parentNode && !el.classList.contains('popped')) el.remove();
+      if (typeof el._releaseBalloonLane === 'function') el._releaseBalloonLane();
+      el._maxLifeTimeoutId = null;
+    }, BALLOON_MAX_MS);
+    return true;
+  }
+
+  function spawnBalloon() {
+    if (!gameActive) return;
+    let free = [];
+    for (let i = 0; i < LANES; i++) if (!activeLanes[i]) free.push(i);
+    if (!free.length) return;
+    const initialFreeCount = free.length;
+    spawnOneBalloon();
+    if (initialFreeCount >= 2) spawnOneBalloon();
+  }
+
+  function handleBalloonPop(el) {
+    if (!gameActive || el._handled) return;
+    el._handled = true;
+    if (el._maxLifeTimeoutId) {
+      clearTimeout(el._maxLifeTimeoutId);
+      el._maxLifeTimeoutId = null;
+    }
+    const payload = { digital: el.dataset.digital, text: el.dataset.text };
+    const isCorrect = answerMatchesTarget(currentStage, payload, currentTarget);
+    el.classList.remove('rising');
+    el.style.animation = 'none';
+    playPopSound(isCorrect);
+
+    if (isCorrect) {
+      const r = el.getBoundingClientRect();
+      const ga = gameArea.getBoundingClientRect();
+      const fx = document.createElement('div');
+      fx.className = 'fx-flower';
+      fx.style.left = (r.left - ga.left + r.width / 2 - 24) + 'px';
+      fx.style.top = (r.top - ga.top + r.height / 2 - 24) + 'px';
+      fx.innerHTML = flowerSVG('#fb7185');
+      gameArea.appendChild(fx);
+      setTimeout(function () { fx.remove(); }, 700);
+
+      score += POINTS_CORRECT;
+      questionsInStage++;
+      scoreDisplay.textContent = String(score);
+      progressText.textContent = 'Stars: ' + questionsInStage + ' / ' + starsRequiredForPhase(currentStage);
+      checkStageProgress();
+    } else {
+      score = Math.max(0, score - POINTS_WRONG);
+      scoreDisplay.textContent = String(score);
+    }
+
+    el.classList.add('popped');
+    setTimeout(function () {
+      el.remove();
+      if (typeof el._releaseBalloonLane === 'function') el._releaseBalloonLane();
+    }, 1100);
+  }
+
+  function checkStageProgress() {
+    if (questionsInStage < starsRequiredForPhase(currentStage)) {
+      setNewTarget();
+      return;
+    }
+    if (currentStage < 3) {
+      currentStage++;
+      questionsInStage = 0;
+      timeLeft = TIMER_START;
+      timerDisplay.textContent = String(timeLeft);
+      stageIndicator.textContent = 'Phase ' + currentStage;
+      progressText.textContent = 'Stars: 0 / ' + starsRequiredForPhase(currentStage);
+      setNewTarget();
+    } else {
+      endGame('win');
+    }
+  }
+
+  function clearGameIntervals() {
+    if (spawnIntervalId) {
+      clearInterval(spawnIntervalId);
+      spawnIntervalId = null;
+    }
+    if (tickIntervalId) {
+      clearInterval(tickIntervalId);
+      tickIntervalId = null;
+    }
+    stopMusic();
+  }
+
+  function endGame(reason) {
+    clearGameIntervals();
+    gameActive = false;
+    gameArea.querySelectorAll('.balloon').forEach(function (b) { b.remove(); });
+
+    const titleEl = document.getElementById('scoreboardTitle');
+    const bodyEl = document.getElementById('finalScoreText');
+    if (reason === 'timeout') {
+      titleEl.textContent = "Time's up!";
+      bodyEl.textContent = 'You scored ' + score + ' points. Try again!';
+      scoreModal.classList.remove('win');
+    } else {
+      titleEl.textContent = 'Great job!';
+      bodyEl.textContent = 'You finished all stages with ' + score + ' points!';
+      scoreModal.classList.add('win');
+    }
+    scoreOverlay.hidden = false;
+  }
+
+  function initGame() {
+    const name = playerNameInput.value.trim();
+    playerNameDisplay.textContent = name || 'Hero';
+    startOverlay.hidden = true;
+
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    clearGameIntervals();
+
+    gameArea.innerHTML = '';
+    score = 0;
+    timeLeft = TIMER_START;
+    currentStage = 1;
+    questionsInStage = 0;
+    balloonQueue = [];
+    activeLanes.fill(false);
+    scoreDisplay.textContent = '0';
+    timerDisplay.textContent = String(timeLeft);
+    stageIndicator.textContent = 'Phase 1';
+    progressText.textContent = 'Stars: 0 / ' + starsRequiredForPhase(1);
+
+    gameActive = true;
+    addGroundFlowers();
+    setNewTarget();
+    startMusic();
+    spawnIntervalId = setInterval(spawnBalloon, SPAWN_MS);
+    tickIntervalId = setInterval(function () {
+      if (!gameActive) return;
+      timeLeft--;
+      timerDisplay.textContent = String(Math.max(0, timeLeft));
+      if (timeLeft <= 0) endGame('timeout');
+    }, 1000);
+
+    spawnBalloon();
+  }
+
+  soundBtn.addEventListener('click', function () {
+    soundEnabled = !soundEnabled;
+    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+  });
+  musicBtn.addEventListener('click', function () {
+    musicEnabled = !musicEnabled;
+    musicBtn.textContent = musicEnabled ? '🎵' : '🔕';
+    if (!musicEnabled) stopMusic();
+    else if (gameActive) startMusic();
+  });
+  startBtn.addEventListener('click', initGame);
+  playAgainBtn.addEventListener('click', function () { location.reload(); });
+})();
+  </script>
+</body>
+</html>
