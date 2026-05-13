@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --ink: #0f172a;
+      --panel: rgba(255, 255, 255, 0.96);
+      --sky: #bae6fd;
+      --grass: #86efac;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Nunito', system-ui, sans-serif;
+      font-weight: 700;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--sky) 0%, #e0f2fe 40%, #fef9c3 100%);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .game-font { font-family: 'Luckiest Guy', cursive; font-weight: 400; letter-spacing: 0.02em; }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(6px);
+    }
+    .overlay[hidden] { display: none !important; }
+
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+      border: 8px solid #7dd3fc;
+    }
+    .modal h1 {
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      color: #0369a1;
+      margin: 0 0 8px;
+    }
+    .modal p { color: #64748b; margin: 0 0 16px; line-height: 1.4; }
+    .modal.win { border-color: #facc15; }
+    .modal.win h1 { color: #ca8a04; }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      border: 4px solid #e2e8f0;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      font-family: inherit;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.35rem;
+      font-family: 'Luckiest Guy', cursive;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #fff;
+      background: #22c55e;
+      box-shadow: 0 6px 0 #15803d;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #15803d;
+    }
+    .btn-secondary {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.15rem;
+      font-family: 'Luckiest Guy', cursive;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #fff;
+      background: #3b82f6;
+      box-shadow: 0 4px 0 #1d4ed8;
+      margin-top: 10px;
+    }
+    .btn-secondary:active { transform: translateY(2px); }
+
+    #gameScreen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(12px, 3vw, 24px) clamp(10px, 3vw, 20px) 32px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    #gameScreen[hidden] { display: none !important; }
+
+    .player-tag {
+      font-size: 0.85rem;
+      color: #0369a1;
+      margin-bottom: 8px;
+    }
+
+    .hint-panel {
+      background: var(--panel);
+      border: 4px solid #facc15;
+      border-radius: 20px;
+      padding: 16px 20px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 520px;
+      margin-bottom: clamp(16px, 4vw, 28px);
+    }
+    .hint-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .hint-text {
+      font-size: clamp(1.1rem, 4vw, 1.45rem);
+      line-height: 1.35;
+      color: #0f172a;
+    }
+    .hint-text em {
+      font-style: normal;
+      color: #db2777;
+      font-size: 1.05em;
+    }
+
+    .star-bar-wrap {
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: clamp(20px, 5vw, 32px);
+    }
+    .star-bar-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .star-bar {
+      display: flex;
+      justify-content: center;
+      gap: clamp(4px, 1.5vw, 8px);
+      flex-wrap: wrap;
+    }
+    .star-slot {
+      font-size: clamp(1.35rem, 5vw, 1.85rem);
+      line-height: 1;
+      opacity: 0.28;
+      filter: grayscale(0.4);
+      transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+    }
+    .star-slot.filled {
+      opacity: 1;
+      filter: none;
+      transform: scale(1.08);
+    }
+
+    .clock-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
+      gap: clamp(12px, 3vw, 20px);
+      width: 100%;
+    }
+
+    .clock-choice {
+      flex: 1 1 140px;
+      max-width: 200px;
+      min-width: 120px;
+      min-height: 200px;
+      padding: 16px 12px 20px;
+      border: 4px solid #94a3b8;
+      border-radius: 22px;
+      background: var(--panel);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+      transition: border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease, opacity 0.25s ease, filter 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .clock-choice:hover:not(:disabled):not(.dimmed) {
+      border-color: #38bdf8;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(14, 165, 233, 0.2);
+    }
+    .clock-choice:focus-visible {
+      outline: 3px solid #0ea5e9;
+      outline-offset: 3px;
+    }
+    .clock-choice.dimmed {
+      opacity: 0.38;
+      filter: grayscale(0.85);
+      pointer-events: none;
+      cursor: default;
+      border-color: #cbd5e1;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .clock-face {
+      width: min(28vw, 140px);
+      height: min(28vw, 140px);
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid #334155;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    .clock-num {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 800;
+      color: #475569;
+      transform: translate(-50%, -50%);
+    }
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+    }
+    .hand-hour {
+      width: 6px;
+      height: 34px;
+      margin-left: -3px;
+      background: #334155;
+    }
+    .hand-minute {
+      width: 4px;
+      height: 48px;
+      margin-left: -2px;
+      background: #ef4444;
+    }
+    .hand-hub {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #0f172a;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .time-used-line {
+      font-size: 1.15rem;
+      color: #0f172a;
+      margin: 12px 0 8px;
+    }
+    .time-used-line strong { color: #0369a1; }
+  </style>
+</head>
+<body>
+
+  <div class="overlay" id="startOverlay" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+    <div class="modal">
+      <h1 class="game-font" id="startTitle">Time Challenge</h1>
+      <p>Read the time in English, then tap the matching clock.</p>
+      <label class="visually-hidden" for="playerNameInput">Your name</label>
+      <input type="text" id="playerNameInput" placeholder="Your name" maxlength="24" autocomplete="nickname">
+      <button type="button" class="btn-primary" id="startBtn">Start</button>
+    </div>
+  </div>
+
+  <div id="gameScreen" hidden>
+    <p class="player-tag" id="playerTag" aria-live="polite"></p>
+    <div class="hint-panel">
+      <div class="hint-label">Hint time</div>
+      <div class="hint-text" id="hintText" aria-live="polite">—</div>
+    </div>
+    <div class="star-bar-wrap">
+      <div class="star-bar-label">Score — 10 stars</div>
+      <div class="star-bar" id="starBar" aria-label="Score out of ten"></div>
+    </div>
+    <div class="clock-row" id="clockRow" role="group" aria-label="Choose the matching clock"></div>
+  </div>
+
+  <div class="overlay" id="winOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <div class="modal win">
+      <h1 class="game-font" id="winTitle">Congratulations!</h1>
+      <p id="winMessage"></p>
+      <p class="time-used-line" id="timeUsedLine"></p>
+      <button type="button" class="btn-primary" id="playAgainBtn">Play again</button>
+    </div>
+  </div>
+
+  <script>
+(function () {
+  'use strict';
+
+  const HOUR_NAMES = ['twelve', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven'];
+
+  function hourWord(h12) {
+    return HOUR_NAMES[h12 % 12];
+  }
+
+  function phraseFor(h12, m) {
+    if (m === 45) {
+      const next = h12 === 12 ? 1 : h12 + 1;
+      return 'quarter to ' + hourWord(next);
+    }
+    if (m === 30) return 'half past ' + hourWord(h12);
+    if (m === 15) return 'quarter past ' + hourWord(h12);
+    return hourWord(h12) + " o'clock";
+  }
+
+  const TIME_DATA = [];
+  for (let h = 1; h <= 12; h++) {
+    for (const m of [0, 15, 30, 45]) {
+      TIME_DATA.push({ h: h, m: m, phrase: phraseFor(h, m) });
+    }
+  }
+
+  function timeKey(t) {
+    return t.h * 60 + t.m;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
+    return a;
+  }
+
+  function analogClockHTML(h, m) {
+    const hRot = h * 30 + m * 0.5;
+    const mRot = m * 6;
+    let nums = '';
+    for (let i = 1; i <= 12; i++) {
+      const ang = (i * 30 * Math.PI) / 180;
+      const lx = 50 + 40 * Math.sin(ang);
+      const ly = 50 - 40 * Math.cos(ang);
+      nums += '<span class="clock-num" style="left:' + lx + '%;top:' + ly + '%">' + i + '</span>';
+    }
+    return (
+      '<div class="clock-face" aria-hidden="true">' + nums +
+      '<div class="hand hand-hour" style="transform:rotate(' + hRot + 'deg)"></div>' +
+      '<div class="hand hand-minute" style="transform:rotate(' + mRot + 'deg)"></div>' +
+      '<div class="hand-hub"></div></div>'
+    );
+  }
+
+  function formatTimeUsed(ms) {
+    if (!Number.isFinite(ms) || ms < 0) return '—';
+    const sec = Math.floor(ms / 1000);
+    const mm = Math.floor(sec / 60);
+    const ss = sec % 60;
+    return mm + ':' + String(ss).padStart(2, '0');
+  }
+
+  const WIN_STARS = 10;
+
+  const startOverlay = document.getElementById('startOverlay');
+  const gameScreen = document.getElementById('gameScreen');
+  const winOverlay = document.getElementById('winOverlay');
+  const playerNameInput = document.getElementById('playerNameInput');
+  const startBtn = document.getElementById('startBtn');
+  const playerTag = document.getElementById('playerTag');
+  const hintText = document.getElementById('hintText');
+  const starBar = document.getElementById('starBar');
+  const clockRow = document.getElementById('clockRow');
+  const winMessage = document.getElementById('winMessage');
+  const timeUsedLine = document.getElementById('timeUsedLine');
+  const playAgainBtn = document.getElementById('playAgainBtn');
+
+  let displayName = 'Player';
+  let correctCount = 0;
+  let timerStarted = false;
+  let timerT0 = 0;
+
+  function buildStarBar() {
+    starBar.innerHTML = '';
+    for (let i = 0; i < WIN_STARS; i++) {
+      const s = document.createElement('span');
+      s.className = 'star-slot';
+      s.setAttribute('aria-hidden', 'true');
+      s.textContent = '⭐';
+      s.dataset.index = String(i);
+      starBar.appendChild(s);
+    }
+    updateStars();
+  }
+
+  function updateStars() {
+    const slots = starBar.querySelectorAll('.star-slot');
+    for (let i = 0; i < slots.length; i++) {
+      slots[i].classList.toggle('filled', i < correctCount);
+    }
+  }
+
+  function maybeStartTimerOnFirstQuestionInteraction() {
+    if (timerStarted) return;
+    if (correctCount !== 0) return;
+    timerStarted = true;
+    timerT0 = performance.now();
+  }
+
+  function pickWrongTimes(target) {
+    const keyT = timeKey(target);
+    const pool = TIME_DATA.filter(function (x) {
+      return timeKey(x) !== keyT;
+    });
+    shuffle(pool);
+    const a = pool[0];
+    let b = pool[1];
+    let i = 2;
+    while (timeKey(b) === timeKey(a) && i < pool.length) {
+      b = pool[i++];
+    }
+    if (timeKey(a) === timeKey(b)) return pickWrongTimes(target);
+    return [a, b];
+  }
+
+  function newRound() {
+    const target = TIME_DATA[Math.floor(Math.random() * TIME_DATA.length)];
+    const wrongPair = pickWrongTimes(target);
+    const choices = shuffle([
+      { h: target.h, m: target.m, correct: true },
+      { h: wrongPair[0].h, m: wrongPair[0].m, correct: false },
+      { h: wrongPair[1].h, m: wrongPair[1].m, correct: false }
+    ]);
+
+    hintText.textContent = target.phrase;
+
+    clockRow.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const c = choices[i];
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'clock-choice';
+      btn.dataset.correct = c.correct ? '1' : '0';
+      btn.setAttribute('aria-label', 'Answer choice ' + (i + 1) + ', analog clock');
+      btn.innerHTML = analogClockHTML(c.h, c.m);
+      btn.addEventListener('click', onClockClick);
+      clockRow.appendChild(btn);
+    }
+  }
+
+  function onClockClick(e) {
+    const btn = e.currentTarget;
+    if (btn.classList.contains('dimmed')) return;
+    if (btn.disabled) return;
+
+    maybeStartTimerOnFirstQuestionInteraction();
+
+    const isCorrect = btn.dataset.correct === '1';
+    if (isCorrect) {
+      correctCount++;
+      updateStars();
+      if (correctCount >= WIN_STARS) {
+        const elapsed = timerStarted ? performance.now() - timerT0 : NaN;
+        showWin(elapsed);
+        return;
+      }
+      newRound();
+      return;
+    }
+
+    btn.classList.add('dimmed');
+    btn.setAttribute('aria-disabled', 'true');
+  }
+
+  function showWin(elapsedMs) {
+    const timeStr = timerStarted ? formatTimeUsed(elapsedMs) : '—';
+    winMessage.textContent = 'You matched all ' + WIN_STARS + ' times, ' + displayName + '!';
+    timeUsedLine.innerHTML = 'Time used: <strong>' + timeStr + '</strong>';
+    winOverlay.hidden = false;
+  }
+
+  function startGame() {
+    displayName = playerNameInput.value.trim() || 'Player';
+    playerTag.textContent = 'Playing as: ' + displayName;
+    correctCount = 0;
+    timerStarted = false;
+    timerT0 = 0;
+    buildStarBar();
+    startOverlay.hidden = true;
+    gameScreen.hidden = false;
+    newRound();
+  }
+
+  function resetForPlayAgain() {
+    winOverlay.hidden = true;
+    correctCount = 0;
+    timerStarted = false;
+    timerT0 = 0;
+    buildStarBar();
+    newRound();
+  }
+
+  startBtn.addEventListener('click', startGame);
+  playAgainBtn.addEventListener('click', resetForPlayAgain);
+
+  buildStarBar();
+})();
+  </script>
+</body>
+</html>
