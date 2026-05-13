@@ -75,11 +75,22 @@
     .game-link:active {
       transform: translateY(-1px);
     }
-    .icon {
-      font-size: 3.5rem;
-      line-height: 1;
-      margin-bottom: 0.75rem;
-      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.08));
+    .thumb-wrap {
+      width: 100%;
+      max-width: 220px;
+      aspect-ratio: 16 / 9;
+      margin: 0 auto 0.75rem;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+      background: #e2e8f0;
+    }
+    .game-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
     }
     .game-link h2 {
       font-family: 'Luckiest Guy', cursive;
@@ -111,12 +122,16 @@
     </header>
     <nav class="grid" aria-label="Games">
       <a class="game-link" href="balloon-time/">
-        <span class="icon" aria-hidden="true">🎈</span>
+        <span class="thumb-wrap">
+          <img class="game-thumb" src="balloon-time/index.jpg" alt="" width="1168" height="632" decoding="async" loading="lazy">
+        </span>
         <h2>Time Garden</h2>
         <p>Pop balloons to match clocks and phrases.</p>
       </a>
       <a class="game-link" href="cap-book/">
-        <span class="icon" aria-hidden="true">📒</span>
+        <span class="thumb-wrap">
+          <img class="game-thumb" src="cap-book/index.jpg" alt="" width="1106" height="632" decoding="async" loading="lazy">
+        </span>
         <h2>Cap Book</h2>
         <p>Record trades, holdings, and backup JSON.</p>
       </a>
