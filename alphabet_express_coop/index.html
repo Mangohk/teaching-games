@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Alphabet Express - Class P1 Adventure</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka has clean, single-story lowercase letters 'a' and 'g' ideal for early literacy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+  <!-- Tone.js for high-fidelity interactive musical sounds -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Canvas Confetti for cooperative victory celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overflow-x: hidden;
+    }
+
+    /* Custom bounce and float animations for child engagement */
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    @keyframes gentleWobble {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-3deg); }
+      40% { transform: translateX(8px) rotate(3deg); }
+      60% { transform: translateX(-5px) rotate(-1deg); }
+      80% { transform: translateX(5px) rotate(1deg); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); transform: scale(1); }
+      50% { box-shadow: 0 0 28px rgba(251, 191, 36, 0.9); transform: scale(1.05); }
+    }
+
+    @keyframes trainChug {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes cloudDrift {
+      0% { transform: translateX(-100px); }
+      100% { transform: translateX(calc(100vw + 120px)); }
+    }
+
+    .animate-float {
+      animation: floaty 3s ease-in-out infinite;
+    }
+
+    .animate-target-pulse {
+      animation: pulseGlow 1.4s ease-in-out infinite;
+    }
+
+    .animate-chug {
+      animation: trainChug 0.7s ease-in-out infinite;
+    }
+
+    .wobble-wrong {
+      animation: gentleWobble 0.6s ease-in-out;
+    }
+
+    .cloud-slow {
+      animation: cloudDrift 45s linear infinite;
+    }
+
+    .cloud-fast {
+      animation: cloudDrift 28s linear infinite;
+    }
+
+    /* Custom scrollbar for train track */
+    .custom-scroll::-webkit-scrollbar {
+      height: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #fbbf24;
+      border-radius: 9999px;
+    }
+
+    /* 3D pushable button look for smartboards */
+    .bubble-btn {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 6px 0 rgba(0,0,0,0.18);
+    }
+    .bubble-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-sky-300 via-sky-200 to-amber-100 min-h-screen flex flex-col justify-between relative overflow-hidden select-none">
+
+  <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+    <!-- Sun -->
+    <div class="absolute top-4 right-10 w-24 h-24 bg-yellow-300 rounded-full shadow-lg border-4 border-yellow-200 flex items-center justify-center animate-pulse">
+      <span class="text-3xl">☀️</span>
+    </div>
+    <!-- Clouds -->
+    <div class="absolute top-8 cloud-slow opacity-80 flex items-center gap-1 text-white text-6xl">
+      ☁️
+    </div>
+    <div class="absolute top-20 cloud-fast opacity-60 flex items-center gap-1 text-white text-5xl" style="animation-delay: -12s;">
+      ☁️
+    </div>
+    <!-- Rolling hills at base -->
+    <div class="absolute -bottom-24 -left-10 -right-10 h-44 bg-green-400 rounded-t-[100%] opacity-90 border-t-8 border-green-500"></div>
+    <div class="absolute -bottom-28 -left-20 -right-20 h-48 bg-emerald-500 rounded-t-[100%] opacity-70 border-t-8 border-emerald-600"></div>
+  </div>
+
+  <header class="relative z-10 w-full px-4 sm:px-8 pt-3 pb-2 flex flex-wrap items-center justify-between gap-3 bg-white/75 backdrop-blur-md border-b-4 border-amber-300 shadow-md">
+    <!-- Title & Team Identity -->
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-amber-400 border-4 border-amber-500 flex items-center justify-center text-2xl shadow-md transform -rotate-3">
+        🚂
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-black tracking-wide text-sky-900 leading-tight">
+          The Alphabet Express
+        </h1>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+            🤝 Class Mission: Help the Train Depart!
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cooperative Class Star Jar / Progress Bar -->
+    <div class="flex items-center gap-3 bg-white/90 px-4 py-2 rounded-2xl border-2 border-sky-200 shadow-sm flex-grow max-w-md">
+      <span class="text-2xl animate-bounce">⭐</span>
+      <div class="flex-1">
+        <div class="flex justify-between text-xs font-black text-sky-800 mb-1">
+          <span>TEAM STAR POWER</span>
+          <span id="progressText" class="font-extrabold text-amber-600">0 / 26 Letters</span>
+        </div>
+        <div class="w-full h-4 bg-sky-100 rounded-full overflow-hidden border border-sky-300 p-0.5">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-amber-400 via-pink-400 to-emerald-400 rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher & Student Utility Controls -->
+    <div class="flex items-center gap-2">
+      <!-- Random Helper Picker (Smartboard tool so all kids get a turn) -->
+      <button id="helperPickerBtn" class="bubble-btn px-3.5 py-2 bg-purple-500 hover:bg-purple-600 text-white font-black text-sm rounded-xl flex items-center gap-1.5 shadow border-b-4 border-purple-700 active:translate-y-1">
+        <span>🎲</span>
+        <span class="hidden sm:inline">Next Helper!</span>
+      </button>
+
+      <!-- Easy Focus Mode Toggle (Helps students with lower attention span focus on fewer options) -->
+      <button id="modeToggleBtn" class="bubble-btn px-3 py-2 bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-xs sm:text-sm rounded-xl border-b-4 border-amber-600">
+        Focus Mode: <span id="modeStatusText" class="text-rose-700">3 Letters</span>
+      </button>
+
+      <!-- Voice Speed Control (Slowed down for P1 learners with toggle) -->
+      <button id="voiceSpeedBtn" class="bubble-btn px-3 py-2 bg-emerald-400 hover:bg-emerald-500 text-emerald-950 font-black text-xs sm:text-sm rounded-xl border-b-4 border-emerald-600 flex items-center gap-1" title="Change voice speed">
+        <span id="voiceSpeedIcon">🐢</span>
+        <span class="hidden sm:inline">Voice:</span> <span id="voiceSpeedText">Slow</span>
+      </button>
+
+      <!-- Audio Mute / Sound toggle -->
+      <button id="soundBtn" class="bubble-btn p-2 bg-sky-200 hover:bg-sky-300 text-sky-800 rounded-xl border-b-2 border-sky-400 text-lg">
+        🔊
+      </button>
+    </div>
+  </header>
+
+  <main class="relative z-10 flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full p-2 sm:p-4 gap-3">
+
+    <!-- Active Quest Callout Card -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 text-white px-4 py-2.5 rounded-2xl shadow-lg border-2 border-white/80">
+      <div class="flex items-center gap-3">
+        <div class="text-3xl animate-float">🦁</div>
+        <div>
+          <p class="text-xs uppercase font-extrabold tracking-wider text-amber-100">Conductor Leo Asks:</p>
+          <p id="promptInstruction" class="text-base sm:text-xl font-black text-white drop-shadow">
+            Which letter starts our alphabet train?
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Speak Letter Sound / Phonics Clue -->
+        <button id="hintAudioBtn" class="bubble-btn px-3 py-2 bg-white/25 hover:bg-white/40 text-white rounded-xl border border-white/50 text-sm font-black flex items-center gap-1">
+          <span>💡</span> <span class="hidden md:inline">Phonics Clue</span>
+        </button>
+        <!-- Phonics Keyword Clue -->
+        <div id="wordClueBadge" class="bg-white text-orange-600 font-extrabold px-3 py-1.5 rounded-xl shadow text-sm hidden sm:flex items-center gap-1.5 border border-orange-200">
+          <span id="clueEmoji">🍎</span>
+          <span id="clueWord">apple</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Train & Track Viewport -->
+    <div class="relative bg-white/70 backdrop-blur-sm rounded-3xl border-4 border-sky-300 p-3 shadow-xl flex flex-col justify-center min-h-[170px]">
+      
+      <!-- Track rails visual -->
+      <div class="absolute bottom-6 left-0 right-0 h-4 bg-stone-400 border-y-2 border-stone-600 flex items-center justify-around overflow-hidden pointer-events-none opacity-80">
+        <!-- Railroad ties -->
+        <div class="w-full flex justify-between px-2">
+          <div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div>
+          <div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div>
+          <div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div>
+          <div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div>
+          <div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div>
+          <div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div><div class="w-2 h-6 bg-stone-700"></div>
+        </div>
+      </div>
+
+      <!-- Train Cars Horizontal Container (Auto-scrolls smoothly to keep the next letter centered) -->
+      <div id="trainTrackScroll" class="custom-scroll flex items-end gap-2 overflow-x-auto pb-6 pt-2 px-4 scroll-smooth">
+        
+        <!-- Locomotive Engine -->
+        <div class="flex-shrink-0 flex flex-col items-center animate-chug">
+          <!-- Steam puff -->
+          <div class="text-lg opacity-75 -mb-2 animate-bounce">💨</div>
+          <!-- Engine body -->
+          <div class="w-24 sm:w-28 h-24 bg-gradient-to-tr from-red-600 via-rose-500 to-red-400 rounded-2xl border-4 border-red-800 shadow-md relative flex flex-col items-center justify-between p-1.5 text-white">
+            <div class="w-full flex justify-between items-center px-1">
+              <span class="text-xs font-black bg-yellow-400 text-yellow-950 px-1.5 py-0.5 rounded-md">P1</span>
+              <span class="text-lg">🦁</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-yellow-300 border-2 border-yellow-500 flex items-center justify-center text-xs font-black text-amber-900">
+              Go!
+            </div>
+            <div class="text-[10px] font-black uppercase tracking-wider text-rose-100">Alphabet</div>
+            <!-- Wheels -->
+            <div class="absolute -bottom-3.5 flex justify-between w-full px-2">
+              <div class="w-7 h-7 bg-stone-800 rounded-full border-2 border-stone-300 shadow flex items-center justify-center text-[10px] text-white font-bold">⚙️</div>
+              <div class="w-7 h-7 bg-stone-800 rounded-full border-2 border-stone-300 shadow flex items-center justify-center text-[10px] text-white font-bold">⚙️</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 26 Letter Slots (Injected dynamically) -->
+        <div id="letterCarriagesContainer" class="flex items-end gap-2">
+          <!-- Carriage slots generated via JS -->
+        </div>
+
+        <!-- Caboose / End Car -->
+        <div class="flex-shrink-0 flex flex-col items-center opacity-70">
+          <div class="w-20 h-20 bg-amber-500 rounded-2xl border-4 border-amber-700 shadow-md relative flex items-center justify-center text-white">
+            <span class="text-2xl">🏁</span>
+            <!-- Wheels -->
+            <div class="absolute -bottom-3.5 flex justify-between w-full px-1.5">
+              <div class="w-6 h-6 bg-stone-800 rounded-full border-2 border-stone-300 shadow"></div>
+              <div class="w-6 h-6 bg-stone-800 rounded-full border-2 border-stone-300 shadow"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="relative bg-white/90 backdrop-blur-md rounded-3xl border-4 border-amber-400 p-3 sm:p-5 shadow-2xl flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🎈</span>
+          <h2 class="text-sm sm:text-base font-black text-sky-950 uppercase tracking-wide">
+            Tap the letter that connects next!
+          </h2>
+        </div>
+        <div class="text-xs text-sky-700 font-bold bg-sky-100 px-3 py-1 rounded-full border border-sky-300">
+          Every friend helps our class win! ✨
+        </div>
+      </div>
+
+      <!-- Letter Selection Buttons Grid/Row -->
+      <div id="letterChoicesContainer" class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 py-2 min-h-[120px]">
+        <!-- Dynamic Option Cards generated via JS -->
+      </div>
+    </div>
+
+    <div id="cheerFeedback" class="h-10 text-center font-black text-lg sm:text-xl text-sky-900 transition-all duration-300 flex items-center justify-center gap-2">
+      <span>🌟</span>
+      <span id="cheerMessage">Together we can build the whole alphabet!</span>
+      <span>🌟</span>
+    </div>
+
+  </main>
+
+  <div id="helperModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl border-4 border-purple-500 shadow-2xl p-6 max-w-sm w-full text-center relative animate-float">
+      <button id="closeHelperBtn" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold text-lg flex items-center justify-center">
+        ✕
+      </button>
+      <div class="text-5xl mb-2">🎉</div>
+      <h3 class="text-2xl font-black text-purple-900 mb-1">Who's Turn at the Board?</h3>
+      <p class="text-xs font-bold text-stone-500 mb-4">Give every child a chance to tap the board!</p>
+      
+      <div id="selectedHelperDisplay" class="bg-purple-100 border-2 border-purple-300 rounded-2xl p-4 mb-4">
+        <span class="text-3xl font-black text-purple-700 block" id="helperNameText">Student #1</span>
+        <span class="text-xs text-purple-600 font-semibold">Your class is cheering for you! 👏</span>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="spinAgainBtn" class="bubble-btn flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-black text-base shadow border-b-4 border-purple-800">
+          🎲 Pick Another!
+        </button>
+        <button id="readyHelperBtn" class="bubble-btn flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black text-base shadow border-b-4 border-emerald-700">
+          Ready! 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="victoryModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-yellow-300 via-amber-100 to-white rounded-3xl border-8 border-yellow-400 shadow-2xl p-6 sm:p-8 max-w-xl w-full text-center relative">
+      <div class="text-6xl sm:text-7xl mb-2 animate-bounce">🏆🚂🎉</div>
+      <h2 class="text-3xl sm:text-4xl font-black text-amber-900 mb-1 tracking-tight">
+        WE DID IT TOGETHER, CLASS P1!
+      </h2>
+      <p class="text-base sm:text-lg font-extrabold text-amber-800 mb-4">
+        All 26 letters from <span class="bg-white px-2 py-0.5 rounded-lg border border-amber-400 text-rose-600">a</span> to <span class="bg-white px-2 py-0.5 rounded-lg border border-amber-400 text-purple-600">z</span> are ready to ride!
+      </p>
+
+      <!-- All Letters Display Row -->
+      <div class="bg-white/80 rounded-2xl p-3 border-2 border-amber-300 shadow-inner mb-6">
+        <p class="text-xs font-black text-sky-800 uppercase mb-2">Sing The Alphabet Song Together!</p>
+        <div id="finalAlphabetDisplay" class="flex flex-wrap justify-center gap-1.5 text-xl font-black text-sky-900">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button id="singSongBtn" class="bubble-btn px-6 py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-lg rounded-2xl shadow-lg border-b-4 border-rose-700 flex items-center justify-center gap-2">
+          <span>🎵</span> Sing Along!
+        </button>
+        <button id="playAgainBtn" class="bubble-btn px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-lg rounded-2xl shadow-lg border-b-4 border-emerald-700 flex items-center justify-center gap-2">
+          <span>🔄</span> Play Another Round!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Alphabet reference dictionary with child-friendly phonics keywords and cute emojis
+    const ALPHABET_DATA = [
+      { letter: 'a', word: 'apple', emoji: '🍎', sound: 'ah', note: 'C3' },
+      { letter: 'b', word: 'bear', emoji: '🐻', sound: 'buh', note: 'D3' },
+      { letter: 'c', word: 'cat', emoji: '🐱', sound: 'kuh', note: 'E3' },
+      { letter: 'd', word: 'dog', emoji: '🐶', sound: 'duh', note: 'F3' },
+      { letter: 'e', word: 'elephant', emoji: '🐘', sound: 'eh', note: 'G3' },
+      { letter: 'f', word: 'fish', emoji: '🐟', sound: 'fff', note: 'A3' },
+      { letter: 'g', word: 'giraffe', emoji: '🦒', sound: 'guh', note: 'B3' },
+      { letter: 'h', word: 'hat', emoji: '🎩', sound: 'huh', note: 'C4' },
+      { letter: 'i', word: 'iguana', emoji: '🦎', sound: 'ih', note: 'D4' },
+      { letter: 'j', word: 'jellyfish', emoji: '🪼', sound: 'juh', note: 'E4' },
+      { letter: 'k', word: 'kangaroo', emoji: '🦘', sound: 'kuh', note: 'F4' },
+      { letter: 'l', word: 'lion', emoji: '🦁', sound: 'lll', note: 'G4' },
+      { letter: 'm', word: 'monkey', emoji: '🐵', sound: 'mmm', note: 'A4' },
+      { letter: 'n', word: 'nest', emoji: '🪹', sound: 'nnn', note: 'B4' },
+      { letter: 'o', word: 'octopus', emoji: '🐙', sound: 'ah', note: 'C5' },
+      { letter: 'p', word: 'penguin', emoji: '🐧', sound: 'puh', note: 'D5' },
+      { letter: 'q', word: 'queen', emoji: '👑', sound: 'kwuh', note: 'E5' },
+      { letter: 'r', word: 'rainbow', emoji: '🌈', sound: 'rrr', note: 'F5' },
+      { letter: 's', word: 'sun', emoji: '☀️', sound: 'sss', note: 'G5' },
+      { letter: 't', word: 'tiger', emoji: '🐯', sound: 'tuh', note: 'A5' },
+      { letter: 'u', word: 'umbrella', emoji: '☂️', sound: 'uh', note: 'B5' },
+      { letter: 'v', word: 'violin', emoji: '🎻', sound: 'vvv', note: 'C6' },
+      { letter: 'w', word: 'whale', emoji: '🐳', sound: 'wuh', note: 'D6' },
+      { letter: 'x', word: 'xylophone', emoji: '🎶', sound: 'ks', note: 'E6' },
+      { letter: 'y', word: 'yak', emoji: '🐂', sound: 'yuh', note: 'F6' },
+      { letter: 'z', word: 'zebra', emoji: '🦓', sound: 'zzz', note: 'G6' }
+    ];
+
+    // Cheerful positive phrases when kids help out
+    const PRAISE_PHRASES = [
+      "Terrific team work! ⭐",
+      "Super job! The train is moving! 🚂",
+      "You helped your class! 👏",
+      "Brilliant! Look at the train grow! 🌟",
+      "Awesome letter finding! 🎯",
+      "You are all alphabet champions! 💖",
+      "Together we are unstoppable! 🚀"
+    ];
+
+    // Palette of child-appealing card colors
+    const COLOR_CLASSES = [
+      'from-pink-400 to-rose-400 border-pink-500 text-white',
+      'from-amber-400 to-orange-400 border-amber-500 text-white',
+      'from-emerald-400 to-teal-400 border-emerald-500 text-white',
+      'from-sky-400 to-blue-400 border-sky-500 text-white',
+      'from-purple-400 to-indigo-400 border-purple-500 text-white',
+      'from-lime-400 to-emerald-400 border-lime-500 text-white'
+    ];
+
+    let currentIndex = 0; // Current letter needed (0 = 'a', 25 = 'z')
+    let isFocusMode = true; // True: show 3-4 letters (ideal for low attention span); False: show all remaining
+    let audioMuted = false;
+    let synth = null;
+    let classHelperNumber = 1;
+    let voiceSpeed = 0.62; // Slowed down significantly for young P1 listening comprehension
+
+    // Initialize Tone.js synthesizer on first click or touch
+    function initAudio() {
+      if (!synth && window.Tone) {
+        try {
+          Tone.start();
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.02, decay: 0.2, sustain: 0.2, release: 0.6 }
+          }).toDestination();
+          synth.volume.value = -6;
+        } catch (e) {
+          console.log("Audio waiting for user gesture");
+        }
+      }
+    }
+
+    // Play a friendly musical note
+    function playNote(note = 'C4', duration = '8n') {
+      if (audioMuted) return;
+      initAudio();
+      if (synth) {
+        try {
+          synth.triggerAttackRelease(note, duration);
+        } catch (e) {}
+      }
+    }
+
+    // Play cheerful chime for correct letter
+    function playSuccessChime() {
+      if (audioMuted) return;
+      initAudio();
+      if (synth) {
+        const now = Tone.now();
+        synth.triggerAttackRelease("C4", "16n", now);
+        synth.triggerAttackRelease("E4", "16n", now + 0.1);
+        synth.triggerAttackRelease("G4", "16n", now + 0.2);
+        synth.triggerAttackRelease("C5", "8n", now + 0.3);
+      }
+    }
+
+    // Friendly gentle 'boing' on wrong letter (no harsh buzzers in cooperative play)
+    function playGentleBoing() {
+      if (audioMuted) return;
+      initAudio();
+      if (synth) {
+        const now = Tone.now();
+        synth.triggerAttackRelease("F3", "16n", now);
+        synth.triggerAttackRelease("D3", "8n", now + 0.15);
+      }
+    }
+
+    // Speech Synthesis for natural phonics & letter naming
+    function speakText(text) {
+      if (audioMuted || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel(); // Stop prior speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = voiceSpeed; // Slow, deliberate pronunciation for P1 learners
+      utterance.pitch = 1.15; // Cheerful friendly pitch
+      window.speechSynthesis.speak(utterance);
+    }
+
+    const letterCarriagesContainer = document.getElementById('letterCarriagesContainer');
+
+    function buildTrainCarriages() {
+      letterCarriagesContainer.innerHTML = '';
+
+      ALPHABET_DATA.forEach((item, idx) => {
+        const carWrapper = document.createElement('div');
+        carWrapper.id = `car-${idx}`;
+        carWrapper.className = `flex-shrink-0 flex flex-col items-center transition-all duration-500`;
+
+        // Carriage container
+        const carBox = document.createElement('div');
+        carBox.id = `car-box-${idx}`;
+        carBox.className = `w-16 sm:w-20 h-20 sm:h-24 rounded-2xl border-4 flex flex-col items-center justify-between p-1 relative shadow-md transition-all duration-300 ${
+          idx === 0 
+            ? 'bg-amber-100 border-amber-400 border-dashed animate-target-pulse' 
+            : 'bg-stone-200/80 border-stone-300 border-dashed opacity-60'
+        }`;
+
+        // Top slot label / preview (shows mystery '?' so students figure out the sequence themselves)
+        const letterSpan = document.createElement('span');
+        letterSpan.id = `car-letter-${idx}`;
+        letterSpan.className = `text-3xl sm:text-4xl font-black transition-all duration-300 ${
+          idx === 0 ? 'text-amber-500' : 'text-stone-400'
+        }`;
+        letterSpan.textContent = '?';
+
+        // Mini status / icon (carriage number)
+        const iconSpan = document.createElement('span');
+        iconSpan.id = `car-icon-${idx}`;
+        iconSpan.className = 'text-xs font-black text-stone-400';
+        iconSpan.textContent = `#${idx + 1}`;
+
+        carBox.appendChild(iconSpan);
+        carBox.appendChild(letterSpan);
+
+        // Carriage wheels
+        const wheels = document.createElement('div');
+        wheels.className = 'absolute -bottom-3 flex justify-between w-full px-1';
+        wheels.innerHTML = `
+          <div class="w-5 h-5 bg-stone-700 rounded-full border border-stone-400 shadow"></div>
+          <div class="w-5 h-5 bg-stone-700 rounded-full border border-stone-400 shadow"></div>
+        `;
+        carBox.appendChild(wheels);
+
+        // Coupler hook between carriages
+        const coupler = document.createElement('div');
+        coupler.className = 'text-[10px] text-stone-500 -mb-1';
+        coupler.textContent = '⛓️';
+
+        carWrapper.appendChild(carBox);
+        carWrapper.appendChild(coupler);
+        letterCarriagesContainer.appendChild(carWrapper);
+      });
+    }
+
+    const letterChoicesContainer = document.getElementById('letterChoicesContainer');
+
+    function renderLetterChoices() {
+      letterChoicesContainer.innerHTML = '';
+      if (currentIndex >= 26) return;
+
+      const targetItem = ALPHABET_DATA[currentIndex];
+      let displayLetters = [];
+
+      if (isFocusMode) {
+        // Pick 3 options total: the correct letter + 2 plausible distractors
+        displayLetters.push(targetItem);
+
+        // Gather candidate distractors from nearby letters or random letters
+        const pool = ALPHABET_DATA.filter(item => item.letter !== targetItem.letter);
+        // Shuffle pool
+        const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
+        displayLetters.push(shuffledPool[0]);
+        displayLetters.push(shuffledPool[1]);
+
+        // Shuffle the 3 options so correct isn't always in same spot
+        displayLetters.sort(() => 0.5 - Math.random());
+      } else {
+        // Show all remaining letters yet to be placed, shuffled
+        const remaining = ALPHABET_DATA.slice(currentIndex);
+        displayLetters = [...remaining].sort(() => 0.5 - Math.random());
+      }
+
+      // Render button cards
+      displayLetters.forEach((item, index) => {
+        const colorStyle = COLOR_CLASSES[index % COLOR_CLASSES.length];
+
+        const btn = document.createElement('button');
+        btn.setAttribute('data-letter', item.letter);
+        btn.className = `bubble-btn w-16 sm:w-20 h-16 sm:h-20 bg-gradient-to-br ${colorStyle} border-b-4 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center shadow-lg transition-transform active:scale-95 group focus:outline-none focus:ring-4 focus:ring-yellow-300`;
+
+        // Strict lowercase letter display for early literacy
+        btn.innerHTML = `
+          <span class="text-3xl sm:text-4xl font-extrabold tracking-wide lowercase leading-none drop-shadow-sm font-['Fredoka']">
+            ${item.letter}
+          </span>
+          <span class="text-xs opacity-90 mt-0.5">${item.emoji}</span>
+        `;
+
+        // Click or tap action
+        btn.addEventListener('click', (e) => {
+          handleLetterSelection(item.letter, btn);
+        });
+
+        letterChoicesContainer.appendChild(btn);
+      });
+    }
+
+    function handleLetterSelection(selectedLetter, buttonElement) {
+      initAudio();
+      const targetItem = ALPHABET_DATA[currentIndex];
+
+      if (selectedLetter === targetItem.letter) {
+        // Correct selection!
+        celebrateCorrectLetter(targetItem);
+      } else {
+        // Gentle, supportive response - no punishment, just encouragement
+        handleGentleWrong(selectedLetter, buttonElement);
+      }
+    }
+
+    function celebrateCorrectLetter(item) {
+      playSuccessChime();
+
+      // Read letter and word cheerfully
+      speakText(`${item.letter}! ${item.word}!`);
+
+      // Update the train carriage visuals
+      const carBox = document.getElementById(`car-box-${currentIndex}`);
+      const carLetter = document.getElementById(`car-letter-${currentIndex}`);
+      const carIcon = document.getElementById(`car-icon-${currentIndex}`);
+
+      if (carBox && carLetter) {
+        carBox.classList.remove('bg-amber-100', 'border-amber-400', 'border-dashed', 'animate-target-pulse');
+        // Give filled car a vibrant solid color
+        carBox.className = `w-16 sm:w-20 h-20 sm:h-24 rounded-2xl border-4 border-emerald-600 bg-gradient-to-t from-emerald-400 to-teal-300 flex flex-col items-center justify-between p-1 relative shadow-lg text-white scale-105 transition-all duration-300`;
+        carLetter.className = 'text-3xl sm:text-4xl font-black text-white drop-shadow';
+        carLetter.textContent = item.letter;
+        carIcon.className = 'text-base';
+        carIcon.textContent = item.emoji;
+      }
+
+      // Small confetti burst right around the success
+      try {
+        confetti({
+          particleCount: 25,
+          spread: 45,
+          origin: { y: 0.6 }
+        });
+      } catch (e) {}
+
+      // Advance index
+      currentIndex++;
+
+      // Update progress bar
+      updateProgressUI();
+
+      // Update next prompt or win
+      if (currentIndex < 26) {
+        const nextItem = ALPHABET_DATA[currentIndex];
+
+        // Highlight next car
+        const nextCarBox = document.getElementById(`car-box-${currentIndex}`);
+        const nextCarLetter = document.getElementById(`car-letter-${currentIndex}`);
+        if (nextCarBox) {
+          nextCarBox.classList.remove('bg-stone-200/80', 'border-stone-300', 'opacity-60');
+          nextCarBox.classList.add('bg-amber-100', 'border-amber-400', 'animate-target-pulse');
+        }
+        if (nextCarLetter) {
+          nextCarLetter.className = 'text-3xl sm:text-4xl font-black text-amber-500 transition-all duration-300';
+        }
+
+        // Smooth scroll the track to keep current letter visible on interactive whiteboard
+        const track = document.getElementById('trainTrackScroll');
+        if (track && nextCarBox) {
+          const scrollPos = nextCarBox.offsetLeft - track.offsetLeft - 120;
+          track.scrollTo({ left: Math.max(0, scrollPos), behavior: 'smooth' });
+        }
+
+        // Show random cheer message
+        const cheerMsg = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+        document.getElementById('cheerMessage').textContent = cheerMsg;
+
+        updatePromptDisplay();
+        renderLetterChoices();
+      } else {
+        // Victory! Whole class won!
+        triggerClassVictory();
+      }
+    }
+
+    function handleGentleWrong(selectedLetter, buttonElement) {
+      playGentleBoing();
+      buttonElement.classList.add('wobble-wrong');
+      setTimeout(() => buttonElement.classList.remove('wobble-wrong'), 650);
+
+      const target = ALPHABET_DATA[currentIndex];
+      let encouragementMsg = '';
+      if (currentIndex === 0) {
+        encouragementMsg = `That is "${selectedLetter}". Can our team find which letter starts the whole alphabet?`;
+        speakText(`That is ${selectedLetter}. Which letter starts the alphabet?`);
+      } else {
+        const prevLetter = ALPHABET_DATA[currentIndex - 1].letter;
+        encouragementMsg = `Good try with "${selectedLetter}"! Think: what letter comes right after "${prevLetter}"?`;
+        speakText(`That is ${selectedLetter}. What comes after ${prevLetter}?`);
+      }
+      document.getElementById('cheerMessage').textContent = encouragementMsg;
+    }
+
+    function updatePromptDisplay() {
+      if (currentIndex >= 26) return;
+      const target = ALPHABET_DATA[currentIndex];
+      const promptInstruction = document.getElementById('promptInstruction');
+
+      if (currentIndex === 0) {
+        promptInstruction.innerHTML = `Which letter starts our alphabet train?`;
+      } else {
+        const prevItem = ALPHABET_DATA[currentIndex - 1];
+        promptInstruction.innerHTML = `What letter comes right after <span class="underline decoration-yellow-200 text-yellow-200 text-3xl font-black lowercase">${prevItem.letter}</span>?`;
+      }
+
+      document.getElementById('clueEmoji').textContent = target.emoji;
+      document.getElementById('clueWord').textContent = target.word;
+    }
+
+    function updateProgressUI() {
+      const percentage = Math.round((currentIndex / 26) * 100);
+      document.getElementById('progressBar').style.width = `${percentage}%`;
+      document.getElementById('progressText').textContent = `${currentIndex} / 26 Letters`;
+    }
+
+    function triggerClassVictory() {
+      // Big celebratory audio fanfare
+      if (!audioMuted) {
+        initAudio();
+        if (synth) {
+          const now = Tone.now();
+          const fanfare = [
+            { note: 'C4', time: now },
+            { note: 'E4', time: now + 0.15 },
+            { note: 'G4', time: now + 0.3 },
+            { note: 'C5', time: now + 0.45 },
+            { note: 'G4', time: now + 0.7 },
+            { note: 'C5', time: now + 0.9 }
+          ];
+          fanfare.forEach(f => synth.triggerAttackRelease(f.note, '8n', f.time));
+        }
+      }
+
+      // Massive confetti shower
+      try {
+        const end = Date.now() + 3.5 * 1000;
+        const colors = ['#f59e0b', '#ec4899', '#10b981', '#3b82f6'];
+
+        (function frame() {
+          confetti({
+            particleCount: 4,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: colors
+          });
+          confetti({
+            particleCount: 4,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: colors
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        }());
+      } catch (e) {}
+
+      // Fill letter badges in victory modal
+      const finalDisplay = document.getElementById('finalAlphabetDisplay');
+      finalDisplay.innerHTML = '';
+      ALPHABET_DATA.forEach(item => {
+        const span = document.createElement('span');
+        span.className = 'w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-sky-900 shadow-sm';
+        span.textContent = item.letter;
+        finalDisplay.appendChild(span);
+      });
+
+      // Show victory modal
+      document.getElementById('victoryModal').classList.remove('hidden');
+      speakText("Hooray! Class P1 completed the Alphabet Express! All aboard!");
+    }
+
+    // Sing-Along function with synchronized bouncy letters
+    function playAlphabetSong() {
+      if (audioMuted) return;
+      initAudio();
+
+      const songNotes = [
+        'C4','C4','G4','G4','A4','A4','G4', // a b c d e f g
+        'F4','F4','E4','E4','D4','D4','C4', // h i j k l m n o p
+        'G4','G4','F4','F4','E4','E4','D4', // q r s t u v
+        'C4','C4','G4','G4','A4','A4','G4'  // w x y and z
+      ];
+
+      const letterBoxes = document.querySelectorAll('#finalAlphabetDisplay span');
+
+      ALPHABET_DATA.forEach((item, i) => {
+        setTimeout(() => {
+          const note = songNotes[i % songNotes.length];
+          playNote(note, '4n');
+          if (letterBoxes[i]) {
+            letterBoxes[i].classList.add('bg-yellow-400', 'scale-125', 'text-white', 'font-black');
+            setTimeout(() => {
+              letterBoxes[i].classList.remove('bg-yellow-400', 'scale-125', 'text-white');
+            }, 350);
+          }
+        }, i * 480); // Slower, paced sing-along rhythm for young children
+      });
+    }
+
+    function setupEventListeners() {
+      // Audio Clue Button
+      document.getElementById('hintAudioBtn').addEventListener('click', () => {
+        initAudio();
+        const target = ALPHABET_DATA[currentIndex];
+        playNote(target.note, '4n');
+        speakText(`Hint! It makes the sound /${target.sound}/, like in ${target.word}!`);
+      });
+
+      // Focus Mode Toggle Button (Switches between 3 choices vs all remaining choices)
+      const modeToggleBtn = document.getElementById('modeToggleBtn');
+      const modeStatusText = document.getElementById('modeStatusText');
+      modeToggleBtn.addEventListener('click', () => {
+        isFocusMode = !isFocusMode;
+        if (isFocusMode) {
+          modeStatusText.textContent = "3 Letters (Calm)";
+          modeStatusText.className = "text-rose-700";
+        } else {
+          modeStatusText.textContent = "All Letters (Full)";
+          modeStatusText.className = "text-emerald-700";
+        }
+        renderLetterChoices();
+      });
+
+      // Voice Speed Toggle Button (Cycles Slow -> Extra Slow -> Normal)
+      const voiceSpeedBtn = document.getElementById('voiceSpeedBtn');
+      const voiceSpeedText = document.getElementById('voiceSpeedText');
+      const voiceSpeedIcon = document.getElementById('voiceSpeedIcon');
+      
+      voiceSpeedBtn.addEventListener('click', () => {
+        if (voiceSpeed === 0.62) {
+          // Switch to Extra Slow
+          voiceSpeed = 0.50;
+          voiceSpeedText.textContent = "Extra Slow";
+          voiceSpeedIcon.textContent = "🐌";
+        } else if (voiceSpeed === 0.50) {
+          // Switch to Normal
+          voiceSpeed = 0.82;
+          voiceSpeedText.textContent = "Normal";
+          voiceSpeedIcon.textContent = "🐰";
+        } else {
+          // Switch back to Default Slow
+          voiceSpeed = 0.62;
+          voiceSpeedText.textContent = "Slow";
+          voiceSpeedIcon.textContent = "🐢";
+        }
+        speakText(`Letter sound speed: ${voiceSpeedText.textContent.toLowerCase()}`);
+      });
+
+      // Sound Mute Toggle
+      const soundBtn = document.getElementById('soundBtn');
+      soundBtn.addEventListener('click', () => {
+        audioMuted = !audioMuted;
+        soundBtn.textContent = audioMuted ? '🔇' : '🔊';
+      });
+
+      // Classroom "Next Helper" Wheel / Tool
+      const helperModal = document.getElementById('helperModal');
+      const helperPickerBtn = document.getElementById('helperPickerBtn');
+      const helperNameText = document.getElementById('helperNameText');
+
+      helperPickerBtn.addEventListener('click', () => {
+        // Pick a student helper number (e.g., student 1 through 30)
+        classHelperNumber = Math.floor(Math.random() * 28) + 1;
+        helperNameText.textContent = `Student #${classHelperNumber}! ⭐`;
+        helperModal.classList.remove('hidden');
+        playNote('G4', '8n');
+      });
+
+      document.getElementById('spinAgainBtn').addEventListener('click', () => {
+        classHelperNumber = Math.floor(Math.random() * 28) + 1;
+        helperNameText.textContent = `Student #${classHelperNumber}! ⭐`;
+        playNote('A4', '8n');
+      });
+
+      document.getElementById('closeHelperBtn').addEventListener('click', () => {
+        helperModal.classList.add('hidden');
+      });
+
+      document.getElementById('readyHelperBtn').addEventListener('click', () => {
+        helperModal.classList.add('hidden');
+      });
+
+      // Victory actions
+      document.getElementById('singSongBtn').addEventListener('click', () => {
+        playAlphabetSong();
+      });
+
+      document.getElementById('playAgainBtn').addEventListener('click', () => {
+        document.getElementById('victoryModal').classList.add('hidden');
+        resetGame();
+      });
+    }
+
+    // Reset game for a fresh cooperative round
+    function resetGame() {
+      currentIndex = 0;
+      buildTrainCarriages();
+      updatePromptDisplay();
+      updateProgressUI();
+      renderLetterChoices();
+      document.getElementById('cheerMessage').textContent = "All aboard! Let's help each other find the letters!";
+      const track = document.getElementById('trainTrackScroll');
+      if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      buildTrainCarriages();
+      updatePromptDisplay();
+      updateProgressUI();
+      renderLetterChoices();
+      setupEventListeners();
+    });
+  </script>
+</body>
+</html>

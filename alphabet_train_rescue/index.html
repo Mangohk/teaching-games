@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alphabet Train Adventure</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Tone.js for kid-friendly synthesizers & sound effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  
+  <!-- Canvas Confetti for cooperative whole-class celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Font: Fredoka (rounded, child-friendly typeface) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* 3D Toy Button styling */
+    .toy-btn {
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    .toy-btn:active {
+      transform: translateY(3px) scale(0.98);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2) !important;
+    }
+
+    /* Gentle attention-grabbing pulse */
+    @keyframes softPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .slot-glow {
+      animation: softPulse 1.8s infinite ease-in-out;
+    }
+
+    /* Gentle error wobble (cooperative & non-punitive) */
+    @keyframes wobbleShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px) rotate(-2deg); }
+      40%, 80% { transform: translateX(6px) rotate(2deg); }
+    }
+    .wobble-shake {
+      animation: wobbleShake 0.45s ease-in-out;
+    }
+
+    /* Puffing steam animation */
+    @keyframes puffSteam {
+      0% { opacity: 0.8; transform: translateY(0) scale(0.6); }
+      100% { opacity: 0; transform: translateY(-35px) scale(1.6); }
+    }
+    .steam-puff {
+      animation: puffSteam 2s infinite ease-out;
+    }
+
+    /* Train rolling animation for completed sequence */
+    .train-departing {
+      transition: transform 2.2s cubic-bezier(0.45, 0, 0.2, 1), opacity 2.2s ease;
+      transform: translateX(120vw) !important;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-sky-300 via-sky-200 to-amber-100 min-h-screen flex flex-col justify-between overflow-x-hidden text-slate-800">
+
+  <!-- Top Bar: Title, Class Fuel Tank, & Accessibility Audio Controls -->
+  <header class="w-full bg-white/90 backdrop-blur shadow-md px-3 sm:px-6 py-2.5 z-30 sticky top-0 border-b-4 border-sky-400">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand Logo / Title -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="w-11 h-11 bg-red-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-inner border-2 border-red-600">
+          🚂
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-wide text-sky-900 leading-tight">
+            Alphabet Train Rescue!
+          </h1>
+          <p class="text-xs font-bold text-sky-600 hidden sm:block">
+            Primary 1 Cooperative Mission • Win Together!
+          </p>
+        </div>
+      </div>
+
+      <!-- Class Star Fuel Tank (Cooperative Progress) -->
+      <div class="flex items-center gap-2 bg-amber-50 border-2 border-amber-300 rounded-2xl px-3 py-1.5 shadow-sm">
+        <span class="text-xl">⭐</span>
+        <div class="text-left">
+          <div class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">
+            Class Star Fuel
+          </div>
+          <div class="flex gap-1 items-center mt-0.5" id="fuel-stars-container">
+            <!-- Star icons filled dynamically -->
+          </div>
+        </div>
+        <span id="fuel-count-label" class="text-xs font-black text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full ml-1">
+          0/5
+        </span>
+      </div>
+
+      <!-- Audio & Classroom Utility Controls -->
+      <div class="flex items-center gap-2">
+        <!-- Quick Case Toggle (Both, Lowercase, Uppercase) -->
+        <button id="btn-quick-case" class="toy-btn px-3 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 border-b-4 border-indigo-700 shadow" title="Quick toggle: Lowercase / Uppercase / Both">
+          <span class="text-base">🔤</span>
+          <span id="case-mode-label" class="font-extrabold">Both (a & A)</span>
+        </button>
+
+        <button id="btn-read-aloud" class="toy-btn px-3 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-4 border-sky-700 shadow" title="Read letter sequence out loud">
+          <i class="fa-solid fa-volume-high text-base animate-bounce"></i>
+          <span>Read Aloud</span>
+        </button>
+
+        <button id="btn-repeat-speech" class="toy-btn px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 border-b-4 border-emerald-700 shadow" title="Repeat conductor message">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span class="hidden sm:inline">Repeat</span>
+        </button>
+
+        <button id="btn-sound-toggle" class="toy-btn w-10 h-10 bg-violet-500 hover:bg-violet-600 text-white rounded-2xl font-bold flex items-center justify-center border-b-4 border-violet-700 shadow" title="Toggle Sound FX">
+          <i id="sound-icon" class="fa-solid fa-music"></i>
+        </button>
+
+        <button id="btn-settings-open" class="toy-btn w-10 h-10 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-2xl font-bold flex items-center justify-center border-b-4 border-slate-400 shadow" title="Teacher Options">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Cooperative Playground -->
+  <main class="max-w-6xl mx-auto w-full px-3 sm:px-4 flex-1 flex flex-col justify-center my-3 relative z-10">
+
+    <!-- Conductor Bear's High-Contrast Live Speech Subtitle Bubble -->
+    <div id="conductor-bubble" class="mx-auto mb-3 max-w-3xl w-full bg-white/95 rounded-2xl p-3 sm:p-4 shadow-xl border-4 border-indigo-400 flex items-center gap-3">
+      <div class="w-12 h-12 sm:w-14 sm:h-14 bg-amber-100 rounded-2xl border-2 border-amber-300 flex-shrink-0 flex items-center justify-center text-3xl shadow-inner">
+        🐻
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-black uppercase tracking-wider text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded-full">
+            Conductor Bear says:
+          </span>
+          <span id="speech-speaking-badge" class="text-xs text-rose-600 font-extrabold hidden items-center gap-1">
+            <i class="fa-solid fa-volume-high animate-pulse"></i> Speaking...
+          </span>
+        </div>
+        <p id="caption-subtitle" class="text-base sm:text-xl font-extrabold text-slate-900 leading-snug mt-0.5">
+          "All aboard young engineers! Let's fill the missing cars so our train can roll!"
+        </p>
+      </div>
+      <button id="btn-bubble-listen" class="toy-btn px-2.5 py-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 text-xs font-black rounded-xl border-b-2 border-amber-600 flex-shrink-0 flex items-center gap-1">
+        <i class="fa-solid fa-volume-high"></i>
+        <span>Hear</span>
+      </button>
+    </div>
+
+    <!-- Cooperative Engineer Turn Banner (Whole Class or Table Callout) -->
+    <div class="text-center mb-2">
+      <span id="helper-banner" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold px-4 py-1 rounded-full text-xs sm:text-sm shadow-md border-2 border-white">
+        <i class="fa-solid fa-users"></i>
+        <span>Working Together: Whole Class Turn!</span>
+      </span>
+    </div>
+
+    <!-- The Train & Track Stage -->
+    <div class="relative w-full py-4 sm:py-6 overflow-hidden bg-sky-100/70 rounded-3xl border-4 border-sky-300 shadow-inner">
+      
+      <!-- Distant background clouds & birds -->
+      <div class="absolute top-2 left-6 text-2xl opacity-40">☁️</div>
+      <div class="absolute top-4 right-10 text-3xl opacity-40">☁️</div>
+
+      <!-- Train Convoy Container -->
+      <div id="train-convoy" class="flex items-end justify-center gap-2 sm:gap-3 transition-all duration-700 px-4">
+        
+        <!-- Locomotive Engine -->
+        <div class="flex-shrink-0 flex flex-col items-center relative">
+          <!-- Steam Puffs -->
+          <div class="absolute -top-7 right-3 w-5 h-5 bg-white rounded-full steam-puff pointer-events-none"></div>
+          <div class="absolute -top-11 right-5 w-6 h-6 bg-white/80 rounded-full steam-puff pointer-events-none" style="animation-delay: 0.8s;"></div>
+
+          <!-- Engine Body -->
+          <div class="w-20 sm:w-28 h-24 sm:h-32 bg-gradient-to-b from-red-500 to-red-600 rounded-t-3xl border-4 border-red-800 shadow-lg relative flex flex-col items-center justify-between p-2">
+            <!-- Smokestack & Cabin Window -->
+            <div class="w-6 sm:w-8 h-4 bg-amber-400 rounded-t-md border-2 border-amber-600 -mt-4 shadow"></div>
+            <div class="w-12 sm:w-16 h-8 sm:h-11 bg-sky-200 border-2 border-sky-400 rounded-xl flex items-center justify-center text-xl sm:text-2xl shadow-inner">
+              🐻
+            </div>
+            <div class="text-[10px] sm:text-xs font-black text-amber-200 uppercase tracking-widest">
+              NO. 1
+            </div>
+          </div>
+
+          <!-- Engine Wheels -->
+          <div class="flex justify-between w-full px-1 -mt-2">
+            <div class="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-800 border-2 border-slate-600 shadow-md flex items-center justify-center text-[10px] text-slate-400">⚙️</div>
+            <div class="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-800 border-2 border-slate-600 shadow-md flex items-center justify-center text-[10px] text-slate-400">⚙️</div>
+            <div class="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-800 border-2 border-slate-600 shadow-md flex items-center justify-center text-[10px] text-slate-400">⚙️</div>
+          </div>
+        </div>
+
+        <!-- Train Cars / Wagons (Dynamically Populated) -->
+        <div id="wagons-container" class="flex items-end gap-2 sm:gap-3">
+          <!-- Injected via JavaScript -->
+        </div>
+
+      </div>
+
+      <!-- Wooden Railroad Ties and Steel Tracks -->
+      <div class="w-full mt-2 relative">
+        <div class="h-3 bg-slate-700 w-full rounded-full border-t-2 border-slate-900 shadow"></div>
+        <div class="flex justify-between px-2 -mt-2.5 pointer-events-none">
+          <div class="w-full h-3 flex justify-around">
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+            <span class="w-2 h-3.5 bg-amber-900 rounded-sm inline-block"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Letter Cargo Depot (Interactive Choice Cards) -->
+    <div class="mt-4 bg-white/90 rounded-3xl p-3 sm:p-5 shadow-lg border-4 border-amber-300">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📦</span>
+          <h2 class="text-base sm:text-lg font-black text-amber-950">
+            Letter Depot — Which letter goes into the glowing car?
+          </h2>
+        </div>
+        <span id="sequence-hint-sub" class="text-xs font-bold text-slate-500 hidden sm:inline">
+          Tap or click a letter box
+        </span>
+      </div>
+
+      <!-- Choice Cards -->
+      <div id="letter-choices-container" class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 py-2">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Cooperative Feedback Message -->
+    <div id="status-feedback-bar" class="mt-2 text-center text-sm sm:text-base font-extrabold text-slate-700 min-h-[28px]">
+      Look at the empty glowing car. Sing the letters together to find what fits!
+    </div>
+
+  </main>
+
+  <!-- Whole-Class Victory Celebration Modal -->
+  <div id="victory-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl border-8 border-amber-400 transform scale-95 transition-transform duration-300">
+      <div class="text-6xl sm:text-7xl mb-2 animate-bounce">🏆🚂🎉</div>
+      <h2 class="text-2xl sm:text-4xl font-black text-amber-950 mb-2">
+        MISSION ACCOMPLISHED!
+      </h2>
+      <p class="text-slate-700 text-sm sm:text-base font-bold mb-4">
+        You all worked together, filled the Star Fuel tank, and powered the Alphabet Train!
+      </p>
+
+      <div class="bg-amber-100 rounded-2xl p-4 mb-5 border-2 border-amber-300">
+        <p class="text-amber-900 font-extrabold text-lg">
+          Superstar Primary 1 Teamwork! ⭐⭐⭐⭐⭐
+        </p>
+        <p class="text-amber-800 text-xs mt-1">
+          Give each other high-fives and shout: <em>"CHOO CHOO!"</em>
+        </p>
+      </div>
+
+      <button id="btn-play-again" class="toy-btn w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black text-lg border-b-4 border-emerald-700 shadow-lg">
+        <i class="fa-solid fa-play mr-2"></i> Play Another Round!
+      </button>
+    </div>
+  </div>
+
+  <!-- Teacher Settings Modal -->
+  <div id="settings-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl border-4 border-sky-400">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-slate-100 mb-4">
+        <div class="flex items-center gap-2 text-sky-900 font-black text-lg">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Teacher & Classroom Options</span>
+        </div>
+        <button id="btn-close-settings" class="text-slate-400 hover:text-slate-700 text-xl font-black">✕</button>
+      </div>
+
+      <div class="space-y-4 text-sm font-bold text-slate-700">
+        <!-- Letter Case Mode -->
+        <div>
+          <label class="block mb-1 text-slate-900">Alphabet Case Mode:</label>
+          <select id="setting-case-mode" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2.5 font-bold focus:border-sky-500 outline-none">
+            <option value="both">Both (Alternates Lowercase & Uppercase every train)</option>
+            <option value="lowercase">Lowercase Only (a, b, c... e.g. m n _ _ q)</option>
+            <option value="uppercase">Uppercase Only (A, B, C... e.g. A B _ D _)</option>
+            <option value="mixed">Mixed Case in Same Train (e.g. A b _ D _)</option>
+          </select>
+        </div>
+
+        <!-- Missing Letters Count -->
+        <div>
+          <label class="block mb-1 text-slate-900">Missing Letters in Sequence:</label>
+          <select id="setting-missing-count" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2.5 font-bold focus:border-sky-500 outline-none">
+            <option value="2">2 Missing Letters (e.g. A, B, __, D, __)</option>
+            <option value="1">1 Missing Letter (Easier warmup)</option>
+          </select>
+        </div>
+
+        <!-- Helper Prompting Mode -->
+        <div>
+          <label class="block mb-1 text-slate-900">Who Answers? (Cooperative Turn Mode):</label>
+          <select id="setting-helper-mode" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2.5 font-bold focus:border-sky-500 outline-none">
+            <option value="whole-class">Whole Class Shouts Together</option>
+            <option value="tables">Rotate Tables (Table 1, Table 2...)</option>
+            <option value="numbers">Random Student Number (1 to 30)</option>
+          </select>
+        </div>
+
+        <!-- Voice Speech Rate -->
+        <div>
+          <label class="block mb-1 text-slate-900">Conductor Voice Pace:</label>
+          <select id="setting-voice-speed" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2.5 font-bold focus:border-sky-500 outline-none">
+            <option value="0.75">Slow & Clear (Best for Classroom Acoustics)</option>
+            <option value="0.9">Normal Speed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-6 flex gap-2">
+        <button id="btn-save-settings" class="toy-btn flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-2xl font-black border-b-4 border-sky-700 shadow">
+          Apply & New Game
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer credits -->
+  <footer class="w-full text-center py-2 text-xs font-extrabold text-sky-800/80">
+    Cooperative Alphabet Learning for Primary 1 • 🌟 Fill the train, learn as a team!
+  </footer>
+
+  <script>
+    // Game Configuration and State
+    const gameState = {
+      caseMode: 'both',           // 'both' (alternates each round) | 'lowercase' | 'uppercase' | 'mixed'
+      currentRoundCase: 'lowercase', // Tracks active case for current round
+      roundIndex: 0,              // Used to alternate between lowercase and uppercase
+      missingCount: 2,            // 1 or 2
+      helperMode: 'whole-class',  // 'whole-class' | 'tables' | 'numbers'
+      voiceSpeed: 0.75,
+      totalFuelGoal: 5,
+      currentFuel: 0,
+      currentSequence: [],        // Objects: { char: 'a', isMissing: true/false, userValue: null, index: 0 }
+      activeMissingIndex: null,   // Target wagon index currently being answered
+      isAudioMuted: false,
+      isTrainRolling: false,
+      lastSpokenText: "Welcome to the Alphabet Train! Let's work together to help the train leave the station!",
+      tableTurnIndex: 1
+    };
+
+    // Phonics Word Anchor Map (Ensures B, D, E, P, T, V are distinctly recognizable)
+    const PHONICS_WORDS = {
+      A: "Apple", B: "Ball", C: "Cat", D: "Dog", E: "Elephant",
+      F: "Fish", G: "Giraffe", H: "Hat", I: "Igloo", J: "Jelly",
+      K: "Kite", L: "Lion", M: "Monkey", N: "Nest", O: "Octopus",
+      P: "Penguin", Q: "Queen", R: "Rainbow", S: "Sun", T: "Tiger",
+      U: "Umbrella", V: "Violin", W: "Whale", X: "Xylophone", Y: "Yellow", Z: "Zebra"
+    };
+
+    // Wagon color themes for child visual appeal
+    const WAGON_PALETTES = [
+      { bg: "bg-amber-400", border: "border-amber-600", text: "text-amber-950" },
+      { bg: "bg-emerald-400", border: "border-emerald-600", text: "text-emerald-950" },
+      { bg: "bg-sky-400", border: "border-sky-600", text: "text-sky-950" },
+      { bg: "bg-violet-400", border: "border-violet-600", text: "text-violet-950" },
+      { bg: "bg-rose-400", border: "border-rose-600", text: "text-rose-950" }
+    ];
+
+    /* Sound FX synthesis */
+    let synth = null;
+    let chimeSynth = null;
+    let whistleSynth = null;
+    let isAudioInitialized = false;
+
+    function initAudio() {
+      if (isAudioInitialized) return;
+      try {
+        if (window.Tone) {
+          Tone.start();
+
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.02, decay: 0.15, sustain: 0.1, release: 0.3 }
+          }).toDestination();
+          synth.volume.value = -4;
+
+          chimeSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.01, decay: 0.4, sustain: 0.2, release: 0.8 }
+          }).toDestination();
+          chimeSynth.volume.value = -2;
+
+          whistleSynth = new Tone.Synth({
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.08, decay: 0.2, sustain: 0.4, release: 0.3 }
+          }).toDestination();
+          whistleSynth.volume.value = -6;
+
+          isAudioInitialized = true;
+        }
+      } catch (err) {
+        console.warn("Tone.js audio setup error:", err);
+      }
+    }
+
+    function playSound(type) {
+      if (gameState.isAudioMuted) return;
+      initAudio();
+      if (!isAudioInitialized) return;
+
+      try {
+        const now = Tone.now();
+        if (type === 'tap') {
+          synth.triggerAttackRelease("C5", "16n", now);
+        } else if (type === 'correct') {
+          chimeSynth.triggerAttackRelease(["E5", "G5", "C6"], "8n", now);
+        } else if (type === 'tryAgain') {
+          synth.triggerAttackRelease("D4", "8n", now);
+        } else if (type === 'trainWhistle') {
+          // Classic two-tone choo-choo whistle
+          whistleSynth.triggerAttackRelease("F5", 0.2, now);
+          whistleSynth.triggerAttackRelease("A5", 0.4, now + 0.22);
+          setTimeout(() => {
+            if (synth) synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "4n");
+          }, 500);
+        } else if (type === 'fanfare') {
+          const melody = ["C5", "E5", "G5", "C6", "E6"];
+          melody.forEach((note, i) => {
+            chimeSynth.triggerAttackRelease(note, "8n", now + (i * 0.14));
+          });
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    /* Speech Synthesis Support */
+    function getClearVoice() {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return null;
+
+      // Select articulate English voice
+      const preferred = ["Google US English", "Samantha", "Victoria", "Daniel", "Zira", "David", "en-US", "en-GB"];
+      for (const pref of preferred) {
+        const match = voices.find(v => v.name.includes(pref) || v.lang.startsWith(pref));
+        if (match) return match;
+      }
+      return voices.find(v => v.lang.startsWith('en')) || voices[0];
+    }
+
+    function setCaption(text) {
+      const captionEl = document.getElementById('caption-subtitle');
+      const badgeEl = document.getElementById('speech-speaking-badge');
+      if (captionEl) captionEl.textContent = `"${text}"`;
+      if (badgeEl) {
+        badgeEl.classList.remove('hidden');
+        badgeEl.classList.add('flex');
+      }
+    }
+
+    function clearSpeakingBadge() {
+      const badgeEl = document.getElementById('speech-speaking-badge');
+      if (badgeEl) {
+        badgeEl.classList.add('hidden');
+        badgeEl.classList.remove('flex');
+      }
+    }
+
+    function speakText(text, customRate = null) {
+      gameState.lastSpokenText = text;
+      setCaption(text);
+
+      if (!('speechSynthesis' in window) || gameState.isAudioMuted) {
+        clearSpeakingBadge();
+        return;
+      }
+
+      window.speechSynthesis.cancel(); // Stop overlap
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = customRate || gameState.voiceSpeed;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      utterance.lang = 'en-US';
+
+      const voice = getClearVoice();
+      if (voice) utterance.voice = voice;
+
+      utterance.onend = () => clearSpeakingBadge();
+      utterance.onerror = () => clearSpeakingBadge();
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakLetterPhonics(char, prefix = "") {
+      const upper = char.toUpperCase();
+      const clue = PHONICS_WORDS[upper] || upper;
+      const message = prefix 
+        ? `${prefix} Letter ${upper}! ${upper} for ${clue}!` 
+        : `Letter ${upper}! ${upper} as in ${clue}!`;
+      speakText(message, 0.78);
+    }
+
+    function speakFullSequence() {
+      if (!gameState.currentSequence || gameState.currentSequence.length === 0) return;
+      const parts = [];
+      gameState.currentSequence.forEach(item => {
+        if (item.userValue) {
+          parts.push(`Letter ${item.userValue}`);
+        } else if (item.isMissing) {
+          parts.push("What letter goes here?");
+        } else {
+          parts.push(`Letter ${item.char}`);
+        }
+      });
+      speakText(parts.join(" ... "), 0.75);
+    }
+
+    /* Alphabet Sequence Generator */
+    function generateNewSequence() {
+      gameState.isTrainRolling = false;
+      const train = document.getElementById('train-convoy');
+      train.classList.remove('train-departing');
+      train.style.transform = 'translateX(0)';
+
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const length = 5; // 5 train cars in each sequence
+
+      // Pick random 5 consecutive letters (e.g. A B C D E or M N O P Q)
+      const maxStartIndex = alphabet.length - length;
+      const startIndex = Math.floor(Math.random() * (maxStartIndex + 1));
+      const sequenceSlice = alphabet.slice(startIndex, startIndex + length);
+
+      // Determine active case mode for this specific train round
+      if (gameState.caseMode === 'both') {
+        // Alternates: Round 0 = lowercase (e.g. m, n, o, p, q), Round 1 = uppercase (A, B, C, D, E), etc.
+        gameState.currentRoundCase = (gameState.roundIndex % 2 === 0) ? 'lowercase' : 'uppercase';
+        gameState.roundIndex++;
+      } else {
+        gameState.currentRoundCase = gameState.caseMode;
+      }
+
+      // Convert characters according to active round case
+      let letters = [];
+      if (gameState.currentRoundCase === 'lowercase') {
+        letters = sequenceSlice.toLowerCase().split('');
+      } else if (gameState.currentRoundCase === 'uppercase') {
+        letters = sequenceSlice.toUpperCase().split('');
+      } else {
+        // Mixed: pick random case for each car
+        letters = sequenceSlice.split('').map(ch => Math.random() > 0.5 ? ch.toUpperCase() : ch.toLowerCase());
+      }
+
+      // Determine which positions to hide
+      let missingPositions = [];
+      if (gameState.missingCount === 1) {
+        // Hide 1 letter (position 1, 2, or 3)
+        const candidates = [1, 2, 3];
+        missingPositions.push(candidates[Math.floor(Math.random() * candidates.length)]);
+      } else {
+        // Hide 2 letters (e.g., indices [2, 4] as in A B _ D _ or [2, 3] as in m n _ _ q)
+        const patternChoice = Math.random();
+        if (patternChoice < 0.4) {
+          missingPositions = [2, 4]; // e.g. A B [C] D [E] or m n [o] p [q]
+        } else if (patternChoice < 0.7) {
+          missingPositions = [2, 3]; // e.g. m n [o] [p] q
+        } else {
+          missingPositions = [1, 3]; // e.g. a [b] c [d] e
+        }
+      }
+
+      gameState.currentSequence = letters.map((char, idx) => ({
+        char: char,
+        isMissing: missingPositions.includes(idx),
+        userValue: null,
+        index: idx
+      }));
+
+      // Focus on first missing slot
+      const firstMissing = gameState.currentSequence.find(i => i.isMissing);
+      gameState.activeMissingIndex = firstMissing ? firstMissing.index : null;
+
+      updateTurnBanner();
+      updateCaseToggleLabel();
+      renderTrainCars();
+      renderChoiceDepot();
+
+      // Read prompt to the classroom
+      setTimeout(() => {
+        speakCurrentTurnPrompt();
+      }, 350);
+    }
+
+    function updateTurnBanner() {
+      const banner = document.getElementById('helper-banner');
+      if (!banner) return;
+
+      if (gameState.helperMode === 'whole-class') {
+        banner.innerHTML = `<i class="fa-solid fa-users"></i><span>Whole Class Answers Together!</span>`;
+      } else if (gameState.helperMode === 'tables') {
+        banner.innerHTML = `<i class="fa-solid fa-people-group"></i><span>Team Turn: Table ${gameState.tableTurnIndex}!</span>`;
+        gameState.tableTurnIndex = (gameState.tableTurnIndex % 4) + 1;
+      } else {
+        const studentNum = Math.floor(Math.random() * 28) + 1;
+        banner.innerHTML = `<i class="fa-solid fa-id-badge"></i><span>Engineer Turn: Student #${studentNum}!</span>`;
+      }
+    }
+
+    function speakCurrentTurnPrompt() {
+      const missingIndex = gameState.activeMissingIndex;
+      if (missingIndex === null) return;
+
+      let prompt = "Look at the letter train! ";
+      if (missingIndex > 0) {
+        const prevChar = gameState.currentSequence[missingIndex - 1].char;
+        prompt += `What letter comes after ${prevChar}?`;
+      } else {
+        prompt += "What letter starts this train?";
+      }
+      speakText(prompt);
+    }
+
+    /* DOM Rendering: Train Wagons */
+    function renderTrainCars() {
+      const container = document.getElementById('wagons-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      gameState.currentSequence.forEach((item, idx) => {
+        const palette = WAGON_PALETTES[idx % WAGON_PALETTES.length];
+        const wagonDiv = document.createElement('div');
+        wagonDiv.className = "flex-shrink-0 flex flex-col items-center cursor-pointer select-none transition-transform active:scale-95";
+
+        const carBody = document.createElement('div');
+        carBody.className = `w-16 sm:w-24 h-20 sm:h-28 rounded-2xl border-4 shadow-md flex flex-col items-center justify-center relative ${palette.border}`;
+
+        if (item.isMissing && !item.userValue) {
+          // Empty mystery wagon
+          const isActive = (gameState.activeMissingIndex === item.index);
+          carBody.className += isActive 
+            ? " bg-amber-100 border-dashed border-amber-500 slot-glow shadow-amber-300 ring-4 ring-amber-300"
+            : " bg-slate-100 border-dashed border-slate-400 opacity-90";
+          
+          carBody.innerHTML = `
+            <span class="text-2xl sm:text-4xl font-black ${isActive ? 'text-amber-600 animate-bounce' : 'text-slate-400'}">
+              ?
+            </span>
+            <span class="text-[9px] sm:text-[11px] font-black uppercase text-slate-500 mt-1">
+              ${isActive ? 'Fill Me!' : 'Car ' + (idx + 1)}
+            </span>
+          `;
+        } else {
+          // Filled wagon (either given or placed by student)
+          const displayChar = item.userValue || item.char;
+          const isJustFilled = (item.isMissing && item.userValue);
+          carBody.className += ` ${palette.bg} ${isJustFilled ? 'ring-4 ring-emerald-400' : ''}`;
+
+          carBody.innerHTML = `
+            <span class="text-3xl sm:text-5xl font-black ${palette.text} drop-shadow">
+              ${displayChar}
+            </span>
+            <span class="text-[9px] sm:text-[11px] font-black uppercase ${palette.text} opacity-75">
+              ${PHONICS_WORDS[displayChar.toUpperCase()] || 'Letter'}
+            </span>
+          `;
+        }
+
+        // Wagon Wheels
+        const wheelsDiv = document.createElement('div');
+        wheelsDiv.className = "flex justify-between w-full px-1.5 -mt-2.5";
+        wheelsDiv.innerHTML = `
+          <div class="w-5 sm:w-7 h-5 sm:h-7 rounded-full bg-slate-800 border-2 border-slate-600 shadow flex items-center justify-center text-[8px] text-slate-400">⚙️</div>
+          <div class="w-5 sm:w-7 h-5 sm:h-7 rounded-full bg-slate-800 border-2 border-slate-600 shadow flex items-center justify-center text-[8px] text-slate-400">⚙️</div>
+        `;
+
+        wagonDiv.appendChild(carBody);
+        wagonDiv.appendChild(wheelsDiv);
+
+        // Click wagon to hear letter or focus slot
+        wagonDiv.addEventListener('click', () => {
+          playSound('tap');
+          if (item.isMissing) {
+            gameState.activeMissingIndex = item.index;
+            if (item.userValue) {
+              speakLetterPhonics(item.userValue, "This car has");
+            } else {
+              speakCurrentTurnPrompt();
+            }
+            renderTrainCars();
+          } else {
+            speakLetterPhonics(item.char);
+          }
+        });
+
+        container.appendChild(wagonDiv);
+      });
+    }
+
+    /* DOM Rendering: Choice Depot */
+    function renderChoiceDepot() {
+      const container = document.getElementById('letter-choices-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Collect target missing letters
+      const neededLetters = gameState.currentSequence
+        .filter(item => item.isMissing && !item.userValue)
+        .map(item => item.char);
+
+      if (neededLetters.length === 0) return;
+
+      // Distractor generator respecting case
+      const isAllLower = (gameState.currentRoundCase === 'lowercase');
+      const isAllUpper = (gameState.currentRoundCase === 'uppercase');
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      const choicesSet = new Set(neededLetters);
+
+      while (choicesSet.size < Math.min(6, 4 + neededLetters.length)) {
+        let randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+        if (isAllLower) {
+          randomChar = randomChar.toLowerCase();
+        } else if (isAllUpper) {
+          randomChar = randomChar.toUpperCase();
+        } else {
+          randomChar = Math.random() > 0.5 ? randomChar.toUpperCase() : randomChar.toLowerCase();
+        }
+        choicesSet.add(randomChar);
+      }
+
+      // Shuffle options
+      const choicesArray = Array.from(choicesSet).sort(() => Math.random() - 0.5);
+
+      choicesArray.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = "toy-btn w-14 sm:w-20 h-14 sm:h-20 bg-white hover:bg-amber-50 text-slate-900 rounded-2xl border-4 border-amber-400 shadow-md flex flex-col items-center justify-center active:border-amber-600 transition-all";
+        
+        btn.innerHTML = `
+          <span class="text-2xl sm:text-4xl font-black text-amber-950">${letter}</span>
+          <span class="text-[9px] sm:text-[10px] font-bold text-slate-500">${PHONICS_WORDS[letter.toUpperCase()] || ''}</span>
+        `;
+
+        btn.addEventListener('click', () => {
+          handleChoiceSelection(letter, btn);
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    /* Choice Validation Logic */
+    function handleChoiceSelection(chosenLetter, buttonEl) {
+      if (gameState.isTrainRolling) return;
+      initAudio();
+
+      if (gameState.activeMissingIndex === null) {
+        const nextMissing = gameState.currentSequence.find(i => i.isMissing && !i.userValue);
+        if (nextMissing) {
+          gameState.activeMissingIndex = nextMissing.index;
+        } else {
+          return;
+        }
+      }
+
+      const activeSlot = gameState.currentSequence[gameState.activeMissingIndex];
+      const isCorrect = (chosenLetter === activeSlot.char);
+
+      if (isCorrect) {
+        // Correct answer!
+        activeSlot.userValue = chosenLetter;
+        playSound('correct');
+        speakLetterPhonics(chosenLetter, "Super job! That is");
+
+        // Small reward confetti at button coordinate
+        const rect = buttonEl.getBoundingClientRect();
+        confetti({
+          particleCount: 28,
+          spread: 50,
+          origin: {
+            x: (rect.left + rect.width / 2) / window.innerWidth,
+            y: (rect.top + rect.height / 2) / window.innerHeight
+          }
+        });
+
+        // Find remaining missing slots in this sequence
+        const remaining = gameState.currentSequence.find(i => i.isMissing && !i.userValue);
+        if (remaining) {
+          gameState.activeMissingIndex = remaining.index;
+          renderTrainCars();
+          renderChoiceDepot();
+          document.getElementById('status-feedback-bar').innerHTML = `
+            <span class="text-emerald-700 font-black">🌟 Great teamwork! Now find the next letter!</span>
+          `;
+          setTimeout(() => {
+            speakCurrentTurnPrompt();
+          }, 800);
+        } else {
+          // Completed all cars on this train!
+          gameState.activeMissingIndex = null;
+          renderTrainCars();
+          renderChoiceDepot();
+          triggerTrainDeparture();
+        }
+
+      } else {
+        // Gentle cooperative retry
+        playSound('tryAgain');
+        buttonEl.classList.add('wobble-shake');
+        setTimeout(() => buttonEl.classList.remove('wobble-shake'), 500);
+
+        const targetClue = PHONICS_WORDS[activeSlot.char.toUpperCase()] || activeSlot.char;
+        speakText(`That was ${chosenLetter}. Let's check together! We need ${activeSlot.char} as in ${targetClue}!`);
+
+        const feedbackBar = document.getElementById('status-feedback-bar');
+        feedbackBar.innerHTML = `
+          <span class="text-amber-700 font-extrabold">Almost! What letter comes after the previous car? Let's sing together!</span>
+        `;
+      }
+    }
+
+    /* Train Departure & Victory System */
+    function triggerTrainDeparture() {
+      gameState.isTrainRolling = true;
+      playSound('trainWhistle');
+
+      gameState.currentFuel += 1;
+      updateFuelDisplay();
+
+      const sequenceString = gameState.currentSequence.map(i => i.char).join(" ... ");
+      speakText(`Hooray! The train is complete: ${sequenceString}! Choo-choo! All aboard!`, 0.82);
+
+      const feedbackBar = document.getElementById('status-feedback-bar');
+      feedbackBar.innerHTML = `
+        <span class="text-emerald-700 text-lg font-black animate-pulse">🚂💨 All letters found! Full speed ahead!</span>
+      `;
+
+      // Animate train moving off screen
+      const train = document.getElementById('train-convoy');
+      train.classList.add('train-departing');
+
+      // Check if Class Star Goal is met
+      if (gameState.currentFuel >= gameState.totalFuelGoal) {
+        setTimeout(() => {
+          showClassVictory();
+        }, 2200);
+      } else {
+        setTimeout(() => {
+          generateNewSequence();
+        }, 2500);
+      }
+    }
+
+    function updateFuelDisplay() {
+      const container = document.getElementById('fuel-stars-container');
+      const label = document.getElementById('fuel-count-label');
+      if (!container || !label) return;
+
+      container.innerHTML = '';
+      for (let i = 0; i < gameState.totalFuelGoal; i++) {
+        const star = document.createElement('i');
+        if (i < gameState.currentFuel) {
+          star.className = "fa-solid fa-star text-amber-500 text-sm sm:text-base animate-bounce";
+        } else {
+          star.className = "fa-regular fa-star text-amber-300 text-sm sm:text-base";
+        }
+        container.appendChild(star);
+      }
+
+      label.textContent = `${gameState.currentFuel}/${gameState.totalFuelGoal}`;
+    }
+
+    function showClassVictory() {
+      playSound('fanfare');
+      speakText("Congratulations Primary 1! You powered the entire Alphabet Train together! You are all certified train conductors!");
+
+      confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+
+      const modal = document.getElementById('victory-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function updateCaseToggleLabel() {
+      const label = document.getElementById('case-mode-label');
+      if (!label) return;
+      if (gameState.caseMode === 'both') {
+        const currentTag = gameState.currentRoundCase === 'lowercase' ? 'lower: a-z' : 'upper: A-Z';
+        label.textContent = `Both (${currentTag})`;
+      } else if (gameState.caseMode === 'lowercase') {
+        label.textContent = `Lowercase (abc)`;
+      } else if (gameState.caseMode === 'uppercase') {
+        label.textContent = `Uppercase (ABC)`;
+      } else {
+        label.textContent = `Mixed (AbC)`;
+      }
+    }
+
+    /* Event Listeners & Startup */
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // Quick Case Switcher Button on top bar
+      document.getElementById('btn-quick-case').addEventListener('click', () => {
+        playSound('tap');
+        const modes = ['both', 'lowercase', 'uppercase', 'mixed'];
+        const nextIndex = (modes.indexOf(gameState.caseMode) + 1) % modes.length;
+        gameState.caseMode = modes[nextIndex];
+        updateCaseToggleLabel();
+        generateNewSequence();
+      });
+
+      // Read Aloud Sequence Button
+      document.getElementById('btn-read-aloud').addEventListener('click', () => {
+        playSound('tap');
+        speakFullSequence();
+      });
+
+      // Repeat Last Audio Message Button
+      document.getElementById('btn-repeat-speech').addEventListener('click', () => {
+        playSound('tap');
+        speakText(gameState.lastSpokenText);
+      });
+
+      // Conductor Bubble Hear Button
+      document.getElementById('btn-bubble-listen').addEventListener('click', () => {
+        playSound('tap');
+        speakText(gameState.lastSpokenText);
+      });
+
+      // Sound FX Toggle
+      document.getElementById('btn-sound-toggle').addEventListener('click', () => {
+        gameState.isAudioMuted = !gameState.isAudioMuted;
+        const icon = document.getElementById('sound-icon');
+        if (gameState.isAudioMuted) {
+          icon.className = "fa-solid fa-volume-xmark";
+          window.speechSynthesis.cancel();
+        } else {
+          icon.className = "fa-solid fa-music";
+          playSound('tap');
+        }
+      });
+
+      // Teacher Settings Dialog
+      const settingsModal = document.getElementById('settings-modal');
+      document.getElementById('btn-settings-open').addEventListener('click', () => {
+        playSound('tap');
+        document.getElementById('setting-case-mode').value = gameState.caseMode;
+        document.getElementById('setting-missing-count').value = gameState.missingCount;
+        document.getElementById('setting-helper-mode').value = gameState.helperMode;
+        document.getElementById('setting-voice-speed').value = gameState.voiceSpeed;
+        settingsModal.classList.remove('hidden');
+      });
+
+      document.getElementById('btn-close-settings').addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+      });
+
+      document.getElementById('btn-save-settings').addEventListener('click', () => {
+        playSound('tap');
+        gameState.caseMode = document.getElementById('setting-case-mode').value;
+        gameState.missingCount = parseInt(document.getElementById('setting-missing-count').value, 10);
+        gameState.helperMode = document.getElementById('setting-helper-mode').value;
+        gameState.voiceSpeed = parseFloat(document.getElementById('setting-voice-speed').value);
+        settingsModal.classList.add('hidden');
+        updateCaseToggleLabel();
+        generateNewSequence();
+      });
+
+      // Play Again after Victory
+      document.getElementById('btn-play-again').addEventListener('click', () => {
+        gameState.currentFuel = 0;
+        updateFuelDisplay();
+        document.getElementById('victory-modal').classList.add('hidden');
+        generateNewSequence();
+      });
+
+      // Keyboard support for interactive smartboards
+      window.addEventListener('keydown', (e) => {
+        if (/^[a-zA-Z]$/.test(e.key)) {
+          const buttons = document.querySelectorAll('#letter-choices-container button');
+          for (let btn of buttons) {
+            const letterSpan = btn.querySelector('span');
+            if (letterSpan && letterSpan.textContent.toLowerCase() === e.key.toLowerCase()) {
+              btn.click();
+              break;
+            }
+          }
+        }
+      });
+
+      // Populate speech voices if ready
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          getClearVoice();
+        };
+      }
+
+      // Start initial game round
+      updateFuelDisplay();
+      generateNewSequence();
+    });
+  </script>
+</body>
+</html>

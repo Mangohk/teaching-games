@@ -45,8 +45,48 @@
       font-size: clamp(0.95rem, 2.5vw, 1.1rem);
       color: #475569;
     }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.65rem;
+      margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+    }
+    .filter-btn {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      letter-spacing: 0.02em;
+      padding: 0.65rem 1.15rem;
+      border-radius: 999px;
+      border: 3px solid rgba(14, 165, 233, 0.35);
+      background: var(--panel);
+      color: #0369a1;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .filter-btn:hover,
+    .filter-btn:focus-visible {
+      border-color: #38bdf8;
+      outline: none;
+      transform: translateY(-2px);
+    }
+    .filter-btn:active {
+      transform: translateY(0);
+    }
+    .filter-btn.active {
+      background: #0ea5e9;
+      border-color: #0284c7;
+      color: #fff;
+      box-shadow: 0 4px 0 #0369a1;
+    }
     .category {
       margin-bottom: clamp(1.75rem, 5vw, 2.75rem);
+    }
+    .category[hidden] {
+      display: none !important;
     }
     .category:last-of-type {
       margin-bottom: 0;
@@ -135,10 +175,49 @@
   <div class="wrap">
     <header>
       <h1>Teaching Games</h1>
-      <p class="sub">Pick a game — each opens its own page in the folder below.</p>
+      <p class="sub">Pick a year level to filter, or browse all games below.</p>
     </header>
+    <div class="filter-bar" role="group" aria-label="Year level">
+      <button type="button" class="filter-btn" data-filter="p1" aria-pressed="false">Primary 1</button>
+      <button type="button" class="filter-btn" data-filter="p4" aria-pressed="false">Primary 4</button>
+      <button type="button" class="filter-btn" data-filter="p5" aria-pressed="false">Primary 5</button>
+    </div>
     <nav aria-label="Games by year level">
-      <section class="category" aria-labelledby="cat-p4">
+      <section class="category" data-category="p1" aria-labelledby="cat-p1">
+        <h2 class="category-title" id="cat-p1">Primary 1</h2>
+        <div class="grid">
+          <a class="game-link" href="./alphabet_express_coop/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./alphabet_express_coop/index.jpg" alt="" width="2752" height="1636" decoding="async" loading="lazy">
+            </span>
+            <h3>The Alphabet Express</h3>
+            <p>Cooperative class adventure for learning the alphabet.</p>
+          </a>
+          <a class="game-link" href="./alphabet_handwriting/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./alphabet_handwriting/index.jpg" alt="" width="2290" height="1572" decoding="async" loading="lazy">
+            </span>
+            <h3>Alphabet Line Master</h3>
+            <p>Practice handwriting letters on a single line.</p>
+          </a>
+          <a class="game-link" href="./alphabet_train_express/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./alphabet_train_express/index.jpg" alt="" width="2538" height="1572" decoding="async" loading="lazy">
+            </span>
+            <h3>The Great Alphabet Express</h3>
+            <p>Ride the train and learn letters together.</p>
+          </a>
+          <a class="game-link" href="./alphabet_train_rescue/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./alphabet_train_rescue/index.jpg" alt="" width="2290" height="1572" decoding="async" loading="lazy">
+            </span>
+            <h3>Alphabet Train Adventure</h3>
+            <p>Rescue letters and keep the alphabet train on track.</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="category" data-category="p4" aria-labelledby="cat-p4">
         <h2 class="category-title" id="cat-p4">Primary 4</h2>
         <div class="grid">
           <a class="game-link" href="./balloon-time/index.html">
@@ -165,7 +244,7 @@
         </div>
       </section>
 
-      <section class="category" aria-labelledby="cat-p5">
+      <section class="category" data-category="p5" aria-labelledby="cat-p5">
         <h2 class="category-title" id="cat-p5">Primary 5</h2>
         <div class="grid">
           <a class="game-link" href="./Grammar_showdown/index.html">
@@ -187,5 +266,28 @@
     </nav>
     <p class="hint">Links go to each folder; the browser loads that folder’s <code>index.html</code> automatically.</p>
   </div>
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('.filter-btn');
+      var sections = document.querySelectorAll('.category');
+
+      function showCategory(id) {
+        sections.forEach(function (section) {
+          section.hidden = section.getAttribute('data-category') !== id;
+        });
+        buttons.forEach(function (btn) {
+          var active = btn.getAttribute('data-filter') === id;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          showCategory(btn.getAttribute('data-filter'));
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

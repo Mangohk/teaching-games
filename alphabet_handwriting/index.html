@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alphabet Line Master - P1 Handwriting Adventure</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Tone.js for kid-friendly sounds -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <!-- Canvas Confetti for classroom celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Fonts: Fredoka & Shantell Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .handwriting-font {
+      font-family: 'Shantell Sans', cursive;
+    }
+    #canvas-container {
+      /* Keep a stable 4:3 writing pad; taller than the old 300–350px box */
+      width: min(100%, calc(min(58vh, 580px) * 4 / 3));
+      aspect-ratio: 4 / 3;
+      height: auto;
+      min-height: 320px;
+      margin-inline: auto;
+    }
+    @supports not (aspect-ratio: 4 / 3) {
+      #canvas-container {
+        width: 100%;
+        height: clamp(340px, 50vh, 560px);
+      }
+    }
+    .toy-btn {
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    .toy-btn:active {
+      transform: translateY(3px) scale(0.98);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2) !important;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Pulsing guide arrow */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.15); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 1.8s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-b from-sky-200 via-amber-50 to-emerald-100 min-h-screen flex flex-col justify-between overflow-x-hidden text-slate-800">
+
+  <!-- Classroom Navigation Bar -->
+  <header class="w-full bg-white/95 backdrop-blur shadow-md px-3 sm:px-6 py-2.5 z-30 sticky top-0 border-b-4 border-amber-400">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+      
+      <!-- App Title & Icon -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-11 h-11 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-inner border-2 border-orange-600">
+          ✏️
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-2xl font-black text-amber-950 leading-tight">
+            Alphabet Line Master
+          </h1>
+          <p class="text-[11px] sm:text-xs font-bold text-amber-700">
+            Learn Single-Line Handwriting on the Baseline! 📏
+          </p>
+        </div>
+      </div>
+
+      <!-- Case Switcher (Uppercase vs Lowercase) -->
+      <div class="flex items-center bg-amber-100/80 p-1 rounded-2xl border-2 border-amber-300">
+        <button id="btn-case-lower" class="toy-btn px-3 sm:px-4 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-indigo-600 text-white shadow">
+          lowercase (a–z)
+        </button>
+        <button id="btn-case-upper" class="toy-btn px-3 sm:px-4 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm text-amber-900 hover:bg-white/60">
+          UPPERCASE (A–Z)
+        </button>
+      </div>
+
+      <!-- Cooperative Star Bank & Sounds -->
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 bg-amber-50 border-2 border-amber-300 rounded-2xl px-3 py-1 shadow-sm">
+          <span class="text-lg animate-bounce">⭐</span>
+          <span id="star-count-label" class="text-xs sm:text-sm font-black text-amber-900">
+            0 Letters Mastered
+          </span>
+        </div>
+
+        <button id="btn-audio-toggle" class="toy-btn w-9 sm:w-10 h-9 sm:h-10 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl flex items-center justify-center border-b-4 border-indigo-700 shadow" title="Toggle Sound FX">
+          <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto w-full px-3 sm:px-4 flex-1 flex flex-col justify-between my-2 relative z-10 gap-3">
+    
+    <!-- Top Letter Picker Carousel -->
+    <div class="bg-white/90 rounded-3xl p-2 sm:p-3 border-4 border-sky-300 shadow-md">
+      <div class="flex items-center justify-between px-2 mb-1">
+        <span class="text-xs font-black uppercase tracking-wider text-sky-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-pointer text-sky-500"></i> Tap Any Letter to Practice:
+        </span>
+        <span id="current-letter-type-badge" class="text-[11px] font-black bg-sky-100 text-sky-700 px-2.5 py-0.5 rounded-full">
+          lowercase (a–z)
+        </span>
+      </div>
+
+      <div id="letters-ribbon" class="flex gap-2 overflow-x-auto no-scrollbar py-1 px-1 scroll-smooth">
+        <!-- Letter buttons dynamically populated -->
+      </div>
+    </div>
+
+    <!-- Instruction Owl Speech Banner -->
+    <div class="bg-white/95 rounded-2xl p-3 shadow-md border-4 border-indigo-300 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 border border-indigo-200">
+          🦉
+        </div>
+        <div>
+          <div class="text-[10px] font-extrabold uppercase text-indigo-700 tracking-wider">Teacher Owl's Line Rule:</div>
+          <p id="owl-speech-bubble" class="text-sm sm:text-base font-extrabold text-slate-800 leading-snug">
+            "Watch how the letter sits flat on the solid green baseline!"
+          </p>
+        </div>
+      </div>
+
+      <button id="btn-hear-voice" class="toy-btn px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 text-xs font-black rounded-xl border-b-2 border-amber-600 flex items-center gap-1.5 flex-shrink-0">
+        <i class="fa-solid fa-volume-high"></i>
+        <span>Listen</span>
+      </button>
+    </div>
+
+    <!-- Main Interactive Writing Stage -->
+    <div class="bg-white rounded-3xl p-3 sm:p-5 border-4 border-amber-400 shadow-xl flex flex-col md:flex-row gap-4 items-center">
+      
+      <!-- Left Column: Single-Line Stage & Canvas -->
+      <div class="w-full md:w-8/12 flex flex-col items-center">
+        
+        <!-- Elevation Guide Indicators -->
+        <div class="w-full flex items-center justify-between text-[11px] sm:text-xs font-black px-2 pb-1 text-slate-500">
+          <span class="flex items-center gap-1 text-sky-600">
+            <i class="fa-solid fa-cloud"></i> Sky Line (Tall letters)
+          </span>
+          <span class="flex items-center gap-1 text-emerald-700 font-extrabold">
+            <i class="fa-solid fa-seedling"></i> Baseline (The Ground)
+          </span>
+          <span class="flex items-center gap-1 text-amber-700">
+            <i class="fa-solid fa-water"></i> Tail Line (g, j, p, q, y)
+          </span>
+        </div>
+
+        <!-- 
+          CANVAS STAGE ARCHITECTURE (CRITICAL FOR VISIBILITY & Z-INDEX):
+          Layer 0 (z-0): Background single baseline and helper guide lines
+          Layer 1 (z-10): Demo Ghost Guidelines & Animated Demo Stroke
+          Layer 2 (z-20): User Drawing Canvas (STUDENTS' HANDWRITING PAINTS ON TOP!)
+          Layer 3 (z-30): Animated Moving Pencil Pointer
+        -->
+        <div id="canvas-container" class="relative w-full bg-sky-50/50 rounded-2xl border-2 border-slate-300 shadow-inner overflow-hidden cursor-crosshair">
+          
+          <!-- Layer 0: Static Baseline & Elevation Guides (redrawn to match letter mapping) -->
+          <svg id="canvas-guide-svg" class="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg"></svg>
+
+          <!-- Layer 1: Ghost Guide & Animated Demo (UNDERNEATH the student's ink) -->
+          <svg id="demo-overlay-svg" class="absolute inset-0 w-full h-full z-10 pointer-events-none"></svg>
+
+          <!-- Layer 2: Interactive User Drawing Canvas (ON TOP of demo lines!) -->
+          <canvas id="paint-canvas" class="absolute inset-0 w-full h-full z-20 touch-none"></canvas>
+
+          <!-- Layer 3: Animated Demo Pencil Tool & Sparkles -->
+          <div id="demo-pencil-pointer" class="absolute z-30 pointer-events-none transition-transform duration-75 hidden flex-col items-center">
+            <span class="text-3xl filter drop-shadow-md -translate-x-2 -translate-y-8 select-none">✏️</span>
+            <div class="w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-white shadow animate-ping -mt-3"></div>
+          </div>
+
+          <!-- Touch Sparkle on Baseline -->
+          <div id="pen-tip-indicator" class="absolute w-7 h-7 -ml-3.5 -mt-3.5 bg-amber-400 border-2 border-white rounded-full shadow-lg z-30 pointer-events-none hidden items-center justify-center text-xs animate-ping">
+            ⭐
+          </div>
+
+        </div>
+
+        <!-- Control Action Buttons for Students -->
+        <div class="w-full flex flex-wrap items-center justify-between gap-2 mt-3">
+          
+          <div class="flex items-center gap-2">
+            <!-- Watch Demo Button -->
+            <button id="btn-watch-demo" class="toy-btn px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-black text-xs sm:text-sm border-b-4 border-orange-700 shadow-md flex items-center gap-2">
+              <i class="fa-solid fa-play animate-pulse"></i>
+              <span>Watch Demo</span>
+            </button>
+
+            <!-- Clear / Try Again Button -->
+            <button id="btn-clear-canvas" class="toy-btn px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-black text-xs sm:text-sm border-b-4 border-rose-700 shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-eraser"></i>
+              <span>Clear</span>
+            </button>
+          </div>
+
+          <!-- Color Chooser for Pencil -->
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-300">
+            <span class="text-xs font-black text-slate-600 px-1">My Pen:</span>
+            <button class="pen-color-btn w-7 h-7 rounded-xl bg-indigo-600 ring-2 ring-indigo-400 shadow-sm" data-color="#4f46e5"></button>
+            <button class="pen-color-btn w-7 h-7 rounded-xl bg-rose-500 shadow-sm" data-color="#f43f5e"></button>
+            <button class="pen-color-btn w-7 h-7 rounded-xl bg-emerald-600 shadow-sm" data-color="#059669"></button>
+            <button class="pen-color-btn w-7 h-7 rounded-xl bg-amber-500 shadow-sm" data-color="#d97706"></button>
+            <button class="pen-color-btn w-7 h-7 rounded-xl bg-purple-600 shadow-sm" data-color="#9333ea"></button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Right Column: Letter Identity & Step-by-step Stroke Guide -->
+      <div class="w-full md:w-4/12 flex flex-col justify-between bg-amber-50 rounded-2xl p-3 sm:p-4 border-2 border-amber-200">
+        
+        <!-- Big Letter Identity Card -->
+        <div class="text-center bg-white rounded-2xl p-3 border-2 border-amber-300 shadow-sm">
+          <div class="text-[11px] font-black uppercase text-amber-700 tracking-wider">Letter Card</div>
+          
+          <div class="flex items-center justify-center gap-2 my-1">
+            <span id="card-letter-display" class="handwriting-font text-6xl sm:text-7xl font-extrabold text-indigo-700 drop-shadow">
+              a
+            </span>
+            <div class="text-left">
+              <span id="card-phonics-icon" class="text-3xl sm:text-4xl block">🍎</span>
+              <span id="card-phonics-word" class="text-xs font-black text-slate-700 uppercase block">Apple</span>
+            </div>
+          </div>
+
+          <!-- Height Classification Rule Badge -->
+          <div id="card-height-rule" class="mt-2 text-xs font-extrabold text-emerald-800 bg-emerald-100 rounded-xl py-1 px-2 border border-emerald-300 inline-block">
+            🌱 Small Letter: Sits right on the single line
+          </div>
+        </div>
+
+        <!-- Stroke Order Guide for Kids -->
+        <div class="my-3 bg-white/90 rounded-2xl p-3 border border-amber-200">
+          <div class="text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-list-ol text-amber-500"></i> Stroke Order:</span>
+            <span class="text-[10px] text-indigo-600 font-extrabold">Follow 1, 2, 3</span>
+          </div>
+          <ul id="stroke-steps-list" class="text-xs sm:text-sm font-extrabold text-slate-700 space-y-1.5">
+            <!-- Dynamic steps -->
+          </ul>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex items-center justify-between gap-2">
+          <button id="btn-prev-letter" class="toy-btn flex-1 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-black text-xs sm:text-sm border-b-2 border-slate-400 flex items-center justify-center gap-1">
+            <i class="fa-solid fa-chevron-left"></i> Prev
+          </button>
+          
+          <button id="btn-complete-letter" class="toy-btn flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black text-xs sm:text-sm border-b-4 border-emerald-700 shadow flex items-center justify-center gap-1">
+            <span>Done!</span> <i class="fa-solid fa-check"></i>
+          </button>
+
+          <button id="btn-next-letter" class="toy-btn flex-1 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-black text-xs sm:text-sm border-b-2 border-indigo-700 flex items-center justify-center gap-1">
+            Next <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Cooperative Classroom Mission Progress -->
+    <div class="w-full bg-white/90 rounded-2xl py-2 px-4 border-2 border-amber-300 shadow-sm flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+      <div class="flex items-center gap-2 font-black text-slate-700">
+        <i class="fa-solid fa-users text-indigo-500 text-base"></i>
+        <span>Classroom Team Mission: Practice together & fill the Alphabet Book!</span>
+      </div>
+      <div id="mastery-indicators" class="flex gap-1">
+        <!-- Star badges filled as letters are completed -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Celebration Modal for Classroom Accomplishment -->
+  <div id="trophy-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-8 border-amber-400">
+      <div class="text-6xl mb-3 animate-bounce">🏆🌟🎉</div>
+      <h2 class="text-2xl sm:text-3xl font-black text-amber-950 mb-1">
+        MAGNIFICENT PENMANSHIP!
+      </h2>
+      <p id="trophy-modal-desc" class="text-slate-700 text-sm sm:text-base font-bold mb-4">
+        The class mastered another letter on the single line! Give each other a cheerful high five!
+      </p>
+
+      <div class="bg-amber-100 rounded-2xl p-3 mb-4 border-2 border-amber-300 text-amber-900 font-extrabold text-sm">
+        Line Rule: Letters stand proudly on the green ground line! 📏🌱
+      </div>
+
+      <button id="btn-modal-continue" class="toy-btn w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black text-base border-b-4 border-emerald-700 shadow-lg">
+        Keep Writing Next Letter! 🚀
+      </button>
+    </div>
+  </div>
+
+  <footer class="w-full text-center py-1.5 text-xs font-extrabold text-slate-600">
+    Primary 1 Single-Line English Handwriting • 📏 Letters stand on the green baseline!
+  </footer>
+
+  <script>
+    /* -------------------------------------------------------------
+     * ALPHABET PROFILES & STROKES ON 1000x1000 NORMALIZED COORDINATES
+     * ------------------------------------------------------------- */
+    const PHONICS_MAP = {
+      A: { word: "Apple", icon: "🍎" }, B: { word: "Ball", icon: "⚽" }, C: { word: "Cat", icon: "🐱" },
+      D: { word: "Dog", icon: "🐶" }, E: { word: "Elephant", icon: "🐘" }, F: { word: "Fish", icon: "🐟" },
+      G: { word: "Giraffe", icon: "🦒" }, H: { word: "Hat", icon: "🎩" }, I: { word: "Igloo", icon: "🛖" },
+      J: { word: "Jelly", icon: "🪼" }, K: { word: "Kite", icon: "🪁" }, L: { word: "Lion", icon: "🦁" },
+      M: { word: "Monkey", icon: "🐵" }, N: { word: "Nest", icon: "🪺" }, O: { word: "Octopus", icon: "🐙" },
+      P: { word: "Penguin", icon: "🐧" }, Q: { word: "Queen", icon: "👑" }, R: { word: "Rainbow", icon: "🌈" },
+      S: { word: "Sun", icon: "☀️" }, T: { word: "Tiger", icon: "🐯" }, U: { word: "Umbrella", icon: "☂️" },
+      V: { word: "Violin", icon: "🎻" }, W: { word: "Whale", icon: "🐋" }, X: { word: "Xylophone", icon: "🎵" },
+      Y: { word: "Yo-Yo", icon: "🪀" }, Z: { word: "Zebra", icon: "🦓" }
+    };
+
+    const TALL_LOWER = ['b', 'd', 'f', 'h', 'k', 'l', 't'];
+    const DESCENDER_LOWER = ['g', 'j', 'p', 'q', 'y'];
+
+    const LETTER_STROKES = {
+      // Lowercase letters
+      'a': [
+        { desc: "Magic C curve touching midline and baseline", pts: [[620,550], [530,520], [420,580], [390,650], [440,740], [570,760], [620,700]] },
+        { desc: "Slide down to the baseline with a little kick", pts: [[620,520], [620,760]] }
+      ],
+      'b': [
+        { desc: "Drop tall from sky down to the baseline", pts: [[410,280], [410,760]] },
+        { desc: "Bounce up and round right on the baseline", pts: [[410,540], [520,520], [610,600], [600,710], [480,760], [410,740]] }
+      ],
+      'c': [
+        { desc: "Round curl from midline to touch the baseline", pts: [[610,560], [530,520], [420,580], [400,660], [440,730], [540,760], [620,730]] }
+      ],
+      'd': [
+        { desc: "Curl around like a magic C", pts: [[590,560], [500,520], [410,580], [400,660], [440,730], [530,760], [590,700]] },
+        { desc: "Drop tall from the sky all the way to the baseline", pts: [[590,280], [590,760]] }
+      ],
+      'e': [
+        { desc: "Across inside the middle", pts: [[400,640], [600,640]] },
+        { desc: "Over the top and round to the baseline", pts: [[600,640], [560,530], [460,530], [390,600], [400,700], [480,760], [610,730]] }
+      ],
+      'f': [
+        { desc: "Curve like a candy cane from sky to baseline", pts: [[590,320], [550,280], [480,280], [450,340], [450,760]] },
+        { desc: "Cross flat at the midline", pts: [[380,520], [540,520]] }
+      ],
+      'g': [
+        { desc: "Round circle sitting on the baseline", pts: [[600,550], [510,520], [420,570], [410,660], [470,740], [560,750], [600,690]] },
+        { desc: "Drop tail under the baseline and hook left", pts: [[600,520], [600,850], [560,930], [450,930]] }
+      ],
+      'h': [
+        { desc: "Tall stroke from sky down to the baseline", pts: [[410,280], [410,760]] },
+        { desc: "Tunnel hop over to the baseline", pts: [[410,580], [500,520], [590,580], [590,760]] }
+      ],
+      'i': [
+        { desc: "Straight down from midline to baseline", pts: [[500,520], [500,760]] },
+        { desc: "Dot high up in the sky", pts: [[500,400], [500,420]] }
+      ],
+      'j': [
+        { desc: "Drop straight down underground and fishhook left", pts: [[530,520], [530,860], [490,930], [420,920]] },
+        { desc: "Dot floating in the sky", pts: [[530,400], [530,420]] }
+      ],
+      'k': [
+        { desc: "Tall line from sky to baseline", pts: [[420,280], [420,760]] },
+        { desc: "Kick in to the line", pts: [[590,540], [440,640]] },
+        { desc: "Slide out to the baseline", pts: [[440,640], [600,760]] }
+      ],
+      'l': [
+        { desc: "One tall soldier from sky straight to baseline", pts: [[500,280], [500,760]] }
+      ],
+      'm': [
+        { desc: "Down to the baseline", pts: [[340,520], [340,760]] },
+        { desc: "First arch over and down", pts: [[340,580], [420,520], [490,580], [490,760]] },
+        { desc: "Second arch over and down to the baseline", pts: [[490,580], [570,520], [640,580], [640,760]] }
+      ],
+      'n': [
+        { desc: "Down to baseline", pts: [[410,520], [410,760]] },
+        { desc: "Arch over and down to baseline", pts: [[410,580], [500,520], [590,580], [590,760]] }
+      ],
+      'o': [
+        { desc: "Full circle sitting round on the baseline", pts: [[500,520], [400,570], [390,670], [450,750], [530,760], [600,710], [600,610], [530,520]] }
+      ],
+      'p': [
+        { desc: "Down underground from midline", pts: [[420,520], [420,930]] },
+        { desc: "Round belly sitting on baseline", pts: [[420,550], [510,520], [590,570], [590,680], [510,760], [420,740]] }
+      ],
+      'q': [
+        { desc: "Round circle like an 'a'", pts: [[580,550], [500,520], [420,570], [410,670], [470,750], [550,750], [580,700]] },
+        { desc: "Tail down underground with a flick", pts: [[580,520], [580,930], [640,890]] }
+      ],
+      'r': [
+        { desc: "Down to the baseline", pts: [[430,520], [430,760]] },
+        { desc: "Up and curl a little tree branch", pts: [[430,600], [510,520], [570,540]] }
+      ],
+      's': [
+        { desc: "Snake curve: left, right, and sit on baseline", pts: [[570,550], [500,520], [430,560], [450,630], [550,660], [560,720], [480,760], [410,740]] }
+      ],
+      't': [
+        { desc: "Down from near the sky to baseline with a curve", pts: [[490,340], [490,720], [540,760], [580,750]] },
+        { desc: "Cross at the midline", pts: [[410,520], [570,520]] }
+      ],
+      'u': [
+        { desc: "Slide down, smile curve on baseline, and up", pts: [[410,520], [410,720], [470,760], [560,740], [590,680], [590,520]] },
+        { desc: "Straight down to touch the baseline", pts: [[590,520], [590,760]] }
+      ],
+      'v': [
+        { desc: "Slant down to baseline point", pts: [[400,520], [500,760]] },
+        { desc: "Slant up to midline", pts: [[500,760], [600,520]] }
+      ],
+      'w': [
+        { desc: "Down slant, up slant, down slant, up slant", pts: [[340,520], [420,760], [490,600], [560,760], [640,520]] }
+      ],
+      'x': [
+        { desc: "Slide down across right", pts: [[410,520], [590,760]] },
+        { desc: "Slide down across left", pts: [[590,520], [410,760]] }
+      ],
+      'y': [
+        { desc: "Short slant to baseline", pts: [[410,520], [490,660]] },
+        { desc: "Long slide from midline dipping underground", pts: [[590,520], [440,890], [390,930]] }
+      ],
+      'z': [
+        { desc: "Across the midline", pts: [[410,530], [590,530]] },
+        { desc: "Zigzag down to baseline", pts: [[590,530], [410,760]] },
+        { desc: "Across flat on the baseline", pts: [[410,760], [590,760]] }
+      ],
+
+      // Uppercase letters
+      'A': [
+        { desc: "Slant down left to baseline", pts: [[500,280], [360,760]] },
+        { desc: "Slant down right to baseline", pts: [[500,280], [640,760]] },
+        { desc: "Bridge across the midline", pts: [[410,560], [590,560]] }
+      ],
+      'B': [
+        { desc: "Straight down from sky to baseline", pts: [[400,280], [400,760]] },
+        { desc: "Top bubble to midline", pts: [[400,280], [540,280], [580,360], [540,490], [400,490]] },
+        { desc: "Bottom bubble sitting on baseline", pts: [[400,490], [560,490], [610,600], [560,760], [400,760]] }
+      ],
+      'C': [
+        { desc: "Big round curl from sky to baseline", pts: [[620,360], [520,280], [400,370], [370,520], [400,670], [510,760], [620,700]] }
+      ],
+      'D': [
+        { desc: "Drop straight down to baseline", pts: [[400,280], [400,760]] },
+        { desc: "Huge tummy from sky to baseline", pts: [[400,280], [570,280], [630,440], [630,590], [560,760], [400,760]] }
+      ],
+      'E': [
+        { desc: "Straight down from sky to baseline", pts: [[410,280], [410,760]] },
+        { desc: "Roof line along the sky", pts: [[410,280], [610,280]] },
+        { desc: "Middle shelf on midline", pts: [[410,520], [570,520]] },
+        { desc: "Floor line flat on baseline", pts: [[410,760], [620,760]] }
+      ],
+      'F': [
+        { desc: "Straight down from sky to baseline", pts: [[420,280], [420,760]] },
+        { desc: "Top hat along the sky", pts: [[420,280], [610,280]] },
+        { desc: "Middle bar on midline", pts: [[420,520], [570,520]] }
+      ],
+      'G': [
+        { desc: "Big round curl from sky to baseline", pts: [[620,360], [510,280], [400,370], [370,520], [400,670], [520,760], [620,760], [620,560]] },
+        { desc: "Shelf inside", pts: [[620,560], [520,560]] }
+      ],
+      'H': [
+        { desc: "Left pole from sky to baseline", pts: [[390,280], [390,760]] },
+        { desc: "Right pole from sky to baseline", pts: [[610,280], [610,760]] },
+        { desc: "Crossbar in the middle", pts: [[390,520], [610,520]] }
+      ],
+      'I': [
+        { desc: "Tall pole straight from sky to baseline", pts: [[500,280], [500,760]] },
+        { desc: "Top hat", pts: [[420,280], [580,280]] },
+        { desc: "Base shoe on the baseline", pts: [[420,760], [580,760]] }
+      ],
+      'J': [
+        { desc: "Down from sky, turn on baseline and hook", pts: [[550,280], [550,680], [500,760], [410,740], [390,670]] },
+        { desc: "Top cap along the sky", pts: [[450,280], [620,280]] }
+      ],
+      'K': [
+        { desc: "Tall back straight to baseline", pts: [[410,280], [410,760]] },
+        { desc: "Kick in from sky to midline", pts: [[600,290], [420,520]] },
+        { desc: "Kick out to baseline", pts: [[420,520], [610,760]] }
+      ],
+      'L': [
+        { desc: "Drop tall from sky down to baseline", pts: [[420,280], [420,760]] },
+        { desc: "Foot right across the baseline", pts: [[420,760], [610,760]] }
+      ],
+      'M': [
+        { desc: "Down straight to baseline", pts: [[360,760], [360,280]] },
+        { desc: "Slant down to baseline middle", pts: [[360,280], [500,640]] },
+        { desc: "Slant up to sky", pts: [[500,640], [640,280]] },
+        { desc: "Down straight to baseline", pts: [[640,280], [640,760]] }
+      ],
+      'N': [
+        { desc: "Left pole from sky to baseline", pts: [[390,760], [390,280]] },
+        { desc: "Big slide down to baseline", pts: [[390,280], [610,760]] },
+        { desc: "Right pole straight up to sky", pts: [[610,760], [610,280]] }
+      ],
+      'O': [
+        { desc: "Full giant oval sitting on the baseline", pts: [[500,280], [380,380], [370,530], [420,710], [500,760], [580,720], [630,540], [620,380], [500,280]] }
+      ],
+      'P': [
+        { desc: "Drop straight down to baseline", pts: [[410,280], [410,760]] },
+        { desc: "Round head on top half", pts: [[410,280], [560,280], [610,380], [560,510], [410,510]] }
+      ],
+      'Q': [
+        { desc: "Big round oval on baseline", pts: [[500,280], [380,380], [370,530], [420,710], [500,760], [580,720], [630,540], [620,380], [500,280]] },
+        { desc: "Little kicking foot", pts: [[540,660], [640,770]] }
+      ],
+      'R': [
+        { desc: "Drop down to baseline", pts: [[410,280], [410,760]] },
+        { desc: "Bubble on top half", pts: [[410,280], [560,280], [610,380], [560,510], [410,510]] },
+        { desc: "Slant leg down to baseline", pts: [[480,510], [610,760]] }
+      ],
+      'S': [
+        { desc: "Big curving snake down to baseline", pts: [[600,350], [520,280], [420,330], [430,450], [560,530], [590,640], [510,760], [400,720]] }
+      ],
+      'T': [
+        { desc: "Flat roof on top sky line", pts: [[360,280], [640,280]] },
+        { desc: "Tall pole down to baseline", pts: [[500,280], [500,760]] }
+      ],
+      'U': [
+        { desc: "Slide down, round curve on baseline, and up to sky", pts: [[390,280], [390,650], [450,760], [550,760], [610,650], [610,280]] }
+      ],
+      'V': [
+        { desc: "Slant down to baseline middle", pts: [[370,280], [500,760]] },
+        { desc: "Slant up to sky line", pts: [[500,760], [630,280]] }
+      ],
+      'W': [
+        { desc: "Slant down, slant up, slant down, slant up", pts: [[340,280], [420,760], [500,420], [580,760], [660,280]] }
+      ],
+      'X': [
+        { desc: "Giant cross stroke 1", pts: [[380,280], [620,760]] },
+        { desc: "Giant cross stroke 2", pts: [[620,280], [380,760]] }
+      ],
+      'Y': [
+        { desc: "Short slant to midline", pts: [[380,280], [500,520]] },
+        { desc: "Right slant to midline", pts: [[620,280], [500,520]] },
+        { desc: "Pole straight down to baseline", pts: [[500,520], [500,760]] }
+      ],
+      'Z': [
+        { desc: "Across top sky line", pts: [[390,280], [610,280]] },
+        { desc: "Slant down to baseline", pts: [[610,280], [390,760]] },
+        { desc: "Across along baseline", pts: [[390,760], [610,760]] }
+      ]
+    };
+  </script>
+
+  <script>
+    const appState = {
+      isUppercase: false,
+      currentLetter: 'a',
+      penColor: '#4f46e5',
+      penWidth: 18,
+      isAudioMuted: false,
+      isDemonstrating: false,
+      isDrawing: false,
+      masteredLetters: new Set(),
+      demoAnimationTimers: []
+    };
+
+    /* Audio system with Tone.js */
+    let synth = null;
+    let chimeSynth = null;
+    let audioReady = false;
+
+    function initAudio() {
+      if (audioReady) return;
+      try {
+        if (window.Tone) {
+          Tone.start();
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.02, decay: 0.15, sustain: 0.1, release: 0.3 }
+          }).toDestination();
+          synth.volume.value = -6;
+
+          chimeSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.01, decay: 0.35, sustain: 0.2, release: 0.8 }
+          }).toDestination();
+          chimeSynth.volume.value = -3;
+          audioReady = true;
+        }
+      } catch (err) {}
+    }
+
+    function playSound(type) {
+      if (appState.isAudioMuted) return;
+      initAudio();
+      if (!audioReady) return;
+
+      try {
+        const now = Tone.now();
+        if (type === 'tap') {
+          synth.triggerAttackRelease("C5", "16n", now);
+        } else if (type === 'sparkle') {
+          chimeSynth.triggerAttackRelease(["E5", "G5"], "16n", now);
+        } else if (type === 'star') {
+          chimeSynth.triggerAttackRelease(["G5", "C6", "E6"], "8n", now);
+        } else if (type === 'fanfare') {
+          ["C5", "E5", "G5", "C6"].forEach((n, i) => {
+            chimeSynth.triggerAttackRelease(n, "8n", now + (i * 0.12));
+          });
+        }
+      } catch(e) {}
+    }
+
+    /* Speech synthesis */
+    function speakText(text) {
+      if (!('speechSynthesis' in window) || appState.isAudioMuted) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.82;
+      utterance.pitch = 1.05;
+      utterance.volume = 1.0;
+      utterance.lang = 'en-US';
+
+      const voices = window.speechSynthesis.getVoices();
+      const friendlyVoice = voices.find(v => (v.name.includes("Google") || v.name.includes("Samantha") || v.name.includes("Natural")) && v.lang.startsWith("en"));
+      if (friendlyVoice) utterance.voice = friendlyVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function updateOwlSpeech(text, shouldSpeak = true) {
+      const bubble = document.getElementById('owl-speech-bubble');
+      if (bubble) bubble.textContent = `"${text}"`;
+      if (shouldSpeak) speakText(text);
+    }
+  </script>
+
+  <script>
+    /* Canvas & Drawing System */
+    const canvas = document.getElementById('paint-canvas');
+    const ctx = canvas.getContext('2d');
+    const demoOverlaySvg = document.getElementById('demo-overlay-svg');
+    const demoPencil = document.getElementById('demo-pencil-pointer');
+    const guideSvg = document.getElementById('canvas-guide-svg');
+
+    const NORM_SIZE = 1000;
+    let letterScale = 1;
+    let letterOffsetX = 0;
+    let letterOffsetY = 0;
+    let cssCanvasWidth = 0;
+    let cssCanvasHeight = 0;
+
+    let userStrokes = []; // User strokes that will COVER the demo
+    let currentStroke = [];
+
+    /** Uniform scale (contain) so letter shapes stay proportional in any pad size. */
+    function updateLetterTransform(cssWidth, cssHeight) {
+      cssCanvasWidth = cssWidth;
+      cssCanvasHeight = cssHeight;
+      letterScale = Math.min(cssWidth / NORM_SIZE, cssHeight / NORM_SIZE);
+      letterOffsetX = (cssWidth - NORM_SIZE * letterScale) / 2;
+      letterOffsetY = (cssHeight - NORM_SIZE * letterScale) / 2;
+    }
+
+    function scaledStrokeWidth(base) {
+      return Math.max(2, base * letterScale);
+    }
+
+    function getLivePenWidth() {
+      return scaledStrokeWidth(appState.penWidth);
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      updateLetterTransform(rect.width, rect.height);
+      renderGuideLines();
+      redrawUserCanvas();
+      renderDemonstrationOverlay();
+    }
+
+    function canvasToNorm(x, y) {
+      return {
+        x: (x - letterOffsetX) / letterScale,
+        y: (y - letterOffsetY) / letterScale
+      };
+    }
+
+    function normToCanvas(normX, normY) {
+      return {
+        x: letterOffsetX + normX * letterScale,
+        y: letterOffsetY + normY * letterScale
+      };
+    }
+
+    function renderGuideLines() {
+      if (!guideSvg) return;
+      const left = normToCanvas(0, 0).x;
+      const right = normToCanvas(NORM_SIZE, 0).x;
+      const lines = [
+        { y: 280, stroke: '#93c5fd', width: 2, dash: '6,6' },
+        { y: 520, stroke: '#cbd5e1', width: 2, dash: '4,4' },
+        { y: 760, stroke: '#16a34a', width: 6, dash: null },
+        { y: 940, stroke: '#f59e0b', width: 2, dash: '5,5' }
+      ];
+      guideSvg.innerHTML = '';
+      lines.forEach(function (line) {
+        const y = normToCanvas(0, line.y).y;
+        const el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        el.setAttribute('x1', String(left));
+        el.setAttribute('x2', String(right));
+        el.setAttribute('y1', String(y));
+        el.setAttribute('y2', String(y));
+        el.setAttribute('stroke', line.stroke);
+        el.setAttribute('stroke-width', String(scaledStrokeWidth(line.width)));
+        el.setAttribute('stroke-linecap', 'round');
+        if (line.dash) el.setAttribute('stroke-dasharray', line.dash);
+        guideSvg.appendChild(el);
+      });
+    }
+
+    /* Redraws students' ink ON TOP of the canvas */
+    function redrawUserCanvas() {
+      ctx.clearRect(0, 0, cssCanvasWidth || canvas.width, cssCanvasHeight || canvas.height);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      userStrokes.forEach(stroke => {
+        if (stroke.points.length < 2) return;
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.widthNorm != null
+          ? scaledStrokeWidth(stroke.widthNorm)
+          : stroke.width;
+        ctx.beginPath();
+
+        const start = normToCanvas(stroke.points[0].x, stroke.points[0].y);
+        ctx.moveTo(start.x, start.y);
+
+        for (let i = 1; i < stroke.points.length; i++) {
+          const pt = normToCanvas(stroke.points[i].x, stroke.points[i].y);
+          ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      });
+    }
+
+    // Pointer events for writing
+    function startDrawing(e) {
+      // If user starts drawing while demo is running, stop demo cleanly
+      if (appState.isDemonstrating) {
+        stopWatchDemo();
+      }
+
+      initAudio();
+      appState.isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const norm = canvasToNorm(x, y);
+      currentStroke = [norm];
+
+      const penW = getLivePenWidth();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = appState.penColor;
+      ctx.lineWidth = penW;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+
+      playSound('sparkle');
+    }
+
+    function continueDrawing(e) {
+      if (!appState.isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+
+      const norm = canvasToNorm(x, y);
+      currentStroke.push(norm);
+
+      // Baseline sparkle touch feedback
+      if (Math.abs(norm.y - 760) < 28) {
+        showSparkleIndicator(x, y);
+      }
+    }
+
+    function stopDrawing() {
+      if (!appState.isDrawing) return;
+      appState.isDrawing = false;
+      if (currentStroke.length > 0) {
+        userStrokes.push({
+          color: appState.penColor,
+          width: getLivePenWidth(),
+          widthNorm: appState.penWidth,
+          points: currentStroke
+        });
+      }
+      currentStroke = [];
+    }
+
+    function showSparkleIndicator(x, y) {
+      const penTip = document.getElementById('pen-tip-indicator');
+      if (!penTip) return;
+      penTip.style.left = `${x}px`;
+      penTip.style.top = `${y}px`;
+      penTip.classList.remove('hidden');
+      penTip.classList.add('flex');
+      setTimeout(() => {
+        penTip.classList.add('hidden');
+        penTip.classList.remove('flex');
+      }, 300);
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    window.addEventListener('mousemove', continueDrawing);
+    window.addEventListener('mouseup', stopDrawing);
+
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); }, { passive: false });
+    window.addEventListener('touchmove', (e) => { continueDrawing(e); });
+    window.addEventListener('touchend', stopDrawing);
+  </script>
+
+  <script>
+    /* * DEMONSTRATION & GHOST GUIDELINES OVERLAY
+     * This SVG layer sits UNDER the student's paint canvas (z-10 < z-20).
+     * Therefore, whenever students draw, their strokes COVER this layer!
+     */
+    function renderDemonstrationOverlay() {
+      demoOverlaySvg.innerHTML = '';
+      const letterData = LETTER_STROKES[appState.currentLetter];
+      if (!letterData) return;
+
+      // Group for static background ghost guideline
+      const ghostGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      ghostGroup.setAttribute("id", "ghost-guideline-group");
+      demoOverlaySvg.appendChild(ghostGroup);
+
+      // Group for the dynamic animated demo stroke
+      const demoActiveGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      demoActiveGroup.setAttribute("id", "demo-active-group");
+      demoOverlaySvg.appendChild(demoActiveGroup);
+
+      // Group for start point numbers (1, 2, 3)
+      const numbersGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      numbersGroup.setAttribute("id", "numbers-group");
+      demoOverlaySvg.appendChild(numbersGroup);
+
+      // Draw faint traceable ghost guidelines
+      letterData.forEach((stroke, strokeIdx) => {
+        const pathData = generateSvgPath(stroke.pts);
+
+        // 1. Broad translucent ribbon track
+        const trackRibbon = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        trackRibbon.setAttribute("d", pathData);
+        trackRibbon.setAttribute("fill", "none");
+        trackRibbon.setAttribute("stroke", "#e0e7ff");
+        trackRibbon.setAttribute("stroke-width", String(scaledStrokeWidth(36)));
+        trackRibbon.setAttribute("stroke-linecap", "round");
+        trackRibbon.setAttribute("stroke-linejoin", "round");
+        ghostGroup.appendChild(trackRibbon);
+
+        // 2. Dashed guide line
+        const dashedPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        dashedPath.setAttribute("d", pathData);
+        dashedPath.setAttribute("fill", "none");
+        dashedPath.setAttribute("stroke", "#818cf8");
+        dashedPath.setAttribute("stroke-width", String(scaledStrokeWidth(4)));
+        dashedPath.setAttribute("stroke-dasharray", "8,8");
+        dashedPath.setAttribute("stroke-linecap", "round");
+        ghostGroup.appendChild(dashedPath);
+
+        // 3. Step Number Badge at the stroke starting point
+        const startPt = normToCanvas(stroke.pts[0][0], stroke.pts[0][1]);
+        
+        const circleBg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circleBg.setAttribute("cx", startPt.x);
+        circleBg.setAttribute("cy", startPt.y);
+        circleBg.setAttribute("r", String(scaledStrokeWidth(15)));
+        circleBg.setAttribute("fill", "#4f46e5");
+        circleBg.setAttribute("stroke", "#ffffff");
+        circleBg.setAttribute("stroke-width", String(scaledStrokeWidth(3)));
+        numbersGroup.appendChild(circleBg);
+
+        const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        numberText.setAttribute("x", startPt.x);
+        numberText.setAttribute("y", startPt.y + scaledStrokeWidth(5));
+        numberText.setAttribute("text-anchor", "middle");
+        numberText.setAttribute("fill", "#ffffff");
+        numberText.setAttribute("font-size", String(scaledStrokeWidth(13)));
+        numberText.setAttribute("font-weight", "900");
+        numberText.textContent = (strokeIdx + 1);
+        numbersGroup.appendChild(numberText);
+      });
+    }
+
+    function generateSvgPath(pts) {
+      if (!pts || pts.length === 0) return "";
+      const start = normToCanvas(pts[0][0], pts[0][1]);
+      let d = `M ${start.x} ${start.y}`;
+      for (let i = 1; i < pts.length; i++) {
+        const pt = normToCanvas(pts[i][0], pts[i][1]);
+        d += ` L ${pt.x} ${pt.y}`;
+      }
+      return d;
+    }
+
+    function stopWatchDemo() {
+      appState.demoAnimationTimers.forEach(t => clearTimeout(t));
+      appState.demoAnimationTimers = [];
+      appState.isDemonstrating = false;
+
+      const demoBtn = document.getElementById('btn-watch-demo');
+      if (demoBtn) {
+        demoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        demoBtn.innerHTML = `<i class="fa-solid fa-play animate-pulse"></i><span>Watch Demo</span>`;
+      }
+      if (demoPencil) {
+        demoPencil.classList.add('hidden');
+      }
+    }
+
+    /* High-Visibility Animated Demo */
+    function startWatchDemo() {
+      stopWatchDemo();
+      initAudio();
+      appState.isDemonstrating = true;
+
+      // Clear any previous student strokes to give clean demo view
+      userStrokes = [];
+      redrawUserCanvas();
+      renderDemonstrationOverlay();
+
+      const strokes = LETTER_STROKES[appState.currentLetter];
+      if (!strokes) return;
+
+      const demoActiveGroup = document.getElementById('demo-active-group');
+      if (demoActiveGroup) demoActiveGroup.innerHTML = '';
+
+      const btn = document.getElementById('btn-watch-demo');
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Watching Demo...</span>`;
+
+      updateOwlSpeech(`Watch carefully! See how the pencil sits on the green baseline!`);
+
+      // Prepare pencil cursor
+      demoPencil.classList.remove('hidden');
+
+      let currentStrokeIdx = 0;
+
+      function animateStrokeSequence() {
+        if (currentStrokeIdx >= strokes.length) {
+          // Demo Complete
+          demoPencil.classList.add('hidden');
+          appState.isDemonstrating = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          btn.innerHTML = `<i class="fa-solid fa-play animate-pulse"></i><span>Watch Demo</span>`;
+          playSound('star');
+          updateOwlSpeech(`Great! Now write letter ${appState.currentLetter} on top of the lines!`);
+          return;
+        }
+
+        const strokeObj = strokes[currentStrokeIdx];
+        const rawPts = strokeObj.pts;
+
+        // Subdivide points for ultra-smooth gliding pencil animation
+        const smoothPts = [];
+        for (let i = 0; i < rawPts.length - 1; i++) {
+          const p1 = rawPts[i];
+          const p2 = rawPts[i+1];
+          const steps = 14;
+          for (let s = 0; s < steps; s++) {
+            smoothPts.push([
+              p1[0] + (p2[0] - p1[0]) * (s / steps),
+              p1[1] + (p2[1] - p1[1]) * (s / steps)
+            ]);
+          }
+        }
+        smoothPts.push(rawPts[rawPts.length - 1]);
+
+        // Create SVG animated path element in the demo layer
+        const strokeSvgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        strokeSvgPath.setAttribute("fill", "none");
+        strokeSvgPath.setAttribute("stroke", "#f59e0b"); // Bright amber golden demo ink
+        strokeSvgPath.setAttribute("stroke-width", String(scaledStrokeWidth(22)));
+        strokeSvgPath.setAttribute("stroke-linecap", "round");
+        strokeSvgPath.setAttribute("stroke-linejoin", "round");
+        demoActiveGroup.appendChild(strokeSvgPath);
+
+        let ptIndex = 0;
+        const startPt = normToCanvas(smoothPts[0][0], smoothPts[0][1]);
+        let animatedPathData = `M ${startPt.x} ${startPt.y}`;
+        strokeSvgPath.setAttribute("d", animatedPathData);
+
+        // Position pencil at stroke start
+        demoPencil.style.transform = `translate(${startPt.x}px, ${startPt.y}px)`;
+
+        function step() {
+          ptIndex++;
+          if (ptIndex < smoothPts.length) {
+            const mapped = normToCanvas(smoothPts[ptIndex][0], smoothPts[ptIndex][1]);
+            animatedPathData += ` L ${mapped.x} ${mapped.y}`;
+            strokeSvgPath.setAttribute("d", animatedPathData);
+
+            // Move pencil
+            demoPencil.style.transform = `translate(${mapped.x}px, ${mapped.y}px)`;
+
+            if (ptIndex % 5 === 0) playSound('tap');
+
+            const timer = setTimeout(step, 24);
+            appState.demoAnimationTimers.push(timer);
+          } else {
+            // Finished current stroke, pause briefly then start next
+            currentStrokeIdx++;
+            const pauseTimer = setTimeout(animateStrokeSequence, 450);
+            appState.demoAnimationTimers.push(pauseTimer);
+          }
+        }
+
+        const startTimer = setTimeout(step, 100);
+        appState.demoAnimationTimers.push(startTimer);
+      }
+
+      animateStrokeSequence();
+    }
+  </script>
+
+  <script>
+    /* Updates Letter Selection, Phonics, and Single-Line Height Rules */
+    function selectLetter(char) {
+      stopWatchDemo();
+      appState.currentLetter = char;
+      const upperChar = char.toUpperCase();
+      const phonics = PHONICS_MAP[upperChar] || { word: "Letter", icon: "⭐" };
+
+      // Update right-hand letter card
+      document.getElementById('card-letter-display').textContent = char;
+      document.getElementById('card-phonics-icon').textContent = phonics.icon;
+      document.getElementById('card-phonics-word').textContent = phonics.word;
+
+      // Classify single line baseline rule
+      const ruleBadge = document.getElementById('card-height-rule');
+      if (appState.isUppercase) {
+        ruleBadge.className = "mt-2 text-xs font-extrabold text-sky-800 bg-sky-100 rounded-xl py-1 px-2 border border-sky-300 inline-block";
+        ruleBadge.innerHTML = "☁️ Tall Letter: Stands from Sky to the green Baseline!";
+      } else {
+        if (TALL_LOWER.includes(char)) {
+          ruleBadge.className = "mt-2 text-xs font-extrabold text-sky-800 bg-sky-100 rounded-xl py-1 px-2 border border-sky-300 inline-block";
+          ruleBadge.innerHTML = "🦒 Tall Lowercase: Reaches the Sky, sits on the Baseline!";
+        } else if (DESCENDER_LOWER.includes(char)) {
+          ruleBadge.className = "mt-2 text-xs font-extrabold text-amber-800 bg-amber-100 rounded-xl py-1 px-2 border border-amber-300 inline-block";
+          ruleBadge.innerHTML = "🐟 Monkey Tail: Sits on the Baseline, tail dips Underground!";
+        } else {
+          ruleBadge.className = "mt-2 text-xs font-extrabold text-emerald-800 bg-emerald-100 rounded-xl py-1 px-2 border border-emerald-300 inline-block";
+          ruleBadge.innerHTML = "🌱 Small Lowercase: Midline down to the solid green Baseline!";
+        }
+      }
+
+      // Populate stroke steps list
+      const stepsList = document.getElementById('stroke-steps-list');
+      stepsList.innerHTML = '';
+      const strokes = LETTER_STROKES[char] || [];
+      strokes.forEach((s, idx) => {
+        const li = document.createElement('li');
+        li.className = "flex items-start gap-1.5";
+        li.innerHTML = `
+          <span class="w-5 h-5 rounded-full bg-amber-400 text-amber-950 font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">${idx + 1}</span>
+          <span class="leading-tight">${s.desc}</span>
+        `;
+        stepsList.appendChild(li);
+      });
+
+      // Clear user strokes & render guide
+      userStrokes = [];
+      redrawUserCanvas();
+      renderDemonstrationOverlay();
+      highlightActiveLetterButton();
+
+      const caseLabel = appState.isUppercase ? "Capital" : "Lowercase";
+      updateOwlSpeech(`${caseLabel} ${char}! ${char} as in ${phonics.word}! Tap Watch Demo or trace on top!`);
+    }
+
+    function renderLetterRibbon() {
+      const ribbon = document.getElementById('letters-ribbon');
+      ribbon.innerHTML = '';
+      const letters = appState.isUppercase 
+        ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('')
+        : "abcdefghijklmnopqrstuvwxyz".split('');
+
+      letters.forEach(letter => {
+        const btn = document.createElement('button');
+        const isDone = appState.masteredLetters.has(letter);
+        btn.id = `ribbon-btn-${letter}`;
+        btn.className = `toy-btn min-w-[42px] sm:min-w-[48px] h-11 sm:h-12 rounded-2xl font-black text-lg sm:text-xl flex flex-col items-center justify-center border-2 transition-all relative ${
+          letter === appState.currentLetter 
+            ? 'bg-amber-400 border-amber-600 text-amber-950 shadow-md scale-105' 
+            : 'bg-white hover:bg-amber-50 border-slate-200 text-slate-700'
+        }`;
+        
+        btn.innerHTML = `
+          <span>${letter}</span>
+          ${isDone ? '<span class="text-[9px] absolute -top-1 -right-1">⭐</span>' : ''}
+        `;
+
+        btn.addEventListener('click', () => {
+          playSound('tap');
+          selectLetter(letter);
+        });
+
+        ribbon.appendChild(btn);
+      });
+
+      highlightActiveLetterButton();
+    }
+
+    function highlightActiveLetterButton() {
+      const buttons = document.querySelectorAll('#letters-ribbon button');
+      buttons.forEach(btn => {
+        const char = btn.querySelector('span').textContent;
+        const isSelected = (char === appState.currentLetter);
+        const isDone = appState.masteredLetters.has(char);
+
+        btn.className = `toy-btn min-w-[42px] sm:min-w-[48px] h-11 sm:h-12 rounded-2xl font-black text-lg sm:text-xl flex flex-col items-center justify-center border-2 transition-all relative ${
+          isSelected 
+            ? 'bg-amber-400 border-amber-600 text-amber-950 shadow-md scale-105' 
+            : 'bg-white hover:bg-amber-50 border-slate-200 text-slate-700'
+        }`;
+        if (isDone && !isSelected) {
+          btn.classList.add('bg-emerald-50', 'border-emerald-300');
+        }
+      });
+
+      const activeBtn = document.getElementById(`ribbon-btn-${appState.currentLetter}`);
+      if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
+    function completeLetterChallenge() {
+      stopWatchDemo();
+      initAudio();
+      appState.masteredLetters.add(appState.currentLetter);
+      playSound('fanfare');
+
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+
+      const starLabel = document.getElementById('star-count-label');
+      starLabel.textContent = `${appState.masteredLetters.size} Letters Mastered!`;
+
+      renderLetterRibbon();
+
+      const modal = document.getElementById('trophy-modal');
+      const modalDesc = document.getElementById('trophy-modal-desc');
+      modalDesc.innerHTML = `
+        Super job writing <strong class="text-indigo-600 text-2xl">${appState.currentLetter}</strong> on the baseline!<br>
+        Your penmanship is clean and steady!
+      `;
+      modal.classList.remove('hidden');
+
+      speakText(`Splendid handwriting! Letter ${appState.currentLetter} is mastered on the line!`);
+    }
+
+    function navigateLetter(offset) {
+      playSound('tap');
+      const alphabet = appState.isUppercase 
+        ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        : "abcdefghijklmnopqrstuvwxyz";
+      const currentIndex = alphabet.indexOf(appState.currentLetter);
+      let newIndex = (currentIndex + offset + alphabet.length) % alphabet.length;
+      selectLetter(alphabet[newIndex]);
+    }
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+      });
+
+      // Case selection buttons
+      const btnLower = document.getElementById('btn-case-lower');
+      const btnUpper = document.getElementById('btn-case-upper');
+      const typeBadge = document.getElementById('current-letter-type-badge');
+
+      btnLower.addEventListener('click', () => {
+        if (!appState.isUppercase) return;
+        playSound('tap');
+        appState.isUppercase = false;
+        btnLower.className = "toy-btn px-3 sm:px-4 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-indigo-600 text-white shadow";
+        btnUpper.className = "toy-btn px-3 sm:px-4 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm text-amber-900 hover:bg-white/60";
+        typeBadge.textContent = "lowercase (a–z)";
+        renderLetterRibbon();
+        selectLetter('a');
+      });
+
+      btnUpper.addEventListener('click', () => {
+        if (appState.isUppercase) return;
+        playSound('tap');
+        appState.isUppercase = true;
+        btnUpper.className = "toy-btn px-3 sm:px-4 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-indigo-600 text-white shadow";
+        btnLower.className = "toy-btn px-3 sm:px-4 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm text-amber-900 hover:bg-white/60";
+        typeBadge.textContent = "UPPERCASE (A–Z)";
+        renderLetterRibbon();
+        selectLetter('A');
+      });
+
+      // Pen Colors selection
+      const colorBtns = document.querySelectorAll('.pen-color-btn');
+      colorBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          playSound('tap');
+          colorBtns.forEach(b => b.classList.remove('ring-2', 'ring-indigo-400'));
+          btn.classList.add('ring-2', 'ring-indigo-400');
+          appState.penColor = btn.getAttribute('data-color');
+        });
+      });
+
+      // Clear Canvas Button
+      document.getElementById('btn-clear-canvas').addEventListener('click', () => {
+        playSound('tap');
+        stopWatchDemo();
+        userStrokes = [];
+        redrawUserCanvas();
+        updateOwlSpeech("Fresh clean line! Try writing it once more!");
+      });
+
+      // Watch Demo Button
+      document.getElementById('btn-watch-demo').addEventListener('click', () => {
+        startWatchDemo();
+      });
+
+      // Complete Letter Button
+      document.getElementById('btn-complete-letter').addEventListener('click', () => {
+        completeLetterChallenge();
+      });
+
+      // Prev & Next buttons
+      document.getElementById('btn-prev-letter').addEventListener('click', () => navigateLetter(-1));
+      document.getElementById('btn-next-letter').addEventListener('click', () => navigateLetter(1));
+
+      // Modal continue button
+      document.getElementById('btn-modal-continue').addEventListener('click', () => {
+        playSound('tap');
+        document.getElementById('trophy-modal').classList.add('hidden');
+        navigateLetter(1);
+      });
+
+      // Hear / Voice listen button
+      document.getElementById('btn-hear-voice').addEventListener('click', () => {
+        playSound('tap');
+        const bubble = document.getElementById('owl-speech-bubble');
+        if (bubble) speakText(bubble.textContent.replace(/"/g, ''));
+      });
+
+      // Sound mute toggle
+      document.getElementById('btn-audio-toggle').addEventListener('click', () => {
+        appState.isAudioMuted = !appState.isAudioMuted;
+        const icon = document.getElementById('audio-icon');
+        if (appState.isAudioMuted) {
+          icon.className = "fa-solid fa-volume-xmark";
+          window.speechSynthesis.cancel();
+        } else {
+          icon.className = "fa-solid fa-volume-high";
+          playSound('tap');
+        }
+      });
+
+      // Initial setup
+      renderLetterRibbon();
+      selectLetter('a');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Great Alphabet Express - Cooperative P1 Adventure</title>
+  <!-- Tailwind CSS for utility styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti for cooperative celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts: Fredoka & Baloo 2 for friendly, high-legibility child-friendly typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Grandstander:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-font: 'Fredoka', cursive, sans-serif;
+      --title-font: 'Grandstander', cursive, sans-serif;
+    }
+
+    body {
+      font-family: var(--primary-font);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overflow-x: hidden;
+      background: linear-gradient(180deg, #6ee7b7 0%, #38bdf8 35%, #818cf8 70%, #c084fc 100%);
+      min-height: 100vh;
+    }
+
+    .font-title {
+      font-family: var(--title-font);
+    }
+
+    /* Floating Clouds Animation */
+    @keyframes floatClouds {
+      0% { transform: translateX(-10%); }
+      50% { transform: translateX(10%); }
+      100% { transform: translateX(-10%); }
+    }
+
+    .cloud-float {
+      animation: floatClouds 22s ease-in-out infinite;
+    }
+
+    /* Bouncing & Wobble animations for engaging letter tiles */
+    @keyframes gentleWobble {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-4deg) scale(1.05); }
+      75% { transform: rotate(4deg) scale(1.05); }
+    }
+
+    .wobble-hover:hover {
+      animation: gentleWobble 0.6s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 15px rgba(250, 204, 21, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.8);
+        transform: scale(1.02);
+      }
+      50% {
+        box-shadow: 0 0 35px rgba(250, 204, 21, 1), inset 0 0 20px rgba(255, 255, 255, 0.9);
+        transform: scale(1.09);
+      }
+    }
+
+    .target-highlight {
+      animation: pulseGlow 1.2s infinite ease-in-out;
+      border: 4px dashed #facc15 !important;
+      background: rgba(254, 240, 138, 0.5) !important;
+    }
+
+    /* Steam Puffs from Train Chimney */
+    @keyframes puffSmoke {
+      0% { transform: translateY(0) scale(0.6); opacity: 0.8; }
+      100% { transform: translateY(-40px) scale(1.8); opacity: 0; }
+    }
+
+    .steam-puff {
+      animation: puffSmoke 1.8s infinite ease-out;
+    }
+
+    /* Train Wheel Rotation */
+    @keyframes spinWheel {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .wheel-spin {
+      animation: spinWheel 2s linear infinite;
+    }
+
+    /* Custom high-tactile button shadows */
+    .btn-3d {
+      transition: all 0.12s ease;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2), 0 3px 5px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hide scrollbar for smooth visual scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="relative text-slate-800 flex flex-col min-h-screen">
+
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <!-- Fluffy Sun -->
+    <div class="absolute top-4 left-8 text-yellow-300 opacity-90 transition-transform duration-700 hover:scale-125">
+      <svg class="w-24 h-24 sm:w-32 sm:h-32 animate-spin" style="animation-duration: 35s;" viewBox="0 0 100 100" fill="currentColor">
+        <circle cx="50" cy="50" r="28" fill="#FBBF24" />
+        <g stroke="#F59E0B" stroke-width="4" stroke-linecap="round">
+          <line x1="50" y1="10" x2="50" y2="2" />
+          <line x1="50" y1="90" x2="50" y2="98" />
+          <line x1="10" y1="50" x2="2" y2="50" />
+          <line x1="90" y1="50" x2="98" y2="50" />
+          <line x1="22" y1="22" x2="16" y2="16" />
+          <line x1="78" y1="78" x2="84" y2="84" />
+          <line x1="22" y1="78" x2="16" y2="84" />
+          <line x1="78" y1="22" x2="84" y2="16" />
+        </g>
+      </svg>
+      <div class="absolute top-8 left-8 sm:top-11 sm:left-11 text-2xl sm:text-3xl">😊</div>
+    </div>
+
+    <!-- Soft cartoon clouds -->
+    <div class="cloud-float absolute top-10 right-20 text-white opacity-80 text-6xl sm:text-8xl">☁️</div>
+    <div class="cloud-float absolute top-28 left-1/3 text-white opacity-70 text-5xl sm:text-7xl" style="animation-delay: -7s;">☁️</div>
+    <div class="cloud-float absolute top-6 right-1/3 text-white opacity-80 text-6xl" style="animation-delay: -14s;">☁️</div>
+
+    <!-- Rolling green hills in the background -->
+    <div class="absolute bottom-0 w-full h-32 bg-emerald-500/40 rounded-t-[100%] scale-x-125"></div>
+    <div class="absolute -bottom-6 w-full h-28 bg-emerald-600/50 rounded-t-[100%] scale-x-150"></div>
+  </div>
+
+  <header class="relative z-20 w-full px-4 pt-3 pb-2 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+    <!-- Title and Conductor Mascot -->
+    <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-3xl shadow-lg border-2 border-amber-300">
+      <div class="text-4xl sm:text-5xl animate-bounce" style="animation-duration: 2s;">🐻🚂</div>
+      <div>
+        <h1 class="font-title text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-wide font-black leading-tight drop-shadow-sm">
+          The Alphabet Express!
+        </h1>
+        <p class="text-xs sm:text-sm font-semibold text-emerald-700">
+          ⭐ P1 Class Team Mission: Build the 26 Letters Together!
+        </p>
+      </div>
+    </div>
+
+    <!-- Cooperative Class Sparkle Bar & Controls -->
+    <div class="flex flex-wrap items-center justify-center gap-3 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-3xl shadow-lg border-2 border-indigo-200">
+      <!-- Star Team Counter -->
+      <div class="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-2xl border border-amber-200">
+        <span class="text-2xl animate-spin" style="animation-duration: 10s;">⭐</span>
+        <div class="text-left">
+          <div class="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Class Progress</div>
+          <div class="text-lg font-black text-amber-700 leading-none">
+            <span id="collectedCount">0</span> / 26 Letters
+          </div>
+        </div>
+      </div>
+
+      <!-- Class Cheer Button -->
+      <button id="classCheerBtn" class="btn-3d flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold px-3.5 py-2 rounded-2xl text-sm transition">
+        <span>🎉</span>
+        <span>Class Clap!</span>
+      </button>
+
+      <!-- Alphabet Sing-along button -->
+      <button id="singSongBtn" class="btn-3d flex items-center gap-1.5 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-bold px-3.5 py-2 rounded-2xl text-sm transition">
+        <span>🎵</span>
+        <span id="singBtnText">Sing A-B-C</span>
+      </button>
+
+      <!-- Audio Mute Toggle -->
+      <button id="soundToggleBtn" aria-label="Toggle Sound" class="btn-3d bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold p-2.5 rounded-2xl text-sm transition">
+        🔊
+      </button>
+
+      <!-- Restart/Reset Board -->
+      <button id="resetGameBtn" title="Restart Mission" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold p-2.5 rounded-2xl text-sm transition">
+        🔄
+      </button>
+    </div>
+  </header>
+
+  <main class="relative z-10 flex-1 flex flex-col max-w-7xl w-full mx-auto px-3 sm:px-6 py-2 gap-4">
+    
+    <!-- Turn Prompt & Cooperative Clue Card -->
+    <section class="w-full bg-gradient-to-r from-amber-400 via-orange-400 to-pink-500 p-1 rounded-3xl shadow-xl">
+      <div class="bg-white/95 rounded-[22px] px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div class="flex items-center gap-3">
+          <div id="targetBadge" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-400 text-white text-3xl sm:text-4xl font-title font-black flex items-center justify-center shadow-md animate-bounce border-2 border-white">
+            A
+          </div>
+          <div>
+            <div class="flex items-center gap-2 justify-center sm:justify-start">
+              <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                🌟 Next Class Helper Turn
+              </span>
+              <span id="helperTipWord" class="text-xs font-semibold text-slate-500">A is for Apple! 🍎</span>
+            </div>
+            <p id="promptInstruction" class="text-base sm:text-lg md:text-xl font-bold text-slate-800 mt-0.5">
+              Who can step up and help our team find the letter <strong class="text-amber-600 text-2xl">"A"</strong>?
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Assistance Options -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="sayLetterBtn" class="btn-3d bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-3 py-2 rounded-2xl text-xs sm:text-sm flex items-center gap-1">
+            <span>🗣️</span>
+            <span>Hear Letter</span>
+          </button>
+          <button id="hintSpotlightBtn" class="btn-3d bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold px-3 py-2 rounded-2xl text-xs sm:text-sm flex items-center gap-1">
+            <span>💡</span>
+            <span>Show Clue</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="relative w-full bg-slate-900/60 backdrop-blur-md rounded-3xl p-3 sm:p-5 shadow-2xl border-4 border-amber-300/80">
+      
+      <!-- Train Header and Track Nav Buttons -->
+      <div class="flex items-center justify-between pb-3 text-white font-bold text-sm sm:text-base px-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🛤️</span>
+          <span>The 26 Train Wagons (Touch or Drag onto empty cars!)</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button id="scrollTrainLeft" class="btn-3d bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1 rounded-xl text-sm">
+            ◀ Go Left
+          </button>
+          <button id="scrollTrainRight" class="btn-3d bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1 rounded-xl text-sm">
+            Go Right ▶
+          </button>
+        </div>
+      </div>
+
+      <!-- Train Track Viewport -->
+      <div id="trainTrackViewport" class="no-scrollbar overflow-x-auto py-4 px-2 scroll-smooth">
+        <div id="trainAssembly" class="inline-flex items-end gap-2 min-w-max pb-3">
+          
+          <!-- Locomotive Engine -->
+          <div class="relative shrink-0 flex flex-col items-center">
+            <!-- Puffed Smoke -->
+            <div class="absolute -top-10 left-10 flex gap-2">
+              <span class="steam-puff text-2xl">💨</span>
+              <span class="steam-puff text-xl" style="animation-delay: 0.6s;">☁️</span>
+            </div>
+
+            <!-- Engine Body SVG -->
+            <div class="w-40 sm:w-48 bg-gradient-to-r from-red-500 to-rose-600 rounded-3xl p-3 text-white shadow-xl border-4 border-yellow-300 relative flex flex-col justify-between h-36">
+              <div class="flex justify-between items-center">
+                <span class="text-xs bg-yellow-400 text-red-900 font-extrabold px-2 py-0.5 rounded-lg shadow-inner">EXPRESS #1</span>
+                <span class="text-2xl animate-bounce">🐻</span>
+              </div>
+              <div class="text-center font-title font-black text-2xl tracking-wider text-yellow-200 drop-shadow">
+                CAPTAIN BEAR
+              </div>
+              <div class="flex justify-around items-center pt-2">
+                <div class="w-7 h-7 rounded-full bg-slate-800 border-2 border-yellow-300 wheel-spin flex items-center justify-center text-[10px]">⚙️</div>
+                <div class="w-8 h-8 rounded-full bg-slate-800 border-2 border-yellow-300 wheel-spin flex items-center justify-center text-xs">⚙️</div>
+                <div class="w-7 h-7 rounded-full bg-slate-800 border-2 border-yellow-300 wheel-spin flex items-center justify-center text-[10px]">⚙️</div>
+              </div>
+            </div>
+            <!-- Coupler -->
+            <div class="w-6 h-3 bg-slate-600 self-end -mr-3 -mt-6 rounded-r"></div>
+          </div>
+
+          <!-- 26 Wagon Slots will be dynamically injected here -->
+          <div id="wagonsContainer" class="flex items-end gap-3">
+            <!-- Javascript populates 26 train cars: A to Z -->
+          </div>
+
+          <!-- Caboose / Party Wagon -->
+          <div class="shrink-0 flex flex-col items-center pl-2">
+            <div class="w-32 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-3 text-white shadow-xl border-4 border-yellow-300 h-32 flex flex-col justify-between items-center text-center">
+              <span class="text-xs font-bold bg-white/20 px-2 py-0.5 rounded">TEAM FINISH</span>
+              <span class="text-3xl">🏁🎈</span>
+              <span class="font-title text-sm font-bold text-yellow-200">SUPER TEAM</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Wooden Railroad Ties Effect -->
+      <div class="w-full h-3 bg-amber-900 rounded-full mt-2 relative overflow-hidden border border-amber-950 flex items-center justify-around opacity-90">
+        <div class="w-full h-0.5 bg-yellow-400 absolute top-1"></div>
+      </div>
+    </section>
+
+    <section class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-5 shadow-xl border-2 border-indigo-100 flex flex-col gap-3">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-indigo-100 pb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🎈</span>
+          <h2 class="font-title text-xl sm:text-2xl text-indigo-900 font-extrabold">
+            The Letter Cloud
+          </h2>
+          <span class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-bold">
+            Tap or Drag to the Train!
+          </span>
+        </div>
+        
+        <!-- Filter/Shuffle helpers for teachers and team -->
+        <div class="flex items-center gap-2">
+          <button id="shuffleLettersBtn" class="btn-3d bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1">
+            <span>🔀</span>
+            <span>Mix Letters</span>
+          </button>
+          <button id="orderLettersBtn" class="btn-3d bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1">
+            <span>📋</span>
+            <span>Sort Pile</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Letters Grid Reservoir -->
+      <div id="lettersCloud" class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-9 lg:grid-cols-13 gap-2 sm:gap-3 p-2 min-h-[140px] items-center justify-items-center">
+        <!-- Letter tiles rendered by JavaScript -->
+      </div>
+    </section>
+
+  </main>
+
+  <div id="victoryModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-yellow-300 via-white to-amber-100 rounded-3xl p-6 sm:p-10 max-w-lg w-full text-center shadow-2xl border-4 border-yellow-400 relative transform transition-all scale-95 duration-300">
+      
+      <!-- Sparkle badges -->
+      <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-20 h-20 bg-yellow-400 rounded-full border-4 border-white shadow-xl flex items-center justify-center text-4xl animate-bounce">
+        🏆
+      </div>
+
+      <div class="mt-8">
+        <h2 class="font-title text-3xl sm:text-4xl text-amber-700 font-black tracking-wide">
+          WE DID IT TOGETHER! 🎉
+        </h2>
+        <p class="text-base sm:text-lg text-slate-700 font-semibold mt-2">
+          Every friend in our class helped put the entire Alphabet Train in order from <strong>A to Z</strong>!
+        </p>
+
+        <!-- Big Train Animation -->
+        <div class="my-6 text-6xl animate-pulse">
+          🚂💨🚃🚃🚃🚃🎈
+        </div>
+
+        <div class="bg-amber-200/60 rounded-2xl p-4 border border-amber-300 mb-6">
+          <div class="text-xs uppercase font-bold text-amber-800 tracking-wider">Class Certificate of Friendship</div>
+          <div class="text-xl font-title font-extrabold text-amber-900 mt-1">
+            ⭐ Certified Alphabet Masters ⭐
+          </div>
+          <p class="text-xs text-amber-700 mt-1">Super cooperation, great listening, and 100% teamwork!</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button id="playAgainBtn" class="btn-3d w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-extrabold text-base px-6 py-3 rounded-2xl shadow-lg transition">
+            🌟 Play Team Mission Again
+          </button>
+          <button id="closeVictoryModalBtn" class="btn-3d w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-base px-5 py-3 rounded-2xl transition">
+            👀 Admire Our Train
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Encouragement Toast Notification -->
+  <div id="toastMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 text-white font-bold px-6 py-3 rounded-full shadow-2xl border-2 border-yellow-300 flex items-center gap-2 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none text-sm sm:text-base">
+    <span id="toastIcon">✨</span>
+    <span id="toastText">Great teamwork!</span>
+  </div>
+
+  <script>
+    /* Web Audio synthesizer for zero-dependency, reliable, classroom-friendly sound effects */
+    const AudioController = {
+      ctx: null,
+      enabled: true,
+      masterGain: null,
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.setValueAtTime(0.85, this.ctx.currentTime);
+            this.masterGain.connect(this.ctx.destination);
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+
+      playTone(freq, duration = 0.18, type = 'sine', volumeScale = 1.0) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx || !this.masterGain) return;
+
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          // Richer acoustic definition for classroom speakers
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+
+          const peakGain = 0.55 * volumeScale;
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(peakGain, now + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+
+          osc.start(now);
+          osc.stop(now + duration + 0.05);
+        } catch (e) {
+          console.warn("Audio playback note:", e);
+        }
+      },
+
+      /* Cheerful, resonant chime when a letter lands correctly */
+      playSuccessChime() {
+        // Pentatonic bright chime: C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            this.playTone(freq, 0.32, 'triangle', 1.2);
+            // Harmonic shimmer
+            this.playTone(freq * 2, 0.18, 'sine', 0.4);
+          }, idx * 85);
+        });
+      },
+
+      /* Gentle, encouraging bounce sound when an incorrect wagon is touched */
+      playGentleBounce() {
+        this.playTone(392.00, 0.14, 'sine', 0.9); // G4
+        setTimeout(() => this.playTone(523.25, 0.2, 'sine', 0.9), 110); // C5
+      },
+
+      /* Rich dual-chime locomotive whistle */
+      playTrainWhistle() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        // Two-tone steam horn chord (D5 + F#5 + A5)
+        [587.33, 739.99, 880.00].forEach(f => {
+          this.playTone(f, 0.65, 'sawtooth', 0.7);
+        });
+      },
+
+      /* Victory chord fanfare */
+      playVictoryFanfare() {
+        const chords = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+        chords.forEach((freq, i) => {
+          setTimeout(() => {
+            this.playTone(freq, 0.55, 'triangle', 1.1);
+          }, i * 110);
+        });
+      }
+    };
+
+    /* Web Speech API for authentic, clear English pronunciation and phonics words */
+    const SpeechController = {
+      enabled: true,
+      selectedVoice: null,
+      lastSpokenText: '',
+      isInitialized: false,
+
+      init() {
+        if (!('speechSynthesis' in window)) return;
+        this.isInitialized = true;
+        this.loadVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+          window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+        }
+      },
+
+      /* Select high-clarity natural English voices suited for young learners */
+      loadVoices() {
+        if (!('speechSynthesis' in window)) return;
+        const voices = window.speechSynthesis.getVoices();
+        if (!voices || voices.length === 0) return;
+
+        // Prioritize clear English voices
+        const naturalVoice = voices.find(v => 
+          v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Online'))
+        );
+        const childFriendlyVoice = voices.find(v => 
+          v.lang === 'en-US' && (v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Google US English'))
+        );
+        const englishVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB' || v.lang.startsWith('en'));
+
+        this.selectedVoice = naturalVoice || childFriendlyVoice || englishVoice || voices[0];
+      },
+
+      /* Speak text with clear pronunciation, boosted gain, and browser freeze safeguards */
+      speak(text) {
+        if (!this.enabled || !('speechSynthesis' in window)) return;
+        this.lastSpokenText = text;
+
+        try {
+          window.speechSynthesis.cancel();
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          if (!this.selectedVoice) {
+            this.loadVoices();
+          }
+          if (this.selectedVoice) {
+            utterance.voice = this.selectedVoice;
+          }
+
+          utterance.rate = 0.82; // Clear, comfortable tempo for Primary 1
+          utterance.pitch = 1.18; // Friendly, engaging tone
+          utterance.volume = 1.0; // Maximum clarity for classroom speakers
+          utterance.lang = 'en-US';
+
+          // Prevent Chrome garbage-collection pause
+          window._activeSpeechUtterance = utterance;
+          utterance.onend = () => {
+            window._activeSpeechUtterance = null;
+          };
+
+          window.speechSynthesis.speak(utterance);
+        } catch (err) {
+          console.warn('Speech playback issue:', err);
+        }
+      }
+    };
+  </script>
+
+  <script>
+    /* Complete A-Z dataset with child-friendly associations, colors, and cute emojis */
+    const ALPHABET_DATA = [
+      { letter: 'A', word: 'Apple', icon: '🍎', color: '#EF4444', bgLight: '#FEE2E2', border: '#DC2626' },
+      { letter: 'B', word: 'Bear', icon: '🐻', color: '#F59E0B', bgLight: '#FEF3C7', border: '#D97706' },
+      { letter: 'C', word: 'Cat', icon: '🐱', color: '#10B981', bgLight: '#D1FAE5', border: '#059669' },
+      { letter: 'D', word: 'Duck', icon: '🦆', color: '#3B82F6', bgLight: '#DBEAFE', border: '#2563EB' },
+      { letter: 'E', word: 'Elephant', icon: '🐘', color: '#8B5CF6', bgLight: '#EDE9FE', border: '#7C3AED' },
+      { letter: 'F', word: 'Fish', icon: '🐟', color: '#EC4899', bgLight: '#FCE7F3', border: '#DB2777' },
+      { letter: 'G', word: 'Giraffe', icon: '🦒', color: '#F97316', bgLight: '#FFEDD5', border: '#EA580C' },
+      { letter: 'H', word: 'Horse', icon: '🐴', color: '#14B8A6', bgLight: '#CCFBF1', border: '#0D9488' },
+      { letter: 'I', word: 'Iguana', icon: '🦎', color: '#84CC16', bgLight: '#ECFCCB', border: '#65A30D' },
+      { letter: 'J', word: 'Jellyfish', icon: '🪼', color: '#06B6D4', bgLight: '#CFFAFE', border: '#0891B2' },
+      { letter: 'K', word: 'Kangaroo', icon: '🦘', color: '#EAB308', bgLight: '#FEF9C3', border: '#CA8A04' },
+      { letter: 'L', word: 'Lion', icon: '🦁', color: '#F59E0B', bgLight: '#FEF3C7', border: '#B45309' },
+      { letter: 'M', word: 'Monkey', icon: '🐵', color: '#A855F7', bgLight: '#F3E8FF', border: '#9333EA' },
+      { letter: 'N', word: 'Nest', icon: '🪺', color: '#64748B', bgLight: '#F1F5F9', border: '#475569' },
+      { letter: 'O', word: 'Owl', icon: '🦉', color: '#D97706', bgLight: '#FEF3C7', border: '#B45309' },
+      { letter: 'P', word: 'Penguin', icon: '🐧', color: '#0284C7', bgLight: '#E0F2FE', border: '#0369A1' },
+      { letter: 'Q', word: 'Queen bee', icon: '🐝', color: '#FACC15', bgLight: '#FEF08A', border: '#EAB308' },
+      { letter: 'R', word: 'Rabbit', icon: '🐰', color: '#F43F5E', bgLight: '#FFE4E6', border: '#E11D48' },
+      { letter: 'S', word: 'Sun', icon: '☀️', color: '#F59E0B', bgLight: '#FEF3C7', border: '#D97706' },
+      { letter: 'T', word: 'Tiger', icon: '🐯', color: '#EA580C', bgLight: '#FFEDD5', border: '#C2410C' },
+      { letter: 'U', word: 'Umbrella', icon: '☂️', color: '#6366F1', bgLight: '#E0E7FF', border: '#4F46E5' },
+      { letter: 'V', word: 'Violin', icon: '🎻', color: '#9333EA', bgLight: '#F3E8FF', border: '#7E22CE' },
+      { letter: 'W', word: 'Whale', icon: '🐳', color: '#0284C7', bgLight: '#E0F2FE', border: '#0369A1' },
+      { letter: 'X', word: 'Xylophone', icon: '🎵', color: '#10B981', bgLight: '#D1FAE5', border: '#059669' },
+      { letter: 'Y', word: 'Yak', icon: '🐂', color: '#B45309', bgLight: '#FEF3C7', border: '#78350F' },
+      { letter: 'Z', word: 'Zebra', icon: '🦓', color: '#334155', bgLight: '#F8FAFC', border: '#1E293B' }
+    ];
+
+    /* Game State for the classroom */
+    const gameState = {
+      placedLetters: new Set(),
+      currentNeedIndex: 0, // Targets A first, then B, C, etc.
+      draggedLetter: null,
+      isSinging: false
+    };
+  </script>
+
+  <script>
+    const wagonsContainer = document.getElementById('wagonsContainer');
+    const lettersCloud = document.getElementById('lettersCloud');
+    const collectedCountEl = document.getElementById('collectedCount');
+    const targetBadgeEl = document.getElementById('targetBadge');
+    const helperTipWordEl = document.getElementById('helperTipWord');
+    const promptInstructionEl = document.getElementById('promptInstruction');
+    const trainTrackViewport = document.getElementById('trainTrackViewport');
+    const victoryModal = document.getElementById('victoryModal');
+    const toastEl = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastText = document.getElementById('toastText');
+
+    /* Build the 26 Train Wagons on the track */
+    function renderTrainWagons() {
+      wagonsContainer.innerHTML = '';
+
+      ALPHABET_DATA.forEach((item, index) => {
+        const isPlaced = gameState.placedLetters.has(item.letter);
+        const isCurrentTarget = index === gameState.currentNeedIndex;
+
+        const wagon = document.createElement('div');
+        wagon.id = `wagon-${item.letter}`;
+        wagon.className = `wagon-slot shrink-0 flex flex-col items-center transition-all duration-300 relative`;
+        wagon.dataset.letter = item.letter;
+        wagon.dataset.index = index;
+
+        // Visual wagon container
+        wagon.innerHTML = `
+          <!-- Wagon box -->
+          <div class="wagon-box w-28 sm:w-32 h-36 sm:h-40 rounded-3xl p-2.5 flex flex-col justify-between items-center transition-all duration-300 cursor-pointer shadow-lg relative border-4 ${
+            isPlaced 
+              ? 'border-white text-white' 
+              : isCurrentTarget 
+                ? 'target-highlight border-yellow-400 bg-amber-50 text-slate-400' 
+                : 'border-dashed border-slate-600 bg-slate-800/80 text-slate-500'
+          }" 
+          style="${isPlaced ? `background: linear-gradient(135deg, ${item.color}, ${item.border});` : ''}">
+            
+            <!-- Car Number (1 to 26) -->
+            <div class="w-full flex justify-between items-center text-[11px] font-extrabold px-1">
+              <span class="bg-black/20 px-2 py-0.5 rounded-full text-white">#${index + 1}</span>
+              <span>${isPlaced ? item.icon : '❓'}</span>
+            </div>
+
+            <!-- Letter display area -->
+            <div class="letter-content flex flex-col items-center justify-center my-auto">
+              ${isPlaced ? `
+                <span class="font-title font-black text-4xl sm:text-5xl drop-shadow-md text-white animate-bounce" style="animation-duration: 1.5s;">${item.letter}</span>
+                <span class="text-xs font-bold text-yellow-200 mt-1 uppercase tracking-wider">${item.word}</span>
+              ` : `
+                <span class="font-title font-bold text-3xl sm:text-4xl opacity-30">${item.letter}</span>
+                <span class="text-[10px] font-semibold opacity-60 mt-1">Empty Car</span>
+              `}
+            </div>
+
+            <!-- Wheels -->
+            <div class="w-full flex justify-around items-center pt-1">
+              <div class="w-6 h-6 rounded-full bg-slate-900 border-2 border-amber-300 ${isPlaced ? 'wheel-spin' : ''}"></div>
+              <div class="w-6 h-6 rounded-full bg-slate-900 border-2 border-amber-300 ${isPlaced ? 'wheel-spin' : ''}"></div>
+            </div>
+          </div>
+
+          <!-- Coupler connecting to next wagon -->
+          <div class="w-4 h-2.5 bg-amber-600 self-end -mr-2 -mt-5 rounded-r shadow"></div>
+        `;
+
+        // Add Drop & Click listener on wagons
+        wagon.addEventListener('dragover', handleDragOver);
+        wagon.addEventListener('dragleave', handleDragLeave);
+        wagon.addEventListener('drop', (e) => handleDropOnWagon(e, item.letter));
+        wagon.addEventListener('click', () => handleWagonClick(item.letter, index));
+
+        wagonsContainer.appendChild(wagon);
+      });
+    }
+
+    /* Build the Letter Cloud / Floating Balloon reservoir */
+    function renderLetterCloud(order = 'random') {
+      lettersCloud.innerHTML = '';
+
+      // Get unplaced letters
+      let pool = ALPHABET_DATA.filter(item => !gameState.placedLetters.has(item.letter));
+
+      if (order === 'random') {
+        pool = [...pool].sort(() => Math.random() - 0.5);
+      } else if (order === 'alphabetical') {
+        pool = [...pool].sort((a, b) => a.letter.localeCompare(b.letter));
+      }
+
+      if (pool.length === 0) {
+        lettersCloud.innerHTML = `
+          <div class="col-span-full py-6 text-center text-emerald-600 font-title text-2xl font-bold flex items-center justify-center gap-3">
+            <span>🎉</span>
+            <span>All 26 letters are aboard the Alphabet Train! Fantastic class teamwork!</span>
+            <span>🎉</span>
+          </div>
+        `;
+        return;
+      }
+
+      pool.forEach(item => {
+        const isCurrentTarget = (item.letter === ALPHABET_DATA[gameState.currentNeedIndex]?.letter);
+
+        const tile = document.createElement('div');
+        tile.id = `letter-tile-${item.letter}`;
+        tile.draggable = true;
+        tile.className = `btn-3d wobble-hover cursor-grab active:cursor-grabbing w-12 h-14 sm:w-16 sm:h-18 md:w-20 md:h-22 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-1 font-title font-black select-none border-3 transition-transform ${
+          isCurrentTarget ? 'ring-4 ring-yellow-400 ring-offset-2 scale-105 animate-pulse' : ''
+        }`;
+        tile.style.backgroundColor = item.bgLight;
+        tile.style.borderColor = item.color;
+        tile.style.color = item.border;
+
+        tile.innerHTML = `
+          <span class="text-2xl sm:text-3xl md:text-4xl leading-none pointer-events-none">${item.letter}</span>
+          <span class="text-xs sm:text-sm mt-0.5 pointer-events-none">${item.icon}</span>
+        `;
+
+        // Touch & Mouse Drag Handlers
+        tile.addEventListener('dragstart', (e) => handleDragStart(e, item.letter));
+        tile.addEventListener('dragend', handleDragEnd);
+
+        // Click / Tap on letter automatically tries to place or guides student
+        tile.addEventListener('click', () => handleLetterTileTap(item));
+
+        lettersCloud.appendChild(tile);
+      });
+    }
+  </script>
+
+  <script>
+    /* Update cooperative status, clue cards, and class counters */
+    function updateClassStatus() {
+      collectedCountEl.textContent = gameState.placedLetters.size;
+
+      // Find the first unplaced letter in sequence A -> Z
+      let nextIdx = 0;
+      while (nextIdx < 26 && gameState.placedLetters.has(ALPHABET_DATA[nextIdx].letter)) {
+        nextIdx++;
+      }
+      gameState.currentNeedIndex = nextIdx;
+
+      if (nextIdx < 26) {
+        const target = ALPHABET_DATA[nextIdx];
+        targetBadgeEl.textContent = target.letter;
+        targetBadgeEl.style.backgroundColor = target.color;
+        helperTipWordEl.textContent = `${target.letter} is for ${target.word}! ${target.icon}`;
+        promptInstructionEl.innerHTML = `
+          Who can step up and help our team find the letter <strong class="text-amber-600 text-2xl">"${target.letter}"</strong>?
+        `;
+
+        // Auto-scroll train smoothly to current wagon to help young learners focus
+        setTimeout(() => {
+          const activeWagon = document.getElementById(`wagon-${target.letter}`);
+          if (activeWagon) {
+            activeWagon.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        }, 200);
+
+      } else {
+        // Victory!
+        targetBadgeEl.textContent = '🌟';
+        helperTipWordEl.textContent = 'Mission Complete! 🚂';
+        promptInstructionEl.innerHTML = `<strong class="text-emerald-600 text-2xl">Hurray! The Alphabet Train is ready to roll! 🎈</strong>`;
+        handleTeamVictory();
+      }
+
+      renderTrainWagons();
+    }
+
+    /* Tap or click on a floating letter */
+    function handleLetterTileTap(item) {
+      AudioController.init();
+
+      // Check if letter matches current sequential target OR place it into its correct wagon
+      placeLetterIntoWagon(item.letter);
+    }
+
+    /* Wagon click support (if student touches the wagon first, give helpful guidance) */
+    function handleWagonClick(wagonLetter, index) {
+      AudioController.init();
+      const target = ALPHABET_DATA[index];
+
+      if (gameState.placedLetters.has(wagonLetter)) {
+        // Already placed: celebrate and re-pronounce!
+        AudioController.playSuccessChime();
+        SpeechController.speak(`${target.letter}! ${target.word}! Super!`);
+        showToast(`Car #${index + 1}: ${target.letter} is for ${target.word}! ${target.icon}`, '🌟');
+      } else {
+        // Empty wagon: guide student to look for this letter
+        SpeechController.speak(`This car needs letter ${target.letter}! Who can find letter ${target.letter}?`);
+        showToast(`Looking for Letter ${target.letter}! Can the team spot it below?`, '🔎');
+        highlightLetterTile(target.letter);
+      }
+    }
+
+    /* Core placement logic: handles both drag-drop and tap */
+    function placeLetterIntoWagon(letter) {
+      const data = ALPHABET_DATA.find(d => d.letter === letter);
+      if (!data) return;
+
+      const targetLetter = ALPHABET_DATA[gameState.currentNeedIndex]?.letter;
+
+      // In this cooperative mode:
+      // If it's the current target letter, it smoothly locks into place with full team cheer!
+      // If they picked another letter ahead of time, we kindly encourage and can place it or nudge sequence.
+      if (letter === targetLetter || !gameState.placedLetters.has(letter)) {
+        // Successful cooperative action!
+        gameState.placedLetters.add(letter);
+
+        // Visual & Sound celebration
+        AudioController.playSuccessChime();
+        // Skip "Awesome teamwork" to directly pronounce the letter and word clearly
+        SpeechController.speak(`${data.letter}! ${data.word}!`);
+
+        // Confetti burst on placement
+        confetti({
+          particleCount: 35,
+          spread: 60,
+          origin: { y: 0.65 },
+          colors: [data.color, '#FBBF24', '#38BDF8', '#34D399']
+        });
+
+        showToast(`Team Helper placed "${data.letter}" for ${data.word}! ⭐`, data.icon);
+
+        updateClassStatus();
+        renderLetterCloud();
+      } else {
+        // Gentle guidance
+        AudioController.playGentleBounce();
+        showToast(`Letter ${letter} is already safe in the train! Look for ${targetLetter}!`, '🤝');
+      }
+    }
+
+    /* Highlight a specific letter tile in the cloud to assist struggling children */
+    function highlightLetterTile(letter) {
+      const tile = document.getElementById(`letter-tile-${letter}`);
+      if (tile) {
+        tile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        tile.classList.add('ring-8', 'ring-yellow-400', 'scale-125');
+        setTimeout(() => {
+          tile.classList.remove('ring-8', 'ring-yellow-400', 'scale-125');
+        }, 2200);
+      }
+    }
+  </script>
+
+  <script>
+    function handleDragStart(e, letter) {
+      AudioController.init();
+      gameState.draggedLetter = letter;
+      e.dataTransfer.setData('text/plain', letter);
+      e.target.style.opacity = '0.5';
+    }
+
+    function handleDragEnd(e) {
+      e.target.style.opacity = '1';
+      document.querySelectorAll('.wagon-box').forEach(box => {
+        box.classList.remove('bg-yellow-200/50', 'scale-105');
+      });
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      const box = e.currentTarget.querySelector('.wagon-box');
+      if (box) {
+        box.classList.add('bg-yellow-200/50', 'scale-105');
+      }
+    }
+
+    function handleDragLeave(e) {
+      const box = e.currentTarget.querySelector('.wagon-box');
+      if (box) {
+        box.classList.remove('bg-yellow-200/50', 'scale-105');
+      }
+    }
+
+    function handleDropOnWagon(e, targetWagonLetter) {
+      e.preventDefault();
+      const draggedLetter = e.dataTransfer.getData('text/plain') || gameState.draggedLetter;
+
+      if (!draggedLetter) return;
+
+      if (draggedLetter === targetWagonLetter) {
+        // Perfect match!
+        placeLetterIntoWagon(draggedLetter);
+      } else {
+        // Gentle non-punitive guidance
+        AudioController.playGentleBounce();
+        const correctForWagon = ALPHABET_DATA.find(d => d.letter === targetWagonLetter);
+        SpeechController.speak(`That is letter ${draggedLetter}! This car is waiting for letter ${targetWagonLetter}!`);
+        showToast(`Nice try! That car needs ${targetWagonLetter} (${correctForWagon.word} ${correctForWagon.icon})!`, '💡');
+      }
+    }
+  </script>
+
+  <script>
+    /* Trigger full team victory modal and celebratory confetti shower */
+    function handleTeamVictory() {
+      AudioController.playVictoryFanfare();
+      AudioController.playTrainWhistle();
+
+      // Multi-stage confetti celebration
+      const end = Date.now() + 3.5 * 1000;
+      const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+
+      (function frame() {
+        confetti({
+          particleCount: 4,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 4,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+
+      setTimeout(() => {
+        victoryModal.classList.remove('hidden');
+        SpeechController.speak("We did it class! The whole Alphabet Train is assembled! Fantastic cooperation!");
+      }, 700);
+    }
+
+    /* Class Clap & Cheer button for teacher and students to applaud together anytime */
+    document.getElementById('classCheerBtn').addEventListener('click', () => {
+      AudioController.init();
+      AudioController.playSuccessChime();
+
+      confetti({
+        particleCount: 45,
+        spread: 80,
+        origin: { y: 0.8 }
+      });
+
+      const cheers = [
+        "Give yourselves a big clap, class! 👏",
+        "Teamwork makes the dream work! ⭐",
+        "Look at our amazing train grow! 🚂",
+        "Super helpers in Primary 1! 🎉"
+      ];
+      const cheer = cheers[Math.floor(Math.random() * cheers.length)];
+      SpeechController.speak(cheer);
+      showToast(cheer, '👏');
+    });
+
+    /* Alphabet Song sing-along player using Speech synthesis & melodic tones */
+    const singSongBtn = document.getElementById('singSongBtn');
+    const singBtnText = document.getElementById('singBtnText');
+
+    singSongBtn.addEventListener('click', () => {
+      AudioController.init();
+
+      if (gameState.isSinging) {
+        window.speechSynthesis.cancel();
+        gameState.isSinging = false;
+        singBtnText.textContent = "Sing A-B-C";
+        return;
+      }
+
+      gameState.isSinging = true;
+      singBtnText.textContent = "Stop Song ⏹️";
+      showToast("🎶 Let's sing the Alphabet together, class! 🎵", "🎶");
+
+      const alphabetRhyme = "A, B, C, D, E, F, G... H, I, J, K, L, M, N, O, P... Q, R, S... T, U, V... W, X... Y and Z! Now I know my A B C's, next time won't you sing with me!";
+      
+      const utterance = new SpeechSynthesisUtterance(alphabetRhyme);
+      utterance.rate = 0.78;
+      utterance.pitch = 1.25;
+      utterance.onend = () => {
+        gameState.isSinging = false;
+        singBtnText.textContent = "Sing A-B-C";
+      };
+      window.speechSynthesis.speak(utterance);
+    });
+
+    /* Hear Letter audio button */
+    document.getElementById('sayLetterBtn').addEventListener('click', () => {
+      const current = ALPHABET_DATA[gameState.currentNeedIndex];
+      if (current) {
+        SpeechController.speak(`Letter ${current.letter}! ${current.word}! ${current.letter}!`);
+      }
+    });
+
+    /* Clue / Spotlight button: spotlights the tile and scrolls into view */
+    document.getElementById('hintSpotlightBtn').addEventListener('click', () => {
+      const current = ALPHABET_DATA[gameState.currentNeedIndex];
+      if (current) {
+        highlightLetterTile(current.letter);
+        SpeechController.speak(`Look closely for ${current.letter}! Like ${current.word}!`);
+        showToast(`Hint: Look for letter ${current.letter} ${current.icon}!`, '💡');
+      }
+    });
+
+    /* Track scrolling buttons for smartboards */
+    document.getElementById('scrollTrainLeft').addEventListener('click', () => {
+      trainTrackViewport.scrollBy({ left: -320, behavior: 'smooth' });
+    });
+
+    document.getElementById('scrollTrainRight').addEventListener('click', () => {
+      trainTrackViewport.scrollBy({ left: 320, behavior: 'smooth' });
+    });
+
+    /* Shuffle and Sort buttons */
+    document.getElementById('shuffleLettersBtn').addEventListener('click', () => {
+      renderLetterCloud('random');
+      AudioController.playTone(400, 0.1);
+    });
+
+    document.getElementById('orderLettersBtn').addEventListener('click', () => {
+      renderLetterCloud('alphabetical');
+      AudioController.playTone(550, 0.1);
+    });
+
+    /* Sound Toggle */
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    soundToggleBtn.addEventListener('click', () => {
+      AudioController.enabled = !AudioController.enabled;
+      SpeechController.enabled = AudioController.enabled;
+      soundToggleBtn.textContent = AudioController.enabled ? '🔊' : '🔇';
+      showToast(AudioController.enabled ? 'Sound turned ON' : 'Sound turned OFF', '🎧');
+    });
+
+    /* Reset game */
+    function resetMission() {
+      gameState.placedLetters.clear();
+      gameState.currentNeedIndex = 0;
+      victoryModal.classList.add('hidden');
+      updateClassStatus();
+      renderLetterCloud('random');
+      AudioController.playTrainWhistle();
+      SpeechController.speak("All aboard! Let's build the Alphabet Train together!");
+      showToast("All wagons are open! Let's cooperate and win together!", '🚂');
+    }
+
+    document.getElementById('resetGameBtn').addEventListener('click', resetMission);
+    document.getElementById('playAgainBtn').addEventListener('click', resetMission);
+    document.getElementById('closeVictoryModalBtn').addEventListener('click', () => {
+      victoryModal.classList.add('hidden');
+    });
+
+    /* Floating Toast Helper */
+    let toastTimeout;
+    function showToast(message, icon = '✨') {
+      toastIcon.textContent = icon;
+      toastText.textContent = message;
+      toastEl.classList.remove('translate-y-24', 'opacity-0');
+      toastEl.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.add('translate-y-24', 'opacity-0');
+        toastEl.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+  </script>
+
+  <script>
+    // Initialize the classroom game once the window is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTrainWagons();
+      renderLetterCloud('random');
+      updateClassStatus();
+      SpeechController.init();
+
+      // First click or touch unlocks both Web Audio and Web Speech
+      const unlockAudio = () => {
+        AudioController.init();
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.resume();
+        }
+        window.removeEventListener('click', unlockAudio);
+        window.removeEventListener('touchstart', unlockAudio);
+      };
+      window.addEventListener('click', unlockAudio);
+      window.addEventListener('touchstart', unlockAudio);
+    });
+  </script>
+</body>
+</html>
