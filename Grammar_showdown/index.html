@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammar Showdown: Verb vs Adjective</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for generative in-browser sound effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- Canvas Confetti for celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts: Fredoka & Quicksand -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 50% 10%, #eff6ff 0%, #fdf4ff 50%, #fefce8 100%);
+      min-height: 100vh;
+      user-select: none;
+    }
+    .font-fredoka {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .btn-3d {
+      transition: all 0.1s ease;
+      box-shadow: 0 6px 0 0 rgba(0,0,0,0.16);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 0 rgba(0,0,0,0.16);
+    }
+    @keyframes pulseCard {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    .animate-pulse-card {
+      animation: pulseCard 2.5s ease-in-out infinite;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle {
+      animation: wiggle 0.6s ease-in-out infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased p-3 sm:p-5 flex flex-col min-h-screen">
+
+  <!-- Header & Toolbar -->
+  <header class="max-w-4xl w-full mx-auto flex items-center justify-between gap-3 mb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-indigo-500 flex items-center justify-center text-2xl shadow-md text-white font-bold animate-wiggle">
+        ⚡
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-black font-fredoka text-slate-900 tracking-wide flex items-center gap-2">
+          Grammar Showdown
+          <span class="text-[10px] font-bold px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full border border-indigo-200 uppercase tracking-wider hidden sm:inline-block">Verb vs Adjective</span>
+        </h1>
+        <p class="text-xs text-slate-500 font-semibold">Speedrun sorting game for young grammar champions!</p>
+      </div>
+    </div>
+
+    <!-- Quick Action Controls -->
+    <div class="flex items-center gap-2">
+      <button onclick="openRuleGuide()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-700 font-fredoka font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition">
+        <span>📖</span> <span class="hidden sm:inline">Rules</span>
+      </button>
+      <button onclick="openHallOfFame()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 border-2 border-amber-500 text-amber-950 font-fredoka font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition">
+        <span>🏆</span> <span class="hidden sm:inline">Hall of Fame</span>
+      </button>
+      <button id="soundBtn" onclick="toggleSound()" class="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-200 text-slate-700 flex items-center justify-center transition shadow-sm" title="Toggle Sound">
+        🔊
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="max-w-4xl w-full mx-auto flex-1 flex flex-col items-center justify-center">
+
+    <!-- Screen 1: Start & Lobby Screen -->
+    <section id="lobbyScreen" class="w-full max-w-xl bg-white rounded-3xl p-5 sm:p-7 border-3 border-indigo-200 shadow-xl text-center">
+      <div class="inline-block p-3 rounded-2xl bg-indigo-50 border-2 border-indigo-100 text-3xl mb-3">
+        🥊
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-black font-fredoka text-slate-900 mb-1">Are You Ready to Battle?</h2>
+      <p class="text-xs sm:text-sm text-slate-500 font-semibold mb-5">Sort 10 words correctly into Verbs or Adjectives in record time!</p>
+
+      <div class="text-left mb-5">
+        <!-- 1. Name Input -->
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 font-fredoka">1. Enter Your Nickname:</label>
+        <div class="flex items-center gap-2 mb-4">
+          <input type="text" id="playerNameInput" maxlength="15" placeholder="e.g. Maya, Alex, Tiger..." value="Champion" class="w-full bg-slate-50 border-2 border-indigo-200 rounded-xl px-4 py-2 font-bold font-fredoka text-slate-800 text-sm sm:text-base focus:outline-none focus:border-indigo-500 transition">
+        </div>
+
+        <!-- 2. Challenge Level Selector -->
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 font-fredoka">2. Choose Challenge Level:</label>
+        <div class="grid grid-cols-3 gap-2 mb-4">
+          <button type="button" id="lvlBtnStandard" onclick="selectDifficulty('standard')" class="p-2 sm:p-2.5 rounded-xl border-2 border-indigo-500 bg-indigo-50 text-indigo-900 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02] shadow-sm">
+            <span class="block text-xs sm:text-sm">🌟 Standard</span>
+            <span class="text-[10px] text-slate-500 font-medium block">Everyday basic words</span>
+          </button>
+          <button type="button" id="lvlBtnIntermediate" onclick="selectDifficulty('intermediate')" class="p-2 sm:p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02]">
+            <span class="block text-xs sm:text-sm">⚡ Intermediate</span>
+            <span class="text-[10px] text-slate-500 font-medium block">2-syllable & lively words</span>
+          </button>
+          <button type="button" id="lvlBtnAdvanced" onclick="selectDifficulty('advanced')" class="p-2 sm:p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02]">
+            <span class="block text-xs sm:text-sm">🚀 Advanced</span>
+            <span class="text-[10px] text-slate-500 font-medium block">Tricky, abstract words</span>
+          </button>
+        </div>
+
+        <!-- 3. Avatar Picker -->
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 font-fredoka">3. Pick Your Lucky Avatar:</label>
+        <div class="flex items-center justify-between gap-1.5 p-2 bg-slate-50 rounded-2xl border border-slate-200 mb-5">
+          <button type="button" onclick="selectAvatar('🦁', this)" class="avatar-opt p-2 rounded-xl text-xl bg-white border-2 border-indigo-500 shadow-sm transition">🦁</button>
+          <button type="button" onclick="selectAvatar('🦊', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">🦊</button>
+          <button type="button" onclick="selectAvatar('🐼', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">🐼</button>
+          <button type="button" onclick="selectAvatar('🦄', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">🦄</button>
+          <button type="button" onclick="selectAvatar('⚡', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">⚡</button>
+          <button type="button" onclick="selectAvatar('🚀', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">🚀</button>
+          <button type="button" onclick="selectAvatar('⭐', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">⭐</button>
+          <button type="button" onclick="selectAvatar('🐯', this)" class="avatar-opt p-2 rounded-xl text-xl hover:bg-white border-2 border-transparent transition">🐯</button>
+        </div>
+      </div>
+
+      <!-- Quick Rule Pill -->
+      <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 mb-5 flex items-center justify-center gap-4 text-xs font-bold font-fredoka text-amber-900">
+        <span class="flex items-center gap-1">🏃 <strong>VERB</strong> = Action (doing)</span>
+        <span class="text-amber-300">|</span>
+        <span class="flex items-center gap-1">🎨 <strong>ADJECTIVE</strong> = Describing</span>
+      </div>
+
+      <button onclick="startGame()" class="btn-3d w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black font-fredoka text-lg sm:text-xl tracking-wider shadow-lg flex items-center justify-center gap-2">
+        <span>🎮 START SHOWDOWN!</span>
+      </button>
+    </section>
+
+    <!-- Screen 2: Active Gameplay Screen -->
+    <section id="gameScreen" class="w-full max-w-xl hidden flex flex-col gap-4">
+      <!-- Live Status HUD -->
+      <div class="bg-white rounded-2xl p-3 sm:p-4 border-2 border-slate-200 shadow-sm flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span id="playerAvatarBadge" class="text-2xl">🦁</span>
+          <div>
+            <div class="font-fredoka font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-1.5">
+              <span id="playerNameBadge">Champion</span>
+              <span id="gameDifficultyBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-fredoka">Standard 🌟</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider" id="roundProgressText">Word 1 of 10</div>
+          </div>
+        </div>
+
+        <!-- Stopwatch & Penalty Pill -->
+        <div class="flex items-center gap-2">
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block font-bold uppercase">Time</span>
+            <span id="gameTimer" class="font-fredoka font-black text-xl sm:text-2xl text-indigo-700 tracking-tight">0.0s</span>
+          </div>
+          <div id="penaltyBadge" class="hidden px-2 py-0.5 rounded-lg bg-rose-100 border border-rose-300 text-rose-700 font-fredoka font-bold text-xs animate-bounce">
+            +3s
+          </div>
+        </div>
+      </div>
+
+      <!-- Word Challenge Arena Card -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-indigo-200 shadow-xl flex flex-col items-center justify-center text-center relative overflow-hidden animate-pulse-card">
+        <!-- Floating Word Counter Pip -->
+        <div class="absolute top-3 right-4 px-3 py-1 rounded-full bg-slate-100 text-slate-600 font-bold font-fredoka text-xs">
+          <span id="currentCardIndex">1</span>/10
+        </div>
+
+        <!-- Target Illustration Emoji -->
+        <div id="wordEmoji" class="text-6xl sm:text-7xl mb-3 filter drop-shadow-md">
+          🏃
+        </div>
+
+        <!-- Target Word Display -->
+        <h2 id="targetWord" class="text-3xl sm:text-5xl font-black font-fredoka text-slate-900 tracking-wide mb-1 capitalize">
+          jump
+        </h2>
+
+        <!-- Phonics Pill Breakdown -->
+        <div id="phonicsPill" class="hidden px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-bold rounded-full mb-3 tracking-widest font-mono">
+          j · u · m · p
+        </div>
+
+        <!-- Assist Toolbar: Listen & Hint -->
+        <div class="flex items-center gap-2 mt-2">
+          <button id="listenBtn" onclick="speakCurrentWord()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold font-fredoka text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95">
+            <span id="listenIcon">🔊</span> <span id="listenText">Listen</span>
+          </button>
+          <button id="hintBtn" onclick="showHint()" class="px-3.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold font-fredoka text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95">
+            <span>💡</span> Hint
+          </button>
+        </div>
+
+        <!-- Sentence Hint Bubble (Hidden by default) -->
+        <div id="hintBubble" class="hidden mt-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs sm:text-sm font-semibold max-w-sm">
+          "The bunny can <strong class="underline" id="hintWordSpot">jump</strong> very high!"
+        </div>
+      </div>
+
+      <!-- Dual Decision Action Buttons -->
+      <div class="grid grid-cols-2 gap-3 sm:gap-4 mt-2">
+        <!-- Verb Button (Left) -->
+        <button onclick="handleAnswer('verb')" class="btn-3d p-4 sm:p-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black font-fredoka text-base sm:text-xl border-b-4 border-emerald-700 flex flex-col items-center justify-center gap-1">
+          <span class="text-2xl sm:text-3xl">🏃</span>
+          <span>VERB</span>
+          <span class="text-[10px] sm:text-xs font-medium opacity-90 block">Action / Doing Word</span>
+        </button>
+
+        <!-- Adjective Button (Right) -->
+        <button onclick="handleAnswer('adj')" class="btn-3d p-4 sm:p-5 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-black font-fredoka text-base sm:text-xl border-b-4 border-sky-700 flex flex-col items-center justify-center gap-1">
+          <span class="text-2xl sm:text-3xl">🎨</span>
+          <span>ADJECTIVE</span>
+          <span class="text-[10px] sm:text-xs font-medium opacity-90 block">Describing Word</span>
+        </button>
+      </div>
+
+      <div class="text-center text-[11px] text-slate-400 font-semibold mt-1">
+        Keyboard Shortcuts: Press <kbd class="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold">← Left Arrow</kbd> for Verb, <kbd class="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold">Right Arrow →</kbd> for Adjective
+      </div>
+    </section>
+
+    <!-- Screen 3: Victory & Results Screen -->
+    <section id="resultsScreen" class="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 border-3 border-amber-300 shadow-2xl text-center hidden flex flex-col items-center">
+      <div class="text-5xl sm:text-6xl mb-2 animate-bounce">🎉</div>
+      <h2 class="text-3xl font-black font-fredoka text-slate-900 mb-1">Showdown Complete!</h2>
+      <p class="text-xs sm:text-sm text-slate-500 font-semibold mb-6">Incredible effort! You classified all 10 words!</p>
+
+      <!-- Scoreboard Card -->
+      <div class="w-full grid grid-cols-2 gap-3 mb-6">
+        <div class="p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-100">
+          <span class="text-xs text-indigo-700 font-bold uppercase block">Final Time</span>
+          <span id="finalTotalTime" class="text-3xl font-black font-fredoka text-indigo-900">14.2s</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-amber-50 border-2 border-amber-100">
+          <span class="text-xs text-amber-700 font-bold uppercase block">Mistake Penalties</span>
+          <span id="finalPenaltySummary" class="text-3xl font-black font-fredoka text-amber-900">0 (+0s)</span>
+        </div>
+      </div>
+
+      <!-- Rank Announcement Banner -->
+      <div id="hallOfFameRankBanner" class="w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-300 text-amber-950 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2">
+        <span>👑</span> You ranked <span id="newLeaderboardRank" class="underline font-black">#2</span> on the Hall of Fame!
+      </div>
+
+      <!-- Bottom Action Buttons -->
+      <div class="w-full flex items-center gap-3">
+        <button onclick="restartGame()" class="btn-3d flex-1 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-fredoka text-base tracking-wide shadow-md">
+          🔄 Play Again
+        </button>
+        <button onclick="openHallOfFame()" class="btn-3d flex-1 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold font-fredoka text-base tracking-wide border-2 border-amber-500 shadow-md">
+          🏆 View Hall of Fame
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal 1: Hall of Fame Leaderboard Modal -->
+  <div id="hallOfFameModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border-4 border-amber-300 relative flex flex-col max-h-[90vh]">
+      <button onclick="closeHallOfFame()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 transition">
+        ✕
+      </button>
+
+      <div class="text-center pb-3 border-b border-slate-100">
+        <div class="text-3xl mb-1">🏆</div>
+        <h3 class="text-2xl font-black font-fredoka text-amber-950">Hall of Fame Leaderboard</h3>
+        <p class="text-xs text-slate-500 font-semibold">Fastest times to sort all 10 words correctly!</p>
+        <!-- Level Filter Tabs -->
+        <div class="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 mt-3">
+          <button onclick="filterHallOfFame('all')" id="hofTab-all" class="px-3 py-1 rounded-full text-xs font-bold font-fredoka bg-amber-500 text-white shadow-sm transition">All Levels</button>
+          <button onclick="filterHallOfFame('standard')" id="hofTab-standard" class="px-3 py-1 rounded-full text-xs font-bold font-fredoka bg-slate-100 text-slate-600 hover:bg-slate-200 transition">🌟 Standard</button>
+          <button onclick="filterHallOfFame('intermediate')" id="hofTab-intermediate" class="px-3 py-1 rounded-full text-xs font-bold font-fredoka bg-slate-100 text-slate-600 hover:bg-slate-200 transition">⚡ Intermediate</button>
+          <button onclick="filterHallOfFame('advanced')" id="hofTab-advanced" class="px-3 py-1 rounded-full text-xs font-bold font-fredoka bg-slate-100 text-slate-600 hover:bg-slate-200 transition">🚀 Advanced</button>
+        </div>
+      </div>
+
+      <!-- Leaderboard Scrollable Table -->
+      <div id="leaderboardList" class="flex-1 overflow-y-auto py-3 space-y-2.5">
+        <!-- Populated via JavaScript -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+        <span class="text-[11px] text-slate-400 font-semibold">Scores stored for your class session</span>
+        <button onclick="closeHallOfFame()" class="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold font-fredoka text-xs">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Rule Guide Modal -->
+  <div id="ruleGuideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-indigo-400 relative">
+      <button onclick="closeRuleGuide()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 transition">
+        ✕
+      </button>
+
+      <div class="text-3xl mb-1">💡</div>
+      <h3 class="text-2xl font-black font-fredoka text-slate-900 mb-2">The Golden Grammar Rules</h3>
+      
+      <div class="space-y-3 mb-5 text-left">
+        <div class="p-3 rounded-2xl bg-emerald-50 border-2 border-emerald-200">
+          <h4 class="font-fredoka font-bold text-emerald-900 text-base flex items-center gap-1.5">
+            <span>🏃</span> What is a VERB?
+          </h4>
+          <p class="text-xs text-emerald-800 mt-1 font-medium leading-relaxed">
+            A <strong>verb</strong> is an action word! It tells what someone or something <strong>does</strong>.
+          </p>
+          <div class="mt-2 text-xs text-emerald-900 font-bold">
+            Test: Can you <em>"do"</em> it right now? Yes! (jump, dance, investigate)
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-sky-50 border-2 border-sky-200">
+          <h4 class="font-fredoka font-bold text-sky-900 text-base flex items-center gap-1.5">
+            <span>🎨</span> What is an ADJECTIVE?
+          </h4>
+          <p class="text-xs text-sky-800 mt-1 font-medium leading-relaxed">
+            An <strong>adjective</strong> is a describing word! It tells <strong>what kind</strong>, <strong>color</strong>, <strong>size</strong>, or <strong>shape</strong> something is.
+          </p>
+          <div class="mt-2 text-xs text-sky-900 font-bold">
+            Test: Can you describe a puppy with it? Yes! (happy, sparkly, mysterious)
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeRuleGuide()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold font-fredoka text-sm">
+        Got it! Let's Play! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-semibold font-fredoka flex items-center gap-2 z-50 opacity-0 pointer-events-none transition-all duration-300">
+    <span id="toastIcon">✨</span>
+    <span id="toastMsg">Notification</span>
+  </div>
+
+  <footer class="max-w-4xl w-full mx-auto text-center py-3 text-xs text-slate-400 font-semibold">
+    Grammar Showdown • Verbs vs Adjectives • Designed with love for classrooms & young writers!
+  </footer>
+
+  <script>
+    // ==========================================
+    // 1. COMPREHENSIVE WORD LIBRARIES (3 LEVELS)
+    // ==========================================
+
+    // Standard Word Pool (Everyday actions & sensory descriptions)
+    const WORD_BANK_STANDARD = [
+      // Standard Verbs
+      { word: "jump", type: "verb", emoji: "🦘", phonics: "j · u · m · p", hint: "The kangaroo can jump very high." },
+      { word: "eat", type: "verb", emoji: "🍎", phonics: "ee · t", hint: "I like to eat a crunchy apple." },
+      { word: "dance", type: "verb", emoji: "💃", phonics: "d · a · n · s", hint: "They love to dance to cheerful music." },
+      { word: "sing", type: "verb", emoji: "🎤", phonics: "s · i · ng", hint: "Birds sing sweetly in the morning." },
+      { word: "run", type: "verb", emoji: "🏃", phonics: "r · u · n", hint: "The puppy will run fast across the grass." },
+      { word: "sleep", type: "verb", emoji: "😴", phonics: "s · l · ee · p", hint: "Bears sleep all winter in their cozy cave." },
+      { word: "read", type: "verb", emoji: "📖", phonics: "r · ee · d", hint: "We read exciting stories before bedtime." },
+      { word: "swim", type: "verb", emoji: "🏊", phonics: "s · w · i · m", hint: "Fish swim together in the clear blue sea." },
+      { word: "kick", type: "verb", emoji: "⚽", phonics: "k · i · k", hint: "Players kick the soccer ball into the goal." },
+      { word: "draw", type: "verb", emoji: "🎨", phonics: "d · r · aw", hint: "Artists draw pictures with bright pencils." },
+      { word: "climb", type: "verb", emoji: "🧗", phonics: "k · l · eye · m", hint: "Monkeys climb tall jungle trees." },
+      { word: "fly", type: "verb", emoji: "🦅", phonics: "f · l · eye", hint: "Eagles fly high above the fluffy clouds." },
+      { word: "catch", type: "verb", emoji: "🧤", phonics: "k · a · ch", hint: "Can you catch the yellow tennis ball?" },
+      { word: "push", type: "verb", emoji: "🛒", phonics: "p · oo · sh", hint: "Mom and I push the grocery cart." },
+      { word: "write", type: "verb", emoji: "✏️", phonics: "r · eye · t", hint: "Students write notes in their notebook." },
+
+      // Standard Adjectives
+      { word: "happy", type: "adj", emoji: "😊", phonics: "h · a · p · ee", hint: "The happy children smiled and cheered." },
+      { word: "shiny", type: "adj", emoji: "✨", phonics: "sh · eye · n · ee", hint: "She found a shiny golden coin." },
+      { word: "big", type: "adj", emoji: "🐘", phonics: "b · i · g", hint: "An elephant is a very big animal." },
+      { word: "fluffy", type: "adj", emoji: "☁️", phonics: "f · l · u · f · ee", hint: "The fluffy kitten purred in my lap." },
+      { word: "cold", type: "adj", emoji: "🍦", phonics: "k · oh · l · d", hint: "Eating cold ice cream on a sunny day." },
+      { word: "sleepy", type: "adj", emoji: "🥱", phonics: "s · l · ee · p · ee", hint: "The sleepy sloth took a long nap." },
+      { word: "loud", type: "adj", emoji: "📢", phonics: "l · ow · d", hint: "A loud drum echoed through the hall." },
+      { word: "cute", type: "adj", emoji: "🧸", phonics: "k · y · oo · t", hint: "Look at that cute little teddy bear." },
+      { word: "fast", type: "adj", emoji: "🏎️", phonics: "f · a · s · t", hint: "A fast race car zoomed past the crowd." },
+      { word: "tiny", type: "adj", emoji: "🐜", phonics: "t · eye · n · ee", hint: "A tiny ant carried a large breadcrumb." },
+      { word: "sweet", type: "adj", emoji: "🍭", phonics: "s · w · ee · t", hint: "The ripe strawberry tasted very sweet." },
+      { word: "bright", type: "adj", emoji: "☀️", phonics: "b · r · eye · t", hint: "The bright sun warmed up the beach." },
+      { word: "hot", type: "adj", emoji: "🔥", phonics: "h · o · t", hint: "Be careful around the hot campfire." },
+      { word: "hungry", type: "adj", emoji: "🍕", phonics: "h · u · ng · g · r · ee", hint: "A hungry bear looks for food." },
+      { word: "kind", type: "adj", emoji: "🌟", phonics: "k · eye · n · d", hint: "She is a kind and helpful friend." }
+    ];
+
+    // Intermediate Word Pool (2-syllable, lively actions & expressive descriptions)
+    const WORD_BANK_INTERMEDIATE = [
+      // Intermediate Verbs
+      { word: "bounce", type: "verb", emoji: "🏀", phonics: "b · ow · n · s", hint: "Children bounce the orange basketball." },
+      { word: "whistle", type: "verb", emoji: "🎶", phonics: "w · i · s · l", hint: "She can whistle a cheerful tune." },
+      { word: "explore", type: "verb", emoji: "🧭", phonics: "ex · plore", hint: "Explorers explore the hidden forest path." },
+      { word: "balance", type: "verb", emoji: "🤹", phonics: "bal · ans", hint: "Gymnasts balance carefully on one foot." },
+      { word: "chuckle", type: "verb", emoji: "🤭", phonics: "ch · u · k · l", hint: "We chuckle at the silly kitten video." },
+      { word: "gallop", type: "verb", emoji: "🐎", phonics: "gal · up", hint: "Wild horses gallop across the grassy meadow." },
+      { word: "scribble", type: "verb", emoji: "✏️", phonics: "sk · r · i · b · l", hint: "Toddlers scribble fun shapes with crayons." },
+      { word: "glide", type: "verb", emoji: "🪁", phonics: "g · l · eye · d", hint: "Eagles glide smoothly in the gentle wind." },
+      { word: "rescue", type: "verb", emoji: "🚒", phonics: "res · kyoo", hint: "Firefighters rescue the frightened puppy." },
+      { word: "shiver", type: "verb", emoji: "🥶", phonics: "sh · i · v · er", hint: "Penguins shiver in the icy blizzard." },
+      { word: "juggle", type: "verb", emoji: "🤹‍♂️", phonics: "j · u · g · l", hint: "Performers juggle three shiny balls." },
+      { word: "scatter", type: "verb", emoji: "🍂", phonics: "sk · a · t · er", hint: "Gusty winds scatter colorful autumn leaves." },
+      { word: "tumble", type: "verb", emoji: "🤸", phonics: "t · u · m · b · l", hint: "Acrobats tumble safely across the soft mat." },
+      { word: "borrow", type: "verb", emoji: "📚", phonics: "bor · oh", hint: "Students borrow exciting books from the library." },
+      { word: "tiptoe", type: "verb", emoji: "🤫", phonics: "t · i · p · t · oh", hint: "We tiptoe past the sleeping bear quietly." },
+
+      // Intermediate Adjectives
+      { word: "clumsy", type: "adj", emoji: "🦆", phonics: "k · l · u · m · z · ee", hint: "A clumsy duck waddled and tripped over." },
+      { word: "brave", type: "adj", emoji: "🦁", phonics: "b · r · ay · v", hint: "The brave knight guarded the kingdom." },
+      { word: "slimy", type: "adj", emoji: "🐌", phonics: "s · l · eye · m · ee", hint: "Snails leave a wet, slimy silver trail." },
+      { word: "noisy", type: "adj", emoji: "📢", phonics: "n · oy · z · ee", hint: "The noisy school bus arrived at the gate." },
+      { word: "gentle", type: "adj", emoji: "🐑", phonics: "j · e · n · t · l", hint: "Petting the gentle lamb felt very soft." },
+      { word: "sparkly", type: "adj", emoji: "✨", phonics: "sp · ar · k · l · ee", hint: "She wore sparkly shoes to the party." },
+      { word: "clever", type: "adj", emoji: "🦊", phonics: "k · l · ev · er", hint: "The clever fox solved the puzzle quickly." },
+      { word: "spooky", type: "adj", emoji: "👻", phonics: "sp · oo · k · ee", hint: "We heard spooky sounds in the old house." },
+      { word: "freezing", type: "adj", emoji: "🧊", phonics: "f · r · ee · z · i · ng", hint: "The freezing winter wind nipped our noses." },
+      { word: "gloomy", type: "adj", emoji: "🌧️", phonics: "g · l · oo · m · ee", hint: "Dark clouds made it a gloomy afternoon." },
+      { word: "greedy", type: "adj", emoji: "🐿️", phonics: "g · r · ee · d · ee", hint: "The greedy squirrel hid twenty acorns." },
+      { word: "friendly", type: "adj", emoji: "🐶", phonics: "f · r · e · n · d · l · ee", hint: "A friendly golden retriever wagged its tail." },
+      { word: "messy", type: "adj", emoji: "🎨", phonics: "m · e · s · ee", hint: "Finger painting created a messy desk." },
+      { word: "cozy", type: "adj", emoji: "☕", phonics: "k · oh · z · ee", hint: "Wrapped up in a warm and cozy blanket." },
+      { word: "curious", type: "adj", emoji: "🐱", phonics: "kyoo · r · ee · us", hint: "The curious kitten peeked inside the box." }
+    ];
+
+    // Advanced Word Pool (Multi-syllable, abstract actions, nuanced adjectives)
+    const WORD_BANK_ADVANCED = [
+      // Advanced Verbs
+      { word: "investigate", type: "verb", emoji: "🕵️", phonics: "in · ves · ti · gate", hint: "Detectives investigate the mysterious clue." },
+      { word: "ponder", type: "verb", emoji: "🤔", phonics: "pon · der", hint: "Philosophers ponder deep and tricky questions." },
+      { word: "hesitate", type: "verb", emoji: "⏳", phonics: "hez · i · tate", hint: "Do not hesitate to ask for assistance." },
+      { word: "accelerate", type: "verb", emoji: "🚀", phonics: "ak · sel · er · ate", hint: "Rockets accelerate as they zoom into outer space." },
+      { word: "wander", type: "verb", emoji: "🌲", phonics: "wahn · der", hint: "Hikers wander through the peaceful forest." },
+      { word: "vanish", type: "verb", emoji: "💨", phonics: "van · ish", hint: "Magicians make the shiny coin vanish instantly." },
+      { word: "celebrate", type: "verb", emoji: "🥳", phonics: "sel · e · brate", hint: "We celebrate winning the grand championship." },
+      { word: "discover", type: "verb", emoji: "🗺️", phonics: "dis · kuv · er", hint: "Scientists discover ancient fossils underground." },
+      { word: "persuade", type: "verb", emoji: "🗣️", phonics: "per · swayd", hint: "She will persuade her team to try a new strategy." },
+      { word: "protect", type: "verb", emoji: "🛡️", phonics: "pro · tekt", hint: "Guardians protect the ancient castle walls." },
+      { word: "accomplish", type: "verb", emoji: "🏆", phonics: "uh · kom · plish", hint: "Together we can accomplish remarkable goals." },
+      { word: "illuminate", type: "verb", emoji: "💡", phonics: "ih · loo · mi · nate", hint: "Lanterns illuminate the dark stone pathway." },
+      { word: "collaborate", type: "verb", emoji: "🤝", phonics: "kuh · lab · uh · rayt", hint: "Students collaborate on a group science project." },
+      { word: "navigate", type: "verb", emoji: "🧭", phonics: "nav · i · gayt", hint: "Sailors navigate across the stormy ocean." },
+      { word: "demolish", type: "verb", emoji: "🏗️", phonics: "dih · mol · ish", hint: "Heavy bulldozers demolish the crumbling wall." },
+
+      // Advanced Adjectives
+      { word: "mysterious", type: "adj", emoji: "🔮", phonics: "mis · teer · ee · us", hint: "We explored a mysterious hidden cave." },
+      { word: "furious", type: "adj", emoji: "😡", phonics: "fyoo · ree · us", hint: "The furious storm blew with howling winds." },
+      { word: "delicate", type: "adj", emoji: "🦋", phonics: "del · i · kit", hint: "A delicate butterfly wing is fragile." },
+      { word: "peculiar", type: "adj", emoji: "🧐", phonics: "pih · kyoo · lyur", hint: "He noticed a peculiar glow in the night sky." },
+      { word: "magnificent", type: "adj", emoji: "🏰", phonics: "mag · nif · uh · sent", hint: "The palace has a magnificent crystal ceiling." },
+      { word: "exhausted", type: "adj", emoji: "😫", phonics: "eg · zaws · tid", hint: "After the marathon, the runner was exhausted." },
+      { word: "dazzling", type: "adj", emoji: "💎", phonics: "daz · ling", hint: "The diamond ring gave off a dazzling sparkle." },
+      { word: "cautious", type: "adj", emoji: "👀", phonics: "kaw · shus", hint: "The cautious deer listened for any quiet sounds." },
+      { word: "ancient", type: "adj", emoji: "🏛️", phonics: "ayn · shunt", hint: "Archaeologists uncovered an ancient stone vase." },
+      { word: "courageous", type: "adj", emoji: "🦸", phonics: "kuh · ray · jus", hint: "A courageous firefighter ran into the building." },
+      { word: "spectacular", type: "adj", emoji: "🎆", phonics: "spek · tak · yuh · ler", hint: "The fireworks produced a spectacular light show." },
+      { word: "fragile", type: "adj", emoji: "🥚", phonics: "fraj · uhl", hint: "Bird eggs are fragile and need gentle care." },
+      { word: "enormous", type: "adj", emoji: "🐳", phonics: "ih · nor · mus", hint: "An enormous blue whale swam past the boat." },
+      { word: "generous", type: "adj", emoji: "🎁", phonics: "jen · er · us", hint: "The generous baker gave extra warm muffins." },
+      { word: "radiant", type: "adj", emoji: "🌟", phonics: "ray · dee · uhnt", hint: "The bride showed a radiant and joyful smile." }
+    ];
+
+    let hallOfFame = [
+      { name: "SpeedySam", avatar: "⚡", level: "standard", time: 14.8, date: "Today" },
+      { name: "SunnySophie", avatar: "🦄", level: "intermediate", time: 15.6, date: "Today" },
+      { name: "BrainyBella", avatar: "🚀", level: "advanced", time: 16.4, date: "Today" },
+      { name: "CleverClara", avatar: "⭐", level: "standard", time: 17.2, date: "Today" },
+      { name: "ExplorerEthan", avatar: "⚡", level: "intermediate", time: 17.9, date: "Today" },
+      { name: "LogicLucas", avatar: "🦊", level: "advanced", time: 18.9, date: "Today" },
+      { name: "LeoLeader", avatar: "🦁", level: "standard", time: 19.5, date: "Yesterday" },
+      { name: "BouncingBen", avatar: "🦊", level: "intermediate", time: 20.4, date: "Yesterday" },
+      { name: "PandaPower", avatar: "🐼", level: "standard", time: 22.1, date: "Yesterday" },
+      { name: "WordWizard", avatar: "🦄", level: "advanced", time: 23.5, date: "Yesterday" },
+      { name: "CuriousFox", avatar: "🦊", level: "standard", time: 26.4, date: "2 days ago" }
+    ];
+
+    // Core Game State Variables
+    let currentDifficulty = "standard"; // "standard", "intermediate", "advanced"
+    let currentHofFilter = "all";
+    let selectedAvatar = "🦁";
+    let currentPlayerName = "Champion";
+    let roundQuestions = [];
+    let currentIndex = 0;
+    let mistakeCount = 0;
+    let timerStartTime = 0;
+    let timerInterval = null;
+    let totalElapsedTime = 0;
+    let isProcessingAnswer = false;
+    let soundEnabled = true;
+    let synth = null;
+    let availableVoices = [];
+    window.__currentUtterance = null; // Guard against Chromium garbage collection bug
+
+    function initSynth() {
+      if (!synth && typeof Tone !== 'undefined') {
+        try {
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.005, decay: 0.1, sustain: 0.05, release: 0.1 }
+          }).toDestination();
+          synth.volume.value = -6;
+        } catch (e) {
+          console.debug("Audio init error:", e);
+        }
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        if (typeof Tone !== 'undefined' && Tone.context && Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        initSynth();
+        if (!synth) return;
+        const now = Tone.now();
+        if (type === 'correct') {
+          synth.triggerAttackRelease(["E5", "G5", "C6"], "16n", now);
+        } else if (type === 'wrong') {
+          synth.triggerAttackRelease(["Eb3", "C3"], "8n", now);
+        } else if (type === 'click') {
+          synth.triggerAttackRelease("C5", "32n", now);
+        } else if (type === 'victory') {
+          synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n", now);
+        }
+      } catch (e) {
+        // Fallback safely
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundBtn');
+      if (btn) {
+        btn.textContent = soundEnabled ? '🔊' : '🔇';
+      }
+      showToast(soundEnabled ? 'Sound Effects ON 🔊' : 'Sound Muted 🔇');
+    }
+
+    function loadAvailableVoices() {
+      if ('speechSynthesis' in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+      }
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = loadAvailableVoices;
+      loadAvailableVoices();
+    }
+
+    function selectDifficulty(lvl) {
+      currentDifficulty = lvl;
+      const stdBtn = document.getElementById('lvlBtnStandard');
+      const medBtn = document.getElementById('lvlBtnIntermediate');
+      const advBtn = document.getElementById('lvlBtnAdvanced');
+
+      [stdBtn, medBtn, advBtn].forEach(b => {
+        if (b) b.className = 'p-2 sm:p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02]';
+      });
+
+      if (lvl === 'standard' && stdBtn) {
+        stdBtn.className = 'p-2 sm:p-2.5 rounded-xl border-2 border-indigo-500 bg-indigo-50 text-indigo-900 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02] shadow-sm';
+      } else if (lvl === 'intermediate' && medBtn) {
+        medBtn.className = 'p-2 sm:p-2.5 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-900 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02] shadow-sm';
+      } else if (lvl === 'advanced' && advBtn) {
+        advBtn.className = 'p-2 sm:p-2.5 rounded-xl border-2 border-purple-500 bg-purple-50 text-purple-900 font-bold font-fredoka text-xs text-left transition hover:scale-[1.02] shadow-sm';
+      }
+
+      playSound('click');
+      const labels = {
+        standard: 'Standard Level Selected 🌟',
+        intermediate: 'Intermediate Level Selected ⚡',
+        advanced: 'Advanced Level Selected 🚀'
+      };
+      showToast(labels[lvl] || 'Level Selected');
+    }
+
+    function selectAvatar(emoji, buttonEl) {
+      selectedAvatar = emoji;
+      document.querySelectorAll('.avatar-opt').forEach(btn => {
+        btn.classList.remove('bg-white', 'border-indigo-500', 'shadow-sm');
+        btn.classList.add('border-transparent');
+      });
+      if (buttonEl) {
+        buttonEl.classList.remove('border-transparent');
+        buttonEl.classList.add('bg-white', 'border-indigo-500', 'shadow-sm');
+      }
+      playSound('click');
+    }
+
+    function startGame() {
+      const nameInput = document.getElementById('playerNameInput');
+      currentPlayerName = (nameInput?.value.trim()) || "Champion";
+
+      document.getElementById('playerNameBadge').textContent = currentPlayerName;
+      document.getElementById('playerAvatarBadge').textContent = selectedAvatar;
+
+      // Update Difficulty Badge on Game Header
+      const diffBadge = document.getElementById('gameDifficultyBadge');
+      if (diffBadge) {
+        if (currentDifficulty === 'standard') {
+          diffBadge.textContent = 'Standard 🌟';
+          diffBadge.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-fredoka';
+        } else if (currentDifficulty === 'intermediate') {
+          diffBadge.textContent = 'Intermediate ⚡';
+          diffBadge.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-fredoka border border-amber-300';
+        } else {
+          diffBadge.textContent = 'Advanced 🚀';
+          diffBadge.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 font-fredoka border border-purple-300';
+        }
+      }
+
+      // Select active word bank based on selected difficulty
+      let activeBank = WORD_BANK_STANDARD;
+      if (currentDifficulty === 'intermediate') {
+        activeBank = WORD_BANK_INTERMEDIATE;
+      } else if (currentDifficulty === 'advanced') {
+        activeBank = WORD_BANK_ADVANCED;
+      }
+
+      // Pick 10 balanced questions (5 verbs + 5 adjectives, shuffled)
+      const verbs = activeBank.filter(w => w.type === 'verb').sort(() => 0.5 - Math.random()).slice(0, 5);
+      const adjs = activeBank.filter(w => w.type === 'adj').sort(() => 0.5 - Math.random()).slice(0, 5);
+      roundQuestions = [...verbs, ...adjs].sort(() => 0.5 - Math.random());
+
+      currentIndex = 0;
+      mistakeCount = 0;
+      isProcessingAnswer = false;
+
+      // Switch Screens
+      document.getElementById('lobbyScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('gameScreen').classList.remove('hidden');
+
+      playSound('click');
+      startStopwatch();
+      renderCurrentWordCard();
+    }
+
+    function startStopwatch() {
+      clearInterval(timerInterval);
+      timerStartTime = Date.now();
+      const timerDisplay = document.getElementById('gameTimer');
+      timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - timerStartTime) / 1000;
+        if (timerDisplay) {
+          timerDisplay.textContent = elapsed.toFixed(1) + 's';
+        }
+      }, 100);
+    }
+
+    function renderCurrentWordCard() {
+      if (currentIndex >= roundQuestions.length) {
+        finishGame();
+        return;
+      }
+
+      const q = roundQuestions[currentIndex];
+      document.getElementById('targetWord').textContent = q.word;
+      document.getElementById('wordEmoji').textContent = q.emoji;
+      document.getElementById('currentCardIndex').textContent = (currentIndex + 1);
+      document.getElementById('roundProgressText').textContent = `Word ${currentIndex + 1} of ${roundQuestions.length}`;
+
+      // Reset Hint & Phonics
+      const hintBubble = document.getElementById('hintBubble');
+      hintBubble.classList.add('hidden');
+      const phonicsPill = document.getElementById('phonicsPill');
+      phonicsPill.classList.add('hidden');
+      phonicsPill.textContent = q.phonics;
+
+      // Prepare sentence hint text
+      document.getElementById('hintWordSpot').textContent = q.word;
+      hintBubble.innerHTML = `“${q.hint}”`;
+
+      // Auto-pronounce for accessibility
+      setTimeout(() => {
+        speakCurrentWord(true);
+      }, 250);
+    }
+
+    function speakCurrentWord(silentToast = false) {
+      if (!('speechSynthesis' in window)) {
+        if (!silentToast) showToast("Speech not supported on this device 📢");
+        return;
+      }
+
+      const q = roundQuestions[currentIndex];
+      if (!q) return;
+
+      const listenBtn = document.getElementById('listenBtn');
+      const listenIcon = document.getElementById('listenIcon');
+      const listenText = document.getElementById('listenText');
+      const phonicsPill = document.getElementById('phonicsPill');
+
+      phonicsPill.classList.remove('hidden');
+
+      if (listenBtn) {
+        listenBtn.classList.add('bg-indigo-100', 'text-indigo-800');
+        if (listenIcon) listenIcon.textContent = '🔈';
+        if (listenText) listenText.textContent = 'Speaking...';
+      }
+
+      window.speechSynthesis.cancel();
+
+      setTimeout(() => {
+        try {
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+
+          const utterance = new SpeechSynthesisUtterance(q.word);
+          utterance.rate = 0.85;
+          utterance.pitch = 1.1;
+          utterance.lang = 'en-US';
+
+          if (availableVoices.length === 0) {
+            loadAvailableVoices();
+          }
+
+          const naturalVoice = availableVoices.find(v => (v.lang.startsWith('en') || v.lang === 'en_US') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Karen')));
+          if (naturalVoice) {
+            utterance.voice = naturalVoice;
+          }
+
+          window.__currentUtterance = utterance;
+
+          utterance.onend = () => {
+            if (listenBtn) {
+              listenBtn.classList.remove('bg-indigo-100', 'text-indigo-800');
+              if (listenIcon) listenIcon.textContent = '🔊';
+              if (listenText) listenText.textContent = 'Listen';
+            }
+          };
+
+          utterance.onerror = () => {
+            if (listenBtn) {
+              listenBtn.classList.remove('bg-indigo-100', 'text-indigo-800');
+              if (listenIcon) listenIcon.textContent = '🔊';
+              if (listenText) listenText.textContent = 'Listen';
+            }
+          };
+
+          window.speechSynthesis.speak(utterance);
+        } catch (err) {
+          console.debug("Speech synthesis error:", err);
+        }
+      }, 35);
+    }
+
+    function showHint() {
+      const hintBubble = document.getElementById('hintBubble');
+      if (hintBubble) {
+        hintBubble.classList.toggle('hidden');
+      }
+      playSound('click');
+    }
+
+    function handleAnswer(choice) {
+      if (isProcessingAnswer) return;
+      isProcessingAnswer = true;
+
+      const q = roundQuestions[currentIndex];
+      const isCorrect = (choice === q.type);
+
+      if (isCorrect) {
+        playSound('correct');
+        showToast(`Correct! "${q.word}" is a ${q.type.toUpperCase()}! ✨`);
+        currentIndex++;
+        setTimeout(() => {
+          isProcessingAnswer = false;
+          renderCurrentWordCard();
+        }, 300);
+      } else {
+        mistakeCount++;
+        playSound('wrong');
+
+        // Apply +3s penalty
+        const penaltyBadge = document.getElementById('penaltyBadge');
+        if (penaltyBadge) {
+          penaltyBadge.classList.remove('hidden');
+          setTimeout(() => penaltyBadge.classList.add('hidden'), 1200);
+        }
+
+        const explanation = q.type === 'verb'
+          ? `Oops! "${q.word}" is an ACTION word (Verb) - something you DO!`
+          : `Oops! "${q.word}" is a DESCRIBING word (Adjective) - it describes how something is!`;
+
+        showToast(explanation);
+
+        // Shake card visual cue
+        const card = document.getElementById('targetWord');
+        if (card) {
+          card.classList.add('text-rose-500');
+          setTimeout(() => card.classList.remove('text-rose-500'), 500);
+        }
+
+        setTimeout(() => {
+          isProcessingAnswer = false;
+        }, 600);
+      }
+    }
+
+    function finishGame() {
+      clearInterval(timerInterval);
+      const rawElapsed = (Date.now() - timerStartTime) / 1000;
+      const penaltySeconds = mistakeCount * 3.0;
+      totalElapsedTime = rawElapsed + penaltySeconds;
+
+      document.getElementById('finalTotalTime').textContent = totalElapsedTime.toFixed(1) + 's';
+      document.getElementById('finalPenaltySummary').textContent = `${mistakeCount} (+${penaltySeconds.toFixed(0)}s)`;
+
+      // Save to in-memory leaderboard
+      const newEntry = {
+        name: currentPlayerName,
+        avatar: selectedAvatar,
+        level: currentDifficulty,
+        time: parseFloat(totalElapsedTime.toFixed(1)),
+        date: "Just now"
+      };
+
+      hallOfFame.push(newEntry);
+      hallOfFame.sort((a, b) => a.time - b.time);
+
+      // Rank calculation
+      const sameLevelList = hallOfFame.filter(e => e.level === currentDifficulty);
+      const rankIndex = sameLevelList.indexOf(newEntry) + 1;
+      const rankBanner = document.getElementById('hallOfFameRankBanner');
+
+      const lvlName = currentDifficulty === 'advanced' 
+        ? 'Advanced 🚀' 
+        : (currentDifficulty === 'intermediate' ? 'Intermediate ⚡' : 'Standard 🌟');
+
+      if (rankIndex === 1) {
+        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2 animate-bounce';
+        rankBanner.innerHTML = `👑 AMAZING! You took the <span class="underline font-black">#1 SPOT</span> on the ${lvlName} Hall of Fame!`;
+      } else {
+        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2';
+        rankBanner.innerHTML = `<span>👑</span> You ranked <span id="newLeaderboardRank" class="underline font-black">#${rankIndex}</span> on the ${lvlName} Hall of Fame!`;
+      }
+
+      document.getElementById('gameScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+
+      playSound('victory');
+      triggerConfetti();
+    }
+
+    function restartGame() {
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('lobbyScreen').classList.remove('hidden');
+      playSound('click');
+    }
+
+    function filterHallOfFame(filter) {
+      currentHofFilter = filter;
+      ['all', 'standard', 'intermediate', 'advanced'].forEach(tab => {
+        const btn = document.getElementById(`hofTab-${tab}`);
+        if (!btn) return;
+        if (tab === filter) {
+          btn.className = 'px-3 py-1 rounded-full text-xs font-bold font-fredoka bg-amber-500 text-white shadow-sm transition';
+        } else {
+          btn.className = 'px-3 py-1 rounded-full text-xs font-bold font-fredoka bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
+        }
+      });
+      renderHallOfFameEntries();
+    }
+
+    function renderHallOfFameEntries() {
+      const container = document.getElementById('leaderboardList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let list = hallOfFame;
+      if (currentHofFilter !== 'all') {
+        list = hallOfFame.filter(e => e.level === currentHofFilter);
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-400 font-semibold text-xs">No scores yet for this level. Be the first champion!</div>`;
+        return;
+      }
+
+      list.slice(0, 15).forEach((entry, idx) => {
+        const rank = idx + 1;
+        let rankBadge = `<span class="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center">${rank}</span>`;
+        let rowBg = 'bg-slate-50 border-slate-200';
+
+        if (rank === 1) {
+          rankBadge = `<span class="text-xl">🥇</span>`;
+          rowBg = 'bg-amber-100/70 border-amber-300 font-bold';
+        } else if (rank === 2) {
+          rankBadge = `<span class="text-xl">🥈</span>`;
+          rowBg = 'bg-slate-100 border-slate-300';
+        } else if (rank === 3) {
+          rankBadge = `<span class="text-xl">🥉</span>`;
+          rowBg = 'bg-amber-50 border-amber-200';
+        }
+
+        let lvlTag = `<span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 ml-1">Standard 🌟</span>`;
+        if (entry.level === 'intermediate') {
+          lvlTag = `<span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200 ml-1">Intermediate ⚡</span>`;
+        } else if (entry.level === 'advanced') {
+          lvlTag = `<span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 ml-1">Advanced 🚀</span>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = `p-2.5 sm:p-3 rounded-2xl border-2 flex items-center justify-between ${rowBg}`;
+        card.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            ${rankBadge}
+            <span class="text-xl sm:text-2xl">${entry.avatar}</span>
+            <div>
+              <div class="font-fredoka font-bold text-slate-900 text-xs sm:text-sm flex items-center">
+                ${entry.name} ${lvlTag}
+              </div>
+              <div class="text-[10px] text-slate-400 font-semibold">${entry.date}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-sm sm:text-base font-black font-fredoka text-indigo-700">${entry.time.toFixed(1)}s</span>
+            <span class="text-[9px] text-slate-400 block uppercase font-bold">Total Time</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openHallOfFame() {
+      renderHallOfFameEntries();
+      document.getElementById('hallOfFameModal').classList.remove('hidden');
+      playSound('click');
+    }
+
+    function closeHallOfFame() {
+      document.getElementById('hallOfFameModal').classList.add('hidden');
+      playSound('click');
+    }
+
+    function openRuleGuide() {
+      document.getElementById('ruleGuideModal').classList.remove('hidden');
+      playSound('click');
+    }
+
+    function closeRuleGuide() {
+      document.getElementById('ruleGuideModal').classList.add('hidden');
+      playSound('click');
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 80,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toastMsg');
+      if (!toast || !msg) return;
+
+      msg.textContent = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2200);
+    }
+
+    // Explicitly bind all event functions to window to guarantee inline onclick availability
+    window.selectDifficulty = selectDifficulty;
+    window.selectAvatar = selectAvatar;
+    window.startGame = startGame;
+    window.handleAnswer = handleAnswer;
+    window.speakCurrentWord = speakCurrentWord;
+    window.showHint = showHint;
+    window.openHallOfFame = openHallOfFame;
+    window.closeHallOfFame = closeHallOfFame;
+    window.filterHallOfFame = filterHallOfFame;
+    window.openRuleGuide = openRuleGuide;
+    window.closeRuleGuide = closeRuleGuide;
+    window.restartGame = restartGame;
+    window.toggleSound = toggleSound;
+
+    // Keyboard navigation bindings
+    window.addEventListener('keydown', (e) => {
+      const gameScreen = document.getElementById('gameScreen');
+      if (!gameScreen || gameScreen.classList.contains('hidden')) return;
+
+      if (e.key === 'ArrowLeft' || e.key === 'v' || e.key === 'V') {
+        handleAnswer('verb');
+      } else if (e.key === 'ArrowRight' || e.key === 'a' || e.key === 'A') {
+        handleAnswer('adj');
+      } else if (e.key === ' ' || e.key === 'h' || e.key === 'H') {
+        showHint();
+      } else if (e.key === 's' || e.key === 'S' || e.key === 'l' || e.key === 'L') {
+        speakCurrentWord();
+      }
+    });
+
+    window.onload = function() {
+      loadAvailableVoices();
+      filterHallOfFame('all');
+    };
+  </script>
+</body>
+</html>

@@ -45,6 +45,23 @@
       font-size: clamp(0.95rem, 2.5vw, 1.1rem);
       color: #475569;
     }
+    .category {
+      margin-bottom: clamp(1.75rem, 5vw, 2.75rem);
+    }
+    .category:last-of-type {
+      margin-bottom: 0;
+    }
+    .category-title {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+      letter-spacing: 0.03em;
+      color: #0369a1;
+      margin: 0 0 1rem;
+      padding-bottom: 0.45rem;
+      border-bottom: 3px solid rgba(14, 165, 233, 0.35);
+      text-shadow: 1px 1px 0 #fff;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -92,7 +109,7 @@
       object-position: center;
       display: block;
     }
-    .game-link h2 {
+    .game-link h3 {
       font-family: 'Luckiest Guy', cursive;
       font-weight: 400;
       font-size: 1.35rem;
@@ -120,28 +137,53 @@
       <h1>Teaching Games</h1>
       <p class="sub">Pick a game — each opens its own page in the folder below.</p>
     </header>
-    <nav class="grid" aria-label="Games">
-      <a class="game-link" href="./balloon-time/index.html">
-        <span class="thumb-wrap">
-          <img class="game-thumb" src="./balloon-time/index.jpg" alt="" width="1168" height="632" decoding="async" loading="lazy">
-        </span>
-        <h2>Time Garden</h2>
-        <p>Pop balloons to match clocks and phrases.</p>
-      </a>
-      <a class="game-link" href="./time-select/index.html">
-        <span class="thumb-wrap">
-          <img class="game-thumb" src="./time-select/index.jpg" alt="" width="1424" height="960" decoding="async" loading="lazy">
-        </span>
-        <h2>Time Challenge</h2>
-        <p>Read English time, then tap the matching clock.</p>
-      </a>
-      <a class="game-link" href="./map-direction/index.html">
-        <span class="thumb-wrap">
-          <img class="game-thumb" src="./map-direction/index.jpg" alt="" width="2338" height="1378" decoding="async" loading="lazy">
-        </span>
-        <h2>HK Direction Master</h2>
-        <p>Follow directions on the map to reach each landmark.</p>
-      </a>
+    <nav aria-label="Games by year level">
+      <section class="category" aria-labelledby="cat-p4">
+        <h2 class="category-title" id="cat-p4">Primary 4</h2>
+        <div class="grid">
+          <a class="game-link" href="./balloon-time/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./balloon-time/index.jpg" alt="" width="1168" height="632" decoding="async" loading="lazy">
+            </span>
+            <h3>Time Garden</h3>
+            <p>Pop balloons to match clocks and phrases.</p>
+          </a>
+          <a class="game-link" href="./time-select/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./time-select/index.jpg" alt="" width="1424" height="960" decoding="async" loading="lazy">
+            </span>
+            <h3>Time Challenge</h3>
+            <p>Read English time, then tap the matching clock.</p>
+          </a>
+          <a class="game-link" href="./map-direction/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./map-direction/index.jpg" alt="" width="2338" height="1378" decoding="async" loading="lazy">
+            </span>
+            <h3>HK Direction Master</h3>
+            <p>Follow directions on the map to reach each landmark.</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="category" aria-labelledby="cat-p5">
+        <h2 class="category-title" id="cat-p5">Primary 5</h2>
+        <div class="grid">
+          <a class="game-link" href="./Grammar_showdown/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./Grammar_showdown/index.jpg" alt="" width="2428" height="1442" decoding="async" loading="lazy">
+            </span>
+            <h3>Grammar Showdown</h3>
+            <p>Verb vs adjective — pick the right word type.</p>
+          </a>
+          <a class="game-link" href="./Wacky_sentence/index.html">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./Wacky_sentence/index.jpg" alt="" width="2428" height="1394" decoding="async" loading="lazy">
+            </span>
+            <h3>Wacky Sentence Machine</h3>
+            <p>Build funny sentences with adjective, subject, verb, place, and time.</p>
+          </a>
+        </div>
+      </section>
     </nav>
     <p class="hint">Links go to each folder; the browser loads that folder’s <code>index.html</code> automatically.</p>
   </div>
