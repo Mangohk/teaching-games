@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mystery Alphabet Reveal - P1 EFL Game</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Quicksand for kid-friendly legibility -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Fredoka', 'Quicksand', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Chunky Kid-Friendly Button Shadows */
+    .btn-3d {
+      transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+    }
+
+    .btn-yellow {
+      background: linear-gradient(180deg, #FDE047 0%, #EAB308 100%);
+      border-bottom: 5px solid #CA8A04;
+    }
+    .btn-yellow:active {
+      border-bottom-width: 1px;
+    }
+
+    .btn-green {
+      background: linear-gradient(180deg, #4ADE80 0%, #16A34A 100%);
+      border-bottom: 5px solid #15803D;
+    }
+    .btn-green:active {
+      border-bottom-width: 1px;
+    }
+
+    .btn-blue {
+      background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+      border-bottom: 5px solid #1D4ED8;
+    }
+    .btn-blue:active {
+      border-bottom-width: 1px;
+    }
+
+    .btn-purple {
+      background: linear-gradient(180deg, #C084FC 0%, #9333EA 100%);
+      border-bottom: 5px solid #7E22CE;
+    }
+    .btn-purple:active {
+      border-bottom-width: 1px;
+    }
+
+    .btn-coral {
+      background: linear-gradient(180deg, #FB7185 0%, #E11D48 100%);
+      border-bottom: 6px solid #BE123C;
+    }
+    .btn-coral:active {
+      border-bottom-width: 2px;
+    }
+
+    /* Tile Animations */
+    .mystery-tile {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease-out;
+      transform-style: preserve-3d;
+    }
+    .mystery-tile.revealed {
+      transform: scale(0) rotate(45deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Pulse animation for the Buzzer */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.03); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .buzzer-glow {
+      animation: pulse-ring 1.8s infinite;
+    }
+
+    /* Pop shake animation for wrong choices */
+    @keyframes wiggle {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .animate-wiggle {
+      animation: wiggle 0.4s ease-in-out;
+    }
+
+    /* Star bounce */
+    @keyframes starBounce {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.25) rotate(15deg); }
+    }
+    .star-pop {
+      animation: starBounce 0.5s ease-in-out;
+    }
+
+    /* Dynamic background clouds */
+    .bg-clouds {
+      background-color: #E0F2FE;
+      background-image: radial-gradient(#BAE6FD 1.5px, transparent 1.5px), radial-gradient(#BAE6FD 1.5px, #E0F2FE 1.5px);
+      background-size: 40px 40px;
+      background-position: 0 0, 20px 20px;
+    }
+  </style>
+</head>
+<body class="bg-clouds min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 text-slate-800 antialiased selection:bg-yellow-300">
+  <header class="w-full max-w-4xl bg-white/90 backdrop-blur-md rounded-3xl shadow-lg p-3 sm:p-4 mb-3 border-4 border-sky-300 flex flex-wrap items-center justify-between gap-2">
+    <!-- Game Title and Logo -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-inner border-2 border-amber-500">
+        🔍
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold text-sky-700 leading-tight">Mystery Alphabet</h1>
+        <p class="text-xs sm:text-sm text-sky-500 font-semibold">Primary 1 Phonics & Letter Detective</p>
+      </div>
+    </div>
+
+    <!-- Mode Selector: Uppercase, Lowercase, Mixed -->
+    <div class="flex bg-sky-100 p-1 rounded-2xl border-2 border-sky-300 space-x-1">
+      <button id="mode-upper" onclick="setMode('uppercase')" class="px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors bg-sky-500 text-white shadow-sm">
+        ABC
+      </button>
+      <button id="mode-lower" onclick="setMode('lowercase')" class="px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors text-sky-700 hover:bg-sky-200">
+        abc
+      </button>
+      <button id="mode-mixed" onclick="setMode('mixed')" class="px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors text-sky-700 hover:bg-sky-200">
+        Aa Bb
+      </button>
+    </div>
+
+    <!-- Stars Score & Quick Audio Options -->
+    <div class="flex items-center space-x-2">
+      <!-- Stars Counter -->
+      <div class="bg-amber-100 border-2 border-amber-400 text-amber-800 font-bold px-3 py-1.5 rounded-2xl flex items-center space-x-1.5 shadow-sm text-sm sm:text-base">
+        <span id="star-icon" class="text-lg sm:text-xl">⭐</span>
+        <span id="score-text">0</span>
+      </div>
+
+      <!-- Sound Toggle -->
+      <button id="sound-btn" onclick="toggleSound()" title="Toggle Sound" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border-2 border-slate-300 flex items-center justify-center text-lg hover:bg-slate-50 transition">
+        🔊
+      </button>
+
+      <!-- Settings / Teacher Modal Trigger -->
+      <button onclick="toggleTeacherSettings(true)" title="Teacher Settings" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border-2 border-slate-300 flex items-center justify-center text-lg hover:bg-slate-50 transition">
+        ⚙️
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-4xl flex-1 flex flex-col items-center justify-center relative my-1">
+    
+    <!-- Outer Card Stage -->
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-4 sm:p-6 border-8 border-sky-400 flex flex-col items-center">
+      
+      <!-- Top Status & Hint Helper Banner -->
+      <div class="w-full flex items-center justify-between mb-3 px-2">
+        <span id="reveal-progress-tag" class="text-xs sm:text-sm font-bold bg-sky-100 text-sky-700 px-3 py-1 rounded-full border border-sky-300">
+          Tiles Hidden: 16 / 16
+        </span>
+        <button id="hear-phonics-btn" onclick="speakCurrentPhonics()" class="flex items-center space-x-1 text-xs sm:text-sm font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300 transition">
+          <span>🗣️ Listen</span>
+        </button>
+      </div>
+
+      <!-- The Mystery Showcase Box (Where letter is drawn and tiles cover it) -->
+      <div id="showcase-container" class="relative w-64 h-64 sm:w-72 sm:h-72 bg-gradient-to-b from-amber-50 to-orange-50 rounded-3xl border-4 border-dashed border-amber-300 shadow-inner flex items-center justify-center overflow-hidden">
+        
+        <!-- Background Hidden Letter Display -->
+        <div id="secret-letter-display" class="absolute inset-0 flex flex-col items-center justify-center select-none font-bold text-slate-800 leading-none" style="font-size: 13.5rem; text-shadow: 4px 6px 0px #FCD34D;">
+          A
+        </div>
+
+        <!-- Phonics Clue Illustration (Fades in on full reveal or round won) -->
+        <div id="phonics-badge" class="absolute bottom-2 left-0 right-0 mx-auto w-max px-4 py-1.5 bg-white/95 rounded-full shadow-lg border-2 border-amber-400 flex items-center space-x-2 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none">
+          <span id="phonics-emoji" class="text-2xl">🍎</span>
+          <span id="phonics-word" class="text-base sm:text-lg font-bold text-amber-800">Apple</span>
+        </div>
+
+        <!-- 4x4 Interactive Mystery Tiles Grid Layer -->
+        <div id="tiles-grid" class="absolute inset-0 grid grid-cols-4 grid-rows-4 p-2 gap-1.5 z-10">
+          <!-- 16 tiles dynamically injected via JavaScript -->
+        </div>
+
+        <!-- Buzzer Freeze Overlay effect when buzzer is hit -->
+        <div id="freeze-indicator" class="absolute inset-0 bg-red-500/10 backdrop-blur-[1px] z-20 pointer-events-none opacity-0 transition-opacity flex items-center justify-center">
+          <span class="bg-red-600 text-white font-black text-xl px-4 py-1.5 rounded-full shadow-lg border-2 border-white animate-bounce">
+            STOP! WHO KNOWS IT?
+          </span>
+        </div>
+      </div>
+
+      <!-- Classroom Interaction Action Buttons -->
+      <div class="w-full mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <!-- Giant Buzzer Button for student to trigger "I Know!" -->
+        <button id="buzzer-btn" onclick="triggerBuzzer()" class="btn-3d btn-coral text-white font-extrabold text-lg sm:text-xl py-3 px-8 rounded-2xl shadow-xl w-full sm:w-auto flex items-center justify-center space-x-2 buzzer-glow">
+          <span class="text-2xl">🔔</span>
+          <span>I KNOW IT!</span>
+        </button>
+
+        <!-- Secondary Peek / Step Button (for manual reveal or smartboard teacher tapping) -->
+        <button id="peek-btn" onclick="revealOneTileManual()" class="btn-3d btn-yellow text-amber-950 font-bold text-base sm:text-lg py-3 px-5 rounded-2xl shadow-md w-full sm:w-auto flex items-center justify-center space-x-1.5">
+          <span>👀</span>
+          <span>Peek More</span>
+        </button>
+
+        <!-- Skip / Next Button -->
+        <button onclick="nextLetter()" class="btn-3d btn-blue text-white font-bold text-base sm:text-lg py-3 px-4 rounded-2xl shadow-md w-full sm:w-auto flex items-center justify-center space-x-1" title="Skip to next letter">
+          <span>⏭️</span>
+          <span>Next</span>
+        </button>
+      </div>
+
+    </div>
+
+    <section id="choices-section" class="w-full max-w-xl mt-4 px-2">
+      <div class="text-center mb-2">
+        <p id="prompt-instruction" class="text-sky-800 font-bold text-base sm:text-lg">
+          Tap tiles to peek, or press the big buzzer when you guess it!
+        </p>
+      </div>
+
+      <!-- 4 Multiple Choice Letter Cards -->
+      <div id="choices-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <!-- Injected via script: 4 choices -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Teacher / Classroom Settings Modal -->
+  <div id="teacher-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-sky-400">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-sky-800 flex items-center space-x-2">
+          <span>⚙️</span>
+          <span>Teacher Controls</span>
+        </h2>
+        <button onclick="toggleTeacherSettings(false)" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">✕</button>
+      </div>
+
+      <div class="space-y-4 text-slate-700">
+        <!-- Auto Reveal Speed -->
+        <div>
+          <label class="block text-sm font-bold mb-1 text-slate-600">Auto-Reveal Speed:</label>
+          <div class="grid grid-cols-4 gap-1.5">
+            <button onclick="setSpeed('manual')" id="speed-manual" class="speed-btn px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 border-slate-300">Manual</button>
+            <button onclick="setSpeed('slow')" id="speed-slow" class="speed-btn px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 border-slate-300">Slow (2.5s)</button>
+            <button onclick="setSpeed('medium')" id="speed-medium" class="speed-btn px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 border-sky-500 bg-sky-100 text-sky-800">Medium</button>
+            <button onclick="setSpeed('fast')" id="speed-fast" class="speed-btn px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 border-slate-300">Fast (1s)</button>
+          </div>
+        </div>
+
+        <!-- Reveal Pattern -->
+        <div>
+          <label class="block text-sm font-bold mb-1 text-slate-600">Reveal Style:</label>
+          <select id="reveal-style" onchange="settings.revealStyle = this.value" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2 font-bold text-sm text-slate-700">
+            <option value="random">🎲 Random Surprise</option>
+            <option value="center-out">🎯 Center Outwards</option>
+            <option value="edges">🔲 Outside In</option>
+          </select>
+        </div>
+
+        <!-- Phonics hints toggle -->
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
+          <div>
+            <div class="font-bold text-sm text-slate-800">Phonics Voiceover</div>
+            <div class="text-xs text-slate-500">Reads "Letter B, /b/ Bear!" on reveal</div>
+          </div>
+          <input type="checkbox" id="phonics-toggle" checked onchange="settings.voicePhonics = this.checked" class="w-5 h-5 accent-sky-500 cursor-pointer">
+        </div>
+
+        <!-- Reset Score -->
+        <div class="pt-2 flex justify-between items-center">
+          <button onclick="resetScore()" class="px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-300 rounded-xl font-bold text-sm">
+            Reset Stars
+          </button>
+          <button onclick="toggleTeacherSettings(false)" class="px-6 py-2 btn-3d btn-green text-white rounded-xl font-bold text-sm">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas for Victory Celebrations -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-40 w-full h-full"></canvas>
+
+  <script>
+    /* P1 Phonics Dictionary with kid-friendly nouns and emojis */
+    const PHONICS_DATA = [
+      { upper: 'A', lower: 'a', word: 'Apple', emoji: '🍎' },
+      { upper: 'B', lower: 'b', word: 'Bear', emoji: '🐻' },
+      { upper: 'C', lower: 'c', word: 'Cat', emoji: '🐱' },
+      { upper: 'D', lower: 'd', word: 'Dog', emoji: '🐶' },
+      { upper: 'E', lower: 'e', word: 'Elephant', emoji: '🐘' },
+      { upper: 'F', lower: 'f', word: 'Fish', emoji: '🐟' },
+      { upper: 'G', lower: 'g', word: 'Giraffe', emoji: '🦒' },
+      { upper: 'H', lower: 'h', word: 'Hat', emoji: '🎩' },
+      { upper: 'I', lower: 'i', word: 'Igloo', emoji: '🧊' },
+      { upper: 'J', lower: 'j', word: 'Jellyfish', emoji: '🪼' },
+      { upper: 'K', lower: 'k', word: 'Kangaroo', emoji: '🦘' },
+      { upper: 'L', lower: 'l', word: 'Lion', emoji: '🦁' },
+      { upper: 'M', lower: 'm', word: 'Monkey', emoji: '🐵' },
+      { upper: 'N', lower: 'n', word: 'Nest', emoji: '🪺' },
+      { upper: 'O', lower: 'o', word: 'Octopus', emoji: '🐙' },
+      { upper: 'P', lower: 'p', word: 'Penguin', emoji: '🐧' },
+      { upper: 'Q', lower: 'q', word: 'Queen', emoji: '👑' },
+      { upper: 'R', lower: 'r', word: 'Rainbow', emoji: '🌈' },
+      { upper: 'S', lower: 's', word: 'Sun', emoji: '☀️' },
+      { upper: 'T', lower: 't', word: 'Tiger', emoji: '🐯' },
+      { upper: 'U', lower: 'u', word: 'Umbrella', emoji: '☂️' },
+      { upper: 'V', lower: 'v', word: 'Violin', emoji: '🎻' },
+      { upper: 'W', lower: 'w', word: 'Whale', emoji: '🐳' },
+      { upper: 'X', lower: 'x', word: 'Xylophone', emoji: '🎵' },
+      { upper: 'Y', lower: 'y', word: 'Yo-yo', emoji: '🪀' },
+      { upper: 'Z', lower: 'z', word: 'Zebra', emoji: '🦓' }
+    ];
+
+    // Cheerful pastel color palette for tiles
+    const TILE_COLORS = [
+      'bg-amber-400 border-amber-500 text-amber-900',
+      'bg-sky-400 border-sky-500 text-sky-950',
+      'bg-emerald-400 border-emerald-500 text-emerald-950',
+      'bg-rose-400 border-rose-500 text-rose-950',
+      'bg-purple-400 border-purple-500 text-purple-950',
+      'bg-indigo-400 border-indigo-500 text-indigo-950',
+      'bg-teal-400 border-teal-500 text-teal-950',
+      'bg-orange-400 border-orange-500 text-orange-950'
+    ];
+
+    /* Game State Object */
+    let gameState = {
+      mode: 'uppercase', // 'uppercase', 'lowercase', 'mixed'
+      currentAlphabetItem: null,
+      currentDisplayChar: 'A',
+      score: 0,
+      soundEnabled: true,
+      tilesRevealed: 0,
+      totalTiles: 16,
+      tileOrder: [],
+      isRoundActive: false,
+      isBuzzerActive: false,
+      autoRevealTimer: null,
+      choices: []
+    };
+
+    /* Teacher Settings */
+    let settings = {
+      speed: 'medium', // 'manual', 'slow' (2500ms), 'medium' (1600ms), 'fast' (900ms)
+      revealStyle: 'random',
+      voicePhonics: true
+    };
+
+    /* Web Audio API Sound Synthesizer (Zero External Dependencies) */
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.15, delay = 0) {
+      if (!gameState.soundEnabled) return;
+      try {
+        initAudio();
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + delay + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + delay);
+        osc.stop(audioCtx.currentTime + delay + duration);
+      } catch(e) {
+        console.warn('Audio tone error', e);
+      }
+    }
+
+    /* Sound Effects */
+    const SoundFX = {
+      pop: () => {
+        playTone(480, 'triangle', 0.08);
+      },
+      buzzer: () => {
+        // Cheerful school buzzer chime
+        playTone(330, 'square', 0.18);
+        playTone(440, 'square', 0.25, 0.1);
+      },
+      correct: () => {
+        // High ascending joyful arpeggio
+        playTone(523.25, 'sine', 0.15, 0.0); // C5
+        playTone(659.25, 'sine', 0.15, 0.1); // E5
+        playTone(783.99, 'sine', 0.18, 0.2); // G5
+        playTone(1046.50, 'sine', 0.35, 0.3); // C6
+      },
+      wrong: () => {
+        // Gentle kid-friendly bonk
+        playTone(220, 'sawtooth', 0.2, 0);
+        playTone(180, 'sawtooth', 0.3, 0.15);
+      },
+      starDing: () => {
+        playTone(987.77, 'triangle', 0.25);
+      }
+    };
+
+    /* Spoken English Phonics via SpeechSynthesis */
+    function speakLetter(letter, phonicsWord = '') {
+      if (!gameState.soundEnabled) return;
+      if (!('speechSynthesis' in window)) return;
+
+      window.speechSynthesis.cancel(); // Stop any pending speech
+
+      const text = phonicsWord 
+        ? `${letter}! ${phonicsWord}!` 
+        : `Letter ${letter}!`;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.85; // slightly slower for EFL clarity
+      utterance.pitch = 1.15; // friendly, upbeat pitch for primary school
+
+      // Try to select an English voice
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('US') || v.name.includes('UK')));
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function startNewRound() {
+      // Clear timers
+      stopAutoReveal();
+      gameState.isBuzzerActive = false;
+      gameState.isRoundActive = true;
+      document.getElementById('freeze-indicator').classList.add('opacity-0');
+
+      // Pick a random letter from the alphabet
+      const item = PHONICS_DATA[Math.floor(Math.random() * PHONICS_DATA.length)];
+      gameState.currentAlphabetItem = item;
+
+      // Determine display case based on selected mode
+      if (gameState.mode === 'uppercase') {
+        gameState.currentDisplayChar = item.upper;
+      } else if (gameState.mode === 'lowercase') {
+        gameState.currentDisplayChar = item.lower;
+      } else {
+        // Mixed: 50% chance upper, 50% lower
+        gameState.currentDisplayChar = Math.random() > 0.5 ? item.upper : item.lower;
+      }
+
+      // Update the hidden letter in DOM
+      const letterDisplay = document.getElementById('secret-letter-display');
+      letterDisplay.textContent = gameState.currentDisplayChar;
+      
+      // Kid-friendly dynamic letter color
+      const letterColors = ['#2563EB', '#D97706', '#059669', '#7C3AED', '#DB2777', '#EA580C'];
+      const randomColor = letterColors[Math.floor(Math.random() * letterColors.length)];
+      letterDisplay.style.color = randomColor;
+
+      // Update phonics badge elements (hidden until solved)
+      document.getElementById('phonics-emoji').textContent = item.emoji;
+      document.getElementById('phonics-word').textContent = `${item.upper}${item.lower} is for ${item.word}`;
+      const badge = document.getElementById('phonics-badge');
+      badge.classList.remove('translate-y-0', 'opacity-100');
+      badge.classList.add('translate-y-16', 'opacity-0');
+
+      // Build Tiles
+      buildMysteryTiles();
+
+      // Generate 4 Multiple Choice Options (1 correct + 3 distractors)
+      generateChoiceOptions();
+
+      // Reset prompt
+      updatePrompt("Look closely! Can you guess the letter?");
+
+      // Start auto reveal if not in manual mode
+      startAutoReveal();
+    }
+
+    /* Build 4x4 Grid of Tiles */
+    function buildMysteryTiles() {
+      const grid = document.getElementById('tiles-grid');
+      grid.innerHTML = '';
+      gameState.tilesRevealed = 0;
+      gameState.tileOrder = [];
+
+      const totalTiles = 16;
+      const order = [];
+
+      for (let i = 0; i < totalTiles; i++) {
+        order.push(i);
+        const tile = document.createElement('div');
+        tile.id = `tile-${i}`;
+        const colorClass = TILE_COLORS[i % TILE_COLORS.length];
+        
+        tile.className = `mystery-tile ${colorClass} rounded-2xl border-b-4 flex items-center justify-center font-bold text-base sm:text-xl shadow-md cursor-pointer active:scale-95 transition-all`;
+        
+        // Number badge or playful question mark on tile
+        tile.innerHTML = `<span>${i + 1}</span>`;
+        
+        // Allow students to tap tiles individually on Smartboard
+        tile.addEventListener('click', () => {
+          initAudio();
+          popTile(i);
+        });
+
+        grid.appendChild(tile);
+      }
+
+      // Sort order according to teacher settings
+      if (settings.revealStyle === 'random') {
+        gameState.tileOrder = order.sort(() => Math.random() - 0.5);
+      } else if (settings.revealStyle === 'center-out') {
+        // Reveal center 4 tiles first (5, 6, 9, 10), then others
+        const center = [5, 6, 9, 10];
+        const rest = order.filter(x => !center.includes(x)).sort(() => Math.random() - 0.5);
+        gameState.tileOrder = [...center.sort(() => Math.random() - 0.5), ...rest];
+      } else {
+        // Outside in
+        const center = [5, 6, 9, 10];
+        const rest = order.filter(x => !center.includes(x)).sort(() => Math.random() - 0.5);
+        gameState.tileOrder = [...rest, ...center];
+      }
+
+      updateTilesProgress();
+    }
+
+    function popTile(index) {
+      const tile = document.getElementById(`tile-${index}`);
+      if (tile && !tile.classList.contains('revealed')) {
+        tile.classList.add('revealed');
+        gameState.tilesRevealed++;
+        SoundFX.pop();
+        updateTilesProgress();
+
+        // If all tiles are revealed without guessing, reveal phonics badge gently
+        if (gameState.tilesRevealed >= gameState.totalTiles) {
+          stopAutoReveal();
+          showPhonicsBadge();
+        }
+      }
+    }
+
+    function revealNextTile() {
+      if (gameState.tilesRevealed >= gameState.totalTiles || !gameState.isRoundActive) {
+        stopAutoReveal();
+        return;
+      }
+      // Find the next unrevealed tile according to tileOrder
+      for (const idx of gameState.tileOrder) {
+        const tile = document.getElementById(`tile-${idx}`);
+        if (tile && !tile.classList.contains('revealed')) {
+          popTile(idx);
+          break;
+        }
+      }
+    }
+
+    function revealOneTileManual() {
+      initAudio();
+      revealNextTile();
+    }
+
+    function updateTilesProgress() {
+      const remaining = gameState.totalTiles - gameState.tilesRevealed;
+      document.getElementById('reveal-progress-tag').textContent = `Tiles Hidden: ${remaining} / ${gameState.totalTiles}`;
+    }
+
+    function getSpeedInterval() {
+      switch (settings.speed) {
+        case 'slow': return 2400;
+        case 'medium': return 1500;
+        case 'fast': return 800;
+        case 'manual': return null;
+        default: return 1500;
+      }
+    }
+
+    function startAutoReveal() {
+      stopAutoReveal();
+      const interval = getSpeedInterval();
+      if (!interval) return; // manual mode
+
+      gameState.autoRevealTimer = setInterval(() => {
+        if (!gameState.isBuzzerActive && gameState.isRoundActive) {
+          revealNextTile();
+        }
+      }, interval);
+    }
+
+    function stopAutoReveal() {
+      if (gameState.autoRevealTimer) {
+        clearInterval(gameState.autoRevealTimer);
+        gameState.autoRevealTimer = null;
+      }
+    }
+
+    /* Buzzer Action */
+    function triggerBuzzer() {
+      initAudio();
+      if (!gameState.isRoundActive) return;
+
+      gameState.isBuzzerActive = true;
+      stopAutoReveal();
+      SoundFX.buzzer();
+
+      // Visual flash
+      const freeze = document.getElementById('freeze-indicator');
+      freeze.classList.remove('opacity-0');
+
+      updatePrompt("🔔 BUZZER PRESSED! Choose the correct letter below!");
+
+      // Highlight choices container
+      const container = document.getElementById('choices-container');
+      container.classList.add('scale-105');
+      setTimeout(() => container.classList.remove('scale-105'), 200);
+    }
+
+    function generateChoiceOptions() {
+      const current = gameState.currentAlphabetItem;
+      const choices = [current];
+
+      // Grab 3 other unique random letters
+      const pool = PHONICS_DATA.filter(item => item.upper !== current.upper);
+      const shuffledPool = pool.sort(() => Math.random() - 0.5);
+      choices.push(...shuffledPool.slice(0, 3));
+
+      // Shuffle the 4 choices
+      gameState.choices = choices.sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('choices-container');
+      container.innerHTML = '';
+
+      const buttonStyles = ['btn-yellow', 'btn-green', 'btn-blue', 'btn-purple'];
+
+      gameState.choices.forEach((choiceItem, idx) => {
+        const btn = document.createElement('button');
+        const styleClass = buttonStyles[idx % buttonStyles.length];
+
+        // Format label based on current mode
+        let displayChoiceText = '';
+        if (gameState.mode === 'uppercase') {
+          displayChoiceText = choiceItem.upper;
+        } else if (gameState.mode === 'lowercase') {
+          displayChoiceText = choiceItem.lower;
+        } else {
+          // Display both uppercase and lowercase for mixed learning
+          displayChoiceText = `${choiceItem.upper} ${choiceItem.lower}`;
+        }
+
+        btn.className = `btn-3d ${styleClass} text-slate-900 font-extrabold rounded-2xl py-4 sm:py-5 px-3 text-3xl sm:text-4xl shadow-xl flex flex-col items-center justify-center transition-transform hover:scale-105`;
+        btn.innerHTML = `
+          <span>${displayChoiceText}</span>
+        `;
+
+        btn.onclick = () => handleChoiceClick(choiceItem, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function handleChoiceClick(selectedItem, buttonElement) {
+      initAudio();
+      if (!gameState.isRoundActive) return;
+
+      const correct = gameState.currentAlphabetItem;
+
+      if (selectedItem.upper === correct.upper) {
+        // CORRECT ANSWER!
+        handleRoundWin(buttonElement);
+      } else {
+        // WRONG ANSWER
+        handleRoundIncorrect(buttonElement);
+      }
+    }
+
+    function handleRoundWin(winningButton) {
+      gameState.isRoundActive = false;
+      gameState.isBuzzerActive = false;
+      stopAutoReveal();
+
+      // 1. Immediately dismiss the "STOP! WHO KNOWS IT?" banner
+      const freeze = document.getElementById('freeze-indicator');
+      if (freeze) {
+        freeze.classList.add('opacity-0');
+      }
+
+      // Confetti + Sound
+      SoundFX.correct();
+      launchConfetti();
+
+      // 2. Clear all remaining tiles and wipe all number labels so the letter is unobstructed
+      for (let i = 0; i < gameState.totalTiles; i++) {
+        const tile = document.getElementById(`tile-${i}`);
+        if (tile) {
+          tile.classList.add('revealed');
+          tile.innerHTML = '';
+          tile.style.display = 'none';
+        }
+      }
+      gameState.tilesRevealed = gameState.totalTiles;
+      document.getElementById('reveal-progress-tag').textContent = 'Revealed! 🎉';
+
+      // Reveal Phonics Badge
+      showPhonicsBadge();
+
+      // Voice Pronunciation
+      if (settings.voicePhonics) {
+        setTimeout(() => {
+          speakLetter(gameState.currentDisplayChar, gameState.currentAlphabetItem.word);
+        }, 300);
+      }
+
+      // Add Star Score
+      gameState.score++;
+      document.getElementById('score-text').textContent = gameState.score;
+      const star = document.getElementById('star-icon');
+      star.classList.add('star-pop');
+      setTimeout(() => star.classList.remove('star-pop'), 500);
+
+      // Button styling effect
+      winningButton.classList.add('ring-4', 'ring-emerald-400', 'bg-emerald-400', 'text-white');
+      updatePrompt(`🎉 Great Job! That is Letter ${gameState.currentDisplayChar}!`);
+
+      // Automatically advance after celebration
+      setTimeout(() => {
+        startNewRound();
+      }, 3000);
+    }
+
+    function handleRoundIncorrect(btnElement) {
+      SoundFX.wrong();
+      btnElement.classList.add('animate-wiggle', 'opacity-60', 'line-through');
+      updatePrompt("Not quite! Try another letter, detectives! 🔎");
+      setTimeout(() => {
+        btnElement.classList.remove('animate-wiggle');
+      }, 500);
+    }
+
+    function showPhonicsBadge() {
+      const badge = document.getElementById('phonics-badge');
+      badge.classList.remove('translate-y-16', 'opacity-0');
+      badge.classList.add('translate-y-0', 'opacity-100');
+    }
+
+    function updatePrompt(message) {
+      document.getElementById('prompt-instruction').textContent = message;
+    }
+
+    function speakCurrentPhonics() {
+      initAudio();
+      if (gameState.currentAlphabetItem) {
+        speakLetter(gameState.currentDisplayChar, gameState.currentAlphabetItem.word);
+      }
+    }
+
+    function nextLetter() {
+      initAudio();
+      startNewRound();
+    }
+
+    function setMode(mode) {
+      initAudio();
+      gameState.mode = mode;
+
+      const upperBtn = document.getElementById('mode-upper');
+      const lowerBtn = document.getElementById('mode-lower');
+      const mixedBtn = document.getElementById('mode-mixed');
+
+      [upperBtn, lowerBtn, mixedBtn].forEach(btn => {
+        btn.className = "px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors text-sky-700 hover:bg-sky-200";
+      });
+
+      if (mode === 'uppercase') {
+        upperBtn.className = "px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors bg-sky-500 text-white shadow-sm";
+      } else if (mode === 'lowercase') {
+        lowerBtn.className = "px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors bg-sky-500 text-white shadow-sm";
+      } else {
+        mixedBtn.className = "px-2.5 py-1.5 sm:px-3 text-sm sm:text-base font-bold rounded-xl transition-colors bg-sky-500 text-white shadow-sm";
+      }
+
+      startNewRound();
+    }
+
+    function setSpeed(speed) {
+      settings.speed = speed;
+      document.querySelectorAll('.speed-btn').forEach(btn => {
+        btn.className = "speed-btn px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 border-slate-300";
+      });
+      const activeBtn = document.getElementById(`speed-${speed}`);
+      if (activeBtn) {
+        activeBtn.className = "speed-btn px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 border-sky-500 bg-sky-100 text-sky-800";
+      }
+      startAutoReveal();
+    }
+
+    function toggleSound() {
+      gameState.soundEnabled = !gameState.soundEnabled;
+      const btn = document.getElementById('sound-btn');
+      btn.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+      if (gameState.soundEnabled) {
+        initAudio();
+        SoundFX.pop();
+      }
+    }
+
+    function toggleTeacherSettings(open) {
+      initAudio();
+      const modal = document.getElementById('teacher-modal');
+      if (open) {
+        stopAutoReveal();
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+        if (gameState.isRoundActive && !gameState.isBuzzerActive) {
+          startAutoReveal();
+        }
+      }
+    }
+
+    function resetScore() {
+      gameState.score = 0;
+      document.getElementById('score-text').textContent = "0";
+      SoundFX.pop();
+    }
+
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      confettiParticles = [];
+      const colors = ['#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6', '#EF4444'];
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          w: Math.random() * 10 + 6,
+          h: Math.random() * 8 + 5,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.7) * 16,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10,
+          gravity: 0.35,
+          opacity: 1
+        });
+      }
+
+      if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+      renderConfetti();
+    }
+
+    function renderConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let active = false;
+
+      confettiParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.rotation += p.rotationSpeed;
+        p.opacity -= 0.012;
+
+        if (p.opacity > 0) {
+          active = true;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        }
+      });
+
+      if (active) {
+        confettiAnimationId = requestAnimationFrame(renderConfetti);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Warm up SpeechSynthesis voices
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.getVoices();
+        };
+      }
+
+      // Start initial game round
+      startNewRound();
+    });
+  </script>
+</body>
+</html>
