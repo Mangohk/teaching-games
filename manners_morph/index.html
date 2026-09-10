@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manners Morph: Adjective vs. Adverb Transformer Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700;800&family=VT323&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0b132b;
+      --card-bg: #1c2541;
+      --panel-bg: #ffffff;
+      --navy: #0f172a;
+      --blue-glow: #38bdf8;
+      --blue-main: #0284c7;
+      --purple-main: #9333ea;
+      --purple-light: #faf5ff;
+      --purple-border: #c084fc;
+      --emerald-main: #10b981;
+      --emerald-light: #ecfdf5;
+      --emerald-border: #34d399;
+      --amber-gold: #f59e0b;
+      --rose-pink: #f43f5e;
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Quicksand', system-ui, sans-serif;
+      --font-code: 'VT323', monospace;
+      --font-comic: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(147, 51, 234, 0.14) 0%, transparent 45%),
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      color: #0f172a;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px 14px 28px 14px;
+      overflow-x: hidden;
+    }
+
+    /* Header Toolbar */
+    .lab-header {
+      width: min(1040px, 96vw);
+      background: rgba(30, 41, 59, 0.95);
+      border: 2px solid rgba(56, 189, 248, 0.35);
+      border-radius: 18px;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+      margin-bottom: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-display);
+      font-size: clamp(17px, 2.3vh, 22px);
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-logo i {
+      font-size: 1.3em;
+      color: var(--amber-gold);
+      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+    }
+
+    .mode-nav {
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 4px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .nav-tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-tab-btn.active {
+      background: var(--blue-main);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.5);
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-control {
+      background: #334155;
+      color: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-control:hover {
+      background: #475569;
+      color: #ffffff;
+    }
+
+    .btn-control.sound-on {
+      color: #38bdf8;
+    }
+
+    .btn-control.sound-off {
+      color: #f87171;
+    }
+
+    /* Game Stage Wrapper */
+    .lab-stage-container {
+      width: min(1040px, 96vw);
+      min-height: 580px;
+      background: #ffffff;
+      border-radius: 22px;
+      border: 4px solid #38bdf8;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Score & Status Bar */
+    .status-meter-bar {
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 10px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat-pill {
+      font-family: var(--font-display);
+      font-size: clamp(14px, 2vh, 17px);
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+    }
+
+    .stat-score {
+      border-color: #f59e0b;
+      color: #b45309;
+      background: #fffbeb;
+    }
+
+    .stat-streak {
+      border-color: #ec4899;
+      color: #be185d;
+      background: #fdf2f8;
+    }
+
+    .stat-mode-badge {
+      background: #e0f2fe;
+      border-color: #7dd3fc;
+      color: #0369a1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Mode 1: Sorter Arena */
+    .mission-panel {
+      display: none;
+      flex: 1;
+      padding: clamp(14px, 2.5vh, 26px) clamp(16px, 2.8vw, 32px);
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .mission-panel.active-mode {
+      display: flex;
+      animation: fadeInPanel 0.3s ease-out;
+    }
+
+    @keyframes fadeInPanel {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Center Target Card in Sorter */
+    .target-word-card {
+      background: #f8fafc;
+      border: 3px solid #cbd5e1;
+      border-radius: 20px;
+      padding: clamp(16px, 2.8vh, 28px);
+      text-align: center;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .target-word-card.pop-correct {
+      border-color: #10b981;
+      background: #ecfdf5;
+      animation: popCardGreen 0.4s ease;
+    }
+
+    .target-word-card.pop-wrong {
+      border-color: #f43f5e;
+      background: #fff1f2;
+      animation: shakeCardRed 0.4s ease;
+    }
+
+    @keyframes popCardGreen {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    @keyframes shakeCardRed {
+      0%, 100% { transform: translateX(0); }
+      25%, 75% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+    }
+
+    .context-sentence-box {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 3.4vh, 32px);
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+
+    .word-highlight-pill {
+      display: inline-block;
+      padding: 2px 14px;
+      background: #fef08a;
+      border-radius: 10px;
+      border-bottom: 4px solid #eab308;
+      color: #854d0e;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .clue-hint-line {
+      font-size: clamp(13px, 1.8vh, 16px);
+      color: #64748b;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Sorter Two-Bin Selection Grid */
+    .sorter-bins-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(12px, 2vw, 22px);
+      margin-bottom: 14px;
+    }
+
+    .bin-button {
+      border-radius: 18px;
+      padding: clamp(14px, 2.2vh, 22px) clamp(12px, 1.8vw, 20px);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 3.5px solid transparent;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .bin-button:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 rgba(0, 0, 0, 0.14);
+    }
+
+    .bin-button:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .bin-adj {
+      background: #faf5ff;
+      border-color: #c084fc;
+      color: #6b21a8;
+    }
+
+    .bin-adj:hover:not(:disabled) {
+      background: #f3e8ff;
+      border-color: #9333ea;
+    }
+
+    .bin-adv {
+      background: #f0f9ff;
+      border-color: #7dd3fc;
+      color: #0369a1;
+    }
+
+    .bin-adv:hover:not(:disabled) {
+      background: #e0f2fe;
+      border-color: #0284c7;
+    }
+
+    .bin-icon {
+      font-size: clamp(26px, 4vh, 38px);
+      margin-bottom: 6px;
+    }
+
+    .bin-title {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 2.6vh, 25px);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .bin-desc {
+      font-size: clamp(12px, 1.7vh, 15px);
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    /* Feedback Dock on Sorter & Transformer */
+    .round-feedback-banner {
+      min-height: 48px;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-family: var(--font-display);
+      font-size: clamp(14px, 2vh, 18px);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      color: #475569;
+    }
+
+    .round-feedback-banner.feedback-correct {
+      background: #ecfdf5;
+      border-color: #6ee7b7;
+      color: #065f46;
+    }
+
+    .round-feedback-banner.feedback-wrong {
+      background: #fff1f2;
+      border-color: #fca5a5;
+      color: #9f1239;
+    }
+
+    .btn-next-step {
+      background: var(--blue-main);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 #0369a1;
+      transition: all 0.2s ease;
+    }
+
+    .btn-next-step:hover {
+      background: #0270a6;
+      transform: translateY(-1px);
+    }
+
+    /* Mode 2: The Morph / Transformer Machine */
+    .transformer-box {
+      background: #f8fafc;
+      border: 3px solid #cbd5e1;
+      border-radius: 20px;
+      padding: clamp(16px, 2.5vh, 26px);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .transformer-conveyor {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 1.8vw, 20px);
+      flex-wrap: wrap;
+      margin: 12px 0 18px 0;
+    }
+
+    .adjective-base-pill {
+      background: #faf5ff;
+      border: 3px solid #c084fc;
+      border-radius: 14px;
+      padding: 10px 24px;
+      font-family: var(--font-display);
+      font-size: clamp(24px, 4vh, 36px);
+      font-weight: 800;
+      color: #7e22ce;
+      box-shadow: 0 4px 12px rgba(147, 51, 234, 0.12);
+    }
+
+    .morph-arrow {
+      font-size: clamp(24px, 3.5vh, 32px);
+      color: #94a3b8;
+      animation: bounceRight 1.2s infinite ease-in-out;
+    }
+
+    @keyframes bounceRight {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(6px); }
+    }
+
+    .adverb-target-slot {
+      min-width: 170px;
+      background: #ffffff;
+      border: 3px dashed #38bdf8;
+      border-radius: 14px;
+      padding: 10px 24px;
+      font-family: var(--font-display);
+      font-size: clamp(24px, 4vh, 36px);
+      font-weight: 800;
+      color: #0284c7;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 1px;
+    }
+
+    .adverb-target-slot.filled {
+      border-style: solid;
+      border-color: #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+      animation: popBadge 0.35s ease-out;
+    }
+
+    @keyframes popBadge {
+      0% { transform: scale(0.85); }
+      60% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* 3 Spell Gear Buttons */
+    .rule-gears-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .rule-gear-btn {
+      background: #ffffff;
+      border: 2.5px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 0 #cbd5e1;
+    }
+
+    .rule-gear-btn:hover:not(:disabled) {
+      border-color: #38bdf8;
+      background: #f0f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #94a3b8;
+    }
+
+    .rule-gear-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #94a3b8;
+    }
+
+    .gear-icon {
+      font-size: 24px;
+      color: #0284c7;
+    }
+
+    .gear-rule-name {
+      font-family: var(--font-display);
+      font-size: clamp(15px, 2.2vh, 19px);
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .gear-example {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    /* Mode 3: Sentence Context Fill Arena */
+    .context-battle-card {
+      background: #eff6ff;
+      border: 3px solid #93c5fd;
+      border-left: 8px solid var(--blue-main);
+      border-radius: 18px;
+      padding: clamp(18px, 3vh, 26px);
+      margin-bottom: 18px;
+    }
+
+    .context-battle-sentence {
+      font-family: var(--font-display);
+      font-size: clamp(21px, 3.2vh, 29px);
+      font-weight: 700;
+      line-height: 1.35;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .battle-slot-gap {
+      display: inline-block;
+      padding: 1px 16px;
+      border-bottom: 3px dashed #0284c7;
+      color: #0284c7;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .battle-slot-gap.solved {
+      border-bottom: 3px solid #10b981;
+      background: #d1fae5;
+      color: #065f46;
+      border-radius: 6px;
+      padding: 2px 12px;
+    }
+
+    .battle-options-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .battle-opt-btn {
+      background: #ffffff;
+      border: 3px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-family: var(--font-display);
+      font-size: clamp(18px, 2.8vh, 24px);
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 0 #cbd5e1;
+      color: #1e293b;
+    }
+
+    .battle-opt-btn:hover:not(:disabled) {
+      border-color: #38bdf8;
+      background: #f8fafc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #94a3b8;
+    }
+
+    .battle-opt-btn.correct-choice {
+      border-color: #10b981 !important;
+      background: #ecfdf5 !important;
+      color: #065f46 !important;
+      box-shadow: 0 4px 0 #059669 !important;
+    }
+
+    .battle-opt-btn.wrong-choice {
+      border-color: #f43f5e !important;
+      background: #fff1f2 !important;
+      color: #9f1239 !important;
+      box-shadow: 0 4px 0 #e11d48 !important;
+    }
+
+    /* Printable Worksheet View */
+    .printable-sheet-container {
+      width: min(920px, 94vw);
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 40px 48px;
+      font-family: var(--font-comic);
+      font-size: 14pt;
+      line-height: 1.55;
+      color: #0f172a;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin: 12px auto 30px auto;
+      display: none;
+    }
+
+    .printable-sheet-container.active-mode {
+      display: block;
+    }
+
+    .ws-header-title {
+      text-align: center;
+      border-bottom: 2pt dashed #64748b;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .ws-meta-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    .ws-section-banner {
+      background: #f1f5f9;
+      border-left: 5pt solid #0284c7;
+      padding: 6pt 12pt;
+      font-weight: bold;
+      margin: 16pt 0 10pt 0;
+      font-size: 15pt;
+    }
+
+    .ws-grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10pt 0;
+    }
+
+    .ws-grid-table th, .ws-grid-table td {
+      border: 1.5pt solid #94a3b8;
+      padding: 8pt 12pt;
+      font-size: 13pt;
+      text-align: left;
+    }
+
+    .ws-grid-table th {
+      background: #e2e8f0;
+      font-size: 13.5pt;
+    }
+
+    /* Victory & Trophy Modal */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .trophy-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px 36px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      border: 4px solid var(--amber-gold);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.show .trophy-card {
+      transform: scale(1);
+    }
+
+    .trophy-emoji {
+      font-size: 64px;
+      margin-bottom: 12px;
+      animation: bounceTrophy 1.5s infinite ease-in-out;
+    }
+
+    @keyframes bounceTrophy {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .btn-big-play {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 30px;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #047857;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-big-play:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 #065f46;
+    }
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Print settings */
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .lab-header, .status-meter-bar, .mission-panel, .modal-backdrop, #confettiCanvas {
+        display: none !important;
+      }
+      .printable-sheet-container {
+        display: block !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Master Bar -->
+  <header class="lab-header">
+    <div class="brand-logo">
+      <i class="fa-solid fa-atom"></i>
+      <span>MANNERS MORPH: ADJECTIVE &amp; ADVERB LAB</span>
+    </div>
+
+    <!-- 3 Game Modes + Printable Worksheet -->
+    <nav class="mode-nav">
+      <button class="nav-tab-btn active" id="tab-sorter" onclick="switchGameMode('sorter')">
+        <i class="fa-solid fa-radar"></i> 1. Sorter Radar
+      </button>
+      <button class="nav-tab-btn" id="tab-transformer" onclick="switchGameMode('transformer')">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> 2. Morph Workshop
+      </button>
+      <button class="nav-tab-btn" id="tab-arena" onclick="switchGameMode('arena')">
+        <i class="fa-solid fa-gamepad"></i> 3. Sentence Arena
+      </button>
+      <button class="nav-tab-btn" id="tab-worksheet" onclick="switchGameMode('worksheet')">
+        <i class="fa-solid fa-print"></i> Printable Sheet
+      </button>
+    </nav>
+
+    <div class="controls-group">
+      <button class="btn-control sound-on" id="btnSoundToggle" onclick="toggleAudio()">
+        <i class="fa-solid fa-volume-high"></i> SFX: ON
+      </button>
+      <button class="btn-control" onclick="resetCurrentMode()">
+        <i class="fa-solid fa-rotate-right"></i> Reset
+      </button>
+    </div>
+  </header>
+
+  <!-- Central Game Board Container -->
+  <main class="lab-stage-container" id="gameStage">
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Top Status Bar -->
+    <div class="status-meter-bar">
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span class="stat-pill stat-mode-badge" id="lblCurrentStage">
+          <i class="fa-solid fa-compass"></i> Mission 1 • Sorter Radar
+        </span>
+        <span class="stat-pill">
+          Question <strong id="valQuestionIndex" style="color: #0284c7;">1</strong> / <span id="valQuestionTotal">10</span>
+        </span>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <span class="stat-pill stat-score">
+          <i class="fa-solid fa-star"></i> <span id="valScore">0</span> pts
+        </span>
+        <span class="stat-pill stat-streak">
+          <i class="fa-solid fa-fire"></i> <span id="valStreak">0</span> Streak
+        </span>
+      </div>
+    </div>
+
+    <!-- MISSION 1: SORTER RADAR (Distinguish Adj vs Adv) -->
+    <section class="mission-panel active-mode" id="panel-sorter">
+      <div>
+        <div style="text-align: center; margin-bottom: 12px;">
+          <span style="background: #e0f2fe; color: #0369a1; padding: 4px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase;">
+            <i class="fa-solid fa-magnifying-glass"></i> Job Inspector: Does this word describe a NOUN/PERSON or an ACTION VERB?
+          </span>
+        </div>
+
+        <div class="target-word-card" id="sorterWordCard">
+          <div class="context-sentence-box" id="sorterSentence">
+            Loading mission...
+          </div>
+          <div class="clue-hint-line" id="sorterClueHint">
+            <i class="fa-solid fa-circle-question text-blue-500"></i> What kind of word is the highlighted word?
+          </div>
+        </div>
+
+        <!-- Two Sorter Bins -->
+        <div class="sorter-bins-grid">
+          <button class="bin-button bin-adj" id="btnSortAdj" onclick="handleSortChoice('adjective')">
+            <div class="bin-icon"><i class="fa-solid fa-user-astronaut"></i></div>
+            <div class="bin-title">BEHAVIOUR ADJECTIVE</div>
+            <div class="bin-desc">Describes a <strong>PERSON</strong> or <strong>NOUN</strong><br>(After 'be' verbs: <em>is, are, should be</em>)</div>
+          </button>
+
+          <button class="bin-button bin-adv" id="btnSortAdv" onclick="handleSortChoice('adverb')">
+            <div class="bin-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="bin-title">ADVERB OF MANNER</div>
+            <div class="bin-desc">Describes <strong>HOW</strong> an <strong>ACTION VERB</strong> is done<br>(Usually ends with <em>-ly</em> / <em>-ily</em>)</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feedback Banner -->
+      <div class="round-feedback-banner" id="sorterFeedbackBar">
+        <span id="sorterFeedbackText">Tap a category above or press [Left / Right Arrow]!</span>
+        <button class="btn-next-step" id="btnSorterNext" style="display: none;" onclick="nextSorterQuestion()">
+          Next Word <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- MISSION 2: THE SUFFIX TRANSFORMER (Practice Morphing Adjectives into Adverbs) -->
+    <section class="mission-panel" id="panel-transformer">
+      <div>
+        <div style="text-align: center; margin-bottom: 8px;">
+          <span style="background: #fdf4ff; color: #9333ea; padding: 4px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase;">
+            <i class="fa-solid fa-gears"></i> Spelling Transformer: Turn the Adjective into an Adverb of Manner!
+          </span>
+        </div>
+
+        <div class="transformer-box">
+          <div style="font-size: 14px; font-weight: 800; color: #64748b; text-transform: uppercase;">
+            Base Behaviour Adjective &rarr; Target Adverb of Manner
+          </div>
+
+          <div class="transformer-conveyor">
+            <div class="adjective-base-pill" id="transBaseAdj">neat</div>
+            <div class="morph-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+            <div class="adverb-target-slot" id="transTargetSlot">? ? ? ?</div>
+          </div>
+
+          <p style="font-size: clamp(14px, 2vh, 17px); font-weight: 700; color: #334155; margin-top: 4px;" id="transSentencePreview">
+            "leave them [neatly] at the door" (Line 14)
+          </p>
+        </div>
+
+        <!-- 3 Spelling Tool Gears -->
+        <div class="rule-gears-grid">
+          <button class="rule-gear-btn" onclick="handleTransformerChoice('add_ly')">
+            <i class="fa-solid fa-plus gear-icon"></i>
+            <span class="gear-rule-name">+ -ly</span>
+            <span class="gear-example">neat &rarr; neatly, patient &rarr; patiently</span>
+          </button>
+
+          <button class="rule-gear-btn" onclick="handleTransformerChoice('drop_y_add_ily')">
+            <i class="fa-solid fa-eraser gear-icon" style="color: #9333ea;"></i>
+            <span class="gear-rule-name">drop -y + -ily</span>
+            <span class="gear-example">noisy &rarr; noisily</span>
+          </button>
+
+          <button class="rule-gear-btn" onclick="handleTransformerChoice('special')">
+            <i class="fa-solid fa-star gear-icon" style="color: #f59e0b;"></i>
+            <span class="gear-rule-name">Irregular / Same</span>
+            <span class="gear-example">early &rarr; early, late &rarr; late</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feedback Banner -->
+      <div class="round-feedback-banner" id="transFeedbackBar">
+        <span id="transFeedbackText">Select the correct spelling gear to morph this word!</span>
+        <button class="btn-next-step" id="btnTransNext" style="display: none;" onclick="nextTransformerQuestion()">
+          Next Word <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- MISSION 3: SENTENCE ARENA (Choose Adj vs Adv in Context) -->
+    <section class="mission-panel" id="panel-arena">
+      <div>
+        <div style="text-align: center; margin-bottom: 12px;">
+          <span style="background: #ecfdf5; color: #065f46; padding: 4px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase;">
+            <i class="fa-solid fa-shield-halved"></i> Master Challenge: Should you use the Adjective or the Adverb?
+          </span>
+        </div>
+
+        <div class="context-battle-card">
+          <div style="font-size: 13px; font-weight: 800; color: #2563eb; margin-bottom: 4px;" id="arenaContextTag">
+            SCENARIO • Planet Zog / Public Places
+          </div>
+          <div class="context-battle-sentence" id="arenaSentence">
+            Ziggy talks <span class="battle-slot-gap" id="arenaGapSlot">[ ? ? ? ]</span> on his mobile phone.
+          </div>
+          <div style="font-size: 14px; font-weight: 700; color: #64748b;" id="arenaGrammarClue">
+            Clue: Does it describe the ACTION 'talks' or a PERSON?
+          </div>
+        </div>
+
+        <!-- Two Context Options -->
+        <div class="battle-options-pair">
+          <button class="battle-opt-btn" id="btnBattleOptA" onclick="handleBattleChoice(0)">
+            <span id="txtBattleOptA">loud</span>
+          </button>
+          <button class="battle-opt-btn" id="btnBattleOptB" onclick="handleBattleChoice(1)">
+            <span id="txtBattleOptB">loudly</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feedback Banner -->
+      <div class="round-feedback-banner" id="arenaFeedbackBar">
+        <span id="arenaFeedbackText">Pick the word that completes the sentence grammatically!</span>
+        <button class="btn-next-step" id="btnArenaNext" style="display: none;" onclick="nextArenaQuestion()">
+          Next Sentence <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Modal Victory Screen -->
+    <div class="modal-backdrop" id="victoryModal">
+      <div class="trophy-card">
+        <div class="trophy-emoji">🏆</div>
+        <h2 style="font-family: var(--font-display); font-size: 32px; color: #0f172a; margin-bottom: 8px;">
+          MISSION ACCOMPLISHED!
+        </h2>
+        <p style="font-size: 18px; color: #475569; font-weight: 700; line-height: 1.4; margin-bottom: 18px;" id="victoryMsg">
+          You mastered both Adjectives and Adverbs of Manner with a stellar score!
+        </p>
+
+        <div style="background: #f0f9ff; border: 2px dashed #38bdf8; border-radius: 14px; padding: 12px 18px; margin-bottom: 18px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Golden Rule of Form &amp; Usage:</div>
+          <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 4px;">
+            • Adjectives describe <u>WHO</u> someone is (<em>be polite</em>)<br>
+            • Adverbs describe <u>HOW</u> someone acts (<em>speak politely</em>)!
+          </div>
+        </div>
+
+        <button class="btn-big-play" onclick="restartCurrentMission()">
+          <i class="fa-solid fa-rotate-right"></i> Play Another Round
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- TAB 4: PRINTABLE WORKSHEET (Comic Sans MS 14pt) -->
+  <article class="printable-sheet-container" id="panel-worksheet">
+    <div class="ws-header-title">
+      <div style="font-size: 11pt; font-family: sans-serif; font-weight: bold; color: #0284c7; letter-spacing: 1px;">
+        Primary 5 English • Unit 1: Good Behaviour
+      </div>
+      <h1 style="font-size: 20pt; margin: 4pt 0;">🧪 Manners Morph: Adjectives vs. Adverbs Challenge</h1>
+      <h2 style="font-size: 14pt; margin: 0; font-weight: normal; color: #475569;">
+        Distinguishing Form &amp; Transforming Words
+      </h2>
+      <div class="ws-meta-row">
+        <div>Name: _______________________ ( &nbsp;&nbsp;&nbsp;&nbsp; )</div>
+        <div>Class: P.5 _____</div>
+        <div>Date: ________________</div>
+      </div>
+    </div>
+
+    <!-- Part 1 -->
+    <div class="ws-section-banner">
+      Part 1: Sorter Radar — Circle [ ADJECTIVE ] or [ ADVERB ]
+    </div>
+    <p>Read the sentences below. Decide if the underlined word is an <strong>Adjective</strong> (describes person/thing) or an <strong>Adverb</strong> (describes how an action is done).</p>
+
+    <div style="margin: 10pt 0;">
+      <p>1. You don't want people to think you are <u>rude</u>. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>2. Please leave your shoes <u>neatly</u> at the door. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>3. Touching someone's head is very <u>impolite</u>. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>4. In Japan, we should eat noodles <u>noisily</u>. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>5. The dining table should be clean and <u>tidy</u>. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>6. Ziggy never speaks <u>politely</u> to his teacher. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>7. Harry is always very <u>patient</u> in the queue. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>8. Zippy tapped her foot <u>impatiently</u> at the canteen. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+      <p>9. We should not arrive <u>late</u> for the cinema. &nbsp;&nbsp;&rarr;&nbsp;&nbsp; [ <strong>ADJECTIVE</strong> &nbsp;/&nbsp; <strong>ADVERB</strong> ]</p>
+    </div>
+
+    <!-- Part 2 -->
+    <div class="ws-section-banner">
+      Part 2: Suffix Transformer — Morph the Adjectives into Adverbs
+    </div>
+    <p>Use the spelling rules to change the base adjectives into adverbs of manner:</p>
+
+    <table class="ws-grid-table">
+      <thead>
+        <tr>
+          <th>Base Adjective</th>
+          <th>Spelling Rule</th>
+          <th>Adverb of Manner</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>neat</td>
+          <td>add <strong>-ly</strong></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>noisy</td>
+          <td>drop <strong>-y</strong>, add <strong>-ily</strong></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>polite</td>
+          <td>add <strong>-ly</strong></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>patient</td>
+          <td>add <strong>-ly</strong></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>impatient</td>
+          <td>add <strong>-ly</strong></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>messy</td>
+          <td>drop <strong>-y</strong>, add <strong>-ily</strong></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>careful</td>
+          <td>add <strong>-ly</strong> (double l)</td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>early</td>
+          <td><em>Special (no change!)</em></td>
+          <td>_______________________</td>
+        </tr>
+        <tr>
+          <td>late</td>
+          <td><em>Special (no change!)</em></td>
+          <td>_______________________</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Part 3 -->
+    <div class="ws-section-banner">
+      Part 3: Complete with the Correct Word Form
+    </div>
+    <p>Fill in the blanks with the correct form: <strong>adjective</strong> or <strong>adverb</strong>.</p>
+    <p>1. Harry is very __________________ (patient / patiently). He waits __________________ (patient / patiently) in the queue.</p>
+    <p>2. Zippy is very __________________ (impatient / impatiently). She sighs __________________ (impatient / impatiently) when the bus is slow.</p>
+    <p>3. Ziggy has __________________ (loud / loudly) manners. He always talks __________________ (loud / loudly) on the phone.</p>
+    <p>4. We shouldn't be __________________ (late / lately). We must not arrive __________________ (late / lately) at school.</p>
+    <p>5. We should be __________________ (careful / carefully) when we cross the street.</p>
+
+    <div style="text-align: center; margin-top: 16pt;">
+      <button class="btn-control" style="background: #0284c7; color: white; padding: 10px 22px; font-size: 16px;" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> Print This Worksheet (A4)
+      </button>
+    </div>
+  </article>
+
+  <script>
+    let isSoundOn = true;
+    let audioSynth = null;
+
+    function initAudioEngine() {
+      if (!audioSynth && window.Tone) {
+        try {
+          audioSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.005, decay: 0.1, sustain: 0.1, release: 0.8 }
+          }).toDestination();
+          audioSynth.volume.value = -6;
+        } catch (e) {
+          console.warn("Audio init delayed", e);
+        }
+      }
+    }
+
+    function playTone(type) {
+      if (!isSoundOn || !audioSynth) return;
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        const now = Tone.now();
+        if (type === 'correct') {
+          audioSynth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "16n", now);
+        } else if (type === 'wrong') {
+          audioSynth.triggerAttackRelease(["Eb4", "Bb3"], "8n", now);
+        } else if (type === 'gear') {
+          audioSynth.triggerAttackRelease(["A4", "D5"], "32n", now);
+        } else if (type === 'fanfare') {
+          audioSynth.triggerAttackRelease(["C5", "G5", "C6", "E6", "G6"], "8n", now);
+        }
+      } catch (err) {}
+    }
+
+    function toggleAudio() {
+      isSoundOn = !isSoundOn;
+      const btn = document.getElementById('btnSoundToggle');
+      if (isSoundOn) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> SFX: ON';
+        btn.className = 'btn-control sound-on';
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> SFX: OFF';
+        btn.className = 'btn-control sound-off';
+      }
+    }
+
+    let currentMode = 'sorter'; // 'sorter' | 'transformer' | 'arena' | 'worksheet'
+    let score = 0;
+    let streak = 0;
+
+    // Mission 1: Sorter dataset (distinguishing Adj vs Adv with context)
+    const sorterItems = [
+      {
+        sentence: "...leave them <span class='word-highlight-pill'>neatly</span> at the door.",
+        targetWord: "neatly",
+        type: "adverb",
+        rule: "It ends in '-ly' and tells us HOW we leave our shoes (action verb)!"
+      },
+      {
+        sentence: "You don't want people to think you are <span class='word-highlight-pill'>rude</span>!",
+        targetWord: "rude",
+        type: "adjective",
+        rule: "It describes a PERSON ('you') following the linking verb 'are'!"
+      },
+      {
+        sentence: "There we should eat noodles <span class='word-highlight-pill'>noisily</span>!",
+        targetWord: "noisily",
+        type: "adverb",
+        rule: "It tells us HOW Japanese diners eat noodles (action verb)!"
+      },
+      {
+        sentence: "Touching someone's head... It is very <span class='word-highlight-pill'>impolite</span>.",
+        targetWord: "impolite",
+        type: "adjective",
+        rule: "It describes the action/thing ('It') following the verb 'is'!"
+      },
+      {
+        sentence: "We are behaving <span class='word-highlight-pill'>strangely</span>!",
+        targetWord: "strangely",
+        type: "adverb",
+        rule: "It describes HOW we are behaving (action verb)!"
+      },
+      {
+        sentence: "We should be <span class='word-highlight-pill'>careful</span> about body language.",
+        targetWord: "careful",
+        type: "adjective",
+        rule: "It describes our attitude/person following 'should be'!"
+      },
+      {
+        sentence: "The table should be clean and <span class='word-highlight-pill'>tidy</span>.",
+        targetWord: "tidy",
+        type: "adjective",
+        rule: "It describes the dining TABLE (a noun), not an action!"
+      },
+      {
+        sentence: "It is not good manners to eat <span class='word-highlight-pill'>messily</span>.",
+        targetWord: "messily",
+        type: "adverb",
+        rule: "It tells us HOW someone eats at the table (action verb)!"
+      },
+      {
+        sentence: "Ziggy speaks <span class='word-highlight-pill'>rudely</span> to the helper.",
+        targetWord: "rudely",
+        type: "adverb",
+        rule: "It tells us HOW Ziggy speaks (action verb)!"
+      },
+      {
+        sentence: "People have different ideas about what is <span class='word-highlight-pill'>polite</span>.",
+        targetWord: "polite",
+        type: "adjective",
+        rule: "It describes good manners (a condition/noun) after 'is'!"
+      },
+      {
+        sentence: "Harry is very <span class='word-highlight-pill'>patient</span> when waiting in the queue.",
+        targetWord: "patient",
+        type: "adjective",
+        rule: "It describes Harry's calm attitude (a person) after 'is'!"
+      },
+      {
+        sentence: "Ziggy never waits <span class='word-highlight-pill'>patiently</span> for the bus.",
+        targetWord: "patiently",
+        type: "adverb",
+        rule: "It describes HOW Ziggy waits (action verb)!"
+      },
+      {
+        sentence: "Zippy is always <span class='word-highlight-pill'>impatient</span> when lines move slowly.",
+        targetWord: "impatient",
+        type: "adjective",
+        rule: "It describes Zippy's mood/personality (a person) after 'is'!"
+      },
+      {
+        sentence: "She tapped her foot <span class='word-highlight-pill'>impatiently</span> at the counter.",
+        targetWord: "impatiently",
+        type: "adverb",
+        rule: "It tells us HOW she tapped her foot (action verb)!"
+      },
+      {
+        sentence: "We should not be <span class='word-highlight-pill'>late</span> for our morning assembly.",
+        targetWord: "late",
+        type: "adjective",
+        rule: "It describes our state/condition after 'should not be'!"
+      },
+      {
+        sentence: "Ziggy often arrives <span class='word-highlight-pill'>late</span> for his lessons.",
+        targetWord: "late",
+        type: "adverb",
+        rule: "Special word! 'Late' tells us WHEN/HOW he arrives (action verb) with no '-ly'!"
+      }
+    ];
+
+    // Mission 2: Transformer dataset (Morphing Adj -> Adv)
+    const transformerItems = [
+      {
+        baseAdj: "neat",
+        adverb: "neatly",
+        correctRule: "add_ly",
+        ruleExplain: "Base adjective + -ly (neat &rarr; neatly)",
+        sentence: "leave them [neatly] at the door (Line 14)"
+      },
+      {
+        baseAdj: "noisy",
+        adverb: "noisily",
+        correctRule: "drop_y_add_ily",
+        ruleExplain: "Ends in consonant + -y: drop -y, add -ily (noisy &rarr; noisily)",
+        sentence: "eat noodles [noisily] in Japan (Line 26)"
+      },
+      {
+        baseAdj: "polite",
+        adverb: "politely",
+        correctRule: "add_ly",
+        ruleExplain: "Base adjective + -ly (polite &rarr; politely)",
+        sentence: "we should speak [politely] in public (p. 7)"
+      },
+      {
+        baseAdj: "patient",
+        adverb: "patiently",
+        correctRule: "add_ly",
+        ruleExplain: "Base adjective + -ly (patient &rarr; patiently)",
+        sentence: "he waits [patiently] in the line (p. 6)"
+      },
+      {
+        baseAdj: "impatient",
+        adverb: "impatiently",
+        correctRule: "add_ly",
+        ruleExplain: "Prefix im- (not patient) + -ly (impatient &rarr; impatiently)",
+        sentence: "she tapped her foot [impatiently] (p. 6)"
+      },
+      {
+        baseAdj: "messy",
+        adverb: "messily",
+        correctRule: "drop_y_add_ily",
+        ruleExplain: "Ends in -y: drop -y, add -ily (messy &rarr; messily)",
+        sentence: "do not eat [messily] in Western countries (Line 23)"
+      },
+      {
+        baseAdj: "strange",
+        adverb: "strangely",
+        correctRule: "add_ly",
+        ruleExplain: "Base adjective + -ly (strange &rarr; strangely)",
+        sentence: "they are behaving [strangely] (Line 16)"
+      },
+      {
+        baseAdj: "careful",
+        adverb: "carefully",
+        correctRule: "add_ly",
+        ruleExplain: "Base ending in -l: still add -ly, so double 'll' (carefully)",
+        sentence: "listen [carefully] to the teacher"
+      },
+      {
+        baseAdj: "rude",
+        adverb: "rudely",
+        correctRule: "add_ly",
+        ruleExplain: "Base adjective + -ly (rude &rarr; rudely)",
+        sentence: "she speaks [rudely] to the helper (p. 6)"
+      },
+      {
+        baseAdj: "quiet",
+        adverb: "quietly",
+        correctRule: "add_ly",
+        ruleExplain: "Base adjective + -ly (quiet &rarr; quietly)",
+        sentence: "eat them [quietly] (Line 28)"
+      },
+      {
+        baseAdj: "early",
+        adverb: "early",
+        correctRule: "special",
+        ruleExplain: "Special word! 'Early' is already an adverb, so NO CHANGE!",
+        sentence: "she never arrives [early] at school (p. 6)"
+      },
+      {
+        baseAdj: "late",
+        adverb: "late",
+        correctRule: "special",
+        ruleExplain: "Special word! 'Late' stays 'late' as an adverb of time/arrival (NO -ly; 'lately' means recently)!",
+        sentence: "do not arrive [late] for the cinema (p. 7)"
+      },
+      {
+        baseAdj: "good",
+        adverb: "well",
+        correctRule: "special",
+        ruleExplain: "Irregular adverb! 'Good' changes completely into 'well'!",
+        sentence: "he plays the piano very [well]"
+      }
+    ];
+
+    // Mission 3: Arena dataset (Sentence context gap-fill)
+    const arenaItems = [
+      {
+        tag: "PLANET ZOG (PAGE 6)",
+        sentence: "Ziggy never waits <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> in the line.",
+        options: ["patient", "patiently"],
+        correctIndex: 1,
+        explanation: "'Wait' is an action verb, so we need the adverb 'patiently'!"
+      },
+      {
+        tag: "PLANET ZOG (PAGE 6)",
+        sentence: "Zippy is very <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> when waiting for lunch.",
+        options: ["impatient", "impatiently"],
+        correctIndex: 0,
+        explanation: "Comes after 'is very' and describes the alien person Zippy &rarr; use adjective 'impatient'!"
+      },
+      {
+        tag: "PLANET ZOG (PAGE 6)",
+        sentence: "Ziggy tapped his fingers <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> on the desk.",
+        options: ["impatient", "impatiently"],
+        correctIndex: 1,
+        explanation: "'Tapped' is an action verb telling us HOW he tapped &rarr; use adverb 'impatiently'!"
+      },
+      {
+        tag: "PLANET ZOG (PAGE 6)",
+        sentence: "Zippy is very <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> to the canteen helper.",
+        options: ["rude", "rudely"],
+        correctIndex: 0,
+        explanation: "Comes after 'is' and describes the alien person Zippy &rarr; use adjective 'rude'!"
+      },
+      {
+        tag: "PUBLIC PLACES (PAGE 7)",
+        sentence: "We should never arrive <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> for a movie at the cinema.",
+        options: ["late", "lately"],
+        correctIndex: 0,
+        explanation: "'Late' is the special adverb for arriving after scheduled time (same as adjective; 'lately' means recently)!"
+      },
+      {
+        tag: "TEXTBOOK PAGE 2",
+        sentence: "We should be <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> about body language.",
+        options: ["careful", "carefully"],
+        correctIndex: 0,
+        explanation: "Comes after 'should be' to describe our mindset &rarr; use adjective 'careful'!"
+      },
+      {
+        tag: "TEXTBOOK PAGE 3",
+        sentence: "Japanese people don't like eating noodles <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span>.",
+        options: ["quiet", "quietly"],
+        correctIndex: 1,
+        explanation: "Tells us HOW noodles are eaten &rarr; use adverb 'quietly'!"
+      },
+      {
+        tag: "PUBLIC PLACES (PAGE 7)",
+        sentence: "We should speak <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> to the librarian.",
+        options: ["polite", "politely"],
+        correctIndex: 1,
+        explanation: "'Speak' is an action verb &rarr; use adverb of manner 'politely'!"
+      },
+      {
+        tag: "TEXTBOOK PAGE 3",
+        sentence: "The dining table should be clean and <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span>.",
+        options: ["tidy", "tidily"],
+        correctIndex: 0,
+        explanation: "Describes the dining table (noun) &rarr; use adjective 'tidy'!"
+      },
+      {
+        tag: "PLANET ZOG (PAGE 6)",
+        sentence: "On the bus, Ziggy talks <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span> on his phone.",
+        options: ["loud", "loudly"],
+        correctIndex: 1,
+        explanation: "'Talks' is an action verb &rarr; use adverb 'loudly'!"
+      },
+      {
+        tag: "TEXTBOOK PAGE 2",
+        sentence: "English people will think we are behaving <span class='battle-slot-gap' id='arenaGapSlot'>[ ? ? ? ]</span>!",
+        options: ["strange", "strangely"],
+        correctIndex: 1,
+        explanation: "'Behaving' is an action verb &rarr; use adverb 'strangely'!"
+      }
+    ];
+
+    let sorterIdx = 0;
+    let transIdx = 0;
+    let arenaIdx = 0;
+    let isRoundLocked = false;
+
+    function initSorterRound() {
+      isRoundLocked = false;
+      const item = sorterItems[sorterIdx];
+      document.getElementById('lblCurrentStage').innerHTML = '<i class="fa-solid fa-radar"></i> Mission 1 • Sorter Radar';
+      document.getElementById('valQuestionIndex').textContent = sorterIdx + 1;
+      document.getElementById('valQuestionTotal').textContent = sorterItems.length;
+
+      const card = document.getElementById('sorterWordCard');
+      card.className = 'target-word-card';
+      document.getElementById('sorterSentence').innerHTML = `"${item.sentence}"`;
+      document.getElementById('sorterClueHint').innerHTML = `Highlighted word: <strong>${item.targetWord}</strong>`;
+
+      document.getElementById('sorterFeedbackBar').className = 'round-feedback-banner';
+      document.getElementById('sorterFeedbackText').innerHTML = "Does this word describe a <strong>PERSON/NOUN</strong> or an <strong>ACTION VERB</strong>?";
+      document.getElementById('btnSorterNext').style.display = 'none';
+
+      document.getElementById('btnSortAdj').disabled = false;
+      document.getElementById('btnSortAdv').disabled = false;
+    }
+
+    function handleSortChoice(chosenType) {
+      if (isRoundLocked) return;
+      isRoundLocked = true;
+      initAudioEngine();
+
+      const item = sorterItems[sorterIdx];
+      const isCorrect = chosenType === item.type;
+      const card = document.getElementById('sorterWordCard');
+      const bar = document.getElementById('sorterFeedbackBar');
+      const text = document.getElementById('sorterFeedbackText');
+
+      document.getElementById('btnSortAdj').disabled = true;
+      document.getElementById('btnSortAdv').disabled = true;
+
+      if (isCorrect) {
+        score += 100 + (streak * 20);
+        streak++;
+        playTone('correct');
+        card.classList.add('pop-correct');
+        bar.className = 'round-feedback-banner feedback-correct';
+        text.innerHTML = `🎉 <strong>CORRECT!</strong> ${item.targetWord.toUpperCase()} is an <u>${item.type.toUpperCase()}</u>. ${item.rule}`;
+      } else {
+        streak = 0;
+        playTone('wrong');
+        card.classList.add('pop-wrong');
+        bar.className = 'round-feedback-banner feedback-wrong';
+        text.innerHTML = `⚠️ <strong>NOT QUITE!</strong> ${item.targetWord.toUpperCase()} is an <u>${item.type.toUpperCase()}</u>. ${item.rule}`;
+      }
+
+      updateStatusMeters();
+      document.getElementById('btnSorterNext').style.display = 'inline-flex';
+    }
+
+    function nextSorterQuestion() {
+      playTone('gear');
+      if (sorterIdx < sorterItems.length - 1) {
+        sorterIdx++;
+        initSorterRound();
+      } else {
+        showVictory("You have conquered Mission 1! You can now tell Adjectives from Adverbs with ease!");
+      }
+    }
+
+    function initTransformerRound() {
+      isRoundLocked = false;
+      const item = transformerItems[transIdx];
+      document.getElementById('lblCurrentStage').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Mission 2 • Morph Workshop';
+      document.getElementById('valQuestionIndex').textContent = transIdx + 1;
+      document.getElementById('valQuestionTotal').textContent = transformerItems.length;
+
+      document.getElementById('transBaseAdj').textContent = item.baseAdj;
+      const targetSlot = document.getElementById('transTargetSlot');
+      targetSlot.textContent = "? ? ? ?";
+      targetSlot.className = 'adverb-target-slot';
+      document.getElementById('transSentencePreview').innerHTML = `Example: "${item.sentence}"`;
+
+      document.getElementById('transFeedbackBar').className = 'round-feedback-banner';
+      document.getElementById('transFeedbackText').innerHTML = `How does <strong>${item.baseAdj}</strong> transform into an adverb of manner?`;
+      document.getElementById('btnTransNext').style.display = 'none';
+
+      document.querySelectorAll('.rule-gear-btn').forEach(b => b.disabled = false);
+    }
+
+    function handleTransformerChoice(rulePicked) {
+      if (isRoundLocked) return;
+      isRoundLocked = true;
+      initAudioEngine();
+
+      const item = transformerItems[transIdx];
+      const isCorrect = rulePicked === item.correctRule;
+      const targetSlot = document.getElementById('transTargetSlot');
+      const bar = document.getElementById('transFeedbackBar');
+      const text = document.getElementById('transFeedbackText');
+
+      document.querySelectorAll('.rule-gear-btn').forEach(b => b.disabled = true);
+
+      targetSlot.textContent = item.adverb;
+      targetSlot.classList.add('filled');
+
+      if (isCorrect) {
+        score += 120 + (streak * 25);
+        streak++;
+        playTone('correct');
+        bar.className = 'round-feedback-banner feedback-correct';
+        text.innerHTML = `✨ <strong>EXCELLENT!</strong> ${item.baseAdj} &rarr; <strong>${item.adverb}</strong>. (${item.ruleExplain})`;
+      } else {
+        streak = 0;
+        playTone('wrong');
+        bar.className = 'round-feedback-banner feedback-wrong';
+        text.innerHTML = `💡 <strong>REMEMBER:</strong> ${item.baseAdj} &rarr; <strong>${item.adverb}</strong>. (${item.ruleExplain})`;
+      }
+
+      updateStatusMeters();
+      document.getElementById('btnTransNext').style.display = 'inline-flex';
+    }
+
+    function nextTransformerQuestion() {
+      playTone('gear');
+      if (transIdx < transformerItems.length - 1) {
+        transIdx++;
+        initTransformerRound();
+      } else {
+        showVictory("Sensational! You mastered the 3 Spelling Transformation Rules for Adverbs of Manner!");
+      }
+    }
+
+    function initArenaRound() {
+      isRoundLocked = false;
+      const item = arenaItems[arenaIdx];
+      document.getElementById('lblCurrentStage').innerHTML = '<i class="fa-solid fa-gamepad"></i> Mission 3 • Sentence Arena';
+      document.getElementById('valQuestionIndex').textContent = arenaIdx + 1;
+      document.getElementById('valQuestionTotal').textContent = arenaItems.length;
+
+      document.getElementById('arenaContextTag').textContent = `SCENARIO ${arenaIdx + 1} • ${item.tag}`;
+      document.getElementById('arenaSentence').innerHTML = item.sentence;
+      document.getElementById('arenaGrammarClue').innerHTML = `🔎 Tip: Look at the verb right in front of the blank!`;
+
+      const btnA = document.getElementById('btnBattleOptA');
+      const btnB = document.getElementById('btnBattleOptB');
+      btnA.className = 'battle-opt-btn';
+      btnB.className = 'battle-opt-btn';
+      btnA.disabled = false;
+      btnB.disabled = false;
+      document.getElementById('txtBattleOptA').textContent = item.options[0];
+      document.getElementById('txtBattleOptB').textContent = item.options[1];
+
+      document.getElementById('arenaFeedbackBar').className = 'round-feedback-banner';
+      document.getElementById('arenaFeedbackText').innerHTML = "Choose the correct word to fit the sentence!";
+      document.getElementById('btnArenaNext').style.display = 'none';
+    }
+
+    function handleBattleChoice(optionIndex) {
+      if (isRoundLocked) return;
+      isRoundLocked = true;
+      initAudioEngine();
+
+      const item = arenaItems[arenaIdx];
+      const isCorrect = optionIndex === item.correctIndex;
+      const chosenBtn = optionIndex === 0 ? document.getElementById('btnBattleOptA') : document.getElementById('btnBattleOptB');
+      const correctBtn = item.correctIndex === 0 ? document.getElementById('btnBattleOptA') : document.getElementById('btnBattleOptB');
+      const gapSlot = document.getElementById('arenaGapSlot');
+      const bar = document.getElementById('arenaFeedbackBar');
+      const text = document.getElementById('arenaFeedbackText');
+
+      document.getElementById('btnBattleOptA').disabled = true;
+      document.getElementById('btnBattleOptB').disabled = true;
+
+      gapSlot.textContent = item.options[item.correctIndex];
+      gapSlot.classList.add('solved');
+
+      if (isCorrect) {
+        score += 150 + (streak * 30);
+        streak++;
+        playTone('correct');
+        chosenBtn.classList.add('correct-choice');
+        bar.className = 'round-feedback-banner feedback-correct';
+        text.innerHTML = `🎯 <strong>BULLSEYE!</strong> ${item.explanation}`;
+      } else {
+        streak = 0;
+        playTone('wrong');
+        chosenBtn.classList.add('wrong-choice');
+        correctBtn.classList.add('correct-choice');
+        bar.className = 'round-feedback-banner feedback-wrong';
+        text.innerHTML = `🛡️ <strong>CAREFUL:</strong> ${item.explanation}`;
+      }
+
+      updateStatusMeters();
+      document.getElementById('btnArenaNext').style.display = 'inline-flex';
+    }
+
+    function nextArenaQuestion() {
+      playTone('gear');
+      if (arenaIdx < arenaItems.length - 1) {
+        arenaIdx++;
+        initArenaRound();
+      } else {
+        showVictory("SUPERSTAR! You've achieved complete mastery of Adjectives vs. Adverbs in context!");
+      }
+    }
+
+    function updateStatusMeters() {
+      document.getElementById('valScore').textContent = score;
+      document.getElementById('valStreak').textContent = streak;
+    }
+
+    function switchGameMode(mode) {
+      initAudioEngine();
+      playTone('gear');
+      currentMode = mode;
+
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.mission-panel, .printable-sheet-container').forEach(p => p.classList.remove('active-mode'));
+
+      document.getElementById(`tab-${mode}`).classList.add('active');
+
+      if (mode === 'sorter') {
+        document.getElementById('panel-sorter').classList.add('active-mode');
+        initSorterRound();
+      } else if (mode === 'transformer') {
+        document.getElementById('panel-transformer').classList.add('active-mode');
+        initTransformerRound();
+      } else if (mode === 'arena') {
+        document.getElementById('panel-arena').classList.add('active-mode');
+        initArenaRound();
+      } else if (mode === 'worksheet') {
+        document.getElementById('panel-worksheet').classList.add('active-mode');
+      }
+    }
+
+    function resetCurrentMode() {
+      if (currentMode === 'sorter') {
+        sorterIdx = 0;
+        initSorterRound();
+      } else if (currentMode === 'transformer') {
+        transIdx = 0;
+        initTransformerRound();
+      } else if (currentMode === 'arena') {
+        arenaIdx = 0;
+        initArenaRound();
+      }
+    }
+
+    function showVictory(msg) {
+      playTone('fanfare');
+      fireConfetti();
+      document.getElementById('victoryMsg').textContent = msg;
+      document.getElementById('victoryModal').classList.add('show');
+    }
+
+    function restartCurrentMission() {
+      document.getElementById('victoryModal').classList.remove('show');
+      resetCurrentMode();
+    }
+
+    function fireConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.height = canvas.parentElement.offsetHeight;
+
+      const particles = [];
+      const colors = ['#f59e0b', '#10b981', '#38bdf8', '#c084fc', '#f43f5e'];
+
+      for (let i = 0; i < 80; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.7) * 16,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * 360,
+          dRot: (Math.random() - 0.5) * 8
+        });
+      }
+
+      let frame = 0;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // Gravity
+          p.rot += p.dRot;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        frame++;
+        if (frame < 120) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      render();
+    }
+
+    // Keyboard controls (Arrow keys for sorting & advancing)
+    window.addEventListener('keydown', (e) => {
+      if (currentMode === 'sorter' && !isRoundLocked) {
+        if (e.key === 'ArrowLeft') {
+          handleSortChoice('adjective');
+        } else if (e.key === 'ArrowRight') {
+          handleSortChoice('adverb');
+        }
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (currentMode === 'sorter' && isRoundLocked) nextSorterQuestion();
+        else if (currentMode === 'transformer' && isRoundLocked) nextTransformerQuestion();
+        else if (currentMode === 'arena' && isRoundLocked) nextArenaQuestion();
+      }
+    });
+
+    // Window Onload initialization
+    window.onload = function() {
+      initSorterRound();
+    };
+  </script>
+</body>
+</html>
