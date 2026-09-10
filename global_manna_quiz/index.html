@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Manners Passport — P5 Reading Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <style>
+    :root {
+      --bg-sky: #e0f2fe;
+      --navy: #0f172a;
+      --blue-main: #2563eb;
+      --blue-dark: #1d4ed8;
+      --emerald: #10b981;
+      --emerald-dark: #059669;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --card-bg: #ffffff;
+      --font-display: 'Fredoka', 'Comic Sans MS', sans-serif;
+      --font-body: 'Quicksand', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #bae6fd 0%, #0284c7 100%);
+      font-family: var(--font-body);
+      color: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    #game-container {
+      width: 100%;
+      max-width: 1000px;
+      min-height: 640px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3), 0 0 0 6px #ffffff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid #38bdf8;
+    }
+
+    /* Top Action & Status Bar */
+    .game-header {
+      background: #f8fafc;
+      border-bottom: 3px solid #e2e8f0;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-pill {
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .stat-pill.score-pill {
+      border-color: #f59e0b;
+      color: #b45309;
+      background: #fffbeb;
+    }
+
+    .stat-pill.streak-pill {
+      border-color: #ec4899;
+      color: #be185d;
+      background: #fdf2f8;
+    }
+
+    .stat-pill.q-pill {
+      border-color: #3b82f6;
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .passport-tracker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 18px;
+      background: #f1f5f9;
+      border-bottom: 2px solid #e2e8f0;
+      overflow-x: auto;
+    }
+
+    .stamp-slot {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px dashed #94a3b8;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #94a3b8;
+      font-weight: 700;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .stamp-slot.collected {
+      border: 2px solid #10b981;
+      background: #d1fae5;
+      color: #065f46;
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .stamp-slot.current {
+      border: 2.5px solid #2563eb;
+      background: #dbeafe;
+      color: #1d4ed8;
+      transform: scale(1.15);
+      animation: pulseSlot 1.5s infinite;
+    }
+
+    @keyframes pulseSlot {
+      0%, 100% { transform: scale(1.15); box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+      50% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(37,99,235,0); }
+    }
+
+    /* Main Play Area */
+    .play-stage {
+      flex: 1;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .question-card {
+      background: #eff6ff;
+      border: 3px solid #bfdbfe;
+      border-left: 8px solid var(--blue-main);
+      border-radius: 18px;
+      padding: 18px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .country-tag {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 4px 12px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .line-ref {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+      background: #ffffff;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .question-prompt {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: #0f172a;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 720px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      .question-prompt {
+        font-size: 20px;
+      }
+    }
+
+    .option-btn {
+      background: #f8fafc;
+      border: 3px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 800;
+      color: #1e293b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 0 #cbd5e1;
+      text-align: left;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #94a3b8;
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #94a3b8;
+    }
+
+    .opt-letter {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #e2e8f0;
+      color: #1e293b;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    /* Option States */
+    .option-btn.correct {
+      background: #d1fae5 !important;
+      border-color: #10b981 !important;
+      color: #065f46 !important;
+      box-shadow: 0 4px 0 #059669 !important;
+      animation: bounceCard 0.45s ease;
+    }
+
+    .option-btn.correct .opt-letter {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .option-btn.wrong {
+      background: #ffe4e6 !important;
+      border-color: #f43f5e !important;
+      color: #9f1239 !important;
+      box-shadow: 0 4px 0 #be123c !important;
+      animation: shakeCard 0.4s ease;
+    }
+
+    .option-btn.wrong .opt-letter {
+      background: #f43f5e;
+      color: #ffffff;
+    }
+
+    .option-btn.dimmed {
+      opacity: 0.35;
+      filter: grayscale(0.7);
+      cursor: not-allowed;
+    }
+
+    @keyframes bounceCard {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    @keyframes shakeCard {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .toolbar-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid #f1f5f9;
+      padding-top: 14px;
+      gap: 10px;
+    }
+
+    .lifeline-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-tool {
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 0 #cbd5e1;
+      transition: all 0.2s ease;
+    }
+
+    .btn-tool:hover:not(:disabled) {
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .btn-tool:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-tool.btn-clue {
+      border-color: #38bdf8;
+      color: #0369a1;
+      background: #f0f9ff;
+    }
+
+    .btn-tool.btn-fifty {
+      border-color: #a855f7;
+      color: #7e22ce;
+      background: #faf5ff;
+    }
+
+    /* Next Question / Continue Bar */
+    .feedback-dock {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 2.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 12px 20px;
+      margin-top: 10px;
+      animation: popFade 0.3s ease;
+    }
+
+    .feedback-dock.show {
+      display: flex;
+    }
+
+    .feedback-dock.is-correct {
+      background: #ecfdf5;
+      border-color: #34d399;
+    }
+
+    .feedback-dock.is-wrong {
+      background: #fff1f2;
+      border-color: #fda4af;
+    }
+
+    .feedback-text {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .is-correct .feedback-text { color: #065f46; }
+    .is-wrong .feedback-text { color: #9f1239; }
+
+    .btn-next {
+      background: var(--blue-main);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 24px;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--blue-dark);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-next:hover {
+      background: var(--blue-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #1e3a8a;
+    }
+
+    @keyframes popFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px 36px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border: 4px solid var(--blue-main);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-card h2 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+
+    .modal-card p {
+      font-size: 18px;
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .btn-large {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 34px;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #047857;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-large:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #065f46;
+    }
+
+    /* Canvas for Victory Confetti */
+    #confetti-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Game Card Frame -->
+  <div id="game-container">
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="game-header">
+      <div class="badge-group">
+        <span class="stat-pill q-pill">
+          <i class="fa-solid fa-map-location-dot"></i> Question <span id="q-number">1</span>/10
+        </span>
+        <span class="stat-pill score-pill">
+          <i class="fa-solid fa-star"></i> <span id="score-val">0</span> pts
+        </span>
+        <span class="stat-pill streak-pill">
+          <i class="fa-solid fa-fire"></i> <span id="streak-val">0</span> Streak
+        </span>
+      </div>
+
+      <div class="badge-group">
+        <button id="btn-sound" class="btn-tool" onclick="toggleSound()" title="Sound Effects Toggle">
+          <i class="fa-solid fa-volume-high"></i> Sound
+        </button>
+        <button class="btn-tool" onclick="restartGame()" title="Restart Quiz">
+          <i class="fa-solid fa-rotate-right"></i> Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="passport-tracker" id="passport-bar">
+      <!-- 10 stamp bubbles populated via JS -->
+    </div>
+
+    <!-- Question Stage -->
+    <div class="play-stage">
+      <div class="question-card">
+        <div class="question-meta">
+          <span class="country-tag" id="q-country">
+            <i class="fa-solid fa-earth-americas"></i> Global Manners
+          </span>
+          <span class="line-ref" id="q-lines">Lines 1–3</span>
+        </div>
+        <div class="question-prompt" id="q-prompt">
+          Loading question prompt...
+        </div>
+      </div>
+
+      <div class="options-grid" id="options-box">
+        <!-- 4 options generated dynamically -->
+      </div>
+
+      <!-- Bottom Feedback Dock (Shown after click) -->
+      <div class="feedback-dock" id="feedback-dock">
+        <div class="feedback-text" id="feedback-msg">
+          <i class="fa-solid fa-circle-check"></i> Great job!
+        </div>
+        <button class="btn-next" onclick="nextQuestion()">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Lifeline Toolbar -->
+      <div class="toolbar-bottom" id="lifeline-bar">
+        <div class="lifeline-box">
+          <button id="btn-fifty" class="btn-tool btn-fifty" onclick="useFiftyFifty()">
+            <i class="fa-solid fa-scissors"></i> 50:50 Lifeline
+          </button>
+          <button id="btn-clue" class="btn-tool btn-clue" onclick="showTextbookClue()">
+            <i class="fa-solid fa-book-open"></i> Textbook Clue
+          </button>
+        </div>
+        <div style="font-size: 14px; font-weight: 700; color: #64748b;">
+          Unit 1: Good Manners? Bad Manners?
+        </div>
+      </div>
+    </div>
+
+    <!-- Start Screen Modal -->
+    <div class="modal-overlay active" id="start-modal">
+      <div class="modal-card">
+        <div style="font-size: 54px; margin-bottom: 12px;">🌏✈️</div>
+        <h2>Global Manners Quest!</h2>
+        <p>
+          Welcome, P5 Manners Detectives! Fly around the world, answer 10 questions from textbook pages 2–3, collect all 10 passport stamps, and prove you're a polite global citizen!
+        </p>
+        <button class="btn-large" onclick="startGame()">
+          <i class="fa-solid fa-play"></i> Start Mission
+        </button>
+      </div>
+    </div>
+
+    <!-- Textbook Clue Modal -->
+    <div class="modal-overlay" id="clue-modal">
+      <div class="modal-card">
+        <div style="font-size: 46px; margin-bottom: 10px;">📖🔍</div>
+        <h2>Textbook Clue</h2>
+        <p id="clue-text" style="background: #f1f5f9; padding: 14px; border-radius: 12px; font-style: italic; border-left: 4px solid #0284c7; text-align: left;">
+          Clue text goes here...
+        </p>
+        <button class="btn-tool" style="padding: 10px 24px; font-size: 17px;" onclick="closeModal('clue-modal')">
+          Got it! Back to Game
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Over / Victory Modal -->
+    <div class="modal-overlay" id="end-modal">
+      <div class="modal-card">
+        <div style="font-size: 60px; margin-bottom: 12px;" id="end-icon">🏆</div>
+        <h2 id="end-title">Passport Completed!</h2>
+        <p id="end-summary">
+          You answered 10/10 questions correctly with 1,200 points!
+        </p>
+        <div style="background: #eff6ff; border: 2px dashed #93c5fd; border-radius: 14px; padding: 12px 18px; margin-bottom: 22px; font-weight: 700; color: #1e40af;">
+          🌟 Golden Rule Master: <em>"You should respect one another's cultures."</em> (Line 31)
+        </div>
+        <button class="btn-large" onclick="restartGame()">
+          <i class="fa-solid fa-rotate-right"></i> Play Again
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /**
+     * 10 Curriculum-Aligned Questions covering Lines 1–31
+     */
+    const questions = [
+      {
+        country: "Global Travellers",
+        flag: "🌏",
+        lines: "Lines 1–3",
+        prompt: "Why is it important to know how to behave when travelling abroad?",
+        options: [
+          "To practice speaking English fast.",
+          "We do not want people to think we are rude.",
+          "To spend less money on airplane tickets.",
+          "To make foreigners laugh loudly."
+        ],
+        answer: 1,
+        clue: "Look at lines 2–3: 'You don't want people to think you are rude!'",
+        feedback: "Correct! We want people in other countries to know we are polite and considerate."
+      },
+      {
+        country: "India & Thailand",
+        flag: "🇮🇳 🇹🇭",
+        lines: "Lines 4–7",
+        prompt: "In India and Thailand, what should we NEVER do with our fingers or feet?",
+        options: [
+          "We should not point with them.",
+          "We should not wear shoes outside.",
+          "We should not shake hands with friends.",
+          "We should not walk fast."
+        ],
+        answer: 0,
+        clue: "Check line 5: 'We should not point with our fingers or feet in India or Thailand.'",
+        feedback: "Spot on! Pointing with fingers or the soles of your feet is considered offensive."
+      },
+      {
+        country: "Malaysia & Thailand",
+        flag: "🇲🇾 🇹🇭",
+        lines: "Lines 8–10",
+        prompt: "Why must you NEVER touch someone's head in Malaysia or Thailand?",
+        options: [
+          "It will make their hair messy.",
+          "People think you want to cut their hair.",
+          "The head is considered special and important.",
+          "It brings bad luck for the weather."
+        ],
+        answer: 2,
+        clue: "Line 8–9 says: 'In many Asian countries, the head is important.'",
+        feedback: "Awesome! The head is regarded as the highest, most sacred part of the body."
+      },
+      {
+        country: "Japan",
+        flag: "🇯🇵",
+        lines: "Lines 11–14",
+        prompt: "If Japanese friends invite you to their home, what should you do with your shoes?",
+        options: [
+          "Wear them straight into the living room.",
+          "Take them off and leave them neatly at the door.",
+          "Throw them into a bag.",
+          "Put them outside on the street."
+        ],
+        answer: 1,
+        clue: "Lines 12–14: '...we should take off our shoes and leave them neatly at the door.'",
+        feedback: "Well done! 'Neatly' means tidily and arranged in an orderly line."
+      },
+      {
+        country: "England",
+        flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        lines: "Lines 14–16",
+        prompt: "According to the text, what will most English people think if you remove your shoes?",
+        options: [
+          "They will think you are behaving strangely.",
+          "They will give you new slippers.",
+          "They will clap and give you a prize.",
+          "They will feel very angry."
+        ],
+        answer: 0,
+        clue: "Line 16: 'Most English people will think we are behaving strangely!'",
+        feedback: "Super detective work! 'Strangely' means in an unusual, weird way."
+      },
+      {
+        country: "India",
+        flag: "🇮🇳",
+        lines: "Lines 17–20",
+        prompt: "According to the article, how can people eat rice in India?",
+        options: [
+          "Only with large soup spoons.",
+          "With their fingers, but NEVER the left hand.",
+          "With their fingers using both hands equally.",
+          "Only by drinking it with a straw."
+        ],
+        answer: 1,
+        clue: "Lines 19–20: 'Just remember we should not use our left hands because it is rude.'",
+        feedback: "Excellent! The right hand is traditionally used for clean tasks and food."
+      },
+      {
+        country: "Reading Detective",
+        flag: "🔍",
+        lines: "Lines 17–19",
+        prompt: "Look at the sentence: '...in India, we can eat IT with our fingers.' What does 'it' refer to?",
+        options: [
+          "chopsticks",
+          "rice",
+          "the spoon",
+          "the table"
+        ],
+        answer: 1,
+        clue: "Line 17 starts: 'In China, we usually eat rice... in India, we can eat it...'",
+        feedback: "Sharp reading skills! 'It' refers to the rice mentioned earlier in the sentence."
+      },
+      {
+        country: "Western Countries",
+        flag: "🍴",
+        lines: "Lines 20–24",
+        prompt: "In Western countries, how should the dining table look when you finish eating?",
+        options: [
+          "The table should be clean and tidy.",
+          "Messy with bones and food all over.",
+          "Left with spilled soup to show you enjoyed it.",
+          "Piled high with dirty napkins."
+        ],
+        answer: 0,
+        clue: "Lines 23–24: 'The table should be clean and tidy when we finish eating.'",
+        feedback: "Correct! In the West, eating messily is considered impolite table manners."
+      },
+      {
+        country: "Japan",
+        flag: "🇯🇵 🍜",
+        lines: "Lines 24–28",
+        prompt: "Why should you eat noodles NOISILY in Japan?",
+        options: [
+          "Because Japanese law commands it.",
+          "It signals the waiter to bring more tea.",
+          "People say noodles do not taste good if eaten quietly!",
+          "It helps you finish eating faster."
+        ],
+        answer: 2,
+        clue: "Lines 27–28: 'Japanese people say noodles do not taste good if we eat them quietly!'",
+        feedback: "Slurp! Slurping shows the chef you are enjoying every mouthful while cooling the soup!"
+      },
+      {
+        country: "The Golden Rule",
+        flag: "🌟",
+        lines: "Lines 29–31",
+        prompt: "If you are not sure about good manners in a new country, what should you do?",
+        options: [
+          "Ask people politely, and respect their cultures.",
+          "Stay inside your hotel room forever.",
+          "Only do whatever you do at home.",
+          "Guess by watching funny cartoon shows."
+        ],
+        answer: 0,
+        clue: "Lines 30–31: 'If you are not sure, you should ask... you should respect one another's cultures.'",
+        feedback: "Hooray! The universal rule is to ask with humility and show respect to everyone!"
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let streak = 0;
+    let soundEnabled = true;
+    let answered = false;
+    let synth = null;
+
+    function initAudio() {
+      if (!synth && window.Tone) {
+        try {
+          synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -6;
+        } catch (e) {
+          console.warn("Audio init deferred", e);
+        }
+      }
+    }
+
+    function playTone(type) {
+      if (!soundEnabled || !synth) return;
+      try {
+        if (Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        const now = Tone.now();
+        if (type === 'correct') {
+          synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n", now);
+        } else if (type === 'wrong') {
+          synth.triggerAttackRelease(["F3", "D3"], "4n", now);
+        } else if (type === 'click') {
+          synth.triggerAttackRelease("A5", "32n", now);
+        } else if (type === 'fanfare') {
+          synth.triggerAttackRelease(["C5", "G5", "C6", "E6"], "2n", now);
+        }
+      } catch (err) {
+        // Silent catch for unsupported browsers
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('btn-sound');
+      if (soundEnabled) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Sound';
+        btn.style.color = '#334155';
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> Muted';
+        btn.style.color = '#ef4444';
+      }
+    }
+
+    function buildPassportBar() {
+      const bar = document.getElementById('passport-bar');
+      bar.innerHTML = '';
+      questions.forEach((q, idx) => {
+        const slot = document.createElement('div');
+        slot.className = `stamp-slot ${idx === 0 ? 'current' : ''}`;
+        slot.id = `stamp-${idx}`;
+        slot.innerHTML = q.flag || (idx + 1);
+        slot.title = `Question ${idx + 1}: ${q.country}`;
+        bar.appendChild(slot);
+      });
+    }
+
+    function loadQuestion(index) {
+      answered = false;
+      const q = questions[index];
+
+      // Update counters & tags
+      document.getElementById('q-number').textContent = index + 1;
+      document.getElementById('q-country').innerHTML = `${q.flag} ${q.country}`;
+      document.getElementById('q-lines').textContent = q.lines;
+      document.getElementById('q-prompt').textContent = q.prompt;
+
+      // Update passport slot highlight
+      document.querySelectorAll('.stamp-slot').forEach((slot, i) => {
+        slot.classList.remove('current');
+        if (i === index && !slot.classList.contains('collected')) {
+          slot.classList.add('current');
+        }
+      });
+
+      // Reset feedback dock
+      const dock = document.getElementById('feedback-dock');
+      dock.className = 'feedback-dock';
+
+      // Reset lifelines
+      document.getElementById('btn-fifty').disabled = false;
+      document.getElementById('btn-clue').disabled = false;
+
+      // Generate Option Buttons
+      const optBox = document.getElementById('options-box');
+      optBox.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.id = `opt-${optIdx}`;
+        btn.onclick = () => selectOption(optIdx);
+
+        btn.innerHTML = `
+          <span class="opt-letter">${letters[optIdx]}</span>
+          <span>${optText}</span>
+        `;
+        optBox.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIdx) {
+      if (answered) return;
+      answered = true;
+
+      initAudio();
+      const q = questions[currentQ];
+      const isCorrect = selectedIdx === q.answer;
+      const chosenBtn = document.getElementById(`opt-${selectedIdx}`);
+      const correctBtn = document.getElementById(`opt-${q.answer}`);
+      const stampSlot = document.getElementById(`stamp-${currentQ}`);
+
+      // Disable all options
+      document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+      document.getElementById('btn-fifty').disabled = true;
+      document.getElementById('btn-clue').disabled = true;
+
+      const dock = document.getElementById('feedback-dock');
+      const msg = document.getElementById('feedback-msg');
+
+      if (isCorrect) {
+        streak++;
+        const pointsGained = 100 + (streak > 1 ? (streak - 1) * 20 : 0);
+        score += pointsGained;
+        playTone('correct');
+
+        chosenBtn.classList.add('correct');
+        stampSlot.classList.add('collected');
+        stampSlot.classList.remove('current');
+        stampSlot.innerHTML = '✔';
+
+        dock.className = 'feedback-dock show is-correct';
+        msg.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>Brilliant!</strong> ${q.feedback}`;
+      } else {
+        streak = 0;
+        playTone('wrong');
+
+        chosenBtn.classList.add('wrong');
+        correctBtn.classList.add('correct');
+
+        dock.className = 'feedback-dock show is-wrong';
+        msg.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <strong>Oops!</strong> ${q.feedback}`;
+      }
+
+      // Update Top Badges
+      document.getElementById('score-val').textContent = score;
+      document.getElementById('streak-val').textContent = streak;
+    }
+
+    function useFiftyFifty() {
+      if (answered) return;
+      initAudio();
+      playTone('click');
+
+      const q = questions[currentQ];
+      const wrongIndices = [0, 1, 2, 3].filter(idx => idx !== q.answer);
+
+      // Randomly pick 2 wrong options to hide
+      wrongIndices.sort(() => Math.random() - 0.5);
+      const toHide = wrongIndices.slice(0, 2);
+
+      toHide.forEach(idx => {
+        const btn = document.getElementById(`opt-${idx}`);
+        if (btn) btn.classList.add('dimmed');
+      });
+
+      document.getElementById('btn-fifty').disabled = true;
+    }
+
+    function showTextbookClue() {
+      initAudio();
+      playTone('click');
+      const q = questions[currentQ];
+      document.getElementById('clue-text').textContent = q.clue;
+      document.getElementById('clue-modal').classList.add('active');
+      document.getElementById('btn-clue').disabled = true;
+    }
+
+    function closeModal(modalId) {
+      playTone('click');
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function nextQuestion() {
+      playTone('click');
+      if (currentQ < questions.length - 1) {
+        currentQ++;
+        loadQuestion(currentQ);
+      } else {
+        finishGame();
+      }
+    }
+
+    function finishGame() {
+      playTone('fanfare');
+      fireConfetti();
+
+      const modal = document.getElementById('end-modal');
+      const summary = document.getElementById('end-summary');
+      const title = document.getElementById('end-title');
+
+      if (score >= 1000) {
+        title.textContent = "🏆 Global Etiquette Master!";
+        summary.innerHTML = `Magnificent! You scored <strong>${score} points</strong> and collected all 10 international passport stamps!`;
+      } else {
+        title.textContent = "🌏 Polite World Explorer!";
+        summary.innerHTML = `Well done! You scored <strong>${score} points</strong>. Keep practicing your cultural manners!`;
+      }
+
+      modal.classList.add('active');
+    }
+
+    function startGame() {
+      initAudio();
+      playTone('click');
+      document.getElementById('start-modal').classList.remove('active');
+      restartGame();
+    }
+
+    function restartGame() {
+      currentQ = 0;
+      score = 0;
+      streak = 0;
+      document.getElementById('score-val').textContent = score;
+      document.getElementById('streak-val').textContent = streak;
+      document.getElementById('end-modal').classList.remove('active');
+      document.getElementById('clue-modal').classList.remove('active');
+      buildPassportBar();
+      loadQuestion(0);
+    }
+
+    function fireConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.height = canvas.parentElement.offsetHeight;
+
+      const particles = [];
+      const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.7) * 14,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          dRot: (Math.random() - 0.5) * 10
+        });
+      }
+
+      let frame = 0;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.3; // Gravity
+          p.rotation += p.dRot;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        frame++;
+        if (frame < 120) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      render();
+    }
+
+    // Initialize on window load
+    window.onload = () => {
+      buildPassportBar();
+      loadQuestion(0);
+    };
+  </script>
+</body>
+</html>
