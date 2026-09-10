@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secret Agent: The Manners & Behaviour Word Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700;800&family=VT323&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <style>
+    :root {
+      --agent-bg: #090d16;
+      --agent-card: #131b2e;
+      --agent-accent: #00f0ff;
+      --agent-emerald: #10b981;
+      --agent-amber: #f59e0b;
+      --agent-rose: #f43f5e;
+      --font-code: 'VT323', monospace;
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Quicksand', system-ui, sans-serif;
+    }
+
+    body {
+      background-color: var(--agent-bg);
+      color: #f8fafc;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      margin: 0;
+      padding: 12px;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* Spy Radar Scanline Effect */
+    .radar-grid {
+      background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .cipher-letter-box {
+      width: 44px;
+      height: 52px;
+      background: #1e293b;
+      border: 2px solid #38bdf8;
+      border-radius: 8px;
+      font-family: var(--font-code);
+      font-size: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #38bdf8;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .cipher-letter-box.unlocked {
+      background: #064e3b;
+      border-color: #34d399;
+      color: #34d399;
+      box-shadow: 0 0 16px rgba(52, 211, 153, 0.5);
+      transform: scale(1.06);
+    }
+
+    .cipher-letter-box.current {
+      border-color: #f59e0b;
+      color: #f59e0b;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+      animation: pulseBox 1.2s infinite;
+    }
+
+    @keyframes pulseBox {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .key-pad-btn {
+      background: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: #e2e8f0;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 0 #334155;
+      text-transform: uppercase;
+    }
+
+    .key-pad-btn:hover:not(:disabled) {
+      background: #334155;
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 #1e293b;
+    }
+
+    .key-pad-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1e293b;
+    }
+
+    .key-pad-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: #334155;
+      box-shadow: none;
+    }
+
+    .secret-badge {
+      font-family: var(--font-code);
+      letter-spacing: 1px;
+    }
+
+    /* Comic Sans Printable Sheet styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .printable-mission-sheet {
+        display: block !important;
+      }
+      #interactive-game-app {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="radar-grid flex flex-col items-center justify-start py-4">
+
+  <!-- Header Bar -->
+  <header class="w-full max-w-5xl flex items-center justify-between bg-slate-900/90 border border-cyan-500/40 rounded-2xl px-6 py-3 mb-4 shadow-xl backdrop-blur-md no-print">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-cyan-950 border border-cyan-400 flex items-center justify-center text-cyan-400 text-xl shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+        <i class="fa-solid fa-user-secret"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold font-['Fredoka'] text-cyan-300 tracking-wide">SECRET AGENT: MANNERS WORD HUNT</h1>
+        <p class="text-xs text-slate-400 font-['Quicksand'] font-semibold">Unit 1 Reading (Pages 2–3) • Adverbs & Adjectives Decoder</p>
+      </div>
+    </div>
+
+    <!-- Mode controls -->
+    <div class="flex items-center gap-2">
+      <button id="btn-audio" onclick="toggleAudio()" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-300 font-['Fredoka'] text-sm font-semibold flex items-center gap-2 transition">
+        <i class="fa-solid fa-volume-high"></i> SFX: ON
+      </button>
+      <button onclick="switchView('game')" id="tab-game-btn" class="px-4 py-1.5 rounded-lg bg-cyan-600 text-white font-['Fredoka'] text-sm font-bold shadow-lg shadow-cyan-600/30 transition">
+        <i class="fa-solid fa-gamepad"></i> Spy Game
+      </button>
+      <button onclick="switchView('sheet')" id="tab-sheet-btn" class="px-4 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-['Fredoka'] text-sm font-semibold transition">
+        <i class="fa-solid fa-file-lines"></i> Printable Mission Sheet
+      </button>
+      <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-['Fredoka'] text-sm font-bold shadow-lg shadow-emerald-600/30 transition">
+        <i class="fa-solid fa-print"></i> Print WS
+      </button>
+    </div>
+  </header>
+
+  <main id="interactive-game-app" class="w-full max-w-5xl bg-slate-900/95 border-2 border-cyan-500/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+    
+    <!-- Secret Agent Progress Bar -->
+    <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-5">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs text-cyan-400 font-mono font-bold uppercase tracking-wider">
+          <i class="fa-solid fa-satellite-dish animate-pulse"></i> MISSION FILE: <span id="current-word-num">1</span> / 10
+        </span>
+        <span class="px-3 py-1 rounded-full bg-emerald-950 border border-emerald-500/50 text-xs text-emerald-400 font-mono font-bold">
+          <i class="fa-solid fa-unlock-keyhole"></i> DECODED: <span id="decoded-count">0</span>
+        </span>
+      </div>
+
+      <!-- Secret Password Vault Meter (Gathers letters to spell R-E-S-P-E-C-T) -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-amber-300 font-bold font-['Fredoka'] uppercase tracking-wider hidden sm:inline">
+          <i class="fa-solid fa-key text-amber-400"></i> MASTER CIPHER:
+        </span>
+        <div class="flex gap-1.5" id="master-code-vault">
+          <!-- Will show 10 secret badge badges R - E - S - P - E - C - T - ! -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Secret Word Case Card -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
+      
+      <!-- Left 7 cols: Clue & Text Detective Clues -->
+      <div class="lg:col-span-7 bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 shadow-inner">
+        <div class="flex items-center justify-between mb-3">
+          <span class="px-3 py-1 rounded-lg bg-cyan-950 border border-cyan-500/60 text-cyan-300 text-xs font-mono font-bold flex items-center gap-2">
+            <i class="fa-solid fa-book-bookmark"></i> TEXTBOOK RADAR: <strong id="clue-line-ref">Line 14</strong>
+          </span>
+          <span id="word-category-badge" class="px-3 py-1 rounded-lg bg-purple-950 border border-purple-500/60 text-purple-300 text-xs font-bold font-['Fredoka'] uppercase">
+            Action Adverb (How?)
+          </span>
+        </div>
+
+        <!-- Textbook Evidence Sentence (Target word blanked out) -->
+        <div class="bg-slate-900 border border-cyan-500/20 rounded-xl p-4 mb-4">
+          <div class="text-xs text-slate-400 font-mono uppercase mb-1">
+            <i class="fa-solid fa-quote-left text-cyan-400"></i> Textbook Passage Evidence:
+          </div>
+          <p id="evidence-sentence" class="text-lg md:text-xl font-['Fredoka'] text-slate-200 leading-relaxed">
+            "leave them <span class="text-cyan-400 underline decoration-wavy decoration-cyan-400 font-bold tracking-widest">[ ?????? ]</span> at the door."
+          </p>
+        </div>
+
+        <!-- Agent Detective Clue -->
+        <div class="bg-amber-950/40 border-l-4 border-amber-500 rounded-r-xl p-3.5 flex items-start gap-3">
+          <div class="text-amber-400 text-lg mt-0.5">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div>
+            <div class="text-xs text-amber-300 font-bold uppercase tracking-wider font-mono">Agent Clue:</div>
+            <p id="agent-clue-text" class="text-sm font-['Quicksand'] font-bold text-amber-100/90 leading-snug">
+              Means arranged tidily, orderly, and side-by-side. Starts with 'N' and ends with '-ly'.
+            </p>
+          </div>
+        </div>
+
+        <!-- Word Inspector: Notice the Part of Speech without boring rules! -->
+        <div class="mt-4 p-3 bg-slate-900/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs text-slate-300 font-['Quicksand'] font-semibold">
+          <span><i class="fa-solid fa-magnifying-glass text-cyan-400"></i> Word Mission:</span>
+          <span id="word-fun-fact" class="text-cyan-300 font-bold">This word tells us HOW the shoes are left!</span>
+        </div>
+      </div>
+
+      <!-- Right 5 cols: The Cipher Lock Display -->
+      <div class="lg:col-span-5 flex flex-col items-center justify-center bg-slate-950/80 border-2 border-cyan-500/40 rounded-2xl p-5 shadow-2xl relative">
+        <div class="text-xs font-mono text-cyan-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+          <i class="fa-solid fa-fingerprint animate-pulse"></i> SECRET CIPHER SLOTS
+        </div>
+
+        <!-- The letter tiles for the secret word -->
+        <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-5 min-h-[64px]" id="cipher-slots-row">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Number Code Clues (e.g. 14-5-1-20-12-25) -->
+        <div class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-center mb-4">
+          <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Agent Letter Code (A=1 ... Z=26):</span>
+          <span id="number-code-display" class="text-lg font-['VT323'] text-amber-400 tracking-wider">
+            14 - 5 - 1 - 20 - 12 - 25
+          </span>
+        </div>
+
+        <!-- Status / Unlock feedback -->
+        <div id="cipher-feedback" class="h-6 text-sm font-['Fredoka'] font-bold text-center text-slate-400">
+          Click the letter keys below or type on your keyboard!
+        </div>
+      </div>
+    </div>
+
+    <!-- Virtual Keyboard Grid -->
+    <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <span class="text-xs font-mono text-slate-400 uppercase tracking-wider">
+          <i class="fa-solid fa-keyboard"></i> AGENT TERMINAL KEYPAD
+        </span>
+        <div class="flex gap-2">
+          <button onclick="revealOneLetterHint()" id="btn-hint" class="px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-['Fredoka'] text-xs font-bold transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Reveal 1 Letter (<span id="hints-left">3</span> left)
+          </button>
+          <button onclick="backspaceLetter()" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-['Fredoka'] text-xs font-bold transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-delete-left"></i> Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- 26 Alphabet Keypad -->
+      <div class="grid grid-cols-7 sm:grid-cols-9 md:grid-cols-13 gap-1.5 sm:gap-2" id="keypad-grid">
+        <!-- Generated dynamically in JS -->
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Controls -->
+    <div class="flex items-center justify-between mt-5 pt-3 border-t border-slate-800">
+      <button onclick="prevSecretWord()" id="btn-prev" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-['Fredoka'] text-sm font-bold transition flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Previous Word
+      </button>
+
+      <div class="text-xs text-slate-400 font-['Quicksand'] font-semibold text-center">
+        Tip: Look at pages 2 & 3 in your textbook! Can you spot the word before the time runs out?
+      </div>
+
+      <button onclick="nextSecretWord()" id="btn-next" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-['Fredoka'] text-sm font-bold shadow-lg shadow-cyan-600/30 transition flex items-center gap-2">
+        Next Word <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- Victory Dossier Modal -->
+    <div id="victory-modal" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="bg-slate-900 border-2 border-emerald-400 rounded-3xl p-6 sm:p-8 max-w-xl w-full text-center shadow-[0_0_50px_rgba(16,185,129,0.3)]">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-950 border-2 border-emerald-400 text-emerald-400 text-3xl mx-auto flex items-center justify-center mb-4 shadow-lg animate-bounce">
+          <i class="fa-solid fa-medal"></i>
+        </div>
+        <h2 class="text-3xl font-['Fredoka'] font-bold text-white mb-2">MISSION ACCOMPLISHED!</h2>
+        <p class="text-sm font-['Quicksand'] font-semibold text-emerald-300 mb-4">
+          All 10 Secret Manners & Behaviour words have been decoded from the textbook!
+        </p>
+
+        <!-- The Secret Golden Rule Revealed -->
+        <div class="bg-slate-950 border border-emerald-500/40 rounded-2xl p-4 mb-6">
+          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider block mb-1">DECRYPTED MASTER GOLDEN CODE:</span>
+          <div class="text-2xl sm:text-3xl font-['Fredoka'] font-extrabold text-amber-300 tracking-wider">
+            "SHOW RESPECT TO ALL!"
+          </div>
+          <p class="text-xs text-slate-400 mt-2 font-['Quicksand']">
+            <em>"Remember — you should respect one another's cultures." (Line 31)</em>
+          </p>
+        </div>
+
+        <!-- 2 Secret Word Groups (Blackboard Anchor for Next Grammar Step) -->
+        <div class="grid grid-cols-2 gap-3 text-left mb-6 text-xs">
+          <div class="bg-slate-800/80 border border-cyan-500/30 rounded-xl p-3">
+            <span class="font-bold text-cyan-300 block mb-1 font-['Fredoka']">⚡ Secret Action Words (-ly):</span>
+            <span class="text-slate-300 font-mono leading-relaxed">neatly, noisily, quietly, messily, strangely</span>
+          </div>
+          <div class="bg-slate-800/80 border border-purple-500/30 rounded-xl p-3">
+            <span class="font-bold text-purple-300 block mb-1 font-['Fredoka']">⭐ Secret Manners Adjectives:</span>
+            <span class="text-slate-300 font-mono leading-relaxed">rude, polite, impolite, careful, tidy</span>
+          </div>
+        </div>
+
+        <div class="flex gap-3 justify-center">
+          <button onclick="resetMission()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-['Fredoka'] text-base font-bold transition">
+            <i class="fa-solid fa-rotate-right"></i> Play Again
+          </button>
+          <button onclick="switchView('sheet')" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-['Fredoka'] text-base font-bold shadow-lg shadow-emerald-600/30 transition">
+            <i class="fa-solid fa-print"></i> Open Printable Mission Sheet
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB 2: PRINTABLE SECRET CODE WORKSHEET (COMIC SANS MS 14PT) -->
+  <section id="printable-sheet-view" class="printable-mission-sheet hidden w-full max-w-4xl bg-white text-slate-900 rounded-2xl p-8 sm:p-12 shadow-2xl my-4 font-['Comic_Neue',_'Comic_Sans_MS',_cursive]">
+    
+    <!-- Worksheet Header -->
+    <div class="text-center border-b-2 border-dashed border-slate-400 pb-4 mb-6">
+      <div class="text-xs font-bold uppercase tracking-widest text-blue-700 font-sans">Primary 5 English • Unit 1: Good Behaviour</div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">🕵️ Mission: Secret Manners Word Hunt!</h1>
+      <p class="text-base text-slate-600 italic">Pre-Grammar Discovery • Textbook Pages 2–3</p>
+      
+      <div class="flex justify-between items-center text-sm font-bold mt-4 pt-2 border-t border-slate-200">
+        <div>Name: ______________________ ( &nbsp;&nbsp;&nbsp;&nbsp; )</div>
+        <div>Class: P.5 _____</div>
+        <div>Date: __________________</div>
+      </div>
+    </div>
+
+    <!-- Agent Instructions -->
+    <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-xl mb-6 text-sm">
+      <strong>🎯 Top Secret Mission Brief:</strong><br>
+      Open your textbook to <strong>Pages 2 and 3</strong>. Use the <strong>Number Cipher Key</strong> below (where A=1, B=2, C=3...) and the line clues to decode the secret words describing manners and actions. Write the secret words neatly on the lines!
+    </div>
+
+    <!-- The Secret Number Decoder Bar -->
+    <div class="border-2 border-slate-800 rounded-xl p-3 bg-slate-50 mb-6 text-xs text-center font-mono">
+      <div class="font-bold text-slate-700 mb-1 font-sans">🔑 AGENT DECODER WHEEL (A=1 to Z=26):</div>
+      <div class="grid grid-cols-13 gap-1 font-bold text-blue-800">
+        <div>A=1</div><div>B=2</div><div>C=3</div><div>D=4</div><div>E=5</div><div>F=6</div><div>G=7</div>
+        <div>H=8</div><div>I=9</div><div>J=10</div><div>K=11</div><div>L=12</div><div>M=13</div>
+        <div>N=14</div><div>O=15</div><div>P=16</div><div>Q=17</div><div>R=18</div><div>S=19</div><div>T=20</div>
+        <div>U=21</div><div>V=22</div><div>W=23</div><div>X=24</div><div>Y=25</div><div>Z=26</div>
+      </div>
+    </div>
+
+    <!-- The 10 Secret Word Missions -->
+    <div class="space-y-4 text-base">
+      
+      <!-- Word 1 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 1 [Line 14] — How Japanese friends leave shoes at the door:</span>
+          <span>Number Code: 14 - 5 - 1 - 20 - 12 - 25</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"...take off our shoes and leave them <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __</span> at the door."</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">N E A T L Y</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Tells us: HOW they leave shoes</span>
+        </div>
+      </div>
+
+      <!-- Word 2 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 2 [Line 16] — How English people think we are behaving:</span>
+          <span>Number Code: 19 - 20 - 18 - 1 - 14 - 7 - 5 - 12 - 25</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"Most English people will think we are behaving <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __ __ __ __</span>!"</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Tells us: HOW we behave</span>
+        </div>
+      </div>
+
+      <!-- Word 3 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 3 [Line 26] — How we should eat noodles in Japan:</span>
+          <span>Number Code: 14 - 15 - 9 - 19 - 9 - 12 - 25</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"There we should eat noodles <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __ __</span>!"</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Tells us: HOW we eat noodles</span>
+        </div>
+      </div>
+
+      <!-- Word 4 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 4 [Line 28] — Japanese noodles do NOT taste good if we eat them:</span>
+          <span>Number Code: 17 - 21 - 9 - 5 - 20 - 12 - 25</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"...noodles do not taste good if we eat them <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __ __</span>!"</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Tells us: HOW we eat them</span>
+        </div>
+      </div>
+
+      <!-- Word 5 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 5 [Line 23] — In Western countries, it is bad manners to eat:</span>
+          <span>Number Code: 13 - 5 - 19 - 19 - 9 - 12 - 25</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"However, it is not good manners to eat <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __ __</span> in Western countries."</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Tells us: HOW we eat</span>
+        </div>
+      </div>
+
+      <!-- Word 6 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 6 [Line 3 & 7] — You don't want people to think you are:</span>
+          <span>Number Code: 18 - 21 - 4 - 5</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"You don't want people to think you are <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __</span>!"</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Describes: A person</span>
+        </div>
+      </div>
+
+      <!-- Word 7 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 7 [Line 10] — Touching someone's head in Malaysia is very:</span>
+          <span>Number Code: 9 - 13 - 16 - 15 - 12 - 9 - 20 - 5</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"It is very <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __ __ __</span>."</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Describes: An action</span>
+        </div>
+      </div>
+
+      <!-- Word 8 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 8 [Lines 4–5] — How we should feel about body language:</span>
+          <span>Number Code: 3 - 1 - 18 - 5 - 6 - 21 - 12</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"We should be <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __ __</span> about body language."</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Describes: Our feeling/attitude</span>
+        </div>
+      </div>
+
+      <!-- Word 9 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 9 [Line 24] — The table should be clean and:</span>
+          <span>Number Code: 20 - 9 - 4 - 25</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"The table should be clean and <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __</span> when we finish eating."</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Describes: The dining table</span>
+        </div>
+      </div>
+
+      <!-- Word 10 -->
+      <div class="border border-slate-300 rounded-xl p-3.5 bg-white">
+        <div class="flex justify-between font-bold text-sm text-blue-800 mb-1">
+          <span>MISSION 10 [Intro Heading] — People have different ideas about what is:</span>
+          <span>Number Code: 16 - 15 - 12 - 9 - 20 - 5</span>
+        </div>
+        <p class="text-sm italic text-slate-700">"...different ideas about what is <span class="font-bold text-blue-900 underline underline-offset-4">__ __ __ __ __ __</span> and what is rude."</p>
+        <div class="mt-2 font-bold flex items-center gap-3">
+          <span>Secret Word:</span>
+          <span class="tracking-widest text-lg font-mono">____________________</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border ml-auto">Describes: Polite manners</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Super Secret Detective Discovery Question -->
+    <div class="mt-6 p-4 border-2 border-dashed border-blue-600 rounded-xl bg-blue-50/50">
+      <h3 class="font-bold text-blue-900 text-base mb-2">🔍 Secret Detective Discovery Question:</h3>
+      <p class="text-sm text-slate-800 mb-2">
+        Look at <strong>Missions 1, 2, 3, 4, and 5</strong>. What special two letters do all these words end with?
+      </p>
+      <div class="flex items-center gap-3 text-base font-bold">
+        <span>They all end with:</span>
+        <span class="px-4 py-1 border-2 border-blue-600 rounded-lg bg-white tracking-widest font-mono">[ &nbsp; - L Y &nbsp; ]</span>
+        <span class="text-xs text-slate-500 font-sans italic">(They tell us HOW an action is done!)</span>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    /**
+     * 10 Core Target Words from Reading Passage (Lines 1–31)
+     * Balanced: 5 Adverbs of Manner (-ly) & 5 Behaviour Adjectives
+     */
+    const secretMissions = [
+      {
+        id: 1,
+        word: "NEATLY",
+        category: "Action Adverb (How?)",
+        line: "Line 14",
+        sentence: 'take off our shoes and leave them <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span> at the door.',
+        clue: "Means arranged tidily and orderly side-by-side. Tells us HOW we leave shoes.",
+        funFact: "Notice: It ends with -ly! It tells us HOW shoes are placed!",
+        secretLetter: "R"
+      },
+      {
+        id: 2,
+        word: "STRANGELY",
+        category: "Action Adverb (How?)",
+        line: "Line 16",
+        sentence: 'Most English people will think we are behaving <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span>!',
+        clue: "Means in an unusual, weird, or odd way. Tells us HOW we are behaving.",
+        funFact: "Notice: strange + ly = strangely. Tells us HOW people act!",
+        secretLetter: "E"
+      },
+      {
+        id: 3,
+        word: "NOISILY",
+        category: "Action Adverb (How?)",
+        line: "Line 26",
+        sentence: 'There we should eat noodles <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span>!',
+        clue: "Making lots of loud slurp sounds! Tells us HOW Japanese people eat ramen.",
+        funFact: "Notice: noisy changes y to -ily! It tells us HOW we eat noodles!",
+        secretLetter: "S"
+      },
+      {
+        id: 4,
+        word: "QUIETLY",
+        category: "Action Adverb (How?)",
+        line: "Line 28",
+        sentence: 'noodles do not taste good if we eat them <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span>!',
+        clue: "Making no sound or very soft sounds. The opposite of noisily.",
+        funFact: "Notice: quiet + ly = quietly. Tells us HOW someone eats!",
+        secretLetter: "P"
+      },
+      {
+        id: 5,
+        word: "MESSILY",
+        category: "Action Adverb (How?)",
+        line: "Line 23",
+        sentence: 'However, it is not good manners to eat <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span> in Western countries.',
+        clue: "Dropping food, spilling sauce, and not keeping things clean. Ends with -ly.",
+        funFact: "Notice: messy changes y to -ily! Tells us HOW we eat.",
+        secretLetter: "E"
+      },
+      {
+        id: 6,
+        word: "RUDE",
+        category: "Manners Adjective",
+        line: "Line 3 & 7",
+        sentence: 'You don\'t want people to think you are <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span>!',
+        clue: "Not polite; having bad manners and hurting people's feelings.",
+        funFact: "Notice: This word describes a PERSON (You are rude). No -ly!",
+        secretLetter: "C"
+      },
+      {
+        id: 7,
+        word: "IMPOLITE",
+        category: "Manners Adjective",
+        line: "Line 10",
+        sentence: 'Touching someone\'s head in Malaysia or Thailand is very <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span>.',
+        clue: "Opposite of polite. Starts with the special prefix 'im-'.",
+        funFact: "Notice: The prefix 'im-' means NOT! Impolite = Not polite.",
+        secretLetter: "T"
+      },
+      {
+        id: 8,
+        word: "CAREFUL",
+        category: "Manners Adjective",
+        line: "Lines 4–5",
+        sentence: 'We should be <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span> about body language.',
+        clue: "Paying attention so you do not make mistakes or cause trouble.",
+        funFact: "Notice: Comes after 'should be'. Describes how we should be!",
+        secretLetter: "A"
+      },
+      {
+        id: 9,
+        word: "TIDY",
+        category: "Manners Adjective",
+        line: "Line 24",
+        sentence: 'The table should be clean and <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span> when we finish eating.',
+        clue: "Neat, clean, and in good order. Describes the dining table.",
+        funFact: "Notice: Describes the TABLE (noun), not an action verb!",
+        secretLetter: "L"
+      },
+      {
+        id: 10,
+        word: "POLITE",
+        category: "Manners Adjective",
+        line: "Intro Box",
+        sentence: 'People in different countries have different ideas about what is <span class="text-cyan-400 font-bold underline underline-offset-8">[ ????? ]</span>.',
+        clue: "Having good manners; saying please and thank you. Opposite of rude.",
+        funFact: "Notice: Later on page 7, this turns into the adverb 'politely'!",
+        secretLetter: "L"
+      }
+    ];
+
+    let currentIndex = 0;
+    let typedLetters = [];
+    let decodedSet = new Set();
+    let hintsRemaining = 3;
+    let soundOn = true;
+    let synth = null;
+
+    function initSynth() {
+      if (!synth && window.Tone) {
+        try {
+          synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -8;
+        } catch (e) {
+          console.warn("Tone.js init deferred", e);
+        }
+      }
+    }
+
+    function playSound(type) {
+      if (!soundOn || !synth) return;
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        const now = Tone.now();
+        if (type === 'type') {
+          synth.triggerAttackRelease("C5", "32n", now);
+        } else if (type === 'unlocked') {
+          synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "16n", now);
+        } else if (type === 'wrong') {
+          synth.triggerAttackRelease(["Eb4", "D4"], "8n", now);
+        } else if (type === 'fanfare') {
+          synth.triggerAttackRelease(["C5", "G5", "C6", "E6", "G6"], "4n", now);
+        }
+      } catch (err) {}
+    }
+
+    function toggleAudio() {
+      soundOn = !soundOn;
+      const btn = document.getElementById('btn-audio');
+      if (soundOn) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> SFX: ON';
+        btn.classList.replace('text-rose-400', 'text-slate-300');
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> SFX: OFF';
+        btn.classList.add('text-rose-400');
+      }
+    }
+
+    function renderKeypad() {
+      const pad = document.getElementById('keypad-grid');
+      pad.innerHTML = '';
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+      letters.forEach(char => {
+        const btn = document.createElement('button');
+        btn.className = 'key-pad-btn';
+        btn.id = `key-${char}`;
+        btn.textContent = char;
+        btn.onclick = () => inputLetter(char);
+        pad.appendChild(btn);
+      });
+    }
+
+    function loadMission(index) {
+      const mission = secretMissions[index];
+      currentIndex = index;
+      typedLetters = [];
+
+      document.getElementById('current-word-num').textContent = index + 1;
+      document.getElementById('clue-line-ref').textContent = mission.line;
+      document.getElementById('word-category-badge').textContent = mission.category;
+      document.getElementById('evidence-sentence').innerHTML = `"${mission.sentence}"`;
+      document.getElementById('agent-clue-text').textContent = mission.clue;
+      document.getElementById('word-fun-fact').textContent = mission.funFact;
+
+      // Update A=1 Number Code String
+      const numberCode = mission.word.split('').map(c => c.charCodeAt(0) - 64).join(' - ');
+      document.getElementById('number-code-display').textContent = numberCode;
+
+      renderCipherSlots();
+      updateCipherFeedback("Click keys or type on your keyboard!", "text-slate-400");
+      updateVaultMeter();
+    }
+
+    function renderCipherSlots() {
+      const mission = secretMissions[currentIndex];
+      const container = document.getElementById('cipher-slots-row');
+      container.innerHTML = '';
+
+      const isAlreadyUnlocked = decodedSet.has(mission.id);
+
+      for (let i = 0; i < mission.word.length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'cipher-letter-box';
+        slot.id = `slot-${i}`;
+
+        if (isAlreadyUnlocked) {
+          slot.textContent = mission.word[i];
+          slot.classList.add('unlocked');
+        } else if (typedLetters[i]) {
+          slot.textContent = typedLetters[i];
+          slot.classList.add('current');
+        } else {
+          slot.textContent = "_";
+        }
+        container.appendChild(slot);
+      }
+    }
+
+    function inputLetter(char) {
+      initSynth();
+      const mission = secretMissions[currentIndex];
+      if (decodedSet.has(mission.id)) return;
+
+      if (typedLetters.length < mission.word.length) {
+        typedLetters.push(char.toUpperCase());
+        playSound('type');
+        renderCipherSlots();
+
+        // Check if word completed
+        if (typedLetters.length === mission.word.length) {
+          checkWordAttempt();
+        }
+      }
+    }
+
+    function backspaceLetter() {
+      initSynth();
+      const mission = secretMissions[currentIndex];
+      if (decodedSet.has(mission.id)) return;
+
+      if (typedLetters.length > 0) {
+        typedLetters.pop();
+        playSound('type');
+        renderCipherSlots();
+        updateCipherFeedback("Typing...", "text-slate-400");
+      }
+    }
+
+    function checkWordAttempt() {
+      const mission = secretMissions[currentIndex];
+      const attempt = typedLetters.join('');
+
+      if (attempt === mission.word) {
+        // SUCCESS UNLOCKED!
+        decodedSet.add(mission.id);
+        playSound('unlocked');
+        updateCipherFeedback(`🎉 ACCESS GRANTED! Secret word is ${mission.word}!`, "text-emerald-400 font-bold");
+        document.getElementById('decoded-count').textContent = decodedSet.size;
+        renderCipherSlots();
+        updateVaultMeter();
+
+        // Check if all 10 completed!
+        if (decodedSet.size === secretMissions.length) {
+          setTimeout(() => {
+            playSound('fanfare');
+            document.getElementById('victory-modal').classList.remove('hidden');
+          }, 800);
+        }
+      } else {
+        // INCORRECT
+        playSound('wrong');
+        updateCipherFeedback(`⚠️ CODE REJECTED. Look at ${mission.line} again!`, "text-rose-400 font-bold");
+        setTimeout(() => {
+          typedLetters = [];
+          renderCipherSlots();
+        }, 1100);
+      }
+    }
+
+    function updateCipherFeedback(msg, colorClass) {
+      const fb = document.getElementById('cipher-feedback');
+      fb.className = `h-6 text-sm font-['Fredoka'] text-center ${colorClass}`;
+      fb.textContent = msg;
+    }
+
+    function revealOneLetterHint() {
+      initSynth();
+      const mission = secretMissions[currentIndex];
+      if (decodedSet.has(mission.id) || hintsRemaining <= 0) return;
+
+      hintsRemaining--;
+      document.getElementById('hints-left').textContent = hintsRemaining;
+      if (hintsRemaining === 0) {
+        document.getElementById('btn-hint').disabled = true;
+      }
+
+      // Fill in next correct letter
+      const nextIdx = typedLetters.length;
+      if (nextIdx < mission.word.length) {
+        typedLetters.push(mission.word[nextIdx]);
+        playSound('type');
+        renderCipherSlots();
+        if (typedLetters.length === mission.word.length) {
+          checkWordAttempt();
+        }
+      }
+    }
+
+    function updateVaultMeter() {
+      const vault = document.getElementById('master-code-vault');
+      vault.innerHTML = '';
+      secretMissions.forEach((m, idx) => {
+        const badge = document.createElement('div');
+        const isDecoded = decodedSet.has(m.id);
+        badge.className = `w-7 h-7 rounded-md flex items-center justify-center font-mono font-bold text-xs border transition ${
+          isDecoded 
+            ? 'bg-amber-400 border-amber-300 text-slate-950 shadow-[0_0_8px_rgba(245,158,11,0.6)]' 
+            : idx === currentIndex 
+              ? 'bg-cyan-950 border-cyan-400 text-cyan-400' 
+              : 'bg-slate-800 border-slate-700 text-slate-500'
+        }`;
+        badge.textContent = isDecoded ? m.secretLetter : (idx + 1);
+        badge.title = `Mission ${idx + 1}: ${m.word}`;
+        badge.onclick = () => loadMission(idx);
+        badge.style.cursor = 'pointer';
+        vault.appendChild(badge);
+      });
+    }
+
+    function nextSecretWord() {
+      if (currentIndex < secretMissions.length - 1) {
+        loadMission(currentIndex + 1);
+      }
+    }
+
+    function prevSecretWord() {
+      if (currentIndex > 0) {
+        loadMission(currentIndex - 1);
+      }
+    }
+
+    function resetMission() {
+      decodedSet.clear();
+      typedLetters = [];
+      hintsRemaining = 3;
+      document.getElementById('hints-left').textContent = hintsRemaining;
+      document.getElementById('btn-hint').disabled = false;
+      document.getElementById('decoded-count').textContent = '0';
+      document.getElementById('victory-modal').classList.add('hidden');
+      loadMission(0);
+    }
+
+    function switchView(mode) {
+      const gameApp = document.getElementById('interactive-game-app');
+      const sheetView = document.getElementById('printable-sheet-view');
+      const gameBtn = document.getElementById('tab-game-btn');
+      const sheetBtn = document.getElementById('tab-sheet-btn');
+
+      if (mode === 'game') {
+        gameApp.classList.remove('hidden');
+        sheetView.classList.add('hidden');
+        gameBtn.className = "px-4 py-1.5 rounded-lg bg-cyan-600 text-white font-['Fredoka'] text-sm font-bold shadow-lg shadow-cyan-600/30 transition";
+        sheetBtn.className = "px-4 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-['Fredoka'] text-sm font-semibold transition";
+      } else {
+        gameApp.classList.add('hidden');
+        sheetView.classList.remove('hidden');
+        sheetBtn.className = "px-4 py-1.5 rounded-lg bg-cyan-600 text-white font-['Fredoka'] text-sm font-bold shadow-lg shadow-cyan-600/30 transition";
+        gameBtn.className = "px-4 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-['Fredoka'] text-sm font-semibold transition";
+      }
+    }
+
+    // Physical Keyboard Listener
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toUpperCase();
+      if (/^[A-Z]$/.test(key)) {
+        inputLetter(key);
+      } else if (e.key === 'Backspace') {
+        backspaceLetter();
+      } else if (e.key === 'ArrowRight') {
+        nextSecretWord();
+      } else if (e.key === 'ArrowLeft') {
+        prevSecretWord();
+      }
+    });
+
+    // Initialize on load
+    window.onload = () => {
+      renderKeypad();
+      loadMission(0);
+    };
+  </script>
+</body>
+</html>
