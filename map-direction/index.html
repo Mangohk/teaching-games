@@ -236,8 +236,40 @@
             border: 0;
         }
     </style>
+
+  <style id="tg-hub-back-style">
+    a.tg-hub-back {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 10000;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid rgba(14, 165, 233, 0.45);
+      color: #0369a1;
+      font: 700 0.8rem/1.2 system-ui, -apple-system, sans-serif;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+      -webkit-tap-highlight-color: transparent;
+    }
+    a.tg-hub-back:hover,
+    a.tg-hub-back:focus-visible {
+      border-color: #38bdf8;
+      outline: none;
+    }
+    @media print {
+      a.tg-hub-back { display: none !important; }
+    }
+  </style>
+
 </head>
 <body class="p-2 md:p-4 flex flex-col items-center min-h-screen">
+
+  <a class="tg-hub-back" href="../index.html">← Back to Teaching Games</a>
+
 
     <div id="start-overlay" role="dialog" aria-modal="true" aria-labelledby="start-title">
         <div class="start-card">
@@ -304,8 +336,8 @@
         let score = 0;
         let questionCount = 1;
         let isGameOver = false;
-        /** When true, the next road-step or invalid-cross "Safety First!" modal is skipped once, then cleared. Reset when cardinal facing changes. */
-        let safetyWarnSuppressAvailable = true;
+        /** After the first road-blocked step in a round, further road-blocked steps show the Safety First modal. */
+        let roadStepWarnSuppressedOnce = false;
 
         // Timer variables
         let startTime = null;
@@ -494,18 +526,11 @@
                     playerPos.x = targetX;
                     playerPos.y = targetY;
                 } else {
-                    if (safetyWarnSuppressAvailable) {
-                        safetyWarnSuppressAvailable = false;
-                    } else {
-                        openModal("Safety First!", "Face the road directly before walking across! 🚦", 'warning', '🚦');
-                    }
+                    openModal("Safety First!", "Face the road directly before walking across! 🚦", 'warning', '🚦');
                     return;
                 }
             } else {
                 let nextX = playerPos.x, nextY = playerPos.y;
-                if (facing !== dir) {
-                    safetyWarnSuppressAvailable = true;
-                }
                 facing = dir;
                 if (dir === 'up' && playerPos.y > 0) nextY--;
                 else if (dir === 'down' && playerPos.y < GRID_SIZE - 1) nextY++;
@@ -513,8 +538,8 @@
                 else if (dir === 'right' && playerPos.x < GRID_SIZE - 1) nextX++;
                 
                 if (isRoad(nextX, nextY)) {
-                    if (safetyWarnSuppressAvailable) {
-                        safetyWarnSuppressAvailable = false;
+                    if (!roadStepWarnSuppressedOnce) {
+                        roadStepWarnSuppressedOnce = true;
                     } else {
                         openModal("Safety First!", "Stop! Don't walk on the road. Use 'Walk Across' only at crossings! 🛑", 'warning', '🚧');
                     }
@@ -577,7 +602,7 @@
             updateTimerDisplay();
             playerPos = { x: 0, y: 6 };
             facing = 'up'; score = 0; questionCount = 1; isGameOver = false;
-            safetyWarnSuppressAvailable = true;
+            roadStepWarnSuppressedOnce = false;
             document.getElementById('score-val').innerText = score;
             document.getElementById('q-count').innerText = questionCount;
             document.getElementById('check-btn').disabled = false;

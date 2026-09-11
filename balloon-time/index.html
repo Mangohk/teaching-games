@@ -213,6 +213,17 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     .icon-btn:hover { background: #f8fafc; }
+    .icon-btn.active-freeze {
+      background: #fee2e2;
+      border-color: #f87171;
+      color: #b91c1c;
+    }
+    .panel.timer.frozen {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+    .panel.timer.frozen .label { color: #64748b; }
+    .panel.timer.frozen .timer-big { color: #64748b; }
 
     .hud-center { text-align: center; min-width: 0; }
 
@@ -414,8 +425,40 @@
       .hud-left { justify-content: center; }
     }
   </style>
+
+  <style id="tg-hub-back-style">
+    a.tg-hub-back {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 10000;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid rgba(14, 165, 233, 0.45);
+      color: #0369a1;
+      font: 700 0.8rem/1.2 system-ui, -apple-system, sans-serif;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+      -webkit-tap-highlight-color: transparent;
+    }
+    a.tg-hub-back:hover,
+    a.tg-hub-back:focus-visible {
+      border-color: #38bdf8;
+      outline: none;
+    }
+    @media print {
+      a.tg-hub-back { display: none !important; }
+    }
+  </style>
+
 </head>
 <body>
+
+  <a class="tg-hub-back" href="../index.html">← Back to Teaching Games</a>
+
 
   <div class="hud">
     <div class="hud-left">
@@ -426,6 +469,7 @@
       <div class="hud-btns">
         <button type="button" class="icon-btn" id="soundBtn" title="Sound">🔊</button>
         <button type="button" class="icon-btn" id="musicBtn" title="Music">🎵</button>
+        <button type="button" class="icon-btn" id="freezeBtn" title="Teacher: freeze timer" aria-pressed="false">❄️</button>
       </div>
     </div>
     <div class="hud-center">
@@ -434,8 +478,8 @@
       <div class="progress-line" id="progressText">Stars: 0 / 10</div>
     </div>
     <div class="hud-right">
-      <div class="panel timer">
-        <span class="label">Timer</span>
+      <div class="panel timer" id="timerPanel">
+        <span class="label" id="timerLabel">Timer</span>
         <div class="timer-big game-font" id="timerDisplay">45</div>
       </div>
     </div>
@@ -478,6 +522,9 @@
   const playerNameDisplay = document.getElementById('playerNameDisplay');
   const soundBtn = document.getElementById('soundBtn');
   const musicBtn = document.getElementById('musicBtn');
+  const freezeBtn = document.getElementById('freezeBtn');
+  const timerPanel = document.getElementById('timerPanel');
+  const timerLabel = document.getElementById('timerLabel');
   const startBtn = document.getElementById('startBtn');
   const playAgainBtn = document.getElementById('playAgainBtn');
 
@@ -516,6 +563,7 @@
   let timeLeft = TIMER_START;
   let currentStage = 1;
   let gameActive = false;
+  let timerFrozen = false;
   let soundEnabled = true;
   let musicEnabled = true;
   let currentTarget = null;
@@ -899,10 +947,20 @@
     scoreOverlay.hidden = false;
   }
 
+  function setTimerFrozen(frozen) {
+    timerFrozen = frozen;
+    freezeBtn.classList.toggle('active-freeze', frozen);
+    freezeBtn.setAttribute('aria-pressed', frozen ? 'true' : 'false');
+    freezeBtn.title = frozen ? 'Teacher: resume timer' : 'Teacher: freeze timer';
+    timerPanel.classList.toggle('frozen', frozen);
+    timerLabel.textContent = frozen ? 'Frozen' : 'Timer';
+  }
+
   function initGame() {
     const name = playerNameInput.value.trim();
     playerNameDisplay.textContent = name || 'Hero';
     startOverlay.hidden = true;
+    scoreOverlay.hidden = true;
 
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -916,6 +974,7 @@
     questionsInStage = 0;
     balloonQueue = [];
     activeLanes.fill(false);
+    setTimerFrozen(false);
     scoreDisplay.textContent = '0';
     timerDisplay.textContent = String(timeLeft);
     stageIndicator.textContent = 'Phase 1';
@@ -927,7 +986,7 @@
     startMusic();
     spawnIntervalId = setInterval(spawnBalloon, SPAWN_MS);
     tickIntervalId = setInterval(function () {
-      if (!gameActive) return;
+      if (!gameActive || timerFrozen) return;
       timeLeft--;
       timerDisplay.textContent = String(Math.max(0, timeLeft));
       if (timeLeft <= 0) endGame('timeout');
@@ -946,8 +1005,13 @@
     if (!musicEnabled) stopMusic();
     else if (gameActive) startMusic();
   });
+  freezeBtn.addEventListener('click', function () {
+    setTimerFrozen(!timerFrozen);
+  });
   startBtn.addEventListener('click', initGame);
-  playAgainBtn.addEventListener('click', function () { location.reload(); });
+  playAgainBtn.addEventListener('click', function () {
+    initGame();
+  });
 })();
   </script>
 </body>
