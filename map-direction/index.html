@@ -336,8 +336,8 @@
         let score = 0;
         let questionCount = 1;
         let isGameOver = false;
-        /** When true, the next road-step or invalid-cross "Safety First!" modal is skipped once, then cleared. Reset when cardinal facing changes. */
-        let safetyWarnSuppressAvailable = true;
+        /** After the first road-blocked step in a round, further road-blocked steps show the Safety First modal. */
+        let roadStepWarnSuppressedOnce = false;
 
         // Timer variables
         let startTime = null;
@@ -526,18 +526,11 @@
                     playerPos.x = targetX;
                     playerPos.y = targetY;
                 } else {
-                    if (safetyWarnSuppressAvailable) {
-                        safetyWarnSuppressAvailable = false;
-                    } else {
-                        openModal("Safety First!", "Face the road directly before walking across! 🚦", 'warning', '🚦');
-                    }
+                    openModal("Safety First!", "Face the road directly before walking across! 🚦", 'warning', '🚦');
                     return;
                 }
             } else {
                 let nextX = playerPos.x, nextY = playerPos.y;
-                if (facing !== dir) {
-                    safetyWarnSuppressAvailable = true;
-                }
                 facing = dir;
                 if (dir === 'up' && playerPos.y > 0) nextY--;
                 else if (dir === 'down' && playerPos.y < GRID_SIZE - 1) nextY++;
@@ -545,8 +538,8 @@
                 else if (dir === 'right' && playerPos.x < GRID_SIZE - 1) nextX++;
                 
                 if (isRoad(nextX, nextY)) {
-                    if (safetyWarnSuppressAvailable) {
-                        safetyWarnSuppressAvailable = false;
+                    if (!roadStepWarnSuppressedOnce) {
+                        roadStepWarnSuppressedOnce = true;
                     } else {
                         openModal("Safety First!", "Stop! Don't walk on the road. Use 'Walk Across' only at crossings! 🛑", 'warning', '🚧');
                     }
@@ -609,7 +602,7 @@
             updateTimerDisplay();
             playerPos = { x: 0, y: 6 };
             facing = 'up'; score = 0; questionCount = 1; isGameOver = false;
-            safetyWarnSuppressAvailable = true;
+            roadStepWarnSuppressedOnce = false;
             document.getElementById('score-val').innerText = score;
             document.getElementById('q-count').innerText = questionCount;
             document.getElementById('check-btn').disabled = false;
