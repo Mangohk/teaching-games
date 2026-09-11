@@ -163,6 +163,42 @@
       color: #64748b;
       line-height: 1.35;
     }
+    .skill-tag {
+      display: inline-block;
+      margin-top: 0.65rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 2px solid transparent;
+    }
+    .skill-tag[data-skill="alphabet"] {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fcd34d;
+    }
+    .skill-tag[data-skill="time"] {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #93c5fd;
+    }
+    .skill-tag[data-skill="directions"] {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #6ee7b7;
+    }
+    .skill-tag[data-skill="grammar"] {
+      background: #fce7f3;
+      color: #9d174d;
+      border-color: #f9a8d4;
+    }
+    .skill-tag[data-skill="manners"] {
+      background: #ede9fe;
+      color: #5b21b6;
+      border-color: #c4b5fd;
+    }
     .hint {
       margin-top: 2rem;
       text-align: center;
@@ -178,6 +214,7 @@
       <p class="sub">Pick a year level to filter, or browse all games below.</p>
     </header>
     <div class="filter-bar" role="group" aria-label="Year level">
+      <button type="button" class="filter-btn" data-filter="all" aria-pressed="false">All</button>
       <button type="button" class="filter-btn" data-filter="p1" aria-pressed="false">Primary 1</button>
       <button type="button" class="filter-btn" data-filter="p4" aria-pressed="false">Primary 4</button>
       <button type="button" class="filter-btn" data-filter="p5" aria-pressed="false">Primary 5</button>
@@ -186,40 +223,45 @@
       <section class="category" data-category="p1" aria-labelledby="cat-p1">
         <h2 class="category-title" id="cat-p1">Primary 1</h2>
         <div class="grid">
-          <a class="game-link" href="./alphabet_express_coop/index.html">
+          <a class="game-link" href="./alphabet_express_coop/index.html" data-skill="alphabet">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./alphabet_express_coop/index.jpg" alt="" width="2752" height="1636" decoding="async" loading="lazy">
             </span>
             <h3>The Alphabet Express</h3>
             <p>Cooperative class adventure for learning the alphabet.</p>
+            <span class="skill-tag" data-skill="alphabet">alphabet</span>
           </a>
-          <a class="game-link" href="./alphabet_handwriting/index.html">
+          <a class="game-link" href="./alphabet_handwriting/index.html" data-skill="alphabet">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./alphabet_handwriting/index.jpg" alt="" width="2290" height="1572" decoding="async" loading="lazy">
             </span>
             <h3>Alphabet Line Master</h3>
             <p>Practice handwriting letters on a single line.</p>
+            <span class="skill-tag" data-skill="alphabet">alphabet</span>
           </a>
-          <a class="game-link" href="./alphabet_train_express/index.html">
+          <a class="game-link" href="./alphabet_train_express/index.html" data-skill="alphabet">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./alphabet_train_express/index.jpg" alt="" width="2538" height="1572" decoding="async" loading="lazy">
             </span>
             <h3>The Great Alphabet Express</h3>
             <p>Ride the train and learn letters together.</p>
+            <span class="skill-tag" data-skill="alphabet">alphabet</span>
           </a>
-          <a class="game-link" href="./alphabet_train_rescue/index.html">
+          <a class="game-link" href="./alphabet_train_rescue/index.html" data-skill="alphabet">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./alphabet_train_rescue/index.jpg" alt="" width="2290" height="1572" decoding="async" loading="lazy">
             </span>
             <h3>Alphabet Train Adventure</h3>
             <p>Rescue letters and keep the alphabet train on track.</p>
+            <span class="skill-tag" data-skill="alphabet">alphabet</span>
           </a>
-          <a class="game-link" href="./mystery_alphabet_reveal/index.html">
+          <a class="game-link" href="./mystery_alphabet_reveal/index.html" data-skill="alphabet">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./mystery_alphabet_reveal/index.jpg" alt="" width="2488" height="1630" decoding="async" loading="lazy">
             </span>
             <h3>Mystery Alphabet Reveal</h3>
             <p>Reveal hidden letters and practice the alphabet.</p>
+            <span class="skill-tag" data-skill="alphabet">alphabet</span>
           </a>
         </div>
       </section>
@@ -227,26 +269,29 @@
       <section class="category" data-category="p4" aria-labelledby="cat-p4">
         <h2 class="category-title" id="cat-p4">Primary 4</h2>
         <div class="grid">
-          <a class="game-link" href="./balloon-time/index.html">
+          <a class="game-link" href="./balloon-time/index.html" data-skill="time">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./balloon-time/index.jpg" alt="" width="1168" height="632" decoding="async" loading="lazy">
             </span>
             <h3>Time Garden</h3>
             <p>Pop balloons to match clocks and phrases.</p>
+            <span class="skill-tag" data-skill="time">time</span>
           </a>
-          <a class="game-link" href="./time-select/index.html">
+          <a class="game-link" href="./time-select/index.html" data-skill="time">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./time-select/index.jpg" alt="" width="1424" height="960" decoding="async" loading="lazy">
             </span>
             <h3>Time Challenge</h3>
             <p>Read English time, then tap the matching clock.</p>
+            <span class="skill-tag" data-skill="time">time</span>
           </a>
-          <a class="game-link" href="./map-direction/index.html">
+          <a class="game-link" href="./map-direction/index.html" data-skill="directions">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./map-direction/index.jpg" alt="" width="2338" height="1378" decoding="async" loading="lazy">
             </span>
             <h3>HK Direction Master</h3>
             <p>Follow directions on the map to reach each landmark.</p>
+            <span class="skill-tag" data-skill="directions">directions</span>
           </a>
         </div>
       </section>
@@ -254,40 +299,45 @@
       <section class="category" data-category="p5" aria-labelledby="cat-p5">
         <h2 class="category-title" id="cat-p5">Primary 5</h2>
         <div class="grid">
-          <a class="game-link" href="./Grammar_showdown/index.html">
+          <a class="game-link" href="./Grammar_showdown/index.html" data-skill="grammar">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./Grammar_showdown/index.jpg" alt="" width="2428" height="1442" decoding="async" loading="lazy">
             </span>
             <h3>Grammar Showdown</h3>
             <p>Verb vs adjective — pick the right word type.</p>
+            <span class="skill-tag" data-skill="grammar">grammar</span>
           </a>
-          <a class="game-link" href="./Wacky_sentence/index.html">
+          <a class="game-link" href="./Wacky_sentence/index.html" data-skill="grammar">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./Wacky_sentence/index.jpg" alt="" width="2428" height="1394" decoding="async" loading="lazy">
             </span>
             <h3>Wacky Sentence Machine</h3>
             <p>Build funny sentences with adjective, subject, verb, place, and time.</p>
+            <span class="skill-tag" data-skill="grammar">grammar</span>
           </a>
-          <a class="game-link" href="./global_manner_quiz/index.html">
+          <a class="game-link" href="./global_manner_quiz/index.html" data-skill="manners">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./global_manner_quiz/index.jpg" alt="" width="2488" height="1630" decoding="async" loading="lazy">
             </span>
             <h3>Global Manners Passport</h3>
             <p>Read and choose good manners around the world.</p>
+            <span class="skill-tag" data-skill="manners">manners</span>
           </a>
-          <a class="game-link" href="./manner_word_hunt/index.html">
+          <a class="game-link" href="./manner_word_hunt/index.html" data-skill="manners">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./manner_word_hunt/index.jpg" alt="" width="2488" height="1542" decoding="async" loading="lazy">
             </span>
             <h3>Secret Agent Manners Code</h3>
             <p>Decode manners and behaviour words like a secret agent.</p>
+            <span class="skill-tag" data-skill="manners">manners</span>
           </a>
-          <a class="game-link" href="./manners_morph/index.html">
+          <a class="game-link" href="./manners_morph/index.html" data-skill="manners">
             <span class="thumb-wrap">
               <img class="game-thumb" src="./manners_morph/index.jpg" alt="" width="2488" height="1542" decoding="async" loading="lazy">
             </span>
             <h3>Manners Morph</h3>
             <p>Transform adjectives and adverbs in the grammar lab.</p>
+            <span class="skill-tag" data-skill="manners">manners</span>
           </a>
         </div>
       </section>
@@ -296,25 +346,39 @@
   </div>
   <script>
     (function () {
+      var STORAGE_KEY = 'teaching-games-filter';
+      var VALID = { all: true, p1: true, p4: true, p5: true };
       var buttons = document.querySelectorAll('.filter-btn');
       var sections = document.querySelectorAll('.category');
 
-      function showCategory(id) {
+      function showFilter(id) {
+        if (!VALID[id]) id = 'all';
         sections.forEach(function (section) {
-          section.hidden = section.getAttribute('data-category') !== id;
+          section.hidden = id !== 'all' && section.getAttribute('data-category') !== id;
         });
         buttons.forEach(function (btn) {
           var active = btn.getAttribute('data-filter') === id;
           btn.classList.toggle('active', active);
           btn.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
+        try {
+          localStorage.setItem(STORAGE_KEY, id);
+        } catch (e) { /* ignore quota / private mode */ }
       }
 
       buttons.forEach(function (btn) {
         btn.addEventListener('click', function () {
-          showCategory(btn.getAttribute('data-filter'));
+          showFilter(btn.getAttribute('data-filter'));
         });
       });
+
+      var saved = 'all';
+      try {
+        saved = localStorage.getItem(STORAGE_KEY) || 'all';
+      } catch (e) {
+        saved = 'all';
+      }
+      showFilter(saved);
     })();
   </script>
 </body>
