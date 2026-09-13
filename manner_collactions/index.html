@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Verb & Adverb Collocation Quest: Good Manners Edition</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Nunito for friendly primary school readability -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .font-action {
+      font-family: 'Nunito', sans-serif;
+    }
+    /* 3D Tactile Buttons for Classroom Touchscreens & Whiteboards */
+    .btn-3d-emerald {
+      background: #059669;
+      color: #FFFFFF !important;
+      border: 3px solid #064E3B;
+      box-shadow: 0 5px 0 #064E3B, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-emerald:hover { background: #10B981; }
+    .btn-3d-emerald:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #064E3B, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-amber {
+      background: #D97706;
+      color: #FFFFFF !important;
+      border: 3px solid #78350F;
+      box-shadow: 0 5px 0 #78350F, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-amber:hover { background: #F59E0B; }
+    .btn-3d-amber:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #78350F, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-purple {
+      background: #7C3AED;
+      color: #FFFFFF !important;
+      border: 3px solid #4C1D95;
+      box-shadow: 0 5px 0 #4C1D95, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-purple:hover { background: #8B5CF6; }
+    .btn-3d-purple:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #4C1D95, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-rose {
+      background: #E11D48;
+      color: #FFFFFF !important;
+      border: 3px solid #881337;
+      box-shadow: 0 5px 0 #881337, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-rose:hover { background: #F43F5E; }
+    .btn-3d-rose:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #881337, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .active-nav-btn {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 3px #FBBF24, 0 6px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-stone-900 via-stone-850 to-stone-950 min-h-screen text-stone-100 flex flex-col p-2 sm:p-4 selection:bg-amber-400 selection:text-stone-950">
+
+  <div class="max-w-5xl w-full mx-auto flex-1 flex flex-col space-y-3">
+    
+    <!-- Top Header & Live Classroom Dashboard -->
+    <header class="bg-stone-900 border-3 border-amber-400 rounded-3xl p-3 sm:p-4 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center text-3xl font-black shadow-lg border-2 border-amber-300">
+          🤝
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black text-amber-300 tracking-wide flex items-center gap-2">
+            <span>Manner Collocations Quest</span>
+            <span class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-300 font-extrabold uppercase">Primary EFL</span>
+          </h1>
+          <p class="text-xs text-stone-300 font-bold">
+            Learn which Adverbs of Manner go naturally with textbook verbs in full sentences!
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Dashboard Badges -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="bg-stone-950 border-2 border-amber-400 px-3 py-1 rounded-xl text-center shadow-inner">
+          <span class="text-[9px] uppercase font-black text-amber-400 block leading-tight">Stars & Score</span>
+          <span id="scoreDisplay" class="text-base font-black text-yellow-300 leading-none">0 pts</span>
+        </div>
+        <div class="bg-stone-950 border-2 border-orange-400 px-3 py-1 rounded-xl text-center shadow-inner">
+          <span class="text-[9px] uppercase font-black text-orange-400 block leading-tight">Combo Streak</span>
+          <span id="streakDisplay" class="text-base font-black text-orange-300 leading-none">0 🔥</span>
+        </div>
+        <button id="btnToggleAudio" class="bg-stone-800 hover:bg-stone-700 text-amber-300 border-2 border-amber-400/80 px-3 py-1.5 rounded-xl text-xs font-black transition active:scale-95 shadow flex items-center gap-1.5" title="Audio Pronunciation">
+          <span id="audioStatusIcon">🔊</span>
+          <span class="hidden sm:inline">Clear Voice ON</span>
+        </button>
+        <button id="btnResetAll" class="bg-rose-700 hover:bg-rose-600 text-white border-2 border-rose-400 px-3 py-1.5 rounded-xl text-xs font-black transition active:scale-95 shadow flex items-center gap-1" title="Reset all activities">
+          <span>🔄</span> <span>Reset</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Activity Mode Navigation Tabs -->
+    <nav class="grid grid-cols-2 md:grid-cols-4 gap-2 shrink-0">
+      <button id="navTabSentences" class="btn-3d-purple active-nav-btn py-2 px-3 rounded-2xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2">
+        <span>📖</span> <span>1. Picture Sentences</span>
+      </button>
+      <button id="navTabSorter" class="bg-stone-800 hover:bg-emerald-700 text-stone-200 border-2 border-emerald-600/60 py-2 px-3 rounded-2xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2">
+        <span>👍👎</span> <span>2. Manners Sorter</span>
+      </button>
+      <button id="navTabMatchup" class="bg-stone-800 hover:bg-amber-600 text-stone-200 border-2 border-amber-500/60 py-2 px-3 rounded-2xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2">
+        <span>⚡</span> <span>3. Collocation Pairs</span>
+      </button>
+      <button id="navTabCoach" class="bg-stone-800 hover:bg-rose-600 text-stone-200 border-2 border-rose-500/60 py-2 px-3 rounded-2xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2">
+        <span>🤖</span> <span>4. AI Manners Coach</span>
+      </button>
+    </nav>
+    <!-- MAIN INTERACTIVE CONTAINER -->
+    <main class="flex-1 flex flex-col bg-stone-900 border-3 border-amber-400 rounded-3xl p-3 sm:p-5 shadow-2xl relative overflow-hidden">
+      
+      <!-- ================= ACTIVITY 1: ILLUSTRATED PICTURE SENTENCES ================= -->
+      <section id="sectionSentences" class="flex-1 flex flex-col space-y-4">
+        
+        <div class="bg-stone-800/80 border-2 border-amber-500/50 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🖼️</span>
+            <div>
+              <h2 class="font-black text-amber-300 text-sm sm:text-base">Activity 1: Full Illustrated Sentences</h2>
+              <p class="text-xs text-stone-300 font-bold">
+                Look at the picture, read the complete story context, and choose the correct adverb of manner!
+              </p>
+            </div>
+          </div>
+          <span id="sentenceCardCounter" class="bg-amber-400 text-stone-950 text-xs font-black px-3 py-1 rounded-xl shadow-sm self-start sm:self-auto">
+            Card 1 / 8
+          </span>
+        </div>
+
+        <!-- Interactive Question Card -->
+        <div class="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full space-y-4 py-2">
+          
+          <!-- Picture Illustration Frame -->
+          <div id="sentenceIllustrationWrap" class="w-full max-w-sm h-44 sm:h-52 bg-stone-950 border-3 border-amber-400 rounded-3xl p-2 flex items-center justify-center shadow-xl overflow-hidden relative">
+            <!-- Dynamic SVG Injected Here -->
+          </div>
+
+          <!-- Scenario Context & Blank Sentence -->
+          <div class="w-full text-center space-y-2 bg-stone-950 border-2 border-stone-700 rounded-2xl p-4 shadow-inner">
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-xs uppercase font-black tracking-widest text-amber-400 bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-500/60">
+                Textbook Scenario
+              </span>
+              <button id="btnReadSentenceAloud" class="bg-purple-900 hover:bg-purple-800 text-purple-200 border border-purple-400 px-3 py-0.5 rounded-full text-xs font-black transition active:scale-95 flex items-center gap-1 shadow">
+                <span>🔊</span> <span>Listen Aloud</span>
+              </button>
+            </div>
+
+            <!-- Context Story Sentence (Guides EFL students) -->
+            <p id="sentenceContextStory" class="text-xs sm:text-sm font-bold text-stone-300 italic">
+              "Look at the bus stop! There are ten passengers waiting in a straight line."
+            </p>
+
+            <!-- Main Question Sentence with Blank -->
+            <h3 id="sentenceMainText" class="text-base sm:text-xl font-black text-white font-action leading-snug">
+              We should wait <span class="bg-stone-800 border-2 border-dashed border-amber-400 text-yellow-300 px-3 py-0.5 rounded-xl font-mono">[ ? ]</span> at the bus stop.
+            </h3>
+
+            <p id="sentencePictureHint" class="text-[11px] text-amber-300 font-bold">
+              💡 Picture clue: No pushing! Everyone is standing calmly in the queue.
+            </p>
+          </div>
+
+          <!-- Multiple Choice Options (Large Touch Targets) -->
+          <div id="sentenceChoicesGrid" class="grid grid-cols-2 gap-3 w-full max-w-md">
+            <!-- Dynamic Buttons Generated Here -->
+          </div>
+
+          <!-- Instant Visual Feedback Toast -->
+          <div id="sentenceFeedbackBox" class="hidden w-full max-w-md p-3 rounded-2xl text-center text-xs sm:text-sm font-black transition-all"></div>
+
+        </div>
+
+        <!-- Navigation Next / Back Button -->
+        <div class="flex items-center justify-between pt-2 border-t border-stone-800">
+          <button id="btnPrevSentence" class="bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-black py-2 px-4 rounded-xl border border-stone-600 transition active:scale-95 disabled:opacity-40" disabled>
+            ← Previous
+          </button>
+          <button id="btnNextSentence" class="btn-3d-amber text-white text-xs font-black py-2 px-5 rounded-xl transition active:scale-95">
+            Next Sentence →
+          </button>
+        </div>
+
+      </section>
+      <!-- ================= ACTIVITY 2: SENTENCE HABIT SORTER ================= -->
+      <section id="sectionHabitSorter" class="hidden space-y-4">
+        
+        <div class="bg-stone-800/90 border-2 border-emerald-500/60 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">👍👎</span>
+            <div>
+              <h2 class="font-black text-emerald-300 text-sm sm:text-base">Activity 2: Good Manners vs. Bad Manners Sentence Sorter</h2>
+              <p class="text-xs text-stone-300 font-bold">
+                Read the action carefully. Decide: Is this something we <strong class="text-emerald-300">SHOULD</strong> or <strong class="text-rose-300">SHOULDN'T</strong> do?
+              </p>
+            </div>
+          </div>
+          <span id="sorterCardCounter" class="bg-emerald-400 text-stone-950 text-xs font-black px-3 py-1 rounded-xl shadow-sm">
+            Card 1 / 8
+          </span>
+        </div>
+
+        <!-- Sorter Main Card -->
+        <div id="sorterCardArea" class="bg-stone-950 border-3 border-amber-400 rounded-3xl p-5 text-center max-w-xl mx-auto shadow-2xl space-y-4">
+          
+          <!-- Mini Picture for the Sorter sentence -->
+          <div id="sorterPictureWrap" class="w-32 h-24 mx-auto bg-stone-900 border-2 border-stone-700 rounded-2xl p-1 flex items-center justify-center overflow-hidden shadow">
+            <!-- SVG injected -->
+          </div>
+
+          <div class="space-y-2">
+            <span class="text-[11px] font-black text-amber-400 uppercase tracking-widest block">Classroom & Daily Manners Challenge</span>
+            <h3 id="sorterSentenceTitle" class="text-lg sm:text-xl font-black text-white font-action leading-snug">
+              We <span class="bg-stone-800 border-2 border-dashed border-amber-400 text-yellow-300 px-3 py-0.5 rounded-xl font-mono text-base sm:text-lg">[ ? should / shouldn't ? ]</span> wait patiently at the bus stop.
+            </h3>
+            <p id="sorterScenarioDetail" class="text-xs text-stone-300 italic font-bold">
+              Standing quietly without pushing other students.
+            </p>
+          </div>
+
+          <!-- Sorter Choices: Big Visual Buttons -->
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <button id="btnSortShould" class="btn-3d-emerald py-3 px-3 rounded-2xl font-black text-xs sm:text-sm transition active:scale-95 flex flex-col items-center justify-center gap-1">
+              <span class="text-2xl">👍</span>
+              <span>WE SHOULD...</span>
+              <span class="text-[10px] text-emerald-200 font-bold">Good Manners!</span>
+            </button>
+            <button id="btnSortShouldNot" class="bg-rose-600 hover:bg-rose-500 text-white border-3 border-rose-800 py-3 px-3 rounded-2xl font-black text-xs sm:text-sm transition active:scale-95 shadow-md flex flex-col items-center justify-center gap-1" style="box-shadow: 0 4px 0 #881337;">
+              <span class="text-2xl">👎</span>
+              <span>WE SHOULDN'T...</span>
+              <span class="text-[10px] text-rose-200 font-bold">Bad Manners!</span>
+            </button>
+          </div>
+
+          <!-- Audio Read Button for Sorter -->
+          <div class="pt-1">
+            <button id="btnSorterAudio" class="text-stone-400 hover:text-white text-xs font-bold underline inline-flex items-center gap-1">
+              <span>🔊</span> <span>Listen to this action</span>
+            </button>
+          </div>
+
+          <div id="sorterFeedbackBox" class="hidden p-3 rounded-2xl text-xs font-black"></div>
+        </div>
+
+        <!-- Sorted Baskets Preview -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div class="bg-emerald-950/60 border-2 border-emerald-500/70 rounded-2xl p-3">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black text-emerald-300 uppercase">👍 Good Manners Basket (We Should)</span>
+              <span id="basketGoodCount" class="bg-emerald-500 text-stone-950 text-xs font-black px-2 py-0.2 rounded-lg">0</span>
+            </div>
+            <div id="basketGoodItems" class="space-y-1.5 text-xs text-stone-200 min-h-[60px] max-h-40 overflow-y-auto"></div>
+          </div>
+
+          <div class="bg-rose-950/60 border-2 border-rose-500/70 rounded-2xl p-3">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black text-rose-300 uppercase">👎 Bad Manners Basket (We Shouldn't)</span>
+              <span id="basketBadCount" class="bg-rose-500 text-stone-950 text-xs font-black px-2 py-0.2 rounded-lg">0</span>
+            </div>
+            <div id="basketBadItems" class="space-y-1.5 text-xs text-stone-200 min-h-[60px] max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+
+      </section>
+      <!-- ================= ACTIVITY 3: COLLOCATION PAIRS ================= -->
+      <section id="sectionMatchup" class="hidden space-y-4">
+        <div class="bg-stone-800/90 border-2 border-amber-500/60 rounded-2xl p-3 flex items-center justify-between gap-2 shadow">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">⚡</span>
+            <div>
+              <h2 class="font-black text-amber-300 text-sm sm:text-base">Activity 3: Match the Verb with Natural Adverbs</h2>
+              <p class="text-xs text-stone-300 font-bold">
+                Tap a Verb on the left, then tap its best Adverb partner on the right!
+              </p>
+            </div>
+          </div>
+          <button id="btnResetPairs" class="text-xs bg-stone-900 hover:bg-stone-700 text-amber-400 border border-amber-400 px-3 py-1 rounded-xl font-bold">
+            Shuffle Pairs 🔀
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <!-- Verbs Column -->
+          <div class="bg-stone-950 border-2 border-stone-700 rounded-3xl p-4 space-y-2">
+            <h3 class="text-xs uppercase font-black text-stone-400 tracking-wider">Step 1: Choose a Verb</h3>
+            <div id="pairsVerbCol" class="space-y-2">
+              <!-- Dynamically rendered verbs -->
+            </div>
+          </div>
+
+          <!-- Adverbs Column -->
+          <div class="bg-stone-950 border-2 border-stone-700 rounded-3xl p-4 space-y-2">
+            <h3 class="text-xs uppercase font-black text-stone-400 tracking-wider">Step 2: Choose Natural Adverb</h3>
+            <div id="pairsAdverbCol" class="space-y-2">
+              <!-- Dynamically rendered adverbs -->
+            </div>
+          </div>
+        </div>
+
+        <div id="pairsFeedbackNotice" class="hidden p-3 rounded-2xl text-center text-xs font-black"></div>
+      </section>
+
+      <!-- ================= ACTIVITY 4: AI MANNERS COACH ================= -->
+      <section id="sectionCoach" class="hidden space-y-4">
+        <div class="bg-stone-800/90 border-2 border-rose-500/60 rounded-2xl p-3 flex items-center gap-2 shadow">
+          <span class="text-2xl">🤖</span>
+          <div>
+            <h2 class="font-black text-rose-300 text-sm sm:text-base">Activity 4: Miss Gemini AI Collocation Coach</h2>
+            <p class="text-xs text-stone-300 font-bold">
+              Pair any verb with an adverb of manner! Miss Gemini will tell you if it's natural English and show you a model sentence.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-stone-950 border-3 border-amber-400 rounded-3xl p-4 sm:p-6 max-w-xl mx-auto space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-black text-stone-300 mb-1">Pick a Verb:</label>
+              <select id="coachVerbSelect" class="w-full bg-stone-800 border-2 border-stone-600 rounded-2xl p-2.5 text-xs font-black text-amber-300 outline-none">
+                <option value="wait">wait</option>
+                <option value="speak">speak / talk</option>
+                <option value="eat">eat</option>
+                <option value="cross the road">cross the road</option>
+                <option value="leave shoes">leave shoes</option>
+                <option value="arrive">arrive</option>
+                <option value="whisper">whisper</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-black text-stone-300 mb-1">Pick an Adverb:</label>
+              <select id="coachAdverbSelect" class="w-full bg-stone-800 border-2 border-stone-600 rounded-2xl p-2.5 text-xs font-black text-amber-300 outline-none">
+                <option value="patiently">patiently</option>
+                <option value="politely">politely</option>
+                <option value="rudely">rudely</option>
+                <option value="noisily">noisily</option>
+                <option value="quietly">quietly</option>
+                <option value="softly">softly</option>
+                <option value="neatly">neatly</option>
+                <option value="carefully">carefully</option>
+                <option value="early">early</option>
+                <option value="late">late</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="btnCoachEvaluate" class="w-full btn-3d-purple text-white font-black py-3 rounded-2xl text-xs sm:text-sm tracking-wide transition active:scale-95 shadow flex items-center justify-center gap-2">
+            <span>🪄</span> <span>Ask Miss Gemini!</span>
+          </button>
+
+          <div id="coachResultArea" class="hidden bg-stone-900 border-2 border-amber-400 rounded-2xl p-4 space-y-2 text-left text-xs">
+            <div class="flex items-center justify-between">
+              <span id="coachBadge" class="bg-emerald-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase">Natural Collocation!</span>
+              <span id="coachStars" class="text-amber-400 font-bold">⭐⭐⭐⭐⭐</span>
+            </div>
+            <p id="coachFeedback" class="font-bold text-stone-200"></p>
+            <div id="coachModelSentence" class="bg-stone-950 p-3 rounded-xl border border-stone-700 font-action text-yellow-300 font-bold"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+  <script>
+    /* ================= Web Audio API Synthesizer ================= */
+    class AudioFeedback {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playCorrect() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          [523.25, 659.25, 783.99].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+            gain.gain.setValueAtTime(0.18, now + idx * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.06);
+            osc.stop(now + idx * 0.06 + 0.2);
+          });
+        } catch(e) {}
+      }
+      playWrong() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.setValueAtTime(95, now + 0.1);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(now + 0.25);
+        } catch(e) {}
+      }
+      playCheer() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.35);
+          });
+        } catch(e) {}
+      }
+    }
+    const sound = new AudioFeedback();
+    /* ================= High-Clarity Voice Engine ================= */
+    let bestLocalVoice = null;
+
+    function loadHighClarityVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return;
+
+      bestLocalVoice = voices.find(v => v.lang.startsWith('en') && (
+        v.name.includes('Natural') || 
+        v.name.includes('Google US English') ||
+        v.name.includes('Samantha') || 
+        v.name.includes('Jenny') || 
+        v.name.includes('Aria') || 
+        v.name.includes('Victoria') ||
+        v.name.includes('Daniel') ||
+        v.name.includes('Karen')
+      )) || voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB') 
+         || voices.find(v => v.lang.startsWith('en')) 
+         || voices[0];
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = loadHighClarityVoices;
+      loadHighClarityVoices();
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      loadHighClarityVoices();
+      const cleanText = text.replace(/\[.*?\]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      if (bestLocalVoice) {
+        utterance.voice = bestLocalVoice;
+      }
+      utterance.lang = 'en-US';
+      utterance.rate = 0.82;  // Articulate, calm pacing for young EFL learners
+      utterance.pitch = 1.05; // Friendly teacher intonation
+      window.speechSynthesis.speak(utterance);
+    }
+    /* Handcrafted Vector SVGs for every textbook situation */
+    const PICTURE_SVGS = {
+      busStop: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#1e293b"/>
+          <!-- Bus Stop Sign -->
+          <rect x="25" y="30" width="6" height="90" fill="#94a3b8"/>
+          <circle cx="28" cy="28" r="18" fill="#ef4444" stroke="#ffffff" stroke-width="3"/>
+          <text x="28" y="33" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle">BUS</text>
+          <!-- Pavement -->
+          <rect x="0" y="105" width="200" height="25" fill="#334155"/>
+          <line x1="0" y1="105" x2="200" y2="105" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8,6"/>
+          <!-- Orderly Student Queue -->
+          <!-- Student 1 -->
+          <circle cx="70" cy="65" r="10" fill="#fbcfe8"/>
+          <rect x="63" y="77" width="14" height="28" rx="4" fill="#3b82f6"/>
+          <circle cx="75" cy="84" r="5" fill="#f59e0b"/> <!-- backpack -->
+          <!-- Student 2 -->
+          <circle cx="110" cy="65" r="10" fill="#fed7aa"/>
+          <rect x="103" y="77" width="14" height="28" rx="4" fill="#10b981"/>
+          <!-- Student 3 -->
+          <circle cx="150" cy="65" r="10" fill="#fef08a"/>
+          <rect x="143" y="77" width="14" height="28" rx="4" fill="#ec4899"/>
+          <!-- Speech Bubble -->
+          <rect x="80" y="10" width="105" height="26" rx="8" fill="#ffffff"/>
+          <text x="132" y="27" fill="#0f172a" font-size="10" font-weight="900" text-anchor="middle">Waiting in queue 🧘</text>
+        </svg>
+      `,
+      phoneLoudly: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#1c1917"/>
+          <!-- Bus Window -->
+          <rect x="15" y="15" width="170" height="95" rx="16" fill="#0284c7" stroke="#38bdf8" stroke-width="3"/>
+          <!-- Shouting Passenger -->
+          <circle cx="95" cy="55" r="18" fill="#fed7aa"/>
+          <!-- Wide Open Mouth -->
+          <ellipse cx="95" cy="61" rx="7" ry="5" fill="#991b1b"/>
+          <rect x="80" y="75" width="30" height="35" rx="6" fill="#ef4444"/>
+          <!-- Smartphone at ear -->
+          <rect x="110" y="45" width="10" height="22" rx="3" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+          <!-- Sound Shockwaves -->
+          <path d="M 125 45 Q 140 55 125 65" stroke="#facc15" stroke-width="3" fill="none"/>
+          <path d="M 132 38 Q 155 55 132 72" stroke="#ef4444" stroke-width="3" fill="none"/>
+          <!-- Warning Badge -->
+          <rect x="35" y="22" width="60" height="20" rx="6" fill="#881337"/>
+          <text x="65" y="36" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">SHOUTING! 🔊</text>
+        </svg>
+      `,
+      restaurant: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#292524"/>
+          <!-- Restaurant Table -->
+          <ellipse cx="100" cy="100" rx="85" ry="25" fill="#78350f" stroke="#b45309" stroke-width="2"/>
+          <rect x="90" y="68" width="20" height="18" rx="3" fill="#38bdf8" opacity="0.8"/> <!-- Water glass -->
+          <!-- Polite Child with smile -->
+          <circle cx="50" cy="55" r="14" fill="#fed7aa"/>
+          <path d="M 44 60 Q 50 66 56 60" stroke="#000000" stroke-width="2" fill="none"/> <!-- gentle smile -->
+          <rect x="38" y="71" width="24" height="30" rx="6" fill="#0284c7"/>
+          <!-- Polite Speech Bubble -->
+          <rect x="25" y="10" width="150" height="28" rx="8" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+          <text x="100" y="27" fill="#0f172a" font-size="10" font-weight="900" text-anchor="middle">"Could you give me water, please?"</text>
+        </svg>
+      `,
+      eatQuietly: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#1c1917"/>
+          <!-- Dining Table & Plate -->
+          <ellipse cx="100" cy="100" rx="85" ry="24" fill="#78350f" stroke="#b45309" stroke-width="2"/>
+          <ellipse cx="100" cy="94" rx="42" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="100" cy="94" r="7" fill="#22c55e"/> <!-- peas / vegetables -->
+          <!-- Child Chewing Gently with Closed Mouth -->
+          <circle cx="100" cy="48" r="16" fill="#fed7aa"/>
+          <path d="M 94 54 Q 100 57 106 54" stroke="#78350f" stroke-width="2.5" fill="none"/> <!-- closed smiling mouth -->
+          <rect x="88" y="66" width="24" height="26" rx="6" fill="#0284c7"/>
+          <!-- Quiet Table Banner -->
+          <rect x="35" y="10" width="130" height="22" rx="6" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+          <text x="100" y="25" fill="#6ee7b7" font-size="9" font-weight="900" text-anchor="middle">Chew with mouth closed 🤫🍽️</text>
+        </svg>
+      `,
+      eatMessily: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#292524"/>
+          <!-- Dirty Table Surface -->
+          <rect x="0" y="70" width="200" height="60" fill="#44403c"/>
+          <!-- Breadcrumbs and Sauce Splatters -->
+          <circle cx="45" cy="95" r="4" fill="#ef4444"/> <!-- ketchup blot -->
+          <circle cx="58" cy="102" r="2.5" fill="#ef4444"/>
+          <circle cx="140" cy="92" r="3" fill="#f59e0b"/> <!-- crumbs -->
+          <circle cx="152" cy="100" r="2" fill="#f59e0b"/>
+          <circle cx="132" cy="108" r="2.5" fill="#f59e0b"/>
+          <!-- Messy Half-eaten Sandwich dripping sauce -->
+          <rect x="85" y="78" width="30" height="18" rx="4" fill="#d97706"/>
+          <path d="M 88 88 Q 95 98 92 108" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round"/> <!-- dripping sauce -->
+          <!-- Bad Manners Notice Banner -->
+          <rect x="25" y="12" width="150" height="24" rx="7" fill="#881337" stroke="#f43f5e" stroke-width="1.5"/>
+          <text x="100" y="28" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">Crumbs & spills everywhere! 🥪🌀</text>
+        </svg>
+      `,
+      runningLate: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#18181b"/>
+          <!-- School Wall & Gate -->
+          <rect x="0" y="20" width="70" height="110" fill="#3f3f46"/>
+          <rect x="15" y="35" width="40" height="40" rx="4" fill="#71717a"/>
+          <text x="35" y="60" fill="#facc15" font-size="9" font-weight="900" text-anchor="middle">SCHOOL</text>
+          <!-- Wall Clock Showing 8:20 AM (LATE!) -->
+          <circle cx="160" cy="40" r="22" fill="#ffffff" stroke="#ef4444" stroke-width="3"/>
+          <circle cx="160" cy="40" r="2" fill="#0f172a"/>
+          <!-- Hour hand pointing past 8 (down-left) -->
+          <line x1="160" y1="40" x2="152" y2="44" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Minute hand pointing to 4 = 20 mins (down-right) -->
+          <line x1="160" y1="40" x2="173" y2="47" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+          <text x="160" y="56" fill="#ef4444" font-size="7" font-weight="900" text-anchor="middle">8:20 AM</text>
+          <!-- Student Running Panting / Sweating -->
+          <circle cx="95" cy="65" r="12" fill="#fed7aa"/>
+          <ellipse cx="108" cy="62" rx="2" ry="4" fill="#38bdf8"/> <!-- sweat drop -->
+          <rect x="88" y="78" width="14" height="24" rx="4" fill="#ef4444"/>
+          <!-- Backpack bouncing behind -->
+          <circle cx="80" cy="85" r="7" fill="#f59e0b"/>
+          <line x1="88" y1="102" x2="78" y2="120" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
+          <line x1="102" y1="102" x2="114" y2="116" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
+          <!-- Warning banner -->
+          <rect x="65" y="8" width="80" height="18" rx="5" fill="#991b1b"/>
+          <text x="105" y="20" fill="#fef08a" font-size="8" font-weight="900" text-anchor="middle">BELL RANG! 🏃💨</text>
+        </svg>
+      `,
+      shoesDoor: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#1e1b4b"/>
+          <!-- Japanese Genkan Step -->
+          <rect x="0" y="70" width="200" height="60" fill="#78350f"/>
+          <line x1="0" y1="70" x2="200" y2="70" stroke="#f59e0b" stroke-width="4"/>
+          <!-- Tidy Pair of Shoes placed side by side -->
+          <!-- Left Shoe -->
+          <ellipse cx="75" cy="95" rx="14" ry="22" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+          <line x1="75" y1="80" x2="75" y2="105" stroke="#ffffff" stroke-width="2"/>
+          <!-- Right Shoe -->
+          <ellipse cx="115" cy="95" rx="14" ry="22" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+          <line x1="115" y1="80" x2="115" y2="105" stroke="#ffffff" stroke-width="2"/>
+          <rect x="40" y="15" width="120" height="26" rx="8" fill="#15803d"/>
+          <text x="100" y="32" fill="#ffffff" font-size="10" font-weight="900" text-anchor="middle">Straight & Tidy 👟👟</text>
+        </svg>
+      `,
+      library: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#18181b"/>
+          <!-- Bookshelf Background -->
+          <rect x="15" y="15" width="170" height="35" rx="4" fill="#713f12"/>
+          <rect x="25" y="20" width="10" height="25" fill="#ef4444"/>
+          <rect x="40" y="18" width="12" height="27" fill="#3b82f6"/>
+          <rect x="56" y="22" width="14" height="23" fill="#10b981"/>
+          <rect x="74" y="19" width="10" height="26" fill="#eab308"/>
+          <!-- Child whispering with finger over mouth (Shh!) -->
+          <circle cx="100" cy="75" r="16" fill="#fed7aa"/>
+          <rect x="98" y="75" width="4" height="15" rx="2" fill="#f59e0b"/> <!-- index finger shh -->
+          <rect x="45" y="100" width="110" height="20" rx="6" fill="#312e81"/>
+          <text x="100" y="114" fill="#a5b4fc" font-size="9" font-weight="900" text-anchor="middle">"Whisper softly... shh!" 🤫</text>
+        </svg>
+      `,
+      crossRoad: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#334155"/>
+          <!-- Zebra Crossing Stripes -->
+          <rect x="25" y="10" width="18" height="110" fill="#ffffff"/>
+          <rect x="65" y="10" width="18" height="110" fill="#ffffff"/>
+          <rect x="105" y="10" width="18" height="110" fill="#ffffff"/>
+          <rect x="145" y="10" width="18" height="110" fill="#ffffff"/>
+          <!-- Child looking Left and Right -->
+          <circle cx="114" cy="65" r="14" fill="#fed7aa"/>
+          <rect x="106" y="80" width="16" height="30" rx="4" fill="#f59e0b"/>
+          <rect x="10" y="15" width="95" height="22" rx="6" fill="#047857"/>
+          <text x="57" y="29" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">Look both ways! 🚦</text>
+        </svg>
+      `,
+      schoolClock: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#0f172a"/>
+          <!-- Morning Sky & Sun -->
+          <circle cx="28" cy="24" r="12" fill="#fbbf24" opacity="0.9"/>
+          <!-- School Building & Gate -->
+          <rect x="12" y="38" width="68" height="92" fill="#334155" rx="3"/>
+          <rect x="22" y="48" width="48" height="28" rx="3" fill="#1e293b"/>
+          <text x="46" y="65" fill="#facc15" font-size="9" font-weight="900" text-anchor="middle">SCHOOL</text>
+          <!-- Entrance Doorway -->
+          <rect x="32" y="86" width="28" height="44" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+
+          <!-- School Gate Wall Clock Showing 7:45 AM -->
+          <circle cx="145" cy="46" r="28" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
+          <!-- 12, 3, 6, 9 hour tick marks -->
+          <circle cx="145" cy="23" r="1.8" fill="#0f172a"/>
+          <circle cx="168" cy="46" r="1.8" fill="#0f172a"/>
+          <circle cx="145" cy="69" r="1.8" fill="#0f172a"/>
+          <circle cx="122" cy="46" r="1.8" fill="#0f172a"/>
+          <!-- Center Pin -->
+          <circle cx="145" cy="46" r="2.5" fill="#0f172a"/>
+          <!-- Minute Hand pointing straight to 9 (45 mins) -->
+          <line x1="145" y1="46" x2="124" y2="46" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Hour Hand pointing between 7 and 8 (almost 8 o'clock) -->
+          <line x1="145" y1="46" x2="134" y2="54" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Digital Time Badge -->
+          <rect x="115" y="80" width="60" height="18" rx="5" fill="#065f46" stroke="#34d399" stroke-width="1"/>
+          <text x="145" y="93" fill="#6ee7b7" font-size="9" font-weight="900" text-anchor="middle">7:45 AM</text>
+
+          <!-- Calm, Happy Student Walking in Early with Backpack -->
+          <circle cx="92" cy="74" r="9" fill="#fed7aa"/>
+          <path d="M 88 77 Q 92 81 96 77" stroke="#b45309" stroke-width="1.5" fill="none"/>
+          <rect x="86" y="84" width="12" height="22" rx="3" fill="#2563eb"/>
+          <circle cx="82" cy="90" r="5" fill="#f59e0b"/>
+          <line x1="89" y1="106" x2="89" y2="124" stroke="#fca5a5" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="95" y1="106" x2="95" y2="124" stroke="#fca5a5" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Early Banner -->
+          <rect x="36" y="8" width="128" height="18" rx="5" fill="#15803d"/>
+          <text x="100" y="21" fill="#ffffff" font-size="8.5" font-weight="900" text-anchor="middle">7:45 AM • Arriving Early! 🎒✨</text>
+        </svg>
+      `,
+      classroomPush: `
+        <svg viewBox="0 0 200 130" class="w-full h-full">
+          <rect width="200" height="130" fill="#1e293b"/>
+          <!-- Classroom Door & Room Sign -->
+          <rect x="0" y="10" width="58" height="120" fill="#334155"/>
+          <rect x="6" y="22" width="46" height="108" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+          <rect x="12" y="32" width="34" height="18" rx="3" fill="#facc15"/>
+          <text x="29" y="44" fill="#0f172a" font-size="8" font-weight="900" text-anchor="middle">ROOM 4B</text>
+          <!-- Door handle -->
+          <circle cx="44" cy="78" r="2.5" fill="#facc15"/>
+          <!-- Floor line -->
+          <line x1="0" y1="114" x2="200" y2="114" stroke="#475569" stroke-width="3"/>
+          
+          <!-- Student 1 at the door (waiting nicely with textbook) -->
+          <circle cx="76" cy="70" r="10" fill="#fbcfe8"/>
+          <rect x="69" y="82" width="14" height="26" rx="3" fill="#3b82f6"/>
+          <rect x="71" y="88" width="10" height="12" rx="1" fill="#fde047"/> <!-- book -->
+          <line x1="72" y1="108" x2="72" y2="122" stroke="#fbcfe8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="79" y1="108" x2="79" y2="122" stroke="#fbcfe8" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Student 2 in the middle being pushed from behind -->
+          <circle cx="116" cy="70" r="10" fill="#fed7aa"/>
+          <ellipse cx="127" cy="65" rx="2" ry="3" fill="#38bdf8"/> <!-- startled sweat drop -->
+          <rect x="109" y="82" width="14" height="26" rx="3" fill="#10b981"/>
+          <line x1="112" y1="108" x2="110" y2="122" stroke="#fed7aa" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="120" y1="108" x2="122" y2="122" stroke="#fed7aa" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Impatient student pushing hands forward into Student 2 -->
+          <circle cx="162" cy="68" r="10" fill="#fca5a5"/>
+          <ellipse cx="158" cy="71" rx="3" ry="2" fill="#991b1b"/> <!-- angry mouth -->
+          <rect x="155" y="80" width="14" height="26" rx="3" fill="#ef4444"/>
+          <!-- Outstretched pushing arms -->
+          <line x1="155" y1="85" x2="132" y2="85" stroke="#fca5a5" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="155" y1="91" x2="135" y2="91" stroke="#fca5a5" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="158" y1="106" x2="152" y2="122" stroke="#fca5a5" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="166" y1="106" x2="170" y2="122" stroke="#fca5a5" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Push impact lines -->
+          <path d="M 130 78 L 126 83 M 130 96 L 126 91" stroke="#facc15" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- Warning Header Banner -->
+          <rect x="42" y="8" width="146" height="20" rx="5" fill="#881337" stroke="#f43f5e" stroke-width="1.5"/>
+          <text x="115" y="22" fill="#ffffff" font-size="8.5" font-weight="900" text-anchor="middle">PUSHING IN LINE! 😤❌</text>
+        </svg>
+      `
+    };
+    /* 1. Full Context Sentences with Visual Hints for EFL Students */
+    const FULL_SENTENCES_DATA = [
+      {
+        storyContext: '"Look at the bus stop! There are eight students standing quietly in a straight line."',
+        mainSentence: 'We should wait [ _____ ] at the bus stop.',
+        audioSentence: 'We should wait patiently at the bus stop.',
+        hint: '💡 Picture clue: Standing calmly in the queue without pushing.',
+        svgKey: 'busStop',
+        choices: [
+          { text: 'patiently 🧘', correct: true, feedback: '✓ Correct! "wait patiently" means standing in the queue calmly.' },
+          { text: 'impatiently 😤', correct: false, feedback: '✕ Impatiently means pushing and complaining. Good students wait patiently!' }
+        ]
+      },
+      {
+        storyContext: '"The mobile phone is ringing on the public bus. Other passengers are trying to sleep."',
+        mainSentence: 'We shouldn\'t talk [ _____ ] on the phone on the bus.',
+        audioSentence: 'We shouldn\'t talk loudly on the phone on the bus.',
+        hint: '💡 Picture clue: Do not shout or disturb other passengers!',
+        svgKey: 'phoneLoudly',
+        choices: [
+          { text: 'loudly 📢', correct: true, feedback: '✓ Correct! We shouldn\'t talk loudly because it disturbs other passengers.' },
+          { text: 'softly 🤫', correct: false, feedback: '✕ Talking softly is good! We shouldn\'t talk loudly.' }
+        ]
+      },
+      {
+        storyContext: '"You are at a restaurant and need some water. You smile and say: \'Could you give me water, please?\'"',
+        mainSentence: 'We should speak [ _____ ] to the waiter.',
+        audioSentence: 'We should speak politely to the waiter.',
+        hint: '💡 Picture clue: Saying "please" and "thank you" with good manners.',
+        svgKey: 'restaurant',
+        choices: [
+          { text: 'politely 😊', correct: true, feedback: '✓ Excellent! Saying "Please" and "Excuse me" is speaking politely.' },
+          { text: 'rudely 😠', correct: false, feedback: '✕ Saying "Give me water!" is speaking rudely. We should speak politely!' }
+        ]
+      },
+      {
+        storyContext: '"At the dinner table with family, everyone is chewing with their mouth closed and enjoying the delicious food."',
+        mainSentence: 'At the dinner table, we should eat our food [ _____ ].',
+        audioSentence: 'At the dinner table, we should eat our food quietly.',
+        hint: '💡 Picture clue: Chewing gently with mouth closed, no loud smacking sounds.',
+        svgKey: 'eatQuietly',
+        choices: [
+          { text: 'quietly 🤫', correct: true, feedback: '✓ Perfect! Good table manners mean chewing with your mouth closed and eating quietly.' },
+          { text: 'noisily 📢', correct: false, feedback: '✕ Making loud smacking noises while eating is impolite. We should eat quietly!' }
+        ]
+      },
+      {
+        storyContext: '"Ben is eating a sandwich at lunchtime. Drops of ketchup and breadcrumbs are falling all over his desk and uniform."',
+        mainSentence: 'We shouldn\'t eat our food [ _____ ] at our desks.',
+        audioSentence: 'We shouldn\'t eat our food messily at our desks.',
+        hint: '💡 Picture clue: Look at the messy crumbs and spills all over the table!',
+        svgKey: 'eatMessily',
+        choices: [
+          { text: 'messily 🥪', correct: true, feedback: '✓ Correct! Dropping food and leaving stains everywhere is eating messily.' },
+          { text: 'tidily 🧻', correct: false, feedback: '✕ Eating tidily keeps the table clean. We shouldn\'t eat messily!' }
+        ]
+      },
+      {
+        storyContext: '"The morning school bell rang at 8:00 AM. May is running through the front gate out of breath at 8:20 AM."',
+        mainSentence: 'Students shouldn\'t arrive [ _____ ] for school.',
+        audioSentence: 'Students shouldn\'t arrive late for school.',
+        hint: '💡 Picture clue: The clock shows 8:20 AM! The lesson has already started.',
+        svgKey: 'runningLate',
+        choices: [
+          { text: 'late 🏃', correct: true, feedback: '✓ Spot on! Arriving late means you miss the start of the lesson.' },
+          { text: 'early ⏰', correct: false, feedback: '✕ Arriving early is good! We shouldn\'t arrive late.' }
+        ]
+      },
+      {
+        storyContext: '"A Japanese family invites you into their beautiful home with wooden tatami floors."',
+        mainSentence: 'We should leave our shoes [ _____ ] at the door.',
+        audioSentence: 'We should leave our shoes neatly at the door.',
+        hint: '💡 Picture clue: Placing shoes straight and tidy in a neat pair.',
+        svgKey: 'shoesDoor',
+        choices: [
+          { text: 'neatly 👟', correct: true, feedback: '✓ Perfect! We leave our shoes neatly in a straight line at the door.' },
+          { text: 'messily 🌀', correct: false, feedback: '✕ Leaving shoes messily across the floor is impolite. Leave them neatly!' }
+        ]
+      },
+      {
+        storyContext: '"You are sitting in the school library where classmates are studying for a reading test."',
+        mainSentence: 'In the library, we should whisper [ _____ ].',
+        audioSentence: 'In the library, we should whisper softly.',
+        hint: '💡 Picture clue: Using very quiet indoor voices so everyone can focus.',
+        svgKey: 'library',
+        choices: [
+          { text: 'softly 🤫', correct: true, feedback: '✓ Correct! "whisper softly" keeps the library quiet and peaceful.' },
+          { text: 'loudly 🔊', correct: false, feedback: '✕ Whispering loudly will disturb students reading. Whisper softly!' }
+        ]
+      },
+      {
+        storyContext: '"The traffic lights are changing and cars are moving along the busy road."',
+        mainSentence: 'Children should cross the road [ _____ ].',
+        audioSentence: 'Children should cross the road carefully.',
+        hint: '💡 Picture clue: Always looking left and right at the zebra crossing.',
+        svgKey: 'crossRoad',
+        choices: [
+          { text: 'carefully 🚦', correct: true, feedback: '✓ Wonderful! Always look left and right to cross the road carefully.' },
+          { text: 'carelessly 🏃', correct: false, feedback: '✕ Crossing carelessly is very dangerous. Always cross carefully!' }
+        ]
+      },
+      {
+        storyContext: '"School begins at 8:00 AM. Chris arrives at 7:45 AM so he can unpack his schoolbag."',
+        mainSentence: 'We should arrive [ _____ ] for school.',
+        audioSentence: 'We should arrive early for school.',
+        hint: '💡 Picture clue: The clock shows 7:45 AM! Arriving 15 minutes before the 8:00 AM bell.',
+        svgKey: 'schoolClock',
+        choices: [
+          { text: 'early ⏰', correct: true, feedback: '✓ Super! Arriving early gives you time to get ready for class.' },
+          { text: 'late 🏃', correct: false, feedback: '✕ Arriving late makes you miss the lesson. We should arrive early!' }
+        ]
+      }
+    ];
+    /* 2. Full Sentence Habits for Sorter Activity (should / shouldn't removed from question prompt) */
+    const HABIT_SENTENCES = [
+      {
+        questionText: 'We [ _____ ] wait patiently in the queue at the bus stop.',
+        audioPrompt: 'Wait patiently in the queue at the bus stop.',
+        solvedText: 'We should wait patiently at the bus stop.',
+        type: 'should',
+        svgKey: 'busStop',
+        detail: 'Standing in line calmly without pushing other passengers.'
+      },
+      {
+        questionText: 'We [ _____ ] talk loudly on the phone on the bus.',
+        audioPrompt: 'Talk loudly on the phone on the bus.',
+        solvedText: 'We shouldn\'t talk loudly on the phone on the bus.',
+        type: 'shouldNot',
+        svgKey: 'phoneLoudly',
+        detail: 'Shouting into the mobile phone disturbs passengers.'
+      },
+      {
+        questionText: 'When asking for water, we [ _____ ] speak politely to the waiter.',
+        audioPrompt: 'Speak politely to the waiter.',
+        solvedText: 'We should speak politely to the waiter.',
+        type: 'should',
+        svgKey: 'restaurant',
+        detail: 'Saying "Excuse me" and "Please could I have water".'
+      },
+      {
+        questionText: 'At the dining table, we [ _____ ] chew our food quietly.',
+        audioPrompt: 'Chew our food quietly at the dining table.',
+        solvedText: 'We should chew our food quietly at the dining table.',
+        type: 'should',
+        svgKey: 'eatQuietly',
+        detail: 'Closing your mouth while chewing without making loud noises.'
+      },
+      {
+        questionText: 'During lunch, students [ _____ ] eat snacks messily and drop crumbs.',
+        audioPrompt: 'Eat snacks messily and drop crumbs on the floor.',
+        solvedText: 'We shouldn\'t eat snacks messily and drop crumbs on the floor.',
+        type: 'shouldNot',
+        svgKey: 'eatMessily',
+        detail: 'Spilling sauce and scattering crumbs across the classroom floor.'
+      },
+      {
+        questionText: 'On school mornings, students [ _____ ] arrive late for class.',
+        audioPrompt: 'Arrive late for morning lessons.',
+        solvedText: 'We shouldn\'t arrive late for morning lessons.',
+        type: 'shouldNot',
+        svgKey: 'runningLate',
+        detail: 'Rushing into the classroom after the school bell has already rung.'
+      },
+      {
+        questionText: 'We [ _____ ] push impatiently into the classroom queue.',
+        audioPrompt: 'Push impatiently into the classroom queue.',
+        solvedText: 'We shouldn\'t push impatiently into the classroom queue.',
+        type: 'shouldNot',
+        svgKey: 'classroomPush',
+        detail: 'Cutting in front of classmates is bad manners.'
+      },
+      {
+        questionText: 'At a Japanese home, we [ _____ ] leave our shoes neatly at the door.',
+        audioPrompt: 'Leave our shoes neatly at the front door.',
+        solvedText: 'We should leave our shoes neatly at the front door.',
+        type: 'should',
+        svgKey: 'shoesDoor',
+        detail: 'Keeping shoes straight and tidy in Japanese homes.'
+      },
+      {
+        questionText: 'During quiet study time, we [ _____ ] whisper softly in the library.',
+        audioPrompt: 'Whisper softly in the school library.',
+        solvedText: 'We should whisper softly in the school library.',
+        type: 'should',
+        svgKey: 'library',
+        detail: 'Using low indoor voices so classmates can read.'
+      },
+      {
+        questionText: 'On busy streets, children [ _____ ] cross the road carefully.',
+        audioPrompt: 'Cross the road carefully at the zebra crossing.',
+        solvedText: 'We should cross the road carefully at the zebra crossing.',
+        type: 'should',
+        svgKey: 'crossRoad',
+        detail: 'Always looking left and right to stay safe.'
+      }
+    ];
+
+    /* 3. Collocation Pairs for Activity 3 */
+    const COLLOCATION_PAIRS = [
+      { verb: 'wait', adverb: 'patiently', note: 'at the bus stop' },
+      { verb: 'speak / talk', adverb: 'politely', note: 'to the waiter' },
+      { verb: 'eat dinner', adverb: 'quietly', note: 'at the dining table' },
+      { verb: 'eat snacks', adverb: 'messily', note: 'dropping crumbs' },
+      { verb: 'leave shoes', adverb: 'neatly', note: 'at the front door' },
+      { verb: 'whisper', adverb: 'softly', note: 'in the library' },
+      { verb: 'cross the road', adverb: 'carefully', note: 'at the zebra crossing' },
+      { verb: 'arrive for school', adverb: 'early', note: 'before 8:00 AM' },
+      { verb: 'arrive for class', adverb: 'late', note: 'after the bell rings' }
+    ];
+
+    /* App State */
+    const state = {
+      score: 0,
+      streak: 0,
+      currentSentenceIdx: 0,
+      currentSorterIdx: 0,
+      goodSorterCount: 0,
+      badSorterCount: 0,
+      selectedVerb: null,
+      selectedAdverb: null,
+      matchedPairsCount: 0
+    };
+
+    function updateStatsUI() {
+      document.getElementById('scoreDisplay').textContent = `${state.score} pts`;
+      document.getElementById('streakDisplay').textContent = `${state.streak} 🔥`;
+    }
+    /* ================= ACTIVITY 1 LOGIC ================= */
+    function renderSentenceCard() {
+      const item = FULL_SENTENCES_DATA[state.currentSentenceIdx];
+      document.getElementById('sentenceCardCounter').textContent = `Card ${state.currentSentenceIdx + 1} / ${FULL_SENTENCES_DATA.length}`;
+      document.getElementById('sentenceIllustrationWrap').innerHTML = PICTURE_SVGS[item.svgKey] || `<div class="text-4xl">📚</div>`;
+      document.getElementById('sentenceContextStory').textContent = item.storyContext;
+      document.getElementById('sentenceMainText').innerHTML = item.mainSentence.replace('[ _____ ]', '<span class="bg-stone-800 border-2 border-dashed border-amber-400 text-yellow-300 px-3 py-0.5 rounded-xl font-mono">[ _____ ]</span>');
+      document.getElementById('sentencePictureHint').textContent = item.hint;
+
+      const choicesGrid = document.getElementById('sentenceChoicesGrid');
+      choicesGrid.innerHTML = '';
+
+      const feedback = document.getElementById('sentenceFeedbackBox');
+      feedback.classList.add('hidden');
+
+      item.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = "bg-stone-800 hover:bg-stone-700 text-white font-black py-3 px-4 rounded-2xl border-2 border-stone-600 transition active:scale-95 shadow text-xs sm:text-sm flex items-center justify-center gap-1.5";
+        btn.textContent = choice.text;
+
+        btn.onclick = () => {
+          sound.init();
+          if (choice.correct) {
+            sound.playCorrect();
+            state.score += 100;
+            state.streak++;
+            feedback.className = "p-3 rounded-2xl text-xs sm:text-sm font-black bg-emerald-900 border-2 border-emerald-400 text-emerald-200 block";
+            feedback.innerHTML = choice.feedback;
+            btn.className = "btn-3d-emerald py-3 px-4 rounded-2xl text-xs sm:text-sm";
+            document.getElementById('sentenceMainText').innerHTML = item.mainSentence.replace('[ _____ ]', `<strong class="text-emerald-300 underline underline-offset-4">${choice.text.split(' ')[0]}</strong>`);
+            speakText(item.audioSentence);
+          } else {
+            sound.playWrong();
+            state.streak = 0;
+            state.score = Math.max(0, state.score - 20);
+            feedback.className = "p-3 rounded-2xl text-xs sm:text-sm font-black bg-rose-900 border-2 border-rose-400 text-rose-200 block";
+            feedback.innerHTML = choice.feedback;
+          }
+          updateStatsUI();
+        };
+
+        choicesGrid.appendChild(btn);
+      });
+
+      document.getElementById('btnPrevSentence').disabled = (state.currentSentenceIdx === 0);
+      document.getElementById('btnNextSentence').disabled = (state.currentSentenceIdx === FULL_SENTENCES_DATA.length - 1);
+    }
+
+    document.getElementById('btnReadSentenceAloud').addEventListener('click', () => {
+      sound.init();
+      const item = FULL_SENTENCES_DATA[state.currentSentenceIdx];
+      speakText(item.audioSentence);
+    });
+
+    document.getElementById('btnPrevSentence').addEventListener('click', () => {
+      if (state.currentSentenceIdx > 0) {
+        state.currentSentenceIdx--;
+        renderSentenceCard();
+      }
+    });
+
+    document.getElementById('btnNextSentence').addEventListener('click', () => {
+      if (state.currentSentenceIdx < FULL_SENTENCES_DATA.length - 1) {
+        state.currentSentenceIdx++;
+        renderSentenceCard();
+      }
+    });
+    /* ================= ACTIVITY 2 LOGIC ================= */
+    function renderSorterCard() {
+      if (state.currentSorterIdx >= HABIT_SENTENCES.length) {
+        document.getElementById('sorterCardArea').innerHTML = `
+          <div class="text-5xl mb-2">🎉 🌟 👏</div>
+          <h3 class="text-2xl font-black text-amber-300">All Manners Sentences Sorted!</h3>
+          <p class="text-xs text-stone-300 font-bold">You know exactly which classroom and public habits we should do and avoid!</p>
+          <button id="btnSorterReplay" class="btn-3d-emerald text-white font-black text-xs py-2 px-5 rounded-xl mt-3">
+            Sort Again 🔄
+          </button>
+        `;
+        document.getElementById('btnSorterReplay').addEventListener('click', () => {
+          state.currentSorterIdx = 0;
+          state.goodSorterCount = 0;
+          state.badSorterCount = 0;
+          document.getElementById('basketGoodItems').innerHTML = '';
+          document.getElementById('basketBadItems').innerHTML = '';
+          document.getElementById('basketGoodCount').textContent = '0';
+          document.getElementById('basketBadCount').textContent = '0';
+          renderSorterCard();
+          updateStatsUI();
+        });
+        return;
+      }
+
+      const item = HABIT_SENTENCES[state.currentSorterIdx];
+      const formattedTitle = item.questionText.replace(
+        '[ _____ ]', 
+        '<span class="bg-stone-800 border-2 border-dashed border-amber-400 text-yellow-300 px-3 py-0.5 rounded-xl font-mono text-base sm:text-lg">[ ? should / shouldn\'t ? ]</span>'
+      );
+      document.getElementById('sorterSentenceTitle').innerHTML = formattedTitle;
+      document.getElementById('sorterScenarioDetail').textContent = item.detail;
+      document.getElementById('sorterCardCounter').textContent = `Card ${state.currentSorterIdx + 1} / ${HABIT_SENTENCES.length}`;
+
+      const picWrap = document.getElementById('sorterPictureWrap');
+      picWrap.innerHTML = PICTURE_SVGS[item.svgKey] || `<div class="text-4xl">🤝</div>`;
+
+      document.getElementById('btnSorterAudio').onclick = () => {
+        sound.init();
+        speakText(item.audioPrompt);
+      };
+
+      const feedback = document.getElementById('sorterFeedbackBox');
+      feedback.classList.add('hidden');
+    }
+
+    function handleSorterChoice(chosenType) {
+      sound.init();
+      const item = HABIT_SENTENCES[state.currentSorterIdx];
+      const feedback = document.getElementById('sorterFeedbackBox');
+      feedback.classList.remove('hidden');
+
+      if (chosenType === item.type) {
+        sound.playCorrect();
+        state.score += 80;
+        state.streak++;
+        speakText(item.solvedText);
+
+        feedback.className = "p-3 rounded-2xl text-xs font-black bg-emerald-900 border-2 border-emerald-400 text-emerald-200 block";
+        feedback.innerHTML = `✓ Great job! <strong class="text-yellow-300">"${item.solvedText}"</strong><br><span class="text-[11px] text-emerald-300">Correctly identified: We ${item.type === 'should' ? 'SHOULD (Good Manners)' : 'SHOULDN\'T (Bad Manners)'}!</span>`;
+
+        if (item.type === 'should') {
+          state.goodSorterCount++;
+          document.getElementById('basketGoodCount').textContent = state.goodSorterCount;
+          const div = document.createElement('div');
+          div.className = "bg-stone-900 px-2.5 py-1.5 rounded-xl border border-emerald-500/50 flex items-center justify-between";
+          div.innerHTML = `<span>✓ ${item.solvedText}</span> <span class="text-[10px] text-emerald-400 font-bold">Should</span>`;
+          document.getElementById('basketGoodItems').appendChild(div);
+        } else {
+          state.badSorterCount++;
+          document.getElementById('basketBadCount').textContent = state.badSorterCount;
+          const div = document.createElement('div');
+          div.className = "bg-stone-900 px-2.5 py-1.5 rounded-xl border border-rose-500/50 flex items-center justify-between";
+          div.innerHTML = `<span>✕ ${item.solvedText}</span> <span class="text-[10px] text-rose-400 font-bold">Shouldn't</span>`;
+          document.getElementById('basketBadItems').appendChild(div);
+        }
+
+        setTimeout(() => {
+          state.currentSorterIdx++;
+          renderSorterCard();
+        }, 1100);
+
+      } else {
+        sound.playWrong();
+        state.streak = 0;
+        state.score = Math.max(0, state.score - 20);
+
+        feedback.className = "p-3 rounded-2xl text-xs font-black bg-rose-900 border-2 border-rose-400 text-rose-200 block";
+        feedback.innerHTML = `✕ Not quite! Read the action: <em>"${item.audioPrompt}"</em>.<br>Remember: ${item.type === 'should' ? 'This is polite behaviour that we SHOULD do' : 'This is rude behaviour that we SHOULD NOT do'}!`;
+      }
+      updateStatsUI();
+    }
+
+    document.getElementById('btnSortShould').addEventListener('click', () => handleSorterChoice('should'));
+    document.getElementById('btnSortShouldNot').addEventListener('click', () => handleSorterChoice('shouldNot'));
+    /* ================= ACTIVITY 3 LOGIC (COLLOCATION MATCH-UP) ================= */
+    function renderMatchupPairs() {
+      const verbCol = document.getElementById('pairsVerbCol');
+      const adverbCol = document.getElementById('pairsAdverbCol');
+      verbCol.innerHTML = '';
+      adverbCol.innerHTML = '';
+      state.selectedVerb = null;
+      state.selectedAdverb = null;
+
+      const verbs = [...COLLOCATION_PAIRS].sort(() => Math.random() - 0.5);
+      const adverbs = [...COLLOCATION_PAIRS].sort(() => Math.random() - 0.5);
+
+      verbs.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left bg-stone-900 hover:bg-stone-800 text-white font-black p-3 rounded-2xl border-2 border-stone-700 transition active:scale-95 text-xs sm:text-sm flex items-center justify-between";
+        btn.innerHTML = `<span>${item.verb}</span> <span class="text-[10px] text-stone-400 font-bold">${item.note}</span>`;
+        btn.onclick = () => {
+          sound.init();
+          document.querySelectorAll('#pairsVerbCol button').forEach(b => b.classList.remove('border-amber-400', 'bg-amber-950'));
+          btn.classList.add('border-amber-400', 'bg-amber-950');
+          state.selectedVerb = item;
+          checkMatchPair();
+        };
+        verbCol.appendChild(btn);
+      });
+
+      adverbs.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left bg-stone-900 hover:bg-stone-800 text-white font-black p-3 rounded-2xl border-2 border-stone-700 transition active:scale-95 text-xs sm:text-sm flex items-center justify-between";
+        btn.innerHTML = `<span class="text-amber-300">${item.adverb}</span> <span class="text-[10px] text-stone-400">Adverb</span>`;
+        btn.onclick = () => {
+          sound.init();
+          document.querySelectorAll('#pairsAdverbCol button').forEach(b => b.classList.remove('border-amber-400', 'bg-amber-950'));
+          btn.classList.add('border-amber-400', 'bg-amber-950');
+          state.selectedAdverb = item;
+          checkMatchPair();
+        };
+        adverbCol.appendChild(btn);
+      });
+    }
+
+    function checkMatchPair() {
+      if (!state.selectedVerb || !state.selectedAdverb) return;
+
+      const notice = document.getElementById('pairsFeedbackNotice');
+      notice.classList.remove('hidden');
+
+      if (state.selectedVerb.adverb === state.selectedAdverb.adverb) {
+        sound.playCorrect();
+        state.score += 70;
+        state.streak++;
+        speakText(`${state.selectedVerb.verb} ${state.selectedVerb.adverb}`);
+        notice.className = "p-3 rounded-2xl text-center text-xs font-black bg-emerald-900 border-2 border-emerald-400 text-emerald-200 block";
+        notice.innerHTML = `✓ Brilliant! <strong>"${state.selectedVerb.verb} ${state.selectedVerb.adverb}"</strong> is a natural collocation!`;
+      } else {
+        sound.playWrong();
+        state.streak = 0;
+        notice.className = "p-3 rounded-2xl text-center text-xs font-black bg-rose-900 border-2 border-rose-400 text-rose-200 block";
+        notice.innerHTML = `✕ Not the most natural match! Try pairing <strong>"${state.selectedVerb.verb}"</strong> with its matching adverb.`;
+      }
+      updateStatsUI();
+    }
+
+    document.getElementById('btnResetPairs').addEventListener('click', renderMatchupPairs);
+    /* ================= ACTIVITY 4 LOGIC (AI COACH) ================= */
+    document.getElementById('btnCoachEvaluate').addEventListener('click', () => {
+      sound.init();
+      const verb = document.getElementById('coachVerbSelect').value;
+      const adverb = document.getElementById('coachAdverbSelect').value;
+      const resultArea = document.getElementById('coachResultArea');
+      const badge = document.getElementById('coachBadge');
+      const feedback = document.getElementById('coachFeedback');
+      const sentenceBox = document.getElementById('coachModelSentence');
+
+      resultArea.classList.remove('hidden');
+
+      const naturalPairs = {
+        wait: ['patiently'],
+        'speak / talk': ['politely', 'softly', 'rudely'],
+        eat: ['quietly', 'politely', 'neatly', 'messily'],
+        'cross the road': ['carefully'],
+        'leave shoes': ['neatly'],
+        arrive: ['early', 'late'],
+        whisper: ['softly']
+      };
+
+      const isNatural = naturalPairs[verb] && naturalPairs[verb].includes(adverb);
+
+      if (isNatural) {
+        sound.playCorrect();
+        badge.className = "bg-emerald-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase";
+        badge.textContent = "✓ Natural Manners Collocation!";
+        feedback.textContent = `Excellent English! "${verb} ${adverb}" is a natural combination taught in our good behaviour lesson.`;
+        sentenceBox.innerHTML = `<strong>Classroom Example:</strong> "We should ${verb} ${adverb}."`;
+        speakText(`We should ${verb} ${adverb}`);
+      } else {
+        sound.playWrong();
+        badge.className = "bg-amber-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase";
+        badge.textContent = "💡 Better Alternative Available";
+        feedback.textContent = `While you might hear "${verb} ${adverb}", native speakers usually say: "${verb} ${naturalPairs[verb] ? naturalPairs[verb][0] : 'carefully'}".`;
+        sentenceBox.innerHTML = `<strong>Model Sentence:</strong> "We should ${verb} ${naturalPairs[verb] ? naturalPairs[verb][0] : 'carefully'}."`;
+      }
+    });
+
+    /* ================= TAB NAVIGATION ================= */
+    const navButtons = [
+      { id: 'navTabSentences', secId: 'sectionSentences', style: 'btn-3d-purple' },
+      { id: 'navTabSorter', secId: 'sectionHabitSorter', style: 'btn-3d-emerald' },
+      { id: 'navTabMatchup', secId: 'sectionMatchup', style: 'btn-3d-amber' },
+      { id: 'navTabCoach', secId: 'sectionCoach', style: 'btn-3d-rose' }
+    ];
+
+    navButtons.forEach(tab => {
+      document.getElementById(tab.id).addEventListener('click', () => {
+        sound.init();
+        navButtons.forEach(t => {
+          document.getElementById(t.secId).classList.add('hidden');
+          const btn = document.getElementById(t.id);
+          btn.className = "bg-stone-800 text-stone-200 border-2 border-stone-700 py-2 px-3 rounded-2xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2";
+        });
+
+        document.getElementById(tab.secId).classList.remove('hidden');
+        document.getElementById(tab.id).className = `${tab.style} active-nav-btn py-2 px-3 rounded-2xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2`;
+
+        if (tab.id === 'navTabMatchup') renderMatchupPairs();
+        if (tab.id === 'navTabSorter') renderSorterCard();
+      });
+    });
+
+    /* Sound Toggle & Reset */
+    document.getElementById('btnToggleAudio').addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      const icon = document.getElementById('audioStatusIcon');
+      if (sound.enabled) {
+        icon.textContent = '🔊';
+        document.getElementById('btnToggleAudio').className = "bg-stone-800 hover:bg-stone-700 text-amber-300 border-2 border-amber-400/80 px-3 py-1.5 rounded-xl text-xs font-black transition active:scale-95 shadow flex items-center gap-1.5";
+      } else {
+        icon.textContent = '🔇';
+        document.getElementById('btnToggleAudio').className = "bg-stone-900 text-stone-500 border-2 border-stone-700 px-3 py-1.5 rounded-xl text-xs font-black transition active:scale-95 shadow flex items-center gap-1.5";
+      }
+    });
+
+    document.getElementById('btnResetAll').addEventListener('click', () => {
+      state.score = 0;
+      state.streak = 0;
+      state.currentSentenceIdx = 0;
+      state.currentSorterIdx = 0;
+      state.goodSorterCount = 0;
+      state.badSorterCount = 0;
+      document.getElementById('basketGoodItems').innerHTML = '';
+      document.getElementById('basketBadItems').innerHTML = '';
+      document.getElementById('basketGoodCount').textContent = '0';
+      document.getElementById('basketBadCount').textContent = '0';
+      updateStatsUI();
+      renderSentenceCard();
+      renderSorterCard();
+    });
+
+    /* Initialize App */
+    window.onload = function() {
+      loadHighClarityVoices();
+      renderSentenceCard();
+      updateStatsUI();
+    };
+  </script>
+</body>
+</html>

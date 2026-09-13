@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Manner Slicer - Adjective & Adverb Fruit Cutting Game</title>
+  <!-- Tailwind CSS for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Nunito for energetic, kid-friendly primary typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none; /* Prevent default scrolling for smooth blade swiping */
+    }
+    .font-action {
+      font-family: 'Nunito', sans-serif;
+    }
+    /* Fixed steady cockpit presentation */
+    .btn-3d-green {
+      background: #059669;
+      color: #FFFFFF !important;
+      border: 3px solid #064E3B;
+      box-shadow: 0 5px 0 #064E3B, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-green:hover { background: #10B981; }
+    .btn-3d-green:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #064E3B, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-amber {
+      background: #D97706;
+      color: #FFFFFF !important;
+      border: 3px solid #78350F;
+      box-shadow: 0 5px 0 #78350F, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-amber:hover { background: #F59E0B; }
+    .btn-3d-amber:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #78350F, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-purple {
+      background: #7C3AED;
+      color: #FFFFFF !important;
+      border: 3px solid #4C1D95;
+      box-shadow: 0 5px 0 #4C1D95, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-purple:hover { background: #8B5CF6; }
+    .btn-3d-purple:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #4C1D95, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-rose {
+      background: #E11D48;
+      color: #FFFFFF !important;
+      border: 3px solid #881337;
+      box-shadow: 0 5px 0 #881337, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-rose:hover { background: #F43F5E; }
+    .btn-3d-rose:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #881337, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-3d-blue {
+      background: #2563EB;
+      color: #FFFFFF !important;
+      border: 3px solid #1E3A8A;
+      box-shadow: 0 5px 0 #1E3A8A, 0 8px 16px rgba(0, 0, 0, 0.35);
+      text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    }
+    .btn-3d-blue:hover { background: #3B82F6; }
+    .btn-3d-blue:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #1E3A8A, 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    /* Active target mode highlight */
+    .active-target-btn {
+      transform: scale(1.04);
+      box-shadow: 0 0 0 4px #FBBF24, 0 8px 20px rgba(0,0,0,0.4) !important;
+    }
+    /* Custom slicing blade cursor */
+    .blade-cursor {
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-amber-600 via-orange-700 to-stone-900 h-screen w-screen text-slate-800 flex items-center justify-center p-1 sm:p-2 overflow-hidden select-none">
+
+  <div class="w-full h-full max-w-7xl bg-stone-900 rounded-2xl shadow-2xl border-4 border-amber-400 flex flex-col relative overflow-hidden">
+    
+    <!-- SLIM COMPACT TOP COCKPIT: Maximized playfield height -->
+    <header class="bg-gradient-to-r from-amber-700 via-orange-800 to-stone-950 text-white px-3 py-1.5 rounded-t-[12px] flex items-center justify-between shadow-md z-20 gap-2 shrink-0 border-b-2 border-amber-500/50">
+      
+      <!-- Logo & Mission Target Badge -->
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 font-black text-amber-300 tracking-wide">
+          <span class="text-xl sm:text-2xl">🍉⚔️</span>
+          <span class="hidden sm:inline text-base lg:text-lg">MANNER SLICER</span>
+        </div>
+        
+        <!-- Live Mission Badge -->
+        <div id="missionBadge" class="bg-yellow-300 text-slate-950 font-black px-2.5 py-1 rounded-xl border-2 border-amber-600 shadow-sm flex items-center gap-1.5 text-xs sm:text-sm">
+          <span class="text-red-700 font-extrabold uppercase text-[10px] sm:text-xs bg-white px-1.5 py-0.2 rounded-md">SLICE</span>
+          <span id="missionText">CUT: <strong class="text-purple-950 underline decoration-wavy">ADVERBS (-ly)</strong></span>
+        </div>
+      </div>
+
+      <!-- Live Score, Streak & Timer Badges -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <div class="bg-stone-950/90 border border-amber-400 px-2.5 py-0.5 rounded-lg text-center shadow-inner">
+          <span class="text-[9px] uppercase font-bold text-amber-300 block leading-tight">Score</span>
+          <span id="scoreDisplay" class="text-sm sm:text-base font-black text-white leading-none">0</span>
+        </div>
+
+        <div class="bg-orange-950/90 border border-orange-400 px-2.5 py-0.5 rounded-lg text-center shadow-inner">
+          <span class="text-[9px] uppercase font-bold text-orange-300 block leading-tight">Combo</span>
+          <span id="streakDisplay" class="text-sm sm:text-base font-black text-yellow-300 leading-none">0 🔥</span>
+        </div>
+
+        <div class="bg-red-950/90 border border-red-400 px-2.5 py-0.5 rounded-lg text-center shadow-inner">
+          <span class="text-[9px] uppercase font-bold text-red-300 block leading-tight">Time</span>
+          <span id="timerDisplay" class="text-sm sm:text-base font-black text-yellow-300 leading-none">60s</span>
+        </div>
+
+        <!-- Instant Reset Button -->
+        <button id="resetGameBtn" class="py-1 px-2.5 rounded-xl bg-rose-700 hover:bg-rose-600 text-white font-black border-2 border-rose-300 transition text-xs flex items-center gap-1 shadow active:scale-95" title="Restart game round immediately">
+          <span>🔄</span> <span class="hidden sm:inline">Reset</span>
+        </button>
+
+        <!-- Hall of Fame Button -->
+        <button id="hallOfFameBtn" class="py-1 px-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-stone-950 font-black border-2 border-yellow-200 transition text-xs flex items-center gap-1 shadow active:scale-95" title="View Classroom Hall of Fame">
+          <span>🏆</span> <span class="hidden sm:inline">Hall of Fame</span>
+        </button>
+
+        <!-- AI Sentence Quest Quick Trigger -->
+        <button id="aiChallengeBtn" class="btn-3d-purple text-white text-xs font-black py-1 px-2.5 rounded-xl transition active:scale-95 flex items-center gap-1 shadow" title="Slice the missing word from an AI Sentence!">
+          <span>🪄</span> <span class="hidden md:inline">AI Quest</span>
+        </button>
+
+        <!-- Compact Sound Toggle -->
+        <button id="soundToggleBtn" class="py-1 px-2.5 rounded-xl bg-stone-800 hover:bg-black text-amber-300 font-black border border-amber-400 transition text-xs flex items-center gap-1 shadow active:scale-95" title="Toggle Sound">
+          <span id="soundIcon">🔊</span>
+        </button>
+
+        <!-- Rules & Word List Button -->
+        <button id="rulesBtn" class="py-1 px-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-black border border-amber-600 transition text-xs flex items-center gap-1 shadow active:scale-95" title="Grammar Rules & Vocab List">
+          <span>📖</span> <span class="hidden sm:inline">Words</span>
+        </button>
+
+        <!-- AI Coach Button -->
+        <button id="aiCoachBtn" class="py-1 px-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-black border border-white transition text-xs flex items-center gap-1 shadow active:scale-95" title="Open AI Teacher Coach">
+          <span>🤖</span> <span class="hidden sm:inline">Coach</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Active AI Sentence Quest Bar -->
+    <div id="aiActiveChallengeBar" class="hidden bg-stone-950 text-white px-3 py-1 flex items-center justify-between border-b-2 border-amber-400 z-10 shrink-0 shadow">
+      <div class="flex items-center gap-2 overflow-hidden text-xs">
+        <span class="text-yellow-300 font-black">🌟 FRUIT QUEST:</span>
+        <span id="aiActiveSentence" class="font-black text-yellow-300 truncate">Slice the missing word fruit!</span>
+      </div>
+      <button id="aiCancelChallengeBtn" class="text-[10px] bg-rose-600 hover:bg-rose-700 border border-white px-2 py-0.5 rounded-lg font-black text-white transition ml-2 shrink-0">
+        Skip ✕
+      </button>
+    </div>
+
+    <!-- MAIN MAXIMIZED PLAYFIELD AREA: Realistic wood cutting board / Dojo backdrop -->
+    <div class="relative flex-1 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-stone-800 via-stone-900 to-black overflow-hidden select-none blade-cursor w-full h-full min-h-0" id="gameArea">
+      
+      <!-- HTML5 Canvas for blade slices, flying fruits, and juice splashes -->
+      <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+      <!-- START SCREEN OVERLAY (Steady, non-moving card) -->
+      <div id="startScreen" class="absolute inset-0 bg-stone-950/85 backdrop-blur-md flex flex-col items-center justify-center p-3 text-center z-30">
+        <div class="max-w-md w-full bg-stone-900 text-white rounded-3xl p-5 shadow-2xl border-4 border-amber-400 max-h-[95%] overflow-y-auto">
+          <div class="text-5xl mb-2">🍉 ⚔️ 🍍</div>
+          <h2 class="text-3xl font-black text-amber-300 mb-1 tracking-wide">Manner Slicer!</h2>
+          <p class="text-stone-300 font-bold text-xs sm:text-sm mb-3">
+            Swipe your finger or mouse like a samurai blade to slice the correct grammar fruits in mid-air!
+          </p>
+
+          <div class="bg-stone-800/90 border-2 border-amber-500/50 rounded-2xl p-3 mb-4 text-left text-xs space-y-2 text-stone-200 font-bold">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🍉</span>
+              <span><strong>Mission 1:</strong> Slice <span class="text-purple-300 bg-purple-900/80 px-1.5 py-0.5 rounded border border-purple-500 font-black">Adverbs</span> (e.g. <em>politely, quietly, well</em>)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🍊</span>
+              <span><strong>Mission 2:</strong> Slice <span class="text-amber-300 bg-amber-900/80 px-1.5 py-0.5 rounded border border-amber-500 font-black">Adjectives</span> (e.g. <em>polite, quiet, good</em>)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl">⭐</span>
+              <span><strong>Chameleon Starfruit:</strong> <em>fast, high, far, late, early</em> are valid for <strong>BOTH</strong> missions! Slice them for huge combo points!</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🗡️</span>
+              <span><strong>How to Cut:</strong> Click and drag (or swipe on touchscreens) across the flying fruits!</span>
+            </div>
+          </div>
+
+          <!-- Slicing Speed Selector -->
+          <div class="grid grid-cols-2 gap-2.5 mb-4">
+            <button id="easyModeBtn" class="py-2 px-2 rounded-xl font-black text-xs sm:text-sm border-3 border-emerald-600 bg-emerald-600 text-white transition active:scale-95 shadow flex flex-col items-center justify-center">
+              <span class="text-sm">🌱 Gentle Toss</span>
+              <span class="text-[10px] font-bold text-emerald-200">Warmup Speed</span>
+            </button>
+            <button id="actionSpeedBtn" class="py-2 px-2 rounded-xl font-black text-xs sm:text-sm border-3 border-stone-600 bg-stone-800 text-stone-300 hover:bg-stone-700 transition active:scale-95 shadow flex flex-col items-center justify-center">
+              <span class="text-sm">⚡ Ninja Toss</span>
+              <span class="text-[10px] font-bold text-stone-400">High Velocity</span>
+            </button>
+          </div>
+
+          <button id="startGameBtn" class="w-full btn-3d-green text-white font-black text-lg py-3.5 px-5 rounded-2xl tracking-wider transition active:scale-95 shadow-2xl flex items-center justify-center gap-2">
+            <span>⚔️</span> <span>START SLICING MISSION!</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- GAME OVER / VICTORY OVERLAY -->
+      <div id="gameOverScreen" class="hidden absolute inset-0 bg-stone-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-6 text-center z-30">
+        <div class="max-w-md w-full bg-stone-900 text-white rounded-3xl p-6 shadow-2xl border-4 border-amber-400">
+          <div id="gameOverEmoji" class="text-6xl mb-2">🏆</div>
+          <h2 id="gameOverTitle" class="text-3xl font-black text-amber-300 mb-1">Master Slicer!</h2>
+          <p id="gameOverSub" class="text-stone-300 text-sm font-black mb-4">You sliced through the adverbs of manner like a true grammar ninja!</p>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-stone-800 border-2 border-amber-400 p-3 rounded-2xl">
+              <span class="text-xs uppercase font-black text-amber-400">Final Score</span>
+              <div id="finalScoreVal" class="text-3xl font-black text-white">0</div>
+            </div>
+            <div class="bg-stone-800 border-2 border-orange-400 p-3 rounded-2xl">
+              <span class="text-xs uppercase font-black text-orange-400">Accuracy</span>
+              <div id="finalAccuracyVal" class="text-3xl font-black text-yellow-300">100%</div>
+            </div>
+          </div>
+
+          <!-- Hall of Fame Submission Box -->
+          <div id="hofSubmitBox" class="bg-amber-950/80 border-2 border-yellow-400 rounded-2xl p-3 mb-4 text-left space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-yellow-300 uppercase tracking-wide">🏆 Join the Hall of Fame</span>
+              <span class="text-[10px] text-yellow-200 font-bold">Classroom Record</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="hofPlayerNameInput" placeholder="Enter student / group name (e.g. 4B Team Falcon)..." maxlength="25" class="flex-1 bg-stone-900 border border-yellow-400/80 rounded-xl px-3 py-1.5 text-xs font-bold text-white outline-none focus:ring-2 focus:ring-yellow-300 shadow-inner">
+              <button id="hofSaveScoreBtn" class="btn-3d-amber text-white font-black text-xs px-3.5 py-1.5 rounded-xl transition active:scale-95 whitespace-nowrap">
+                Save 🌟
+              </button>
+            </div>
+            <p id="hofSubmitStatus" class="hidden text-[11px] font-bold text-emerald-300"></p>
+          </div>
+
+          <!-- Mini Learning Summary of Textbook Rules -->
+          <div id="learningRecapBox" class="bg-stone-800 border border-stone-700 rounded-2xl p-3.5 text-left mb-4 max-h-32 overflow-y-auto text-xs text-stone-200 space-y-1.5 font-bold">
+            <div class="font-black text-amber-300 text-sm">🌟 Good Manners Revision Reminders:</div>
+            <div>• <strong class="text-emerald-400">Adjectives</strong> describe people & things (e.g. <em>polite student, tidy room</em>).</div>
+            <div>• <strong class="text-purple-300">Adverbs of Manner</strong> describe actions (e.g. <em>speak politely, wait patiently</em>).</div>
+            <div>• <strong class="text-yellow-300">Both forms:</strong> <em>fast, high, far, late, early</em> (no change!).</div>
+            <div>• <strong class="text-rose-400">Irregular:</strong> <strong class="text-emerald-400">good</strong> (adjective) ➔ <strong class="text-purple-400">well</strong> (adverb).</div>
+          </div>
+
+          <!-- AI Report Container -->
+          <div id="aiReportContainer" class="hidden bg-stone-800 border-2 border-amber-400 rounded-2xl p-3.5 text-left mb-4 max-h-48 overflow-y-auto text-xs text-stone-200 space-y-2">
+            <div class="font-black text-amber-300 flex items-center justify-between text-sm">
+              <span>🤖 AI Classroom Report & Spoken Drill:</span>
+              <span id="aiReportLoadingBadge" class="hidden text-xs text-purple-300 animate-pulse font-black">Thinking...</span>
+            </div>
+            <div id="aiReportContent" class="space-y-1.5 text-stone-200 font-bold"></div>
+          </div>
+
+          <!-- End Game Action Buttons -->
+          <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col sm:flex-row gap-2.5">
+              <button id="playAgainBtn" class="flex-1 btn-3d-green text-white font-black py-3 px-4 rounded-2xl text-sm sm:text-base tracking-wide transition active:scale-95 flex items-center justify-center gap-2">
+                <span>🔄</span> <span>SLICE AGAIN</span>
+              </button>
+              <button id="viewHofFromOverBtn" class="btn-3d-amber text-white font-black py-3 px-4 rounded-2xl text-sm sm:text-base tracking-wide transition active:scale-95 flex items-center justify-center gap-2">
+                <span>🏆</span> <span>HALL OF FAME</span>
+              </button>
+              <button id="showRuleSheetBtn" class="btn-3d-blue text-white font-black py-3 px-4 rounded-2xl text-sm sm:text-base tracking-wide transition active:scale-95 flex items-center justify-center gap-2">
+                <span>📚</span> <span>VOCAB LIST</span>
+              </button>
+            </div>
+            <button id="aiGenerateReportBtn" class="w-full btn-3d-purple text-white font-black py-3 px-4 rounded-2xl text-sm sm:text-base tracking-wide transition active:scale-95 flex items-center justify-center gap-2 shadow">
+              <span>🪄</span> <span>AI Lesson Report & Spoken Drills</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- IN-GAME FLOATING FEEDBACK TOAST -->
+      <div id="hitToast" class="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 px-4 py-2 rounded-2xl border-2 border-amber-400 shadow-xl text-center font-black transition-all duration-300 transform -translate-y-10 opacity-0 z-20 max-w-sm">
+        <span id="hitToastText" class="text-sm md:text-base text-stone-900">Juicy Slice!</span>
+      </div>
+    </div>
+
+    <!-- SLIM FOOTER CONTROLS -->
+    <footer class="bg-stone-950 border-t-2 border-amber-400 py-1.5 px-3 flex items-center justify-between gap-2 z-20 shrink-0 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-amber-300 font-black text-[11px] uppercase tracking-wider hidden sm:inline">Slice Target:</span>
+        <button id="filterAdverbModeBtn" class="btn-3d-purple active-target-btn px-3 py-1.5 rounded-xl text-white font-black text-xs sm:text-sm transition active:scale-95 flex items-center gap-1.5">
+          <span>🍉</span> <span>Slice Adverbs (-ly)</span>
+        </button>
+        <button id="filterAdjectiveModeBtn" class="bg-stone-800 hover:bg-amber-600 text-amber-300 hover:text-white font-black border border-amber-500/60 px-3 py-1.5 rounded-xl text-xs sm:text-sm shadow transition active:scale-95 flex items-center gap-1.5">
+          <span>🍊</span> <span>Slice Adjectives</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5 text-white">
+        <span class="text-stone-400 text-[11px] hidden md:inline">Katana Tip:</span>
+        <span class="bg-stone-900 text-yellow-300 border border-amber-400 px-2.5 py-0.5 rounded-lg text-[11px] font-black">
+          ⭐ Drag or swipe across fruits to slice them in half!
+        </span>
+      </div>
+    </footer>
+
+    <!-- RULES & VOCABULARY MODAL -->
+    <div id="rulesModal" class="hidden absolute inset-0 bg-stone-950/85 backdrop-blur-md z-40 flex items-center justify-center p-4">
+      <div class="bg-stone-900 text-white max-w-2xl w-full rounded-3xl p-6 shadow-2xl border-4 border-amber-400 max-h-[88vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 border-b-2 border-stone-700 pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="text-3xl">📚</span>
+            <h3 class="text-2xl font-black text-amber-300">Vocabulary & Grammar Focus</h3>
+          </div>
+          <button id="closeRulesBtn" class="bg-stone-800 hover:bg-rose-500 hover:text-white text-stone-300 font-black text-lg w-9 h-9 rounded-full border-2 border-stone-600 transition flex items-center justify-center shadow">✕</button>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-stone-200">
+          <div class="bg-stone-800 border-2 border-amber-500/60 rounded-2xl p-3">
+            <h4 class="font-black text-amber-300 text-base mb-1">Golden Grammar Rule:</h4>
+            <p><strong>Adjectives</strong> describe nouns (people, things): <em>"She is a <strong>careful</strong> driver."</em></p>
+            <p><strong>Adverbs of Manner</strong> describe verbs (how actions happen): <em>"She drives <strong>carefully</strong>."</em></p>
+            <p class="text-yellow-300 font-bold mt-1">⭐ Chameleon Starfruits (Both): <em>fast, high, far, late, early</em> can be BOTH adjectives and adverbs!</p>
+          </div>
+
+          <!-- Vocabulary Groups Breakdown -->
+          <div class="space-y-3">
+            <div class="bg-stone-800/80 p-3 rounded-2xl border border-stone-700">
+              <h5 class="font-black text-emerald-400 mb-1">1. Regular: Add "-ly" to Adjective</h5>
+              <p class="text-stone-300 text-xs">polite ➔ politely | patient ➔ patiently | quiet ➔ quietly | rude ➔ rudely | soft ➔ softly | loud ➔ loudly | quick ➔ quickly | slow ➔ slowly | kind ➔ kindly | neat ➔ neatly | careful ➔ carefully</p>
+            </div>
+
+            <div class="bg-stone-800/80 p-3 rounded-2xl border border-stone-700">
+              <h5 class="font-black text-orange-400 mb-1">2. Spelling Change: "-y" becomes "-ily"</h5>
+              <p class="text-stone-300 text-xs">noisy ➔ noisily | messy ➔ messily | easy ➔ easily | tidy ➔ tidily</p>
+            </div>
+
+            <div class="bg-stone-800/80 p-3 rounded-2xl border border-stone-700">
+              <h5 class="font-black text-rose-400 mb-1">3. Irregular Transformation</h5>
+              <p class="text-stone-300 text-xs">good (adjective) ➔ <strong>well</strong> (adverb of manner)</p>
+            </div>
+
+            <div class="bg-stone-800/80 p-3 rounded-2xl border border-yellow-500/50">
+              <h5 class="font-black text-yellow-300 mb-1">4. Both Adjective and Adverb (No change!)</h5>
+              <p class="text-stone-300 text-xs">fast | high | far | late | early</p>
+            </div>
+          </div>
+
+          <button id="modalGotItBtn" class="w-full btn-3d-green text-white font-black py-3 rounded-2xl text-sm tracking-wide transition active:scale-95 shadow-md flex items-center justify-center gap-2 mt-2">
+            <span>⚔️</span> <span>Got It! Ready to Slice!</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HALL OF FAME LEADERBOARD MODAL -->
+    <div id="hallOfFameModal" class="hidden absolute inset-0 bg-stone-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="bg-stone-900 text-white max-w-xl w-full rounded-3xl p-5 md:p-6 shadow-2xl border-4 border-yellow-400 max-h-[90vh] flex flex-col overflow-hidden">
+        
+        <div class="flex justify-between items-center pb-3 border-b-2 border-yellow-500/50 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-stone-950 flex items-center justify-center text-2xl shadow-md font-black">
+              🏆
+            </div>
+            <div>
+              <h3 class="text-xl md:text-2xl font-black text-amber-300 leading-tight">Classroom Hall of Fame</h3>
+              <p class="text-xs text-stone-400 font-bold">Top Grammar Ninjas & Fruit Slicing Champions</p>
+            </div>
+          </div>
+          <button id="closeHallOfFameBtn" class="bg-stone-800 hover:bg-rose-500 hover:text-white text-stone-300 font-black text-lg w-9 h-9 rounded-full border border-stone-600 transition flex items-center justify-center shadow">✕</button>
+        </div>
+
+        <!-- Top 3 Podium Highlights -->
+        <div class="grid grid-cols-3 gap-2 my-3 text-center shrink-0">
+          <div class="bg-stone-800 border-2 border-slate-400 rounded-2xl p-2 flex flex-col items-center justify-end h-24">
+            <span class="text-xl">🥈</span>
+            <span id="podium2Name" class="text-xs font-black text-stone-200 truncate w-full">Team Falcon</span>
+            <span id="podium2Score" class="text-sm font-black text-yellow-300">1,320</span>
+          </div>
+          <div class="bg-gradient-to-b from-amber-950/90 to-stone-800 border-2 border-yellow-400 rounded-2xl p-2 flex flex-col items-center justify-end h-28 shadow-lg">
+            <span class="text-2xl">👑 🥇</span>
+            <span id="podium1Name" class="text-xs font-black text-yellow-300 truncate w-full">Sammy & Chris</span>
+            <span id="podium1Score" class="text-base font-black text-white">1,680</span>
+          </div>
+          <div class="bg-stone-800 border-2 border-amber-700 rounded-2xl p-2 flex flex-col items-center justify-end h-24">
+            <span class="text-xl">🥉</span>
+            <span id="podium3Name" class="text-xs font-black text-stone-200 truncate w-full">Lily (4A)</span>
+            <span id="podium3Score" class="text-sm font-black text-yellow-300">1,150</span>
+          </div>
+        </div>
+
+        <!-- Full Roster Table -->
+        <div class="flex-1 overflow-y-auto pr-1">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-stone-800 text-stone-400 uppercase text-[10px] tracking-wider">
+                <th class="p-2 rounded-l-xl">Rank</th>
+                <th class="p-2">Ninja / Team</th>
+                <th class="p-2">Score</th>
+                <th class="p-2">Accuracy</th>
+                <th class="p-2 rounded-r-xl">Ninja Title</th>
+              </tr>
+            </thead>
+            <tbody id="hallOfFameTableBody" class="divide-y divide-stone-800">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex justify-between items-center pt-3 border-t border-stone-800 mt-2 shrink-0">
+          <button id="resetLeaderboardBtn" class="text-[11px] text-stone-500 hover:text-stone-300 underline font-bold">
+            Reset to default scores
+          </button>
+          <button id="closeHofFooterBtn" class="btn-3d-green text-white font-black py-2 px-6 rounded-xl text-xs sm:text-sm">
+            Ready to Slice! ⚔️
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AI GRAMMAR COACH MODAL -->
+    <div id="aiCoachModal" class="hidden absolute inset-0 bg-stone-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="bg-stone-900 text-white max-w-2xl w-full rounded-3xl p-5 md:p-6 shadow-2xl border-4 border-rose-400 max-h-[90vh] flex flex-col overflow-hidden">
+        
+        <div class="flex justify-between items-center pb-3 border-b border-stone-700 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-md border border-rose-300">
+              🤖
+            </div>
+            <div>
+              <h3 class="text-xl md:text-2xl font-black text-amber-300 leading-tight">AI Grammar Sensei</h3>
+              <p class="text-xs text-stone-400 font-bold">Interactive sentence testing & fruit stories</p>
+            </div>
+          </div>
+          <button id="closeAiCoachBtn" class="bg-stone-800 hover:bg-rose-500 hover:text-white text-stone-300 font-black text-lg w-9 h-9 rounded-full border border-stone-600 transition flex items-center justify-center shadow">✕</button>
+        </div>
+
+        <div class="flex gap-2.5 my-3 shrink-0">
+          <button id="tabSentenceChecker" class="flex-1 py-2.5 px-3 rounded-2xl font-black text-xs md:text-sm bg-rose-600 text-white border-2 border-rose-800 shadow-md transition">
+            ✍️ Sentence Checker
+          </button>
+          <button id="tabMnemonicGen" class="flex-1 py-2.5 px-3 rounded-2xl font-black text-xs md:text-sm bg-stone-800 text-stone-300 hover:bg-stone-700 border-2 border-stone-700 transition">
+            🎨 Word Pair Stories
+          </button>
+        </div>
+
+        <!-- Tab 1: Sentence Checker -->
+        <div id="tabContentChecker" class="space-y-3 flex-1 overflow-y-auto pr-1 text-stone-200">
+          <div class="bg-stone-800 border border-stone-700 rounded-2xl p-3 text-xs text-stone-200 font-bold">
+            <strong>Classroom Practice:</strong> Type any sentence (or click a quick prompt below). Miss Gemini will check if the adjective or adverb of manner is used correctly!
+          </div>
+
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="text-stone-400 font-black py-1">Quick Prompts:</span>
+            <button class="quick-sentence-btn bg-stone-800 hover:bg-stone-700 border border-stone-600 px-3 py-1.5 rounded-xl text-amber-300 font-black transition shadow-sm" data-text="We should wait patient at the bus stop.">
+              "We should wait patient..."
+            </button>
+            <button class="quick-sentence-btn bg-stone-800 hover:bg-stone-700 border border-stone-600 px-3 py-1.5 rounded-xl text-amber-300 font-black transition shadow-sm" data-text="He slurps his noodles noisily in Japan.">
+              "He slurps noisily..."
+            </button>
+            <button class="quick-sentence-btn bg-stone-800 hover:bg-stone-700 border border-stone-600 px-3 py-1.5 rounded-xl text-amber-300 font-black transition shadow-sm" data-text="She is a politely girl with good manners.">
+              "She is a politely girl..."
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" id="sentenceInput" placeholder="Type a sentence (e.g., 'He talks loud on the phone')..." class="flex-1 bg-stone-800 border-2 border-stone-600 focus:border-rose-400 rounded-2xl px-4 py-2.5 text-sm font-bold text-white outline-none transition shadow-inner">
+            <button id="submitSentenceBtn" class="btn-3d-rose text-white font-black px-5 py-2.5 rounded-2xl text-sm whitespace-nowrap shadow-lg transition active:scale-95 flex items-center gap-1.5">
+              <span>Check!</span> <span>🚀</span>
+            </button>
+          </div>
+
+          <div id="checkerResultBox" class="hidden bg-stone-800 border-2 border-stone-600 rounded-2xl p-3 text-xs md:text-sm text-stone-200 space-y-2 transition-all">
+            <div class="flex items-center justify-between">
+              <span id="checkerStatusTag" class="px-2.5 py-0.5 rounded-full font-black text-xs uppercase bg-emerald-600 text-white">Correct!</span>
+              <span id="checkerStars" class="text-amber-400 font-black">⭐⭐⭐⭐⭐</span>
+            </div>
+            <div id="checkerFeedback" class="font-bold text-stone-200"></div>
+            <div id="checkerCorrection" class="bg-stone-900 p-2.5 rounded-xl border border-stone-700 font-action text-xs text-amber-300"></div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Word Pair Stories -->
+        <div id="tabContentMnemonic" class="hidden space-y-3 flex-1 overflow-y-auto pr-1 text-stone-200">
+          <div class="bg-stone-800 border border-stone-700 rounded-2xl p-3 text-xs text-stone-200 font-bold">
+            <strong>Memory Mnemonic:</strong> Pick any vocabulary word from our lesson! Gemini will write a short 2-sentence classroom cartoon comparing the adjective and adverb forms.
+          </div>
+
+          <div class="flex gap-2">
+            <select id="mnemonicWordSelect" class="flex-1 bg-stone-800 border-2 border-stone-600 rounded-2xl px-3 py-2.5 text-sm font-black text-amber-300 outline-none shadow-inner">
+              <!-- Dynamically populated -->
+            </select>
+            <button id="generateMnemonicBtn" class="btn-3d-purple text-white font-black px-5 py-2.5 rounded-2xl text-sm whitespace-nowrap shadow-lg transition active:scale-95 flex items-center gap-1.5">
+              <span>Create Story</span> <span>🪄</span>
+            </button>
+          </div>
+
+          <div id="mnemonicResultBox" class="hidden bg-stone-800 border-2 border-amber-400 rounded-2xl p-4 text-xs md:text-sm text-stone-200 space-y-2">
+            <div class="flex items-center gap-2 text-amber-300 font-black text-base">
+              <span>🎭</span> <span id="mnemonicTitle">Fun Word Scenario</span>
+            </div>
+            <p id="mnemonicBody" class="text-stone-300 italic font-medium leading-relaxed"></p>
+            <div id="mnemonicRuleBadge" class="bg-stone-900 p-2 rounded-xl text-xs font-bold text-purple-300 border border-stone-700"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* Web Audio API Sound Synthesizer (Realistic blade swoosh, juicy fruit slice, combo fanfare) */
+    class FruitSoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      // Swoosh of katana blade slicing through air
+      playSwish() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(now + 0.08);
+        } catch(e) {}
+      }
+      // Juicy fruit cut splash
+      playSlice() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          // Noise/squish component
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+          osc.frequency.exponentialRampToValueAtTime(200, now + 0.12);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(now + 0.14);
+        } catch(e) {}
+      }
+      // Pleasant correct grammar chime
+      playCorrectChime() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          [659.25, 830.61, 987.77].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.22);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.05);
+            osc.stop(now + idx * 0.05 + 0.22);
+          });
+        } catch(e) {}
+      }
+      // Dull buzz for slicing wrong word category
+      playWrong() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(130, now);
+          osc.frequency.setValueAtTime(90, now + 0.1);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(now + 0.25);
+        } catch(e) {}
+      }
+      // Victory fanfare
+      playFanfare() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+            gain.gain.setValueAtTime(0.3, now + idx * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.35);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.1);
+            osc.stop(now + idx * 0.1 + 0.35);
+          });
+        } catch(e) {}
+      }
+    }
+
+    const sound = new FruitSoundEngine();
+
+    /* Comprehensive Primary Vocabulary Database matching Hong Kong Syllabus */
+    const VOCAB_DATABASE = [
+      // --- 1. PURE ADJECTIVES (Behaviors / Qualities) ---
+      { word: 'polite', type: 'adjective', pair: 'politely', fruitType: 'watermelon', note: 'describes good manners' },
+      { word: 'impolite', type: 'adjective', pair: 'impolitely', fruitType: 'orange', note: 'describes bad manners' },
+      { word: 'patient', type: 'adjective', pair: 'patiently', fruitType: 'apple', note: 'waiting calmly' },
+      { word: 'impatient', type: 'adjective', pair: 'impatiently', fruitType: 'strawberry', note: 'cannot wait' },
+      { word: 'rude', type: 'adjective', pair: 'rudely', fruitType: 'orange', note: 'not polite' },
+      { word: 'quiet', type: 'adjective', pair: 'quietly', fruitType: 'watermelon', note: 'making little noise' },
+      { word: 'noisy', type: 'adjective', pair: 'noisily', fruitType: 'orange', note: 'making lots of noise' },
+      { word: 'messy', type: 'adjective', pair: 'messily', fruitType: 'coconut', note: 'untidy or dirty' },
+      { word: 'soft', type: 'adjective', pair: 'softly', fruitType: 'apple', note: 'gentle sound' },
+      { word: 'loud', type: 'adjective', pair: 'loudly', fruitType: 'orange', note: 'high volume' },
+      { word: 'quick', type: 'adjective', pair: 'quickly', fruitType: 'strawberry', note: 'fast movement' },
+      { word: 'slow', type: 'adjective', pair: 'slowly', fruitType: 'coconut', note: 'taking more time' },
+      { word: 'easy', type: 'adjective', pair: 'easily', fruitType: 'watermelon', note: 'not difficult' },
+      { word: 'nice', type: 'adjective', pair: 'nicely', fruitType: 'apple', note: 'pleasant and friendly' },
+      { word: 'kind', type: 'adjective', pair: 'kindly', fruitType: 'strawberry', note: 'caring and helpful' },
+      { word: 'beautiful', type: 'adjective', pair: 'beautifully', fruitType: 'apple', note: 'pretty to look at' },
+      { word: 'tidy', type: 'adjective', pair: 'tidily', fruitType: 'watermelon', note: 'neat and clean' },
+      { word: 'careful', type: 'adjective', pair: 'carefully', fruitType: 'orange', note: 'giving good attention' },
+      { word: 'good', type: 'adjective', pair: 'well', fruitType: 'apple', note: 'high quality / well-behaved' },
+
+      // --- 2. ADVERBS OF MANNER (How actions happen) ---
+      { word: 'politely', type: 'adverb', pair: 'polite', fruitType: 'watermelon', note: 'speak politely' },
+      { word: 'impolitely', type: 'adverb', pair: 'impolite', fruitType: 'orange', note: 'shout impolitely' },
+      { word: 'patiently', type: 'adverb', pair: 'patient', fruitType: 'apple', note: 'wait patiently' },
+      { word: 'impatiently', type: 'adverb', pair: 'impatient', fruitType: 'strawberry', note: 'tap feet impatiently' },
+      { word: 'rudely', type: 'adverb', pair: 'rude', fruitType: 'orange', note: 'behave rudely' },
+      { word: 'quietly', type: 'adverb', pair: 'quiet', fruitType: 'watermelon', note: 'eat soup quietly' },
+      { word: 'noisily', type: 'adverb', pair: 'noisy', fruitType: 'orange', note: 'slurp noodles noisily' },
+      { word: 'messily', type: 'adverb', pair: 'messy', fruitType: 'coconut', note: 'eat messily' },
+      { word: 'softly', type: 'adverb', pair: 'soft', fruitType: 'apple', note: 'whisper softly' },
+      { word: 'loudly', type: 'adverb', pair: 'loud', fruitType: 'orange', note: 'play drums loudly' },
+      { word: 'quickly', type: 'adverb', pair: 'quick', fruitType: 'strawberry', note: 'finish homework quickly' },
+      { word: 'slowly', type: 'adverb', pair: 'slow', fruitType: 'coconut', note: 'walk slowly' },
+      { word: 'easily', type: 'adverb', pair: 'easy', fruitType: 'watermelon', note: 'solve puzzles easily' },
+      { word: 'nicely', type: 'adverb', pair: 'nice', fruitType: 'apple', note: 'ask nicely' },
+      { word: 'kindly', type: 'adverb', pair: 'kind', fruitType: 'strawberry', note: 'smile kindly' },
+      { word: 'beautifully', type: 'adverb', pair: 'beautiful', fruitType: 'apple', note: 'sing beautifully' },
+      { word: 'carefully', type: 'adverb', pair: 'careful', fruitType: 'orange', note: 'cross road carefully' },
+      { word: 'tidily', type: 'adverb', pair: 'tidy', fruitType: 'watermelon', note: 'pack bag tidily' },
+      { word: 'well', type: 'adverb', pair: 'good', fruitType: 'apple', note: 'behave well' },
+
+      // --- 3. BOTH ADJECTIVES AND ADVERBS (Chameleon Starfruits) ---
+      { word: 'fast', type: 'both', pair: 'fast', fruitType: 'starfruit', note: 'Both! "fast car" & "run fast"' },
+      { word: 'high', type: 'both', pair: 'high', fruitType: 'starfruit', note: 'Both! "high wall" & "jump high"' },
+      { word: 'far', type: 'both', pair: 'far', fruitType: 'starfruit', note: 'Both! "far country" & "travel far"' },
+      { word: 'late', type: 'both', pair: 'late', fruitType: 'starfruit', note: 'Both! "late bus" & "arrive late"' },
+      { word: 'early', type: 'both', pair: 'early', fruitType: 'starfruit', note: 'Both! "early bird" & "wake early"' }
+    ];
+
+    // Fruit visual configurations & juice colors
+    const FRUIT_THEMES = {
+      watermelon: { skin: '#15803d', rind: '#86efac', flesh: '#ef4444', juice: '#f43f5e', name: 'Watermelon' },
+      orange: { skin: '#c2410c', rind: '#fed7aa', flesh: '#f97316', juice: '#fb923c', name: 'Orange' },
+      apple: { skin: '#991b1b', rind: '#fef08a', flesh: '#dc2626', juice: '#ef4444', name: 'Apple' },
+      strawberry: { skin: '#b91c1c', rind: '#fecaca', flesh: '#e11d48', juice: '#f43f5e', name: 'Strawberry' },
+      coconut: { skin: '#451a03', rind: '#fef3c7', flesh: '#78350f', juice: '#d97706', name: 'Coconut' },
+      starfruit: { skin: '#ca8a04', rind: '#fef08a', flesh: '#eab308', juice: '#fde047', name: 'Golden Starfruit' }
+    };
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Game State
+    const state = {
+      active: false,
+      score: 0,
+      streak: 0,
+      timeLeft: 60,
+      targetType: 'adverb', // 'adverb' or 'adjective'
+      speedMultiplier: 1.0,
+      totalSwipes: 0,
+      correctSlices: 0,
+      spawnTimer: 0,
+      fruits: [],
+      fruitHalves: [],
+      particles: [],
+      splatters: [],
+      bladePoints: [], // Touch/Mouse trailing path for the slicing blade
+      isMouseDown: false,
+      lastTime: 0
+    };
+
+    const sessionTracker = {
+      missedWords: [],
+      correctWords: [],
+      aiQuestsCompleted: 0
+    };
+
+    const activeAiChallenge = {
+      isActive: false,
+      sentenceText: '',
+      targetWord: '',
+      targetType: '',
+      explanation: ''
+    };
+
+    function resizeCanvas() {
+      const container = document.getElementById('gameArea');
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
+
+    /* Flying Fruit Class (Launched upwards in parabolic arcs) */
+    class FlyingFruit {
+      constructor(item, width, height, speedMult) {
+        this.item = item;
+        this.fruitTheme = FRUIT_THEMES[item.fruitType] || FRUIT_THEMES.watermelon;
+        this.radius = Math.min(Math.max(width * 0.08, 48), 64);
+        
+        // Spawn from bottom within safe bounds
+        this.x = Math.random() * (width - this.radius * 3) + this.radius * 1.5;
+        this.y = height + this.radius + 10;
+
+        // Gentle, floaty parabolic arc physics with extended hang time at the apex
+        // Base gravity reduced from 0.35 down to 0.13 for easy word readability!
+        const baseGravity = 0.13;
+        this.gravity = baseGravity * (speedMult >= 1.2 ? 1.25 : 0.95);
+        
+        // Reach comfortable apex around 22% - 38% from top of playfield
+        const targetApexY = height * (0.22 + Math.random() * 0.16);
+        const apexDelta = this.y - targetApexY;
+        this.vy = -Math.sqrt(2 * this.gravity * apexDelta);
+        
+        // Smooth parabola directed across screen towards opposite side or center
+        const timeToApex = Math.abs(this.vy / this.gravity);
+        const targetX = width * 0.5 + (Math.random() - 0.5) * (width * 0.55);
+        this.vx = (targetX - this.x) / (timeToApex * 1.95);
+
+        this.angle = 0;
+        // Mild rotation so text stays easily legible
+        this.rotSpeed = (Math.random() - 0.5) * 0.015;
+        this.alive = true;
+      }
+
+      update(dt) {
+        this.x += this.vx * dt * 60;
+        this.y += this.vy * dt * 60;
+        this.vy += this.gravity * dt * 60; // Classical parabolic acceleration
+        this.angle += this.rotSpeed * dt * 60;
+
+        const container = document.getElementById('gameArea');
+        // Drop below screen bottom after completing parabola
+        if (this.vy > 0 && this.y - this.radius > container.clientHeight + 40) {
+          this.alive = false;
+        }
+      }
+
+      draw(context) {
+        context.save();
+        context.translate(this.x, this.y);
+        context.rotate(this.angle);
+
+        const isDual = (this.item.type === 'both');
+        const theme = this.fruitTheme;
+
+        // Outer Glow for Starfruits
+        if (isDual) {
+          context.shadowColor = '#FBBF24';
+          context.shadowBlur = 18;
+        }
+
+        // Draw Fruit Body
+        context.beginPath();
+        if (this.item.fruitType === 'watermelon') {
+          // Round watermelon with dark rind & stripes
+          context.arc(0, 0, this.radius, 0, Math.PI * 2);
+          context.fillStyle = theme.skin;
+          context.fill();
+          context.lineWidth = 4;
+          context.strokeStyle = '#052e16';
+          context.stroke();
+
+          // Stripes
+          context.beginPath();
+          context.arc(-this.radius * 0.4, 0, this.radius * 0.5, -Math.PI/2, Math.PI/2);
+          context.strokeStyle = '#166534';
+          context.lineWidth = 6;
+          context.stroke();
+        } else if (this.item.fruitType === 'orange') {
+          // Vibrant Orange
+          context.arc(0, 0, this.radius, 0, Math.PI * 2);
+          context.fillStyle = theme.flesh;
+          context.fill();
+          context.lineWidth = 4;
+          context.strokeStyle = theme.skin;
+          context.stroke();
+          // Stem leaf
+          context.fillStyle = '#22c55e';
+          context.beginPath();
+          context.ellipse(0, -this.radius, 8, 4, Math.PI/4, 0, Math.PI*2);
+          context.fill();
+        } else if (this.item.fruitType === 'starfruit') {
+          // 5-pointed Golden Starfruit
+          this.drawStar(context, 0, 0, 5, this.radius, this.radius * 0.55);
+          context.fillStyle = '#FBBF24';
+          context.fill();
+          context.lineWidth = 4;
+          context.strokeStyle = '#78350F';
+          context.stroke();
+        } else {
+          // Apple / Strawberry / Coconut round base
+          context.arc(0, 0, this.radius, 0, Math.PI * 2);
+          context.fillStyle = theme.flesh;
+          context.fill();
+          context.lineWidth = 4;
+          context.strokeStyle = theme.skin;
+          context.stroke();
+          // Little green leafy crown
+          context.fillStyle = '#16a34a';
+          context.beginPath();
+          context.arc(0, -this.radius + 3, 7, 0, Math.PI * 2);
+          context.fill();
+        }
+
+        // Fruit Highlight reflection
+        context.beginPath();
+        context.ellipse(-this.radius * 0.35, -this.radius * 0.35, this.radius * 0.28, this.radius * 0.16, -Math.PI / 4, 0, Math.PI * 2);
+        context.fillStyle = 'rgba(255, 255, 255, 0.38)';
+        context.fill();
+
+        // Reset shadow before drawing text
+        context.shadowBlur = 0;
+
+        // Special Badge for Chameleon Dual Words
+        if (isDual) {
+          context.fillStyle = '#78350F';
+          context.font = 'bold 11px Fredoka, sans-serif';
+          context.textAlign = 'center';
+          context.fillText('★ BOTH ★', 0, -this.radius * 0.52);
+        }
+
+        // High-Contrast Word Label on Fruit
+        context.fillStyle = '#FFFFFF';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        let fontSize = Math.floor(this.radius * 0.40);
+        if (this.item.word.length > 8) fontSize = Math.floor(this.radius * 0.30);
+        context.font = `900 ${fontSize}px Fredoka, Nunito, sans-serif`;
+        
+        // Dark outline around word for maximum readability
+        context.strokeStyle = '#000000';
+        context.lineWidth = 4;
+        context.strokeText(this.item.word, 0, isDual ? 4 : 0);
+        context.fillText(this.item.word, 0, isDual ? 4 : 0);
+
+        context.restore();
+      }
+
+      drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+        let rot = Math.PI / 2 * 3;
+        let x = cx;
+        let y = cy;
+        let step = Math.PI / spikes;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerRadius);
+        for (let i = 0; i < spikes; i++) {
+          x = cx + Math.cos(rot) * outerRadius;
+          y = cy + Math.sin(rot) * outerRadius;
+          ctx.lineTo(x, y);
+          rot += step;
+          x = cx + Math.cos(rot) * innerRadius;
+          y = cy + Math.sin(rot) * innerRadius;
+          ctx.lineTo(x, y);
+          rot += step;
+        }
+        ctx.lineTo(cx, cy - outerRadius);
+        ctx.closePath();
+      }
+    }
+
+    /* Sliced Fruit Half Class (Flies apart after being cleanly cut) */
+    class SlicedFruitHalf {
+      constructor(x, y, radius, theme, isLeftHalf, sliceAngle) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.theme = theme;
+        this.isLeftHalf = isLeftHalf;
+        this.angle = sliceAngle;
+        
+        // Push apart perpendicularly to slice angle
+        const pushDir = isLeftHalf ? -1 : 1;
+        const perpX = -Math.sin(sliceAngle) * pushDir;
+        const perpY = Math.cos(sliceAngle) * pushDir;
+
+        this.vx = perpX * (4 + Math.random() * 3);
+        this.vy = perpY * 3 - (2 + Math.random() * 3);
+        this.rotSpeed = pushDir * (0.08 + Math.random() * 0.08);
+        this.gravity = 0.22;
+        this.alpha = 1;
+      }
+
+      update(dt) {
+        this.x += this.vx * dt * 60;
+        this.y += this.vy * dt * 60;
+        this.vy += this.gravity * dt * 60;
+        this.angle += this.rotSpeed * dt * 60;
+        this.alpha -= 0.008;
+      }
+
+      draw(context) {
+        if (this.alpha <= 0) return;
+        context.save();
+        context.translate(this.x, this.y);
+        context.rotate(this.angle);
+        context.globalAlpha = Math.max(0, this.alpha);
+
+        context.beginPath();
+        // Sliced semi-circle
+        if (this.isLeftHalf) {
+          context.arc(0, 0, this.radius, Math.PI / 2, Math.PI * 1.5);
+        } else {
+          context.arc(0, 0, this.radius, -Math.PI / 2, Math.PI / 2);
+        }
+        context.closePath();
+
+        // Rind & Flesh colors
+        context.fillStyle = this.theme.flesh;
+        context.fill();
+        context.lineWidth = 4;
+        context.strokeStyle = this.theme.skin;
+        context.stroke();
+
+        // Inner juicy fruit seeds or core
+        context.fillStyle = '#000000';
+        const seedOffset = this.isLeftHalf ? -this.radius * 0.3 : this.radius * 0.3;
+        context.beginPath();
+        context.arc(seedOffset, 0, 3, 0, Math.PI * 2);
+        context.fill();
+
+        context.restore();
+      }
+    }
+
+    /* Splashing Juice Drops */
+    class JuiceParticle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.radius = Math.random() * 6 + 3;
+        this.color = color || '#ef4444';
+        this.alpha = 1;
+        this.decay = Math.random() * 0.03 + 0.025;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.25; // gravity
+        this.alpha -= this.decay;
+      }
+      draw(context) {
+        context.save();
+        context.globalAlpha = Math.max(0, this.alpha);
+        context.fillStyle = this.color;
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+    }
+
+    /* Juice Splatter Stains on cutting board wall */
+    class WallSplatter {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 28 + 18;
+        this.alpha = 0.55;
+      }
+      update() {
+        this.alpha -= 0.003;
+      }
+      draw(context) {
+        if (this.alpha <= 0) return;
+        context.save();
+        context.globalAlpha = Math.max(0, this.alpha);
+        context.fillStyle = this.color;
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+    }
+
+    function spawnFruit() {
+      const container = document.getElementById('gameArea');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      const randomItem = VOCAB_DATABASE[Math.floor(Math.random() * VOCAB_DATABASE.length)];
+      state.fruits.push(new FlyingFruit(randomItem, w, h, state.speedMultiplier));
+    }
+
+    const toastElem = document.getElementById('hitToast');
+    const toastText = document.getElementById('hitToastText');
+    let toastTimeout = null;
+
+    function showToast(message, isSuccess = true) {
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastText.innerHTML = message;
+      if (isSuccess) {
+        toastElem.className = "pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-5 py-2 rounded-2xl border-2 border-emerald-300 shadow-xl text-center font-black transition-all duration-300 transform translate-y-0 opacity-100 z-20 max-w-md";
+      } else {
+        toastElem.className = "pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 bg-rose-600 text-white px-5 py-2 rounded-2xl border-2 border-rose-300 shadow-xl text-center font-black transition-all duration-300 transform translate-y-0 opacity-100 z-20 max-w-md";
+      }
+      toastTimeout = setTimeout(() => {
+        toastElem.classList.add('-translate-y-10', 'opacity-0');
+      }, 1900);
+    }
+
+    /* Check intersection between blade swipe line segment (p1 -> p2) and circle (c, r) */
+    function checkLineCircleIntersection(p1, p2, c, r) {
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const lenSq = dx * dx + dy * dy;
+      if (lenSq === 0) {
+        return Math.hypot(p1.x - c.x, p1.y - c.y) <= r;
+      }
+      // Project circle center onto segment
+      const t = Math.max(0, Math.min(1, ((c.x - p1.x) * dx + (c.y - p1.y) * dy) / lenSq));
+      const projX = p1.x + t * dx;
+      const projY = p1.y + t * dy;
+      return Math.hypot(c.x - projX, c.y - projY) <= r;
+    }
+
+    function handleBladeSwipe(p1, p2) {
+      sound.init();
+      if (!state.active) return;
+      sound.playSwish();
+
+      const sliceAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+
+      // Check all flying fruits
+      for (let i = state.fruits.length - 1; i >= 0; i--) {
+        const fruit = state.fruits[i];
+        if (checkLineCircleIntersection(p1, p2, { x: fruit.x, y: fruit.y }, fruit.radius)) {
+          sliceFruit(fruit, i, sliceAngle);
+        }
+      }
+    }
+
+    function sliceFruit(fruit, index, sliceAngle) {
+      state.totalSwipes++;
+      sound.playSlice();
+
+      // Splatter on wall + juice spray particles
+      state.splatters.push(new WallSplatter(fruit.x, fruit.y, fruit.fruitTheme.juice));
+      for (let p = 0; p < 22; p++) {
+        state.particles.push(new JuiceParticle(fruit.x, fruit.y, fruit.fruitTheme.juice));
+      }
+
+      // Spawn two halves tumbling away
+      state.fruitHalves.push(new SlicedFruitHalf(fruit.x, fruit.y, fruit.radius, fruit.fruitTheme, true, sliceAngle));
+      state.fruitHalves.push(new SlicedFruitHalf(fruit.x, fruit.y, fruit.radius, fruit.fruitTheme, false, sliceAngle));
+
+      const isDualWord = (fruit.item.type === 'both');
+      const isCorrect = (fruit.item.type === state.targetType || isDualWord);
+
+      // 1. Check if AI Sentence Quest is active
+      if (activeAiChallenge.isActive) {
+        const questMatched = (fruit.item.word.toLowerCase() === activeAiChallenge.targetWord.toLowerCase());
+        
+        if (questMatched) {
+          sound.playCorrectChime();
+          state.correctSlices++;
+          sessionTracker.aiQuestsCompleted++;
+          sessionTracker.correctWords.push(fruit.item.word);
+          const questBonus = 300;
+          state.score += questBonus;
+          showToast(`🌟 <strong>AI QUEST COMPLETE! (+${questBonus} pts)</strong><br><span class="text-xs text-white">${activeAiChallenge.explanation}</span>`, true);
+          clearAiChallenge();
+        } else {
+          sound.playWrong();
+          sessionTracker.missedWords.push({
+            word: fruit.item.word,
+            reason: `Needed "${activeAiChallenge.targetWord}" to complete: ${activeAiChallenge.sentenceText}`
+          });
+          state.score = Math.max(0, state.score - 40);
+          showToast(`⚠️ Wrong fruit! Find: <em>"${activeAiChallenge.sentenceText}"</em>`, false);
+        }
+
+        state.fruits.splice(index, 1);
+        updateScoreUI();
+        return;
+      }
+
+      // 2. Standard Mission evaluation
+      if (isCorrect) {
+        sound.playCorrectChime();
+        state.correctSlices++;
+        state.streak++;
+        sessionTracker.correctWords.push(fruit.item.word);
+        const comboBonus = Math.min(state.streak * 8, 50);
+        const dualBonus = isDualWord ? 60 : 0;
+        const points = 100 + comboBonus + dualBonus;
+        state.score += points;
+
+        let toastMsg = '';
+        if (isDualWord) {
+          toastMsg = `⭐ <strong>CHAMELEON STARFRUIT!</strong> "${fruit.item.word}" is <u>BOTH</u> an Adjective & Adverb!<br><span class="text-xs font-semibold text-white">(+${points} pts!)</span>`;
+        } else {
+          toastMsg = `🍉 <strong>JUICY CUT!</strong> "${fruit.item.word}" is an <strong>${state.targetType.toUpperCase()}</strong>!`;
+          if (fruit.item.note) toastMsg += `<br><span class="text-xs font-semibold text-white/90">E.g., ${fruit.item.note}</span>`;
+        }
+        showToast(toastMsg, true);
+
+      } else {
+        sound.playWrong();
+        state.streak = 0;
+        state.score = Math.max(0, state.score - 40);
+
+        sessionTracker.missedWords.push({
+          word: fruit.item.word,
+          type: fruit.item.type,
+          pair: fruit.item.pair,
+          mission: state.targetType
+        });
+
+        let mistakeNotice = `⚠️ Sliced wrong fruit! <strong>"${fruit.item.word}"</strong> is an <strong>${fruit.item.type.toUpperCase()}</strong>.`;
+        if (fruit.item.type === 'adjective') {
+          mistakeNotice += `<br><span class="text-xs font-semibold">Tip: Describes things! (Adverb form: <em>${fruit.item.pair}</em>)</span>`;
+        } else {
+          mistakeNotice += `<br><span class="text-xs font-semibold">Tip: Describes actions! (Adjective form: <em>${fruit.item.pair}</em>)</span>`;
+        }
+        showToast(mistakeNotice, false);
+      }
+
+      // Remove sliced fruit
+      state.fruits.splice(index, 1);
+      updateScoreUI();
+    }
+
+    // Touch and Mouse Blade Trail Listeners
+    function addBladePoint(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const pt = {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+        time: Date.now()
+      };
+      state.bladePoints.push(pt);
+      
+      // Keep only recent points to form the razor sword trail
+      if (state.bladePoints.length > 1) {
+        const prev = state.bladePoints[state.bladePoints.length - 2];
+        handleBladeSwipe(prev, pt);
+      }
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      state.isMouseDown = true;
+      state.bladePoints = [];
+      addBladePoint(e.clientX, e.clientY);
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      e.preventDefault();
+      if (!state.isMouseDown) return;
+      addBladePoint(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('pointerup', () => {
+      state.isMouseDown = false;
+    });
+    window.addEventListener('pointercancel', () => {
+      state.isMouseDown = false;
+    });
+
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const streakDisplay = document.getElementById('streakDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const missionText = document.getElementById('missionText');
+
+    function updateScoreUI() {
+      scoreDisplay.textContent = state.score;
+      streakDisplay.textContent = `${state.streak} 🔥`;
+    }
+
+    function setMission(type) {
+      state.targetType = type;
+      const advBtn = document.getElementById('filterAdverbModeBtn');
+      const adjBtn = document.getElementById('filterAdjectiveModeBtn');
+
+      if (type === 'adverb') {
+        missionText.innerHTML = `CUT: <span class="text-purple-950 bg-yellow-200 px-1.5 py-0.5 rounded border border-purple-400 font-black underline uppercase">ADVERBS (-ly)</span>`;
+        advBtn.className = "btn-3d-purple active-target-btn px-3 py-1.5 rounded-xl text-white font-black text-xs sm:text-sm transition active:scale-95 flex items-center gap-1.5";
+        adjBtn.className = "bg-stone-800 hover:bg-amber-600 text-amber-300 hover:text-white font-black border border-amber-500/60 px-3 py-1.5 rounded-xl text-xs sm:text-sm shadow transition active:scale-95 flex items-center gap-1.5";
+      } else {
+        missionText.innerHTML = `CUT: <span class="text-amber-950 bg-yellow-200 px-1.5 py-0.5 rounded border border-amber-400 font-black underline uppercase">ADJECTIVES</span>`;
+        adjBtn.className = "btn-3d-amber active-target-btn px-3 py-1.5 rounded-xl text-white font-black text-xs sm:text-sm transition active:scale-95 flex items-center gap-1.5";
+        advBtn.className = "bg-stone-800 hover:bg-purple-600 text-purple-300 hover:text-white font-black border border-purple-500/60 px-3 py-1.5 rounded-xl text-xs sm:text-sm shadow transition active:scale-95 flex items-center gap-1.5";
+      }
+    }
+
+    let timerInterval = null;
+
+    function gameLoop(currentTime) {
+      if (!state.lastTime) state.lastTime = currentTime;
+      const dt = Math.min((currentTime - state.lastTime) / 1000, 0.1);
+      state.lastTime = currentTime;
+
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Draw wall juice splatters
+      for (let i = state.splatters.length - 1; i >= 0; i--) {
+        const s = state.splatters[i];
+        s.update();
+        s.draw(ctx);
+        if (s.alpha <= 0) state.splatters.splice(i, 1);
+      }
+
+      // 2. Active Game Spawning Logic (Fruit Ninja launch bursts)
+      if (state.active) {
+        state.spawnTimer += dt;
+        // Launch 1-3 fruits in bursts every ~1.6s
+        if (state.spawnTimer > (1.6 / state.speedMultiplier)) {
+          const burst = Math.floor(Math.random() * 2) + 1;
+          for (let b = 0; b < burst; b++) {
+            spawnFruit();
+          }
+          state.spawnTimer = 0;
+        }
+
+        // Automatic mid-game mission flip at 30 seconds
+        if (state.timeLeft === 30 && state.targetType === 'adverb') {
+          setMission('adjective');
+          showToast("🔄 MISSION SHIFT! NOW SLICE ADJECTIVES! 🍊", true);
+        }
+      }
+
+      // 3. Update & Draw Flying Whole Fruits
+      for (let i = state.fruits.length - 1; i >= 0; i--) {
+        const f = state.fruits[i];
+        if (state.active) f.update(dt);
+        f.draw(ctx);
+        if (!f.alive) state.fruits.splice(i, 1);
+      }
+
+      // 4. Update & Draw Sliced Fruit Halves
+      for (let i = state.fruitHalves.length - 1; i >= 0; i--) {
+        const hf = state.fruitHalves[i];
+        hf.update(dt);
+        hf.draw(ctx);
+        if (hf.alpha <= 0 || hf.y > h + 100) state.fruitHalves.splice(i, 1);
+      }
+
+      // 5. Update & Draw Juice Droplet Particles
+      for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        p.update();
+        p.draw(ctx);
+        if (p.alpha <= 0) state.particles.splice(i, 1);
+      }
+
+      // 6. Draw Glowing Samurai Blade Trail
+      const now = Date.now();
+      state.bladePoints = state.bladePoints.filter(pt => now - pt.time < 120);
+
+      if (state.bladePoints.length > 1) {
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        for (let i = 1; i < state.bladePoints.length; i++) {
+          const pPrev = state.bladePoints[i - 1];
+          const pCurr = state.bladePoints[i];
+          const age = now - pCurr.time;
+          const progress = 1 - (age / 120);
+
+          // Outer Glow
+          ctx.strokeStyle = `rgba(251, 191, 36, ${progress * 0.8})`;
+          ctx.lineWidth = 14 * progress;
+          ctx.beginPath();
+          ctx.moveTo(pPrev.x, pPrev.y);
+          ctx.lineTo(pCurr.x, pCurr.y);
+          ctx.stroke();
+
+          // Hot White Core Blade
+          ctx.strokeStyle = `rgba(255, 255, 255, ${progress})`;
+          ctx.lineWidth = 5 * progress;
+          ctx.beginPath();
+          ctx.moveTo(pPrev.x, pPrev.y);
+          ctx.lineTo(pCurr.x, pCurr.y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      sound.init();
+      resizeCanvas();
+      state.active = true;
+      state.score = 0;
+      state.streak = 0;
+      state.totalSwipes = 0;
+      state.correctSlices = 0;
+      state.timeLeft = 60;
+      state.fruits = [];
+      state.fruitHalves = [];
+      state.particles = [];
+      state.splatters = [];
+      state.bladePoints = [];
+      state.spawnTimer = 0;
+
+      updateScoreUI();
+      timerDisplay.textContent = `${state.timeLeft}s`;
+      timerDisplay.classList.remove('text-red-400', 'animate-pulse');
+
+      sessionTracker.missedWords = [];
+      sessionTracker.correctWords = [];
+      sessionTracker.aiQuestsCompleted = 0;
+      clearAiChallenge();
+
+      document.getElementById('aiReportContainer').classList.add('hidden');
+      document.getElementById('aiReportContent').innerHTML = '';
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('gameOverScreen').classList.add('hidden');
+      
+      // Reset Hall of Fame submission box in Game Over screen
+      const hofStatus = document.getElementById('hofSubmitStatus');
+      if (hofStatus) {
+        hofStatus.classList.add('hidden');
+        hofStatus.textContent = '';
+      }
+      const hofBtn = document.getElementById('hofSaveScoreBtn');
+      if (hofBtn) {
+        hofBtn.disabled = false;
+        hofBtn.textContent = 'Save 🌟';
+      }
+
+      // Initial fruit toss burst
+      for (let i = 0; i < 3; i++) {
+        spawnFruit();
+      }
+
+      // Start countdown
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        state.timeLeft--;
+        timerDisplay.textContent = `${state.timeLeft}s`;
+
+        if (state.timeLeft <= 10) {
+          timerDisplay.classList.add('text-red-400', 'animate-pulse');
+        } else {
+          timerDisplay.classList.remove('text-red-400', 'animate-pulse');
+        }
+
+        if (state.timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function resetGame() {
+      if (timerInterval) clearInterval(timerInterval);
+      state.active = false;
+      state.score = 0;
+      state.streak = 0;
+      state.totalSwipes = 0;
+      state.correctSlices = 0;
+      state.timeLeft = 60;
+      state.fruits = [];
+      state.fruitHalves = [];
+      state.particles = [];
+      state.splatters = [];
+      state.bladePoints = [];
+      clearAiChallenge();
+
+      updateScoreUI();
+      timerDisplay.textContent = '60s';
+      timerDisplay.classList.remove('text-red-400', 'animate-pulse');
+
+      // Return to the very beginning of the page (Start Screen)
+      document.getElementById('gameOverScreen').classList.add('hidden');
+      document.getElementById('aiReportContainer').classList.add('hidden');
+      document.getElementById('startScreen').classList.remove('hidden');
+      showToast("🔄 Returned to Start Screen!", true);
+    }
+
+    /* Classroom Hall of Fame System */
+    const DEFAULT_HALL_OF_FAME = [
+      { name: "Sammy & Chris (4B)", score: 1680, accuracy: "96%", title: "Katana Grandmaster" },
+      { name: "Team Falcon (4A)", score: 1320, accuracy: "92%", title: "Manner Master" },
+      { name: "Lily & Brian (4C)", score: 1150, accuracy: "89%", title: "Fruit Slicer" },
+      { name: "Miss Chan (Teacher)", score: 1050, accuracy: "100%", title: "Grammar Sensei" },
+      { name: "Marcus (4B)", score: 880, accuracy: "85%", title: "Speedy Ninja" }
+    ];
+
+    let hallOfFameData = [...DEFAULT_HALL_OF_FAME];
+
+    function getPlayerNinjaTitle(score, accuracyVal) {
+      if (score >= 1500) return "Katana Grandmaster 👑";
+      if (score >= 1200) return "Manner Master ⚔️";
+      if (score >= 900) return "Super Slicer 🍉";
+      return "Apprentice Ninja 🌱";
+    }
+
+    function renderHallOfFame() {
+      hallOfFameData.sort((a, b) => b.score - a.score);
+
+      // Top 3 Podium
+      const p1 = hallOfFameData[0] || { name: "---", score: 0 };
+      const p2 = hallOfFameData[1] || { name: "---", score: 0 };
+      const p3 = hallOfFameData[2] || { name: "---", score: 0 };
+
+      document.getElementById('podium1Name').textContent = p1.name;
+      document.getElementById('podium1Score').textContent = p1.score.toLocaleString();
+      document.getElementById('podium2Name').textContent = p2.name;
+      document.getElementById('podium2Score').textContent = p2.score.toLocaleString();
+      document.getElementById('podium3Name').textContent = p3.name;
+      document.getElementById('podium3Score').textContent = p3.score.toLocaleString();
+
+      const tbody = document.getElementById('hallOfFameTableBody');
+      tbody.innerHTML = '';
+
+      hallOfFameData.forEach((entry, idx) => {
+        const row = document.createElement('tr');
+        row.className = "hover:bg-stone-800/80 transition text-stone-300 font-bold";
+        
+        let rankBadge = `${idx + 1}`;
+        if (idx === 0) rankBadge = '🥇 1st';
+        else if (idx === 1) rankBadge = '🥈 2nd';
+        else if (idx === 2) rankBadge = '🥉 3rd';
+
+        row.innerHTML = `
+          <td class="p-2 font-black ${idx === 0 ? 'text-yellow-300' : 'text-stone-400'}">${rankBadge}</td>
+          <td class="p-2 font-black text-white">${entry.name}</td>
+          <td class="p-2 font-black text-yellow-300">${entry.score.toLocaleString()}</td>
+          <td class="p-2 text-emerald-400 font-bold">${entry.accuracy}</td>
+          <td class="p-2 text-amber-300 text-[11px]">${entry.title}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function addScoreToHallOfFame(name, score, accuracy) {
+      const cleanName = name.trim() || "Anonymous Ninja";
+      const title = getPlayerNinjaTitle(score, accuracy);
+      hallOfFameData.push({
+        name: cleanName,
+        score: score,
+        accuracy: `${accuracy}%`,
+        title: title
+      });
+      hallOfFameData.sort((a, b) => b.score - a.score);
+      renderHallOfFame();
+    }
+
+    function endGame() {
+      state.active = false;
+      clearInterval(timerInterval);
+      sound.playFanfare();
+
+      const accuracy = state.totalSwipes > 0 
+        ? Math.round((state.correctSlices / state.totalSwipes) * 100) 
+        : 100;
+
+      document.getElementById('finalScoreVal').textContent = state.score;
+      document.getElementById('finalAccuracyVal').textContent = `${accuracy}%`;
+
+      const gameOverTitle = document.getElementById('gameOverTitle');
+      const gameOverEmoji = document.getElementById('gameOverEmoji');
+      const gameOverSub = document.getElementById('gameOverSub');
+
+      if (state.score >= 1200) {
+        gameOverEmoji.textContent = '🌟⚔️';
+        gameOverTitle.textContent = 'Grammar Fruit Grandmaster!';
+        gameOverSub.textContent = 'Incredible mastery slicing adverbs and adjectives!';
+      } else if (state.score >= 600) {
+        gameOverEmoji.textContent = '🍉🎉';
+        gameOverTitle.textContent = 'Super Slicer!';
+        gameOverSub.textContent = 'Great reflex recognizing adverbs of manner!';
+      } else {
+        gameOverEmoji.textContent = '🍎💪';
+        gameOverTitle.textContent = 'Good Effort!';
+        gameOverSub.textContent = 'Keep practicing the -ly word forms!';
+      }
+
+      document.getElementById('gameOverScreen').classList.remove('hidden');
+    }
+
+    document.getElementById('startGameBtn').addEventListener('click', startGame);
+    document.getElementById('playAgainBtn').addEventListener('click', startGame);
+    document.getElementById('resetGameBtn').addEventListener('click', resetGame);
+
+    // Hall of Fame Modal Listeners
+    const hallOfFameModal = document.getElementById('hallOfFameModal');
+    function openHallOfFame() {
+      renderHallOfFame();
+      hallOfFameModal.classList.remove('hidden');
+    }
+    function closeHallOfFame() {
+      hallOfFameModal.classList.add('hidden');
+    }
+    document.getElementById('hallOfFameBtn').addEventListener('click', openHallOfFame);
+    document.getElementById('viewHofFromOverBtn').addEventListener('click', openHallOfFame);
+    document.getElementById('closeHallOfFameBtn').addEventListener('click', closeHallOfFame);
+    document.getElementById('closeHofFooterBtn').addEventListener('click', closeHallOfFame);
+    document.getElementById('resetLeaderboardBtn').addEventListener('click', () => {
+      hallOfFameData = [...DEFAULT_HALL_OF_FAME];
+      renderHallOfFame();
+      showToast("Leaderboard restored to defaults!", true);
+    });
+
+    // Hall of Fame Save Button on Game Over screen
+    document.getElementById('hofSaveScoreBtn').addEventListener('click', () => {
+      const input = document.getElementById('hofPlayerNameInput');
+      const status = document.getElementById('hofSubmitStatus');
+      const btn = document.getElementById('hofSaveScoreBtn');
+      const name = input.value.trim() || "Ninja Student";
+
+      const accuracy = state.totalSwipes > 0 
+        ? Math.round((state.correctSlices / state.totalSwipes) * 100) 
+        : 100;
+
+      addScoreToHallOfFame(name, state.score, accuracy);
+
+      btn.disabled = true;
+      btn.textContent = 'Saved! ✓';
+      status.textContent = `🌟 Awesome! "${name}" added with ${state.score} pts!`;
+      status.classList.remove('hidden');
+      
+      setTimeout(() => {
+        openHallOfFame();
+      }, 700);
+    });
+
+    // Speed Controls
+    document.getElementById('easyModeBtn').addEventListener('click', () => {
+      state.speedMultiplier = 0.6; // 60% Warmup Speed
+      document.getElementById('easyModeBtn').className = "py-2 px-2 rounded-xl font-black text-xs sm:text-sm border-3 border-emerald-600 bg-emerald-600 text-white transition active:scale-95 shadow flex flex-col items-center justify-center";
+      document.getElementById('actionSpeedBtn').className = "py-2 px-2 rounded-xl font-black text-xs sm:text-sm border-3 border-stone-600 bg-stone-800 text-stone-300 hover:bg-stone-700 transition active:scale-95 shadow flex flex-col items-center justify-center";
+    });
+
+    document.getElementById('actionSpeedBtn').addEventListener('click', () => {
+      state.speedMultiplier = 1.0; // Standard Ninja Speed
+      document.getElementById('actionSpeedBtn').className = "py-2 px-2 rounded-xl font-black text-xs sm:text-sm border-3 border-orange-500 bg-orange-600 text-white transition active:scale-95 shadow flex flex-col items-center justify-center";
+      document.getElementById('easyModeBtn').className = "py-2 px-2 rounded-xl font-black text-xs sm:text-sm border-3 border-stone-600 bg-stone-800 text-stone-300 hover:bg-stone-700 transition active:scale-95 shadow flex flex-col items-center justify-center";
+    });
+
+    // Sound toggle
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    soundToggleBtn.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      if (sound.enabled) {
+        soundToggleBtn.innerHTML = `<span class="text-sm">🔊</span> <span class="hidden md:inline text-xs font-black">Sound ON</span>`;
+        soundToggleBtn.className = "py-1 px-2.5 rounded-xl bg-stone-800 hover:bg-black text-amber-300 font-black border border-amber-400 transition text-xs flex items-center gap-1 shadow active:scale-95";
+      } else {
+        soundToggleBtn.innerHTML = `<span class="text-sm">🔇</span> <span class="hidden md:inline text-xs font-black">Muted</span>`;
+        soundToggleBtn.className = "py-1 px-2.5 rounded-xl bg-stone-900 text-stone-500 font-bold border border-stone-700 transition text-xs flex items-center gap-1 shadow active:scale-95";
+      }
+    });
+
+    // Rules & Vocabulary Modal
+    const rulesModal = document.getElementById('rulesModal');
+    const rulesBtn = document.getElementById('rulesBtn');
+    if (rulesBtn) rulesBtn.addEventListener('click', () => rulesModal && rulesModal.classList.remove('hidden'));
+    
+    const showRuleSheetBtn = document.getElementById('showRuleSheetBtn');
+    if (showRuleSheetBtn) showRuleSheetBtn.addEventListener('click', () => rulesModal && rulesModal.classList.remove('hidden'));
+    
+    const closeRulesBtn = document.getElementById('closeRulesBtn');
+    if (closeRulesBtn) closeRulesBtn.addEventListener('click', () => rulesModal && rulesModal.classList.add('hidden'));
+    
+    const modalGotItBtn = document.getElementById('modalGotItBtn');
+    if (modalGotItBtn) modalGotItBtn.addEventListener('click', () => rulesModal && rulesModal.classList.add('hidden'));
+
+    // Mission Mode Selectors
+    document.getElementById('filterAdverbModeBtn').addEventListener('click', () => {
+      setMission('adverb');
+      showToast("🍉 TARGET SWITCH: SLICE ADVERBS OF MANNER!", true);
+    });
+
+    document.getElementById('filterAdjectiveModeBtn').addEventListener('click', () => {
+      setMission('adjective');
+      showToast("🍊 TARGET SWITCH: SLICE ADJECTIVES!", true);
+    });
+
+    const GEMINI_API_KEY = ""; // Canvas runtime supplies key when empty
+    const GEMINI_MODEL = "gemini-3-flash-preview";
+
+    async function callGemini(payload, maxRetries = 3) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+      let delay = 1000;
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) {
+            if (res.status === 429 && attempt < maxRetries - 1) {
+              await new Promise(resolve => setTimeout(resolve, delay));
+              delay *= 2;
+              continue;
+            }
+            throw new Error(`Gemini API error: ${res.statusText}`);
+          }
+          return await res.json();
+        } catch (err) {
+          if (attempt === maxRetries - 1) throw err;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= 2;
+        }
+      }
+    }
+
+    // 1. AI Sentence Checker
+    async function evaluateSentenceWithAI(userSentence) {
+      const systemInstruction = `You are a supportive Primary English teacher in Hong Kong teaching young learners (ages 8-10) about Good Behaviour.
+The grammar focus is distinguishing Adjectives (describe nouns/people/things) vs Adverbs of Manner (describe verbs/how actions happen).
+Analyze the student's sentence. Determine whether they correctly used adjectives or adverbs of manner.
+Return structured JSON with:
+- isCorrect (boolean)
+- starRating (integer 1 to 5)
+- friendlyFeedback (cheerful 1-2 sentence kid-friendly explanation)
+- correctedSentence (corrected or model version)
+- grammarTip (short rule reminder)`;
+
+      const payload = {
+        contents: [{ parts: [{ text: `Review this sentence: "${userSentence}". Check adjective vs adverb of manner.` }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              isCorrect: { type: "BOOLEAN" },
+              starRating: { type: "INTEGER" },
+              friendlyFeedback: { type: "STRING" },
+              correctedSentence: { type: "STRING" },
+              grammarTip: { type: "STRING" }
+            },
+            required: ["isCorrect", "starRating", "friendlyFeedback", "correctedSentence", "grammarTip"]
+          }
+        }
+      };
+
+      const result = await callGemini(payload);
+      const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+      return JSON.parse(text);
+    }
+
+    // 2. AI Missing Word Fruit Quest
+    async function generateAiSentenceQuest() {
+      const targetItem = VOCAB_DATABASE[Math.floor(Math.random() * VOCAB_DATABASE.length)];
+      const systemInstruction = `You are a primary English educator making a lively 1-sentence fill-in-the-blank question for children based on 'Good Behaviour' and 'Manners'.
+The missing word MUST be: "${targetItem.word}". Replace "${targetItem.word}" with "_____" in the sentence.
+Return JSON with:
+- sentenceWithBlank (e.g., "In the classroom, children should whisper _____ so everyone can study.")
+- missingWord ("${targetItem.word}")
+- wordType ("${targetItem.type}")
+- hintExplanation (short note why this word fits)`;
+
+      const payload = {
+        contents: [{ parts: [{ text: `Create a primary fill-in sentence where the exact missing word is "${targetItem.word}".` }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              sentenceWithBlank: { type: "STRING" },
+              missingWord: { type: "STRING" },
+              wordType: { type: "STRING" },
+              hintExplanation: { type: "STRING" }
+            },
+            required: ["sentenceWithBlank", "missingWord", "wordType", "hintExplanation"]
+          }
+        }
+      };
+
+      const result = await callGemini(payload);
+      const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+      return JSON.parse(text);
+    }
+
+    // 3. AI Word Pair Story Generator
+    async function generateWordPairStory(selectedWord) {
+      const vocabEntry = VOCAB_DATABASE.find(v => v.word.toLowerCase() === selectedWord.toLowerCase()) || VOCAB_DATABASE[0];
+      const otherPair = vocabEntry.pair || (vocabEntry.type === 'adverb' ? 'adjective' : 'adverb');
+
+      const systemInstruction = `You are a primary English teacher. Write a delightful 2-sentence classroom cartoon story illustrating the contrast between the adjective and adverb forms: "${vocabEntry.word}" and "${otherPair}".
+Example: "Sam is a polite boy who smiles at his teacher. He speaks politely and says 'Excuse me, please!'"
+Return JSON with:
+- title (e.g. "Polite Panda Speaks Politely!")
+- story (2 sentences comparing both words)
+- goldenRule (super clear 1-line rule for kids)`;
+
+      const payload = {
+        contents: [{ parts: [{ text: `Write a short 2-sentence cartoon comparison for words: "${vocabEntry.word}" and "${otherPair}".` }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              title: { type: "STRING" },
+              story: { type: "STRING" },
+              goldenRule: { type: "STRING" }
+            },
+            required: ["title", "story", "goldenRule"]
+          }
+        }
+      };
+
+      const result = await callGemini(payload);
+      const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+      return JSON.parse(text);
+    }
+
+    // 4. AI Post-Game Lesson Report & Oral Practice Drills
+    async function generateAiClassReport() {
+      const mistakesSummary = sessionTracker.missedWords.length > 0
+        ? JSON.stringify(sessionTracker.missedWords.slice(0, 5))
+        : "None! Perfect run!";
+      const correctSummary = sessionTracker.correctWords.slice(0, 8).join(', ') || "Warmup fruits";
+
+      const systemInstruction = `You are an expert Primary English teacher reviewing a fruit slicing grammar revision game.
+Session stats:
+- Score: ${state.score}
+- Accuracy: ${state.totalSwipes > 0 ? Math.round((state.correctSlices / state.totalSwipes) * 100) : 100}%
+- Words mastered: ${correctSummary}
+- Tricky mistakes: ${mistakesSummary}
+
+Write an engaging, constructive teacher summary for the class.
+Return JSON with:
+- praiseQuote (inspiring 1-sentence commendation)
+- keyPitfallAdvice (clarify why students made mistakes, e.g. patient vs patiently, or good vs well)
+- oralClassroomQuestions (array of exactly 3 spoken drill questions the teacher can ask aloud right now)`;
+
+      const payload = {
+        contents: [{ parts: [{ text: "Analyze the students' fruit slicing grammar revision session." }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              praiseQuote: { type: "STRING" },
+              keyPitfallAdvice: { type: "STRING" },
+              oralClassroomQuestions: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              }
+            },
+            required: ["praiseQuote", "keyPitfallAdvice", "oralClassroomQuestions"]
+          }
+        }
+      };
+
+      const result = await callGemini(payload);
+      const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+      return JSON.parse(text);
+    }
+
+    function clearAiChallenge() {
+      activeAiChallenge.isActive = false;
+      activeAiChallenge.sentenceText = '';
+      activeAiChallenge.targetWord = '';
+      document.getElementById('aiActiveChallengeBar').classList.add('hidden');
+    }
+
+    document.getElementById('aiCancelChallengeBtn').addEventListener('click', () => {
+      clearAiChallenge();
+      showToast("Fruit Quest skipped! Back to regular cutting ⚔️", false);
+    });
+
+    // AI Quest Trigger
+    const aiChallengeBtn = document.getElementById('aiChallengeBtn');
+    aiChallengeBtn.addEventListener('click', async () => {
+      if (!state.active) {
+        showToast("Press 'START SLICING MISSION' first, then click AI Quest! ⚔️", false);
+        return;
+      }
+      aiChallengeBtn.disabled = true;
+      aiChallengeBtn.innerHTML = `<span>⏳</span> <span>Tossing...</span>`;
+      try {
+        const quest = await generateAiSentenceQuest();
+        activeAiChallenge.isActive = true;
+        activeAiChallenge.sentenceText = quest.sentenceWithBlank;
+        activeAiChallenge.targetWord = quest.missingWord;
+        activeAiChallenge.targetType = quest.wordType;
+        activeAiChallenge.explanation = quest.hintExplanation;
+
+        // Launch the target fruit into the air immediately!
+        const container = document.getElementById('gameArea');
+        const dbEntry = VOCAB_DATABASE.find(v => v.word.toLowerCase() === quest.missingWord.toLowerCase()) || {
+          word: quest.missingWord,
+          type: quest.wordType,
+          fruitType: 'watermelon',
+          note: quest.hintExplanation
+        };
+        state.fruits.push(new FlyingFruit(dbEntry, container.clientWidth, container.clientHeight, state.speedMultiplier));
+
+        document.getElementById('aiActiveSentence').textContent = quest.sentenceWithBlank;
+        document.getElementById('aiActiveChallengeBar').classList.remove('hidden');
+        showToast(`🪄 <strong>NEW QUEST:</strong> "${quest.sentenceWithBlank}" - Slice the missing word fruit!`, true);
+      } catch (e) {
+        showToast("⚠️ Could not load AI Quest. Please check network connection.", false);
+      } finally {
+        aiChallengeBtn.disabled = false;
+        aiChallengeBtn.innerHTML = `<span>🪄</span> <span class="hidden md:inline">AI Quest</span>`;
+      }
+    });
+
+    // Populate Mnemonic Select Dropdown
+    const mnemonicWordSelect = document.getElementById('mnemonicWordSelect');
+    VOCAB_DATABASE.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.word;
+      opt.textContent = `${item.word} (${item.type})`;
+      mnemonicWordSelect.appendChild(opt);
+    });
+
+    // AI Coach Modal Controls
+    const aiCoachModal = document.getElementById('aiCoachModal');
+    document.getElementById('aiCoachBtn').addEventListener('click', () => {
+      aiCoachModal.classList.remove('hidden');
+    });
+    document.getElementById('closeAiCoachBtn').addEventListener('click', () => {
+      aiCoachModal.classList.add('hidden');
+    });
+
+    // Tabs inside Coach
+    const tabSentenceChecker = document.getElementById('tabSentenceChecker');
+    const tabMnemonicGen = document.getElementById('tabMnemonicGen');
+    const tabContentChecker = document.getElementById('tabContentChecker');
+    const tabContentMnemonic = document.getElementById('tabContentMnemonic');
+
+    tabSentenceChecker.addEventListener('click', () => {
+      tabSentenceChecker.className = "flex-1 py-2.5 px-3 rounded-2xl font-black text-xs md:text-sm bg-rose-600 text-white border-2 border-rose-800 shadow-md transition";
+      tabMnemonicGen.className = "flex-1 py-2.5 px-3 rounded-2xl font-black text-xs md:text-sm bg-stone-800 text-stone-300 hover:bg-stone-700 border-2 border-stone-700 transition";
+      tabContentChecker.classList.remove('hidden');
+      tabContentMnemonic.classList.add('hidden');
+    });
+
+    tabMnemonicGen.addEventListener('click', () => {
+      tabMnemonicGen.className = "flex-1 py-2.5 px-3 rounded-2xl font-black text-xs md:text-sm bg-rose-600 text-white border-2 border-rose-800 shadow-md transition";
+      tabSentenceChecker.className = "flex-1 py-2.5 px-3 rounded-2xl font-black text-xs md:text-sm bg-stone-800 text-stone-300 hover:bg-stone-700 border-2 border-stone-700 transition";
+      tabContentMnemonic.classList.remove('hidden');
+      tabContentChecker.classList.add('hidden');
+    });
+
+    // Quick prompts
+    document.querySelectorAll('.quick-sentence-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('sentenceInput').value = btn.getAttribute('data-text');
+      });
+    });
+
+    // Sentence Checker Submit
+    const submitSentenceBtn = document.getElementById('submitSentenceBtn');
+    const sentenceInput = document.getElementById('sentenceInput');
+    const checkerResultBox = document.getElementById('checkerResultBox');
+
+    submitSentenceBtn.addEventListener('click', async () => {
+      const sentence = sentenceInput.value.trim();
+      if (!sentence) {
+        sentenceInput.focus();
+        return;
+      }
+      submitSentenceBtn.disabled = true;
+      submitSentenceBtn.textContent = "Checking...";
+      checkerResultBox.classList.remove('hidden');
+      document.getElementById('checkerFeedback').textContent = "🤖 Miss Gemini is reading your sentence carefully...";
+      document.getElementById('checkerCorrection').textContent = "";
+
+      try {
+        const evaluation = await evaluateSentenceWithAI(sentence);
+        const stars = "⭐".repeat(Math.max(1, Math.min(evaluation.starRating, 5)));
+        document.getElementById('checkerStars').textContent = stars;
+
+        const tag = document.getElementById('checkerStatusTag');
+        if (evaluation.isCorrect) {
+          tag.className = "px-2.5 py-0.5 rounded-full font-black text-xs uppercase bg-emerald-600 text-white";
+          tag.textContent = "Great Sentence! 🌟";
+        } else {
+          tag.className = "px-2.5 py-0.5 rounded-full font-black text-xs uppercase bg-rose-600 text-white";
+          tag.textContent = "Needs a Little Polish 💡";
+        }
+
+        document.getElementById('checkerFeedback').textContent = evaluation.friendlyFeedback;
+        document.getElementById('checkerCorrection').innerHTML = `
+          <strong>Corrected / Model:</strong> "${evaluation.correctedSentence}"<br>
+          <span class="text-stone-400 text-[11px] font-semibold">💡 <em>${evaluation.grammarTip}</em></span>
+        `;
+      } catch (err) {
+        document.getElementById('checkerFeedback').textContent = "Could not check sentence at this moment. Please try again.";
+      } finally {
+        submitSentenceBtn.disabled = false;
+        submitSentenceBtn.textContent = "Check! 🚀";
+      }
+    });
+
+    // Mnemonic Story Submit
+    const generateMnemonicBtn = document.getElementById('generateMnemonicBtn');
+    const mnemonicResultBox = document.getElementById('mnemonicResultBox');
+
+    generateMnemonicBtn.addEventListener('click', async () => {
+      const word = mnemonicWordSelect.value;
+      generateMnemonicBtn.disabled = true;
+      generateMnemonicBtn.textContent = "Thinking...";
+      mnemonicResultBox.classList.remove('hidden');
+      document.getElementById('mnemonicTitle').textContent = `Creating story for "${word}"...`;
+      document.getElementById('mnemonicBody').textContent = "Weaving a funny cartoon scenario...";
+      document.getElementById('mnemonicRuleBadge').textContent = "";
+
+      try {
+        const res = await generateWordPairStory(word);
+        document.getElementById('mnemonicTitle').textContent = res.title;
+        document.getElementById('mnemonicBody').textContent = `"${res.story}"`;
+        document.getElementById('mnemonicRuleBadge').textContent = `💡 Grammar Golden Rule: ${res.goldenRule}`;
+      } catch (err) {
+        document.getElementById('mnemonicTitle').textContent = "Oops!";
+        document.getElementById('mnemonicBody').textContent = "Could not create story. Please try again.";
+      } finally {
+        generateMnemonicBtn.disabled = false;
+        generateMnemonicBtn.textContent = "Create Story 🪄";
+      }
+    });
+
+    // AI Class Report Submit
+    const aiGenerateReportBtn = document.getElementById('aiGenerateReportBtn');
+    aiGenerateReportBtn.addEventListener('click', async () => {
+      aiGenerateReportBtn.disabled = true;
+      aiGenerateReportBtn.innerHTML = `<span>⏳</span> <span>Generating Class Report...</span>`;
+      const container = document.getElementById('aiReportContainer');
+      const content = document.getElementById('aiReportContent');
+      const badge = document.getElementById('aiReportLoadingBadge');
+      container.classList.remove('hidden');
+      badge.classList.remove('hidden');
+      content.innerHTML = `<p class="italic text-stone-400 animate-pulse">Analyzing student slicing accuracy and drafting oral drill questions...</p>`;
+
+      try {
+        const report = await generateAiClassReport();
+        badge.classList.add('hidden');
+        
+        const drillItems = report.oralClassroomQuestions
+          .map((q, idx) => `<li class="pl-1"><strong>Q${idx + 1}:</strong> "${q}"</li>`)
+          .join('');
+
+        content.innerHTML = `
+          <div class="p-2.5 bg-stone-900 rounded-xl border border-stone-700">
+            <div class="font-black text-amber-300 mb-1">👏 Sensei Praise:</div>
+            <p class="italic text-stone-300">"${report.praiseQuote}"</p>
+          </div>
+          <div class="p-2.5 bg-stone-900 rounded-xl border border-stone-700">
+            <div class="font-black text-orange-400 mb-1">🎯 Grammar Focus Tip:</div>
+            <p class="text-stone-300">${report.keyPitfallAdvice}</p>
+          </div>
+          <div class="p-2.5 bg-stone-900 rounded-xl border border-stone-700">
+            <div class="font-black text-amber-300 mb-1">🗣️ Spoken Practice for the Class (Ask Aloud):</div>
+            <ul class="list-disc list-inside space-y-1 text-stone-300 text-[11px] sm:text-xs">
+              ${drillItems}
+            </ul>
+          </div>
+        `;
+      } catch (e) {
+        badge.classList.add('hidden');
+        content.innerHTML = `<p class="text-rose-400 font-bold">Failed to load AI report. Please try again.</p>`;
+      } finally {
+        aiGenerateReportBtn.disabled = false;
+        aiGenerateReportBtn.innerHTML = `<span>🪄</span> <span>AI Lesson Report & Drills</span>`;
+      }
+    });
+
+    // Initialize layout and animation loop on load
+    window.onload = function() {
+      resizeCanvas();
+      setMission('adverb');
+      renderHallOfFame();
+      requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>
