@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Good Manners Action Lab - Hands-On Consolidation Stations</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Comic Neue for energetic, cute primary classroom presentation -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .font-body {
+      font-family: 'Nunito', sans-serif;
+    }
+    .font-comic {
+      font-family: 'Comic Neue', cursive, sans-serif;
+    }
+    /* 3D Tactile Buttons */
+    .btn-3d {
+      transition: all 0.1s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+    }
+    .comic-box {
+      border: 3px solid #1e293b;
+      box-shadow: 4px 4px 0 #0f172a;
+    }
+    /* Dashed cut lines for printed manipulatives */
+    .cut-border {
+      border: 2px dashed #94a3b8;
+    }
+    /* Pulse glow */
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.85); }
+    }
+    .glow-gold {
+      animation: pulseGlow 2s infinite;
+    }
+    /* Printable page layout */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+      }
+      .print-page {
+        page-break-after: always;
+        break-after: page;
+        padding: 10mm;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col p-2 sm:p-4">
+
+  <!-- ================= TOP TEACHER CONTROL BAR ================= -->
+  <header class="no-print max-w-6xl w-full mx-auto bg-stone-900 border-3 border-amber-400 rounded-3xl p-3 sm:p-4 shadow-xl flex flex-col md:flex-row items-center justify-between gap-3 mb-3">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-stone-950 flex items-center justify-center text-3xl font-black shadow-md border-2 border-amber-300 no-underline cursor-pointer hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        ⚡
+      </a>
+      <div>
+        <h1 class="text-lg sm:text-xl font-black text-amber-300 tracking-wide flex items-center gap-2">
+          <span>Good Manners Action Lab</span>
+          <span class="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full font-extrabold uppercase">Primary EFL</span>
+        </h1>
+        <p class="text-xs text-stone-300 font-body font-semibold">
+          Station 1: Kinesthetic Charades • Station 2: Comic Manner Blaster Action Game
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Classroom Tools (Timer, Sound, Print) -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <!-- Station Rotation Timer -->
+      <div class="bg-stone-950 border-2 border-amber-500/80 rounded-2xl px-3 py-1.5 flex items-center gap-2 shadow-inner">
+        <span class="text-xs text-amber-400 font-black uppercase tracking-wider">Station Timer:</span>
+        <span id="timerDisplay" class="font-mono text-base font-black text-yellow-300">07:00</span>
+        <button id="btnTimerToggle" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-2.5 py-1 rounded-xl btn-3d">
+          Start ▶
+        </button>
+        <button id="btnTimerReset" class="bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-black px-2 py-1 rounded-xl">
+          🔄
+        </button>
+      </div>
+
+      <!-- Quick Audio Bell -->
+      <button id="btnPlayChime" class="bg-purple-700 hover:bg-purple-600 text-white text-xs font-black px-3 py-2 rounded-2xl border-2 border-purple-400 btn-3d flex items-center gap-1.5 shadow">
+        <span>🔔</span> <span>Bell</span>
+      </button>
+
+      <!-- Print Button -->
+      <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black px-3.5 py-2 rounded-2xl border-2 border-yellow-200 btn-3d flex items-center gap-1.5 shadow">
+        <span>🖨️</span> <span>Print Cards</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= STATION NAVIGATION TABS (STATION 1 & 2 ONLY) ================= -->
+  <nav class="no-print max-w-6xl w-full mx-auto grid grid-cols-2 gap-3 mb-3">
+    <button id="tabBtn1" class="station-tab-btn active-tab bg-amber-500 text-stone-950 border-3 border-amber-300 p-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition">
+      <span class="text-xl">🎭</span> <span>Station 1: Manner Charades & Freeze-Frame</span>
+    </button>
+    <button id="tabBtn2" class="station-tab-btn bg-stone-800 text-stone-300 hover:bg-stone-700 border-2 border-stone-700 p-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition">
+      <span class="text-xl">💥</span> <span>Station 2: Comic Manner Quest (Action Game)</span>
+    </button>
+  </nav>
+
+  <!-- ================= MAIN DISPLAY CONTAINER ================= -->
+  <main class="max-w-6xl w-full mx-auto flex-1 flex flex-col bg-stone-900 border-3 border-stone-700 rounded-3xl p-3 sm:p-5 shadow-2xl relative overflow-hidden">
+    
+    <!-- ---------------------------------------------------- -->
+    <!-- STATION 1: KINESTHETIC CHARADES WHEEL                -->
+    <!-- ---------------------------------------------------- -->
+    <section id="stationView1" class="station-section flex-1 flex flex-col space-y-4">
+      <div class="bg-amber-950/70 border-2 border-amber-500/70 rounded-2xl p-3 flex items-center justify-between">
+        <div>
+          <span class="text-xs font-black uppercase tracking-widest text-amber-400 block">Station 1 • Kinesthetic Acting & Spoken Guessing</span>
+          <h2 class="text-base sm:text-lg font-black text-white">Manner Charades & Freeze-Frame (12 Guessable Cards)</h2>
+          <p class="text-xs text-stone-300 font-body font-semibold">
+            One student taps to see the secret action card and acts silently. Team members call out: <em>"You are [action]-ing [adverb]!"</em>
+          </p>
+        </div>
+        <div class="text-3xl hidden sm:block">🎭</div>
+      </div>
+
+      <!-- Charades Spinner Wheel Simulation -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 items-center">
+        <!-- Interactive Card Drawer -->
+        <div class="bg-stone-950 border-3 border-stone-800 rounded-3xl p-4 flex flex-col items-center justify-center text-center space-y-3 shadow-inner">
+          <span class="text-xs text-amber-400 uppercase font-black tracking-wider">Tap Card to Reveal Secret Action</span>
+          
+          <div id="charadeSecretCard" class="w-full max-w-sm h-52 bg-gradient-to-br from-amber-400 to-yellow-500 text-stone-950 rounded-3xl p-4 border-4 border-yellow-200 shadow-2xl flex flex-col items-center justify-center space-y-2 cursor-pointer transition transform active:scale-95">
+            <span class="text-4xl">🤫</span>
+            <h3 class="text-lg font-black">TAP TO REVEAL SECRET ACTION</h3>
+            <p class="text-xs font-bold text-stone-800">Only the actor looks at the screen!</p>
+          </div>
+
+          <div class="flex gap-2.5">
+            <button id="btnNewCharade" class="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black py-2.5 px-5 rounded-2xl btn-3d shadow flex items-center gap-1.5">
+              <span>🎲</span> <span>Next Secret Action (12 Cards)</span>
+            </button>
+            <button id="btnCharadeAudio" class="bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-black py-2.5 px-3 rounded-2xl border border-stone-600">
+              🔊 Hear Sentence
+            </button>
+          </div>
+        </div>
+
+        <!-- Student Guessing Helper Board -->
+        <div class="bg-stone-950 border-3 border-stone-800 rounded-3xl p-4 space-y-3 font-body">
+          <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+            <h4 class="text-xs font-black uppercase text-amber-400 tracking-wider">🎯 Team Guessing Sentence Formula:</h4>
+            <span class="text-[10px] bg-amber-950 text-amber-300 border border-amber-600/60 px-2 py-0.5 rounded-full font-bold">Classroom Clue</span>
+          </div>
+
+          <!-- Sentence Formula Box -->
+          <div class="bg-stone-900 border-2 border-dashed border-amber-500/60 rounded-2xl p-3 text-center">
+            <p class="text-xs text-stone-400 font-bold mb-1">Guessing Team calls out loud:</p>
+            <p class="text-sm sm:text-base font-black text-white">
+              "You are <span class="text-yellow-300 bg-stone-800 px-2 py-0.5 rounded-lg border border-yellow-500/60">[ action-ing ]</span> 
+              <span class="text-emerald-300 bg-stone-800 px-2 py-0.5 rounded-lg border border-emerald-500/60">[ how / adverb ]</span>!"
+            </p>
+          </div>
+
+          <!-- Quick Word Bank Chips for easy scanning -->
+          <div>
+            <span class="text-[11px] font-black text-stone-400 block mb-1">Textbook Action Verbs:</span>
+            <div class="flex flex-wrap gap-1.5 text-xs font-bold text-stone-200">
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">waiting for the bus</span>
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">speaking to the waiter</span>
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">talking on the phone</span>
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">eating noodles / soup</span>
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">leaving shoes</span>
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">crossing the road</span>
+              <span class="bg-stone-800 border border-stone-700 px-2 py-1 rounded-xl">doing homework / sums</span>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-[11px] font-black text-stone-400 block mb-1">Target Adverbs of Manner:</span>
+            <div class="flex flex-wrap gap-1.5 text-xs font-bold text-amber-300">
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">patiently</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">impatiently</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">politely</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">rudely</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">quietly</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">noisily</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">softly</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">loudly</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">neatly</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">fast / quickly</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">hard</span>
+              <span class="bg-amber-950/80 border border-amber-600/60 px-2 py-1 rounded-xl">punctually</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- STATION 2: COMIC MANNER QUEST (ACTION GAME)          -->
+    <!-- ---------------------------------------------------- -->
+    <section id="stationView2" class="station-section hidden flex-1 flex flex-col space-y-3">
+      
+      <!-- Top Comic Game Cockpit -->
+      <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-stone-950 border-3 border-purple-400 rounded-3xl p-3 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-lg">
+        <div class="flex items-center gap-2">
+          <span class="text-3xl">💥</span>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-purple-300 block">Station 2 • Comic Action Clue Game</span>
+            <h2 class="text-base sm:text-lg font-black text-white">Manner Quest: Spot the Clue & Pick the Adverb!</h2>
+          </div>
+        </div>
+
+        <!-- Live Score & Combo -->
+        <div class="flex items-center gap-2">
+          <div class="bg-stone-900 border-2 border-yellow-400 px-3 py-1 rounded-2xl text-center shadow-inner">
+            <span class="text-[9px] uppercase font-black text-amber-400 block leading-tight">Score</span>
+            <span id="gameScore" class="text-sm sm:text-base font-black text-yellow-300 leading-none">0 pts</span>
+          </div>
+          <div class="bg-stone-900 border-2 border-orange-500 px-3 py-1 rounded-2xl text-center shadow-inner">
+            <span class="text-[9px] uppercase font-black text-orange-400 block leading-tight">Combo</span>
+            <span id="gameStreak" class="text-sm sm:text-base font-black text-orange-300 leading-none">0 🔥</span>
+          </div>
+          <span id="gameProgressBadge" class="bg-purple-800 border border-purple-400 text-white font-black text-xs px-3 py-1.5 rounded-2xl shadow">
+            Card 1 / 14
+          </span>
+        </div>
+      </div>
+
+      <!-- Central Comic Arena: Illustrated Picture Box + Action Choice Targets -->
+      <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+        
+        <!-- Left 7 cols: Cute Comic Illustration Panel -->
+        <div class="md:col-span-7 bg-stone-950 border-4 border-amber-400 rounded-3xl p-3 shadow-2xl flex flex-col items-center justify-between min-h-[300px] relative overflow-hidden">
+          
+          <!-- Comic Action Clue Badge -->
+          <div class="w-full flex items-center justify-between mb-1.5">
+            <span id="comicSceneTag" class="bg-amber-400 text-stone-950 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow">
+              Scene Clue
+            </span>
+            <button id="btnReadComicAudio" class="bg-stone-800 hover:bg-stone-700 text-amber-300 text-xs font-black px-3 py-1 rounded-xl border border-amber-400 flex items-center gap-1 shadow active:scale-95">
+              <span>🔊</span> <span>Listen Sentence</span>
+            </button>
+          </div>
+
+          <!-- High-Resolution Comic Style Vector Graphic Container -->
+          <div id="comicIllustrationWrap" class="w-full max-w-sm h-52 sm:h-56 bg-gradient-to-b from-stone-900 to-stone-950 border-2 border-stone-800 rounded-2xl p-2 flex items-center justify-center shadow-inner relative overflow-hidden">
+            <!-- Dynamic Vector Comic Injected by JS -->
+          </div>
+
+          <!-- Sentence Prompt with Blank -->
+          <div class="w-full text-center mt-2 bg-stone-900 p-2.5 rounded-2xl border-2 border-stone-800">
+            <h3 id="comicSentencePrompt" class="text-sm sm:text-base md:text-lg font-black text-white font-action leading-tight">
+              <!-- Dynamically populated -->
+            </h3>
+            <p id="comicClueHint" class="text-[11px] text-amber-300 font-bold mt-1">
+              <!-- Visual clue hint -->
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Right 5 cols: 4 Interactive Big Comic Action Buttons -->
+        <div class="md:col-span-5 flex flex-col justify-center space-y-2.5">
+          <div class="bg-stone-950 border-2 border-stone-800 rounded-2xl p-3 text-center">
+            <span class="text-xs uppercase font-black tracking-widest text-purple-300 block mb-1">
+              ⚡ Action Choice: Pick the Natural Adverb!
+            </span>
+            <p class="text-[11px] text-stone-400 font-body">Look at the comic facial expressions & actions above!</p>
+          </div>
+
+          <!-- 4 Big Choice Buttons -->
+          <div id="comicChoicesGrid" class="grid grid-cols-2 gap-2.5 font-comic">
+            <!-- Buttons dynamically generated -->
+          </div>
+
+          <!-- Feedback Toast Box -->
+          <div id="comicFeedbackBox" class="hidden p-3 rounded-2xl text-center text-xs font-black font-body transition-all"></div>
+
+          <!-- Game Controls Footer -->
+          <div class="flex items-center justify-between pt-1">
+            <button id="btnPrevComic" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-black text-xs py-2 px-3.5 rounded-xl border border-stone-600 disabled:opacity-40" disabled>
+              ← Previous
+            </button>
+            <button id="btnShuffleComic" class="bg-stone-800 hover:bg-stone-700 text-amber-400 font-black text-xs py-2 px-3.5 rounded-xl border border-amber-500/50">
+              🔀 Shuffle
+            </button>
+            <button id="btnNextComic" class="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs py-2 px-4 rounded-xl btn-3d shadow">
+              Next Action →
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================================================== -->
+  <!-- PRINTABLE MANIPULATIVE SHEETS (PRINT-ONLY SECTION)   -->
+  <!-- ==================================================== -->
+  <div class="hidden print:block text-black bg-white">
+    
+    <!-- PRINT PAGE 1: 12 MANNER CHARADE CUT-OUT PROMPT CARDS -->
+    <div class="print-page space-y-3">
+      <div class="border-b-2 border-black pb-1.5 text-center">
+        <h2 class="text-xl font-bold uppercase">Station 1: Manner Charades Cut-Out Prompt Cards (12 Cards)</h2>
+        <p class="text-xs text-gray-600">Cut along dashed lines. Fold or place into an envelope. Students draw one card and act silently!</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5 text-xs">
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🚌 🧘</span>
+          <strong class="block text-sm">wait patiently</strong>
+          <p class="text-[10px] text-gray-700">Act: Stand calmly in line with a relaxed smile and hands neatly folded.</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🚌 😤</span>
+          <strong class="block text-sm">waitfile impatiently</strong>
+          <p class="text-[10px] text-gray-700">Act: Tap foot rapidly, puff cheeks, check watch angrily, try to jump the queue.</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🍽️ 😊</span>
+          <strong class="block text-sm">speak politely</strong>
+          <p class="text-[10px] text-gray-700">Act: Smile warmly at waiter, bow slightly, mouth "Please could I have water".</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🍽️ 😠</span>
+          <strong class="block text-sm">speak rudely</strong>
+          <p class="text-[10px] text-gray-700">Act: Slam the table with fist, point an angry finger, demand food with a frown.</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">📱 📢</span>
+          <strong class="block text-sm">speak / talk loudly</strong>
+          <p class="text-[10px] text-gray-700">Act: Hold phone to ear, pace around shouting with wide eyes and huge gestures.</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🤫 📚</span>
+          <strong class="block text-sm">speak / whisper softly</strong>
+          <p class="text-[10px] text-gray-700">Act: Cup hand around ear/mouth, tiptoe between library bookshelves, signal "shh!".</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">⚽ 🎈</span>
+          <strong class="block text-sm">play happily</strong>
+          <p class="text-[10px] text-gray-700">Act: Laugh cheerfully, throw an imaginary ball, jump with joyous energy!</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🧑‍🏫 🧘</span>
+          <strong class="block text-sm">teach patiently</strong>
+          <p class="text-[10px] text-gray-700">Act: Point gently at chalkboard, nod encouragingly, guide a struggling learner.</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🎒 ⏰</span>
+          <strong class="block text-sm">go to school punctually</strong>
+          <p class="text-[10px] text-gray-700">Act: Walk calmly through school gate, check watch: exactly 7:55 AM (on time!).</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">🍳 ⭐</span>
+          <strong class="block text-sm">cook well</strong>
+          <p class="text-[10px] text-gray-700">Act: Flip pancake with a pan, taste with a spoon, kiss fingers: "Delicious!"</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">📖 🤫</span>
+          <strong class="block text-sm">read quietly</strong>
+          <p class="text-[10px] text-gray-700">Act: Hold an open book gently, turn pages silently, completely absorbed in reading.</p>
+        </div>
+        <div class="cut-border p-2.5 rounded-lg text-center space-y-1">
+          <span class="text-xl">✍️ ⚡</span>
+          <strong class="block text-sm">do homework quickly / fast</strong>
+          <p class="text-[10px] text-gray-700">Act: Write furiously across paper with turbo speed, turn pages at lightning pace!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRINT PAGE 2: STATION 2 COLLOCATION FLASHCARDS -->
+    <div class="print-page space-y-3">
+      <div class="border-b-2 border-black pb-1.5 text-center">
+        <h2 class="text-xl font-bold uppercase">Station 2: Target Collocation Match Cards</h2>
+        <p class="text-xs text-gray-600">Cut along outer dashed lines. Students match the action verb to its natural adverb partner!</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 wait</span> <span>➔ ⭐ patiently / impatiently</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 talk / speak</span> <span>➔ ⭐ loudly / softly</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 speak</span> <span>➔ ⭐ politely / rudely</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 play</span> <span>➔ ⭐ happily</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 teach</span> <span>➔ ⭐ patiently</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 go to school</span> <span>➔ ⭐ punctually</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 cook</span> <span>➔ ⭐ well</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 read</span> <span>➔ ⭐ quietly</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 do homework</span> <span>➔ ⭐ quickly / fast</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 write</span> <span>➔ ⭐ neatly</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 do sums</span> <span>➔ ⭐ fast</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 study</span> <span>➔ ⭐ hard</span>
+        </div>
+        <div class="cut-border p-2 rounded-lg flex justify-between items-center font-bold">
+          <span>🚂 come to school</span> <span>➔ ⭐ late / early</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INTERACTIVE APPLICATION JAVASCRIPT ================= -->
+  <script>
+    /* Web Audio API Sound Effects */
+    class LabSoundEngine {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playChime() {
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.50].forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, now + idx * 0.12);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.12);
+            osc.stop(now + idx * 0.12 + 0.4);
+          });
+        } catch(e) {}
+      }
+      playCorrect() {
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          [659.25, 880, 1174.66].forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, now + idx * 0.07);
+            gain.gain.setValueAtTime(0.18, now + idx * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.07);
+            osc.stop(now + idx * 0.07 + 0.25);
+          });
+        } catch(e) {}
+      }
+      playBuzz() {
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.setValueAtTime(90, now + 0.1);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(now + 0.25);
+        } catch(e) {}
+      }
+    }
+    const sound = new LabSoundEngine();
+
+    /* Text-to-Speech Pronunciation */
+    function speakLabText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.84;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 1. STATION TIMER LOGIC                               */
+    /* ---------------------------------------------------- */
+    let timerDuration = 7 * 60; // 7 minutes
+    let timeRemaining = timerDuration;
+    let timerRunning = false;
+    let timerInterval = null;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const btnTimerToggle = document.getElementById('btnTimerToggle');
+    const btnTimerReset = document.getElementById('btnTimerReset');
+
+    function updateTimerUI() {
+      const mins = Math.floor(timeRemaining / 60);
+      const secs = timeRemaining % 60;
+      timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    btnTimerToggle.addEventListener('click', () => {
+      sound.init();
+      if (!timerRunning) {
+        timerRunning = true;
+        btnTimerToggle.textContent = 'Pause ⏸';
+        btnTimerToggle.className = "bg-amber-600 hover:bg-amber-500 text-white text-xs font-black px-2.5 py-1 rounded-xl btn-3d";
+        timerInterval = setInterval(() => {
+          if (timeRemaining > 0) {
+            timeRemaining--;
+            updateTimerUI();
+          } else {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            btnTimerToggle.textContent = 'Start ▶';
+            btnTimerToggle.className = "bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-2.5 py-1 rounded-xl btn-3d";
+            sound.playChime();
+            speakLabText("Time is up! Rotate to the next station!");
+          }
+        }, 1000);
+      } else {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        btnTimerToggle.textContent = 'Start ▶';
+        btnTimerToggle.className = "bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-2.5 py-1 rounded-xl btn-3d";
+      }
+    });
+
+    btnTimerReset.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timeRemaining = timerDuration;
+      updateTimerUI();
+      btnTimerToggle.textContent = 'Start ▶';
+      btnTimerToggle.className = "bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-2.5 py-1 rounded-xl btn-3d";
+    });
+
+    document.getElementById('btnPlayChime').addEventListener('click', () => sound.playChime());
+
+    /* ---------------------------------------------------- */
+    /* 2. TAB SWITCHING LOGIC (STATION 1 & 2 ONLY)          */
+    /* ---------------------------------------------------- */
+    const tabBtn1 = document.getElementById('tabBtn1');
+    const tabBtn2 = document.getElementById('tabBtn2');
+    const stationView1 = document.getElementById('stationView1');
+    const stationView2 = document.getElementById('stationView2');
+
+    tabBtn1.addEventListener('click', () => {
+      sound.init();
+      stationView1.classList.remove('hidden');
+      stationView2.classList.add('hidden');
+      tabBtn1.className = "station-tab-btn active-tab bg-amber-500 text-stone-950 border-3 border-amber-300 p-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition";
+      tabBtn2.className = "station-tab-btn bg-stone-800 text-stone-300 hover:bg-stone-700 border-2 border-stone-700 p-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition";
+    });
+
+    tabBtn2.addEventListener('click', () => {
+      sound.init();
+      stationView2.classList.remove('hidden');
+      stationView1.classList.add('hidden');
+      tabBtn2.className = "station-tab-btn active-tab bg-purple-600 text-white border-3 border-purple-300 p-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition";
+      tabBtn1.className = "station-tab-btn bg-stone-800 text-stone-300 hover:bg-stone-700 border-2 border-stone-700 p-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition";
+      renderComicGameQuestion();
+    });
+
+    /* ---------------------------------------------------- */
+    /* 3. STATION 1: CHARADES 12 QUESTIONS DATA & LOGIC     */
+    /* ---------------------------------------------------- */
+    const CHARADE_CARDS = [
+      { verb: 'waiting for the bus', manner: 'patiently', full: 'You are waiting for the bus patiently!', icon: '🚌 🧘', tip: 'Stand calmly in line with hands folded, smile gently.' },
+      { verb: 'waiting for the bus', manner: 'impatiently', full: 'You are waiting for the bus impatiently!', icon: '🚌 😤', tip: 'Tap your feet rapidly, check watch angrily, try to push in.' },
+      { verb: 'speaking to the waiter', manner: 'politely', full: 'You are speaking to the waiter politely!', icon: '🍽️ 😊', tip: 'Smile warmly, bow slightly, mouth "Please could I have water".' },
+      { verb: 'speaking to the waiter', manner: 'rudely', full: 'You are speaking to the waiter rudely!', icon: '🍽️ 😠', tip: 'Slam table with fist, point an angry finger, demand food with a scowl.' },
+      { verb: 'talking on mobile phone', manner: 'loudly', full: 'You are talking on the phone loudly!', icon: '📱 📢', tip: 'Hold phone to ear, pace around the room shouting with wide eyes.' },
+      { verb: 'whispering in library', manner: 'softly', full: 'You are whispering softly in the library!', icon: '🤫 📚', tip: 'Put finger over lips: shh! Cup hand to mouth and speak very gently.' },
+      { verb: 'playing in the playground', manner: 'happily', full: 'You are playing happily in the playground!', icon: '⚽ 🎈', tip: 'Smile broadly, bounce an imaginary ball, celebrate with joy!' },
+      { verb: 'teaching the students', manner: 'patiently', full: 'You are teaching the students patiently!', icon: '🧑‍🏫 🧘', tip: 'Point at chalkboard, nod gently, guide a struggling student calmly.' },
+      { verb: 'arriving at school gate', manner: 'punctually', full: 'You are going to school punctually!', icon: '🎒 ⏰', tip: 'Walk calmly through the school gate, check watch: exactly on time!' },
+      { verb: 'cooking a hot dinner', manner: 'well', full: 'You are cooking well in the kitchen!', icon: '🍳 ⭐', tip: 'Flip a pancake in a frying pan, smell the aroma, kiss fingers: Chef master!' },
+      { verb: 'reading a storybook', manner: 'quietly', full: 'You are reading a storybook quietly!', icon: '📖 🤫', tip: 'Hold book with two hands, turn pages without sound, chew lips in focus.' },
+      { verb: 'doing school homework', manner: 'quickly / fast', full: 'You are doing your homework quickly!', icon: '✍️ ⚡', tip: 'Scribble furiously with a turbo pencil, turn worksheets with lightning speed!' }
+    ];
+
+    let currentCharade = CHARADE_CARDS[0];
+    const charadeSecretCard = document.getElementById('charadeSecretCard');
+    let charadeRevealed = false;
+
+    function renderCharadeCard(hide = true) {
+      charadeRevealed = !hide;
+      if (hide) {
+        charadeSecretCard.innerHTML = `
+          <span class="text-4xl">🤫</span>
+          <h3 class="text-lg font-black">TAP TO REVEAL SECRET ACTION</h3>
+          <p class="text-xs font-bold text-stone-800">Only the actor looks at the screen!</p>
+        `;
+      } else {
+        charadeSecretCard.innerHTML = `
+          <span class="text-4xl">${currentCharade.icon}</span>
+          <h3 class="text-xl font-black uppercase text-purple-950">${currentCharade.verb}</h3>
+          <span class="bg-stone-950 text-yellow-300 font-mono text-sm px-3.5 py-1 rounded-full font-black">Manner: ${currentCharade.manner}</span>
+          <p class="text-[11px] font-bold text-stone-900 italic max-w-xs">Clue: ${currentCharade.tip}</p>
+        `;
+      }
+    }
+
+    charadeSecretCard.addEventListener('click', () => {
+      sound.init();
+      renderCharadeCard(charadeRevealed);
+    });
+
+    document.getElementById('btnNewCharade').addEventListener('click', () => {
+      sound.init();
+      const nextIdx = Math.floor(Math.random() * CHARADE_CARDS.length);
+      currentCharade = CHARADE_CARDS[nextIdx];
+      renderCharadeCard(true);
+    });
+
+    document.getElementById('btnCharadeAudio').addEventListener('click', () => {
+      speakLabText(currentCharade.full);
+    });
+
+    /* ---------------------------------------------------- */
+    /* 4. STATION 2: CUTE COMIC VECTOR GRAPHICS REPOSITORY  */
+    /* ---------------------------------------------------- */
+    const COMIC_SVGS = {
+      // 1. wait patiently (cute calm student with smile at bus queue)
+      waitPatiently: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#f8fafc" rx="14"/>
+          <!-- Bus Stop Sign -->
+          <line x1="26" y1="20" x2="26" y2="125" stroke="#475569" stroke-width="4"/>
+          <circle cx="26" cy="30" r="16" fill="#ef4444" stroke="#1e293b" stroke-width="3"/>
+          <text x="26" y="34" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">BUS</text>
+          <!-- Pavement -->
+          <line x1="0" y1="120" x2="200" y2="120" stroke="#cbd5e1" stroke-width="5"/>
+          <!-- Comic Halftone dots / sparkles -->
+          <circle cx="170" cy="35" r="5" fill="#fde047"/>
+          <circle cx="160" cy="20" r="3" fill="#facc15"/>
+          <!-- Chibi Student: Calm with zen hands -->
+          <circle cx="110" cy="55" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Big Cute Eyes closed in zen peace ^_^ -->
+          <path d="M 98 52 Q 104 46 110 52" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 116 52 Q 122 46 128 52" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="98" cy="60" rx="3.5" ry="2" fill="#f43f5e"/>
+          <ellipse cx="128" cy="60" rx="3.5" ry="2" fill="#f43f5e"/>
+          <path d="M 108 63 Q 113 67 118 63" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Blue school uniform -->
+          <rect x="94" y="78" width="34" height="38" rx="7" fill="#3b82f6" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Hands neatly folded in front -->
+          <ellipse cx="111" cy="95" rx="8" ry="6" fill="#fed7aa" stroke="#1e293b" stroke-width="2.5"/>
+          <!-- Speech / thought bubble -->
+          <rect x="52" y="10" width="105" height="22" rx="7" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+          <text x="105" y="24" fill="#0f172a" font-size="8.5" font-weight="900" text-anchor="middle">"I can wait calmly! 🧘"</text>
+        </svg>
+      `,
+      // 2. waitfile impatiently (ticking foot, sweat drop, furious scowl)
+      waitImpatiently: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#fef2f2" rx="14"/>
+          <!-- Speed lines in comic red -->
+          <line x1="160" y1="20" x2="190" y2="20" stroke="#f87171" stroke-width="2.5"/>
+          <line x1="165" y1="28" x2="195" y2="28" stroke="#f87171" stroke-width="2.5"/>
+          <!-- Chibi Face: Furious & Puffed Cheeks -->
+          <circle cx="100" cy="55" r="23" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Angry eyes >_< -->
+          <path d="M 88 50 L 98 54 L 88 58" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 112 50 L 102 54 L 112 58" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- Annoyed mouth -->
+          <line x1="94" y1="66" x2="106" y2="66" stroke="#991b1b" stroke-width="3" stroke-linecap="round"/>
+          <!-- Huge Sweat drop -->
+          <ellipse cx="126" cy="42" rx="3.5" ry="6" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+          <rect x="85" y="78" width="30" height="36" rx="6" fill="#ef4444" stroke="#1e293b" stroke-width="3"/>
+          <!-- Tapping foot with motion arcs -->
+          <ellipse cx="100" cy="116" rx="9" ry="4" fill="#1e293b"/>
+          <path d="M 114 112 Q 120 116 114 120" stroke="#dc2626" stroke-width="2" fill="none"/>
+          <path d="M 118 110 Q 126 116 118 122" stroke="#dc2626" stroke-width="2" fill="none"/>
+          <!-- Comic Bubble -->
+          <rect x="42" y="8" width="118" height="24" rx="7" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
+          <text x="101" y="24" fill="#b91c1c" font-size="8.5" font-weight="900" text-anchor="middle">"WHERE IS THE BUS?! 😤"</text>
+        </svg>
+      `,
+      // 3. speak / talk loudly (megaphone / shockwaves, huge open mouth)
+      talkLoudly: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#fff7ed" rx="14"/>
+          <!-- Sound wave shock arcs -->
+          <path d="M 135 40 Q 155 60 135 80" stroke="#f97316" stroke-width="4" fill="none"/>
+          <path d="M 148 30 Q 175 60 148 90" stroke="#ef4444" stroke-width="4" fill="none"/>
+          <!-- Chibi character shouting with big mouth -->
+          <circle cx="85" cy="55" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Wide singing/shouting mouth -->
+          <ellipse cx="98" cy="62" rx="9" ry="8" fill="#991b1b" stroke="#1e293b" stroke-width="2"/>
+          <ellipse cx="98" cy="65" rx="5" ry="3" fill="#f87171"/>
+          <circle cx="76" cy="48" r="3" fill="#1e293b"/>
+          <circle cx="92" cy="48" r="3" fill="#1e293b"/>
+          <!-- Phone in hand -->
+          <rect x="110" y="44" width="12" height="24" rx="3" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+          <rect x="70" y="78" width="32" height="38" rx="6" fill="#ea580c" stroke="#1e293b" stroke-width="3.5"/>
+          <rect x="35" y="10" width="130" height="24" rx="6" fill="#ea580c" stroke="#1e293b" stroke-width="2.5"/>
+          <text x="100" y="25" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">"HEY! CAN YOU HEAR ME?!" 📢</text>
+        </svg>
+      `,
+      // 4. speak / whisper softly (gentle chibi cupping mouth, shh finger, peaceful library)
+      talkSoftly: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#f5f3ff" rx="14"/>
+          <!-- Bookshelf background -->
+          <rect x="15" y="18" width="170" height="28" rx="4" fill="#713f12" stroke="#1e293b" stroke-width="2"/>
+          <rect x="25" y="22" width="10" height="20" fill="#ec4899"/>
+          <rect x="39" y="20" width="12" height="22" fill="#3b82f6"/>
+          <rect x="55" y="24" width="14" height="18" fill="#10b981"/>
+          <!-- Chibi Whispering with finger over lips -->
+          <circle cx="100" cy="65" r="20" fill="#fed7aa" stroke="#1e293b" stroke-width="3"/>
+          <circle cx="94" cy="60" r="2.5" fill="#1e293b"/>
+          <circle cx="106" cy="60" r="2.5" fill="#1e293b"/>
+          <!-- Index finger shh -->
+          <rect x="97" y="62" width="5" height="15" rx="2.5" fill="#f59e0b" stroke="#1e293b" stroke-width="1.8"/>
+          <rect x="86" y="86" width="28" height="30" rx="6" fill="#8b5cf6" stroke="#1e293b" stroke-width="3"/>
+          <rect x="45" y="112" width="110" height="20" rx="6" fill="#4c1d95"/>
+          <text x="100" y="125" fill="#ddd6fe" font-size="8.5" font-weight="900" text-anchor="middle">"Whisper softly... shh! 🤫"</text>
+        </svg>
+      `,
+      // 5. speak politely (polite boy bowing and smiling saying please)
+      speakPolitely: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#ecfdf5" rx="14"/>
+          <!-- Sparkles & hearts -->
+          <text x="35" y="45" font-size="14">✨</text>
+          <text x="165" y="55" font-size="14">💖</text>
+          <!-- Chibi Bowing politely with cute smile -->
+          <circle cx="100" cy="52" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Gentle happy arc eyes ^_^ -->
+          <path d="M 90 48 Q 95 42 100 48" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 108 48 Q 113 42 118 48" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 98 58 Q 104 65 110 58" stroke="#065f46" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="90" cy="56" rx="4" ry="2.5" fill="#f43f5e" opacity="0.8"/>
+          <ellipse cx="118" cy="56" rx="4" ry="2.5" fill="#f43f5e" opacity="0.8"/>
+          <rect x="85" y="74" width="30" height="38" rx="6" fill="#10b981" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Comic Bubble -->
+          <rect x="25" y="10" width="150" height="24" rx="7" fill="#ffffff" stroke="#10b981" stroke-width="2.5"/>
+          <text x="100" y="25" fill="#065f46" font-size="8.5" font-weight="900" text-anchor="middle">"Excuse me, please! 😊"</text>
+        </svg>
+      `,
+      // 6. speak rudely (slamming table, demanding angrily)
+      speakRudely: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#fef2f2" rx="14"/>
+          <!-- Wooden dining table -->
+          <rect x="20" y="100" width="160" height="18" fill="#78350f" stroke="#1e293b" stroke-width="3"/>
+          <!-- Fist slamming table with impact stars -->
+          <path d="M 125 90 L 132 82 L 140 92 L 130 96 Z" fill="#f59e0b"/>
+          <!-- Chibi scowling with pointing finger -->
+          <circle cx="75" cy="50" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <path d="M 68 45 L 82 52" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+          <ellipse cx="78" cy="62" rx="7" ry="5" fill="#7f1d1d"/>
+          <rect x="62" y="72" width="28" height="30" rx="5" fill="#dc2626" stroke="#1e293b" stroke-width="3"/>
+          <!-- Pointing arm -->
+          <line x1="88" y1="80" x2="120" y2="80" stroke="#fed7aa" stroke-width="6" stroke-linecap="round"/>
+          <rect x="30" y="8" width="140" height="24" rx="6" fill="#991b1b" stroke="#1e293b" stroke-width="2.5"/>
+          <text x="100" y="23" fill="#ffffff" font-size="8.5" font-weight="900" text-anchor="middle">"GIVE ME WATER NOW!" 😠</text>
+        </svg>
+      `,
+      // 7. play happily (cute children jumping and smiling with football and balloons)
+      playHappily: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#f0fdf4" rx="14"/>
+          <!-- Sun & rainbow sparkles -->
+          <circle cx="175" cy="25" r="14" fill="#fbbf24"/>
+          <text x="25" y="35" font-size="16">🎈</text>
+          <!-- Happy Chibi jumping with soccer ball -->
+          <circle cx="100" cy="48" r="20" fill="#fed7aa" stroke="#1e293b" stroke-width="3"/>
+          <path d="M 92 46 Q 96 40 100 46" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+          <path d="M 104 46 Q 108 40 112 46" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+          <path d="M 96 56 Q 102 64 108 56" stroke="#059669" stroke-width="2.5" fill="none"/>
+          <rect x="88" y="68" width="24" height="26" rx="5" fill="#f59e0b" stroke="#1e293b" stroke-width="3"/>
+          <!-- Flying soccer ball -->
+          <circle cx="138" cy="85" r="12" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+          <polygon points="138,78 143,82 141,88 135,88 133,82" fill="#1e293b"/>
+          <rect x="40" y="108" width="120" height="22" rx="6" fill="#15803d"/>
+          <text x="100" y="122" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">"Yay! So much fun!" ⚽🎉</text>
+        </svg>
+      `,
+      // 8. teach patiently (smiling teacher gently guiding student with open book)
+      teachPatiently: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#fefce8" rx="14"/>
+          <!-- Chalkboard in green -->
+          <rect x="15" y="15" width="80" height="60" rx="5" fill="#065f46" stroke="#78350f" stroke-width="3"/>
+          <text x="55" y="38" fill="#fde047" font-size="10" font-weight="900" text-anchor="middle">A B C</text>
+          <text x="55" y="55" fill="#ffffff" font-size="8" font-weight="bold" text-anchor="middle">Good job! ⭐</text>
+          <!-- Kind Teacher Chibi with gentle smile and glasses -->
+          <circle cx="140" cy="55" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Glasses -->
+          <circle cx="132" cy="52" r="7" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <circle cx="148" cy="52" r="7" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <line x1="139" y1="52" x2="141" y2="52" stroke="#1e293b" stroke-width="2"/>
+          <path d="M 136 65 Q 140 70 144 65" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+          <rect x="125" y="78" width="30" height="40" rx="6" fill="#9333ea" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Pointer wand pointing gently to board -->
+          <line x1="125" y1="88" x2="95" y2="65" stroke="#ca8a04" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="94" cy="64" r="3" fill="#facc15"/>
+        </svg>
+      `,
+      // 9. go to school punctually (clock showing 7:55 AM, student arrives right on time)
+      goSchoolPunctually: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#f0f9ff" rx="14"/>
+          <!-- Big Wall Clock showing 7:55 AM -->
+          <circle cx="50" cy="45" r="26" fill="#ffffff" stroke="#0284c7" stroke-width="3.5"/>
+          <!-- Clock Hands: Minute hand at 11 (55 mins), Hour hand near 8 -->
+          <line x1="50" y1="45" x2="40" y2="24" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="50" y1="45" x2="42" y2="52" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="45" r="2.5" fill="#0f172a"/>
+          <!-- School Gate with sign -->
+          <rect x="100" y="25" width="85" height="95" fill="#334155" rx="4"/>
+          <rect x="110" y="32" width="65" height="20" rx="3" fill="#facc15"/>
+          <text x="142" y="46" fill="#0f172a" font-size="8.5" font-weight="900" text-anchor="middle">PRIMARY SCHOOL</text>
+          <!-- Student with thumbs up -->
+          <circle cx="140" cy="75" r="14" fill="#fed7aa" stroke="#1e293b" stroke-width="2.5"/>
+          <path d="M 136 78 Q 140 82 144 78" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <rect x="132" y="89" width="16" height="26" rx="4" fill="#2563eb" stroke="#1e293b" stroke-width="2.5"/>
+          <!-- On-time badge -->
+          <rect x="15" y="85" width="70" height="18" rx="4" fill="#15803d"/>
+          <text x="50" y="97" fill="#ffffff" font-size="7.5" font-weight="900" text-anchor="middle">7:55 AM • ON TIME!</text>
+        </svg>
+      `,
+      // 10. cook well (chef with tall hat cooking tasty meal with delicious steam)
+      cookWell: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#fffbeb" rx="14"/>
+          <!-- Sizzling frying pan with delicious aroma waves -->
+          <ellipse cx="60" cy="98" rx="32" ry="10" fill="#334155" stroke="#1e293b" stroke-width="3"/>
+          <line x1="28" y1="98" x2="10" y2="92" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 50 82 Q 54 70 50 62" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
+          <path d="M 64 80 Q 68 68 64 60" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
+          <circle cx="58" cy="95" r="5" fill="#ef4444"/> <!-- tomato -->
+          <circle cx="68" cy="94" r="4" fill="#22c55e"/> <!-- herbs -->
+          <!-- Cute Little Chef with tall white hat -->
+          <rect x="112" y="16" width="30" height="28" rx="6" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+          <ellipse cx="127" cy="18" rx="20" ry="10" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+          <circle cx="127" cy="58" r="20" fill="#fed7aa" stroke="#1e293b" stroke-width="3"/>
+          <circle cx="121" cy="54" r="2.5" fill="#1e293b"/>
+          <circle cx="133" cy="54" r="2.5" fill="#1e293b"/>
+          <path d="M 124 63 Q 127 68 130 63" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <rect x="115" y="78" width="24" height="34" rx="4" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+          <rect x="40" y="115" width="120" height="20" rx="6" fill="#d97706"/>
+          <text x="100" y="128" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">"Delicious! 5 Stars! ⭐"</text>
+        </svg>
+      `,
+      // 11. read quietly (reading open storybook, sleeping cat beside)
+      readQuietly: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#f8fafc" rx="14"/>
+          <!-- Cosy Beanbag -->
+          <ellipse cx="100" cy="102" rx="65" ry="24" fill="#e2e8f0" stroke="#64748b" stroke-width="2.5"/>
+          <!-- Chibi girl reading peacefully -->
+          <circle cx="100" cy="55" r="20" fill="#fed7aa" stroke="#1e293b" stroke-width="3"/>
+          <!-- Relaxed focused eyes -->
+          <path d="M 94 54 Q 97 50 100 54" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <path d="M 104 54 Q 107 50 110 54" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <!-- Open Storybook in hands -->
+          <path d="M 75 88 Q 100 92 100 85 Q 100 92 125 88 L 122 106 Q 100 102 100 108 Q 100 102 78 106 Z" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+          <!-- Little sleeping cat in corner zzz -->
+          <ellipse cx="160" cy="108" rx="14" ry="9" fill="#f97316"/>
+          <polygon points="152,100 156,96 158,102" fill="#ea580c"/>
+          <text x="160" y="94" font-size="9" font-weight="900" fill="#64748b">zzz</text>
+        </svg>
+      `,
+      // 12. do homework quickly / fast (pencil with turbo lightning speed lines)
+      doHomeworkFast: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#eff6ff" rx="14"/>
+          <!-- Lightning sparks -->
+          <polygon points="35,30 42,42 36,44 45,58 32,45 38,43" fill="#facc15" stroke="#ca8a04" stroke-width="1.5"/>
+          <!-- Speedy pencil angled with smoke trails -->
+          <line x1="80" y1="30" x2="140" y2="85" stroke="#f59e0b" stroke-width="10" stroke-linecap="round"/>
+          <polygon points="140,85 152,95 136,92" fill="#fed7aa" stroke="#1e293b" stroke-width="2"/>
+          <polygon points="148,92 152,95 146,94" fill="#1e293b"/>
+          <!-- Speed lines behind pencil -->
+          <line x1="60" y1="20" x2="90" y2="45" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+          <line x1="50" y1="35" x2="80" y2="60" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+          <!-- Homework sheet with checkmarks ✓✓✓ -->
+          <rect x="75" y="70" width="70" height="48" rx="4" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+          <text x="85" y="85" fill="#16a34a" font-size="11" font-weight="900">✓</text>
+          <text x="100" y="85" fill="#16a34a" font-size="11" font-weight="900">✓</text>
+          <text x="115" y="85" fill="#16a34a" font-size="11" font-weight="900">✓ 100%</text>
+          <line x1="85" y1="95" x2="135" y2="95" stroke="#cbd5e1" stroke-width="2"/>
+          <line x1="85" y1="105" x2="125" y2="105" stroke="#cbd5e1" stroke-width="2"/>
+        </svg>
+      `,
+      // 13. write neatly (sparkling clean lined page, beautiful straight cursive)
+      writeNeatly: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#fdf4ff" rx="14"/>
+          <!-- Sparkles -->
+          <text x="25" y="40" font-size="16">✨</text>
+          <text x="165" y="45" font-size="16">⭐</text>
+          <!-- Lined notebook page with tidy margins -->
+          <rect x="40" y="20" width="120" height="100" rx="5" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+          <line x1="55" y1="20" x2="55" y2="120" stroke="#f43f5e" stroke-width="1.8"/> <!-- Red margin line -->
+          <!-- Blue notebook guide lines -->
+          <line x1="58" y1="40" x2="150" y2="40" stroke="#93c5fd" stroke-width="1.5"/>
+          <text x="65" y="38" fill="#1e293b" font-family="Comic Neue, sans-serif" font-size="10" font-weight="900">Good Manners</text>
+          <line x1="58" y1="65" x2="150" y2="65" stroke="#93c5fd" stroke-width="1.5"/>
+          <text x="65" y="63" fill="#1e293b" font-family="Comic Neue, sans-serif" font-size="9" font-weight="bold">Speak politely.</text>
+          <line x1="58" y1="90" x2="150" y2="90" stroke="#93c5fd" stroke-width="1.5"/>
+          <text x="65" y="88" fill="#1e293b" font-family="Comic Neue, sans-serif" font-size="9" font-weight="bold">Wait patiently.</text>
+        </svg>
+      `,
+      // 14. do sums fast (chalkboard with 12+8=20, turbo rocket, quick math genius)
+      doSumsFast: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#0f172a" rx="14"/>
+          <!-- Math chalkboard -->
+          <rect x="20" y="20" width="160" height="85" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="3"/>
+          <text x="100" y="55" fill="#fde047" font-size="16" font-weight="900" text-anchor="middle">12 + 8 = 20 !</text>
+          <text x="100" y="80" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">5 × 4 = 20 ✓</text>
+          <!-- Math symbols floating -->
+          <text x="35" y="45" fill="#ec4899" font-size="14" font-weight="900">+</text>
+          <text x="160" y="50" fill="#10b981" font-size="14" font-weight="900">÷</text>
+          <text x="155" y="85" fill="#a855f7" font-size="14" font-weight="900">×</text>
+          <rect x="40" y="112" width="120" height="20" rx="5" fill="#e11d48"/>
+          <text x="100" y="126" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">"Solved in 2 seconds! ⚡"</text>
+        </svg>
+      `,
+      // 15. study hard (headband of determination, tall stack of books, desk lamp)
+      studyHard: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#1e1b4b" rx="14"/>
+          <!-- Glowing Desk Lamp -->
+          <path d="M 25 110 L 40 50 L 55 50" stroke="#cbd5e1" stroke-width="3.5" fill="none"/>
+          <polygon points="55,42 75,55 55,68" fill="#fde047"/>
+          <!-- Chibi with white determination headband (Hachimaki) -->
+          <circle cx="115" cy="55" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Headband with red circle -->
+          <rect x="93" y="42" width="44" height="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+          <circle cx="115" cy="46" r="3" fill="#ef4444"/>
+          <!-- Determined eyes -->
+          <line x1="104" y1="56" x2="111" y2="54" stroke="#1e293b" stroke-width="3"/>
+          <line x1="119" y1="54" x2="126" y2="56" stroke="#1e293b" stroke-width="3"/>
+          <path d="M 111 65 Q 115 63 119 65" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <!-- Stack of textbooks on desk -->
+          <rect x="145" y="80" width="35" height="10" fill="#ef4444" stroke="#1e293b" stroke-width="2"/>
+          <rect x="143" y="90" width="38" height="10" fill="#3b82f6" stroke="#1e293b" stroke-width="2"/>
+          <rect x="141" y="100" width="42" height="12" fill="#10b981" stroke="#1e293b" stroke-width="2"/>
+          <rect x="85" y="78" width="32" height="34" rx="5" fill="#3b82f6" stroke="#1e293b" stroke-width="3"/>
+          <!-- Desk line -->
+          <line x1="15" y1="112" x2="190" y2="112" stroke="#475569" stroke-width="4"/>
+        </svg>
+      `,
+      // 16. come to school late (running frantically, clock at 8:25 AM, panic sweat)
+      comeSchoolLate: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#450a0a" rx="14"/>
+          <!-- Red Alarm Clock showing 8:25 AM (LATE!) -->
+          <circle cx="45" cy="42" r="24" fill="#ffffff" stroke="#ef4444" stroke-width="4"/>
+          <line x1="45" y1="42" x2="56" y2="52" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+          <line x1="45" y1="42" x2="38" y2="48" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="45" cy="42" r="2.5" fill="#1e293b"/>
+          <!-- Chibi student running with panic face -->
+          <circle cx="120" cy="55" r="22" fill="#fed7aa" stroke="#1e293b" stroke-width="3.5"/>
+          <!-- Wide panic eyes O_O -->
+          <circle cx="112" cy="52" r="4" fill="#ffffff" stroke="#1e293b" stroke-width="2"/>
+          <circle cx="112" cy="52" r="1.5" fill="#1e293b"/>
+          <circle cx="128" cy="52" r="4" fill="#ffffff" stroke="#1e293b" stroke-width="2"/>
+          <circle cx="128" cy="52" r="1.5" fill="#1e293b"/>
+          <ellipse cx="120" cy="64" rx="5" ry="6" fill="#7f1d1d"/>
+          <!-- Sweating drops -->
+          <ellipse cx="140" cy="44" rx="3" ry="5" fill="#38bdf8"/>
+          <rect x="108" y="78" width="26" height="30" rx="5" fill="#ef4444" stroke="#1e293b" stroke-width="3"/>
+          <rect x="25" y="112" width="150" height="20" rx="5" fill="#b91c1c"/>
+          <text x="100" y="125" fill="#ffffff" font-size="8.5" font-weight="900" text-anchor="middle">"OH NO! THE BELL RANG! 8:25 AM" ⏰🏃</text>
+        </svg>
+      `,
+      // 17. come to school early (sun rising, 7:40 AM, peaceful smiling arrival)
+      comeSchoolEarly: `
+        <svg viewBox="0 0 200 140" class="w-full h-full">
+          <rect width="200" height="140" fill="#f0fdf4" rx="14"/>
+          <!-- Rising Sun -->
+          <circle cx="35" cy="30" r="14" fill="#fbbf24" opacity="0.9"/>
+          <!-- Analog Clock showing 7:40 AM -->
+          <circle cx="155" cy="40" r="24" fill="#ffffff" stroke="#10b981" stroke-width="3.5"/>
+          <line x1="155" y1="40" x2="138" y2="48" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="155" y1="40" x2="147" y2="47" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="155" cy="40" r="2.5" fill="#1e293b"/>
+          <!-- Calm happy student walking in early -->
+          <circle cx="95" cy="55" r="20" fill="#fed7aa" stroke="#1e293b" stroke-width="3"/>
+          <path d="M 89 53 Q 94 48 99 53" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+          <path d="M 103 53 Q 108 48 113 53" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+          <path d="M 97 62 Q 101 66 105 62" stroke="#1e293b" stroke-width="2" fill="none"/>
+          <rect x="85" y="75" width="22" height="28" rx="4" fill="#2563eb" stroke="#1e293b" stroke-width="2.5"/>
+          <!-- Schoolbag -->
+          <circle cx="78" cy="84" r="6" fill="#f59e0b"/>
+          <rect x="40" y="112" width="120" height="20" rx="5" fill="#15803d"/>
+          <text x="100" y="125" fill="#ffffff" font-size="8.5" font-weight="900" text-anchor="middle">"7:40 AM • Ready to learn! ✨🎒"</text>
+        </svg>
+      `
+    };
+
+    /* ---------------------------------------------------- */
+    /* 5. STATION 2: COMIC ACTION GAME QUESTIONS DATABASE   */
+    /* ---------------------------------------------------- */
+    const COMIC_GAME_DATA = [
+      {
+        id: 'q1',
+        tag: 'Bus Stop Queue',
+        svgKey: 'waitPatiently',
+        prompt: 'Look at the queue! Everyone stands calmly. We should wait [ _____ ] for the bus.',
+        audio: 'We should wait patiently for the bus.',
+        hint: '💡 Clue: Peaceful closed eyes, hands folded neatly, no pushing!',
+        correct: 'patiently',
+        choices: ['patiently', 'impatiently', 'loudly', 'messily']
+      },
+      {
+        id: 'q2',
+        tag: 'Angry at Bus Stop',
+        svgKey: 'waitImpatiently',
+        prompt: 'He is tapping his foot angrily and scowling! He is waiting [ _____ ].',
+        audio: 'He is waiting impatiently.',
+        hint: '💡 Clue: Foot tapping, furious scowl, checking watch every second!',
+        correct: 'impatiently',
+        choices: ['impatiently', 'patiently', 'quietly', 'politely']
+      },
+      {
+        id: 'q3',
+        tag: 'Mobile Phone on Bus',
+        svgKey: 'talkLoudly',
+        prompt: 'He is shouting into his phone! We shouldn\'t speak [ _____ ] on the bus.',
+        audio: 'We shouldn\'t speak loudly on the bus.',
+        hint: '💡 Clue: Big open mouth, sound shockwaves, disturbing everyone!',
+        correct: 'loudly',
+        choices: ['loudly', 'softly', 'neatly', 'punctually']
+      },
+      {
+        id: 'q4',
+        tag: 'School Library',
+        svgKey: 'talkSoftly',
+        prompt: 'Classmates are reading in the library. We should whisper [ _____ ].',
+        audio: 'We should whisper softly in the library.',
+        hint: '💡 Clue: Finger over lips (shh!), cupping mouth, gentle whisper!',
+        correct: 'softly',
+        choices: ['softly', 'loudly', 'rudely', 'messily']
+      },
+      {
+        id: 'q5',
+        tag: 'Restaurant Etiquette',
+        svgKey: 'speakPolitely',
+        prompt: 'He smiles warmly at the waiter. We should speak [ _____ ] and say please.',
+        audio: 'We should speak politely to the waiter.',
+        hint: '💡 Clue: Gentle smile, bowing head, saying "Excuse me, please"!',
+        correct: 'politely',
+        choices: ['politely', 'rudely', 'noisily', 'late']
+      },
+      {
+        id: 'q6',
+        tag: 'Demanding Waiter',
+        svgKey: 'speakRudely',
+        prompt: 'He is slamming the dining table! It is impolite to speak [ _____ ].',
+        audio: 'It is impolite to speak rudely.',
+        hint: '💡 Clue: Slamming fist, angry pointing finger, demanding food!',
+        correct: 'rudely',
+        choices: ['rudely', 'politely', 'patiently', 'punctually']
+      },
+      {
+        id: 'q7',
+        tag: 'Sunny Playground',
+        svgKey: 'playHappily',
+        prompt: 'Look at the children in the sunny playground! They play [ _____ ] with the ball.',
+        audio: 'They play happily with the ball.',
+        hint: '💡 Clue: Joyful jumping, colorful balloons, cheerful smiles!',
+        correct: 'happily',
+        choices: ['happily', 'sadly', 'patiently', 'rudely']
+      },
+      {
+        id: 'q8',
+        tag: 'Classroom Lesson',
+        svgKey: 'teachPatiently',
+        prompt: 'The teacher guides the student step-by-step. She teaches [ _____ ].',
+        audio: 'She teaches patiently.',
+        hint: '💡 Clue: Gentle smile, pointing with wand, encouraging star on board!',
+        correct: 'patiently',
+        choices: ['patiently', 'impatiently', 'loudly', 'messily']
+      },
+      {
+        id: 'q9',
+        tag: 'Morning School Gate',
+        svgKey: 'goSchoolPunctually',
+        prompt: 'The clock shows 7:55 AM! Students should go to school [ _____ ].',
+        audio: 'Students should go to school punctually.',
+        hint: '💡 Clue: 7:55 AM clock, arriving right on time before the morning bell!',
+        correct: 'punctually',
+        choices: ['punctually', 'late', 'messily', 'rudely']
+      },
+      {
+        id: 'q10',
+        tag: 'Kitchen Chef',
+        svgKey: 'cookWell',
+        prompt: 'The chef flips the golden pancake. It smells delicious! He cooks [ _____ ].',
+        audio: 'He cooks well.',
+        hint: '💡 Clue: Irregular adverb of "good" -> "well"! Sizzling delicious food!',
+        correct: 'well',
+        choices: ['well', 'goodly', 'quietly', 'loudly']
+      },
+      {
+        id: 'q11',
+        tag: 'Cosy Reading Corner',
+        svgKey: 'readQuietly',
+        prompt: 'The kitten is sleeping beside her. She reads her storybook [ _____ ].',
+        audio: 'She reads her storybook quietly.',
+        hint: '💡 Clue: Silent page turning, sleeping cat, peaceful focus!',
+        correct: 'quietly',
+        choices: ['quietly', 'noisily', 'messily', 'impatiently']
+      },
+      {
+        id: 'q12',
+        tag: 'Speedy Homework Desk',
+        svgKey: 'doHomeworkFast',
+        prompt: 'Look at his pencil with lightning sparks! He finishes his homework [ _____ ].',
+        audio: 'He finishes his homework quickly.',
+        hint: '💡 Clue: Turbo smoke trails, checkmarks, lightning speed!',
+        correct: 'quickly', // or fast
+        choices: ['quickly', 'slowly', 'rudely', 'punctually']
+      },
+      {
+        id: 'q13',
+        tag: 'Beautiful Handwriting',
+        svgKey: 'writeNeatly',
+        prompt: 'Look at the sparkling notebook! The letters are straight. She writes [ _____ ].',
+        audio: 'She writes neatly.',
+        hint: '💡 Clue: Sparkling stars, clean notebook lines, perfect straight letters!',
+        correct: 'neatly',
+        choices: ['neatly', 'messily', 'loudly', 'late']
+      },
+      {
+        id: 'q14',
+        tag: 'Chalkboard Math Wizard',
+        svgKey: 'doSumsFast',
+        prompt: 'He calculated 12 + 8 = 20 in two seconds! He can do sums [ _____ ].',
+        audio: 'He can do sums fast.',
+        hint: '💡 Clue: Both adjective and adverb! Math solved in 2 seconds!',
+        correct: 'fast',
+        choices: ['fast', 'fastly', 'softly', 'rudely']
+      },
+      {
+        id: 'q15',
+        tag: 'Study Determination',
+        svgKey: 'studyHard',
+        prompt: 'Wearing a headband under the lamp with stacks of books, he studies [ _____ ].',
+        audio: 'He studies hard.',
+        hint: '💡 Clue: Determination headband, late night lamp, towering books!',
+        correct: 'hard',
+        choices: ['hard', 'hardly', 'softly', 'quietly']
+      },
+      {
+        id: 'q16',
+        tag: 'Clock Panic',
+        svgKey: 'comeSchoolLate',
+        prompt: 'The clock shows 8:25 AM! The bell already rang! He came to school [ _____ ].',
+        audio: 'He came to school late.',
+        hint: '💡 Clue: Red alarm clock at 8:25 AM, panic sweat, sprinting in terror!',
+        correct: 'late',
+        choices: ['late', 'early', 'neatly', 'politely']
+      },
+      {
+        id: 'q17',
+        tag: 'Early Morning Sun',
+        svgKey: 'comeSchoolEarly',
+        prompt: 'The morning sun is rising at 7:40 AM. She loves to come to school [ _____ ].',
+        audio: 'She loves to come to school early.',
+        hint: '💡 Clue: Clock shows 7:40 AM! 20 minutes before the bell rings!',
+        correct: 'early',
+        choices: ['early', 'late', 'rudely', 'messily']
+      }
+    ];
+
+    let comicCurrentIdx = 0;
+    let gameScoreCount = 0;
+    let gameStreakCount = 0;
+
+    const comicSceneTag = document.getElementById('comicSceneTag');
+    const comicIllustrationWrap = document.getElementById('comicIllustrationWrap');
+    const comicSentencePrompt = document.getElementById('comicSentencePrompt');
+    const comicClueHint = document.getElementById('comicClueHint');
+    const comicChoicesGrid = document.getElementById('comicChoicesGrid');
+    const comicFeedbackBox = document.getElementById('comicFeedbackBox');
+    const gameProgressBadge = document.getElementById('gameProgressBadge');
+    const gameScore = document.getElementById('gameScore');
+    const gameStreak = document.getElementById('gameStreak');
+    const btnPrevComic = document.getElementById('btnPrevComic');
+    const btnNextComic = document.getElementById('btnNextComic');
+
+    function renderComicGameQuestion() {
+      const q = COMIC_GAME_DATA[comicCurrentIdx];
+      gameProgressBadge.textContent = `Card ${comicCurrentIdx + 1} / ${COMIC_GAME_DATA.length}`;
+      comicSceneTag.textContent = q.tag;
+      
+      // Inject cute comic SVG
+      comicIllustrationWrap.innerHTML = COMIC_SVGS[q.svgKey] || `<div class="text-5xl">🎨</div>`;
+      
+      // Sentence Prompt with glowing blank box
+      comicSentencePrompt.innerHTML = q.prompt.replace('[ _____ ]', `<span class="text-yellow-300 bg-stone-800 border-2 border-dashed border-amber-400 px-3 py-0.5 rounded-xl font-mono text-base">[ _____ ]</span>`);
+      comicClueHint.textContent = q.hint;
+      comicFeedbackBox.classList.add('hidden');
+
+      // Populate choice buttons
+      comicChoicesGrid.innerHTML = '';
+      const shuffledChoices = [...q.choices].sort(() => Math.random() - 0.5);
+
+      shuffledChoices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = "w-full bg-stone-800 hover:bg-purple-700 text-white font-black py-3 px-3 rounded-2xl border-3 border-stone-700 hover:border-purple-300 text-xs sm:text-sm btn-3d shadow flex items-center justify-center transition";
+        btn.textContent = `⚡ ${choice}`;
+
+        btn.onclick = () => {
+          sound.init();
+          if (choice === q.correct) {
+            sound.playCorrect();
+            gameScoreCount += 100;
+            gameStreakCount++;
+            gameScore.textContent = `${gameScoreCount} pts`;
+            gameStreak.textContent = `${gameStreakCount} 🔥`;
+            
+            comicFeedbackBox.className = "p-3 rounded-2xl text-center text-xs font-black font-body bg-emerald-950 border-2 border-emerald-400 text-emerald-200 block";
+            comicFeedbackBox.innerHTML = `🎉 YES! <strong>"${choice}"</strong> is the exact natural adverb!<br><span class="text-amber-300">"${q.audio}"</span>`;
+            btn.className = "w-full bg-emerald-600 text-white font-black py-3 px-3 rounded-2xl border-3 border-emerald-300 text-xs sm:text-sm shadow glow-gold";
+            
+            // Fill in the sentence prompt
+            comicSentencePrompt.innerHTML = q.prompt.replace('[ _____ ]', `<span class="text-emerald-300 bg-emerald-950 border-2 border-emerald-400 px-3 py-0.5 rounded-xl font-black">${choice}</span>`);
+            speakLabText(q.audio);
+          } else {
+            sound.playBuzz();
+            gameStreakCount = 0;
+            gameStreak.textContent = `0 🔥`;
+            comicFeedbackBox.className = "p-3 rounded-2xl text-center text-xs font-black font-body bg-rose-950 border-2 border-rose-400 text-rose-200 block";
+            comicFeedbackBox.innerHTML = `⚠️ Oops! Look at the picture clue again: <em>${q.hint}</em>`;
+            btn.className = "w-full bg-rose-600 text-white font-black py-3 px-3 rounded-2xl border-3 border-rose-800 text-xs sm:text-sm opacity-60";
+          }
+        };
+
+        comicChoicesGrid.appendChild(btn);
+      });
+
+      btnPrevComic.disabled = (comicCurrentIdx === 0);
+      btnNextComic.disabled = (comicCurrentIdx === COMIC_GAME_DATA.length - 1);
+    }
+
+    document.getElementById('btnReadComicAudio').addEventListener('click', () => {
+      sound.init();
+      const q = COMIC_GAME_DATA[comicCurrentIdx];
+      speakLabText(q.audio);
+    });
+
+    btnPrevComic.addEventListener('click', () => {
+      if (comicCurrentIdx > 0) {
+        comicCurrentIdx--;
+        renderComicGameQuestion();
+      }
+    });
+
+    btnNextComic.addEventListener('click', () => {
+      if (comicCurrentIdx < COMIC_GAME_DATA.length - 1) {
+        comicCurrentIdx++;
+        renderComicGameQuestion();
+      }
+    });
+
+    document.getElementById('btnShuffleComic').addEventListener('click', () => {
+      sound.init();
+      comicCurrentIdx = Math.floor(Math.random() * COMIC_GAME_DATA.length);
+      renderComicGameQuestion();
+    });
+
+    /* Initialize everything on load */
+    window.onload = function() {
+      updateTimerUI();
+      renderCharadeCard(true);
+      renderComicGameQuestion();
+    };
+  </script>
+</body>
+</html>
