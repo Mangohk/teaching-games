@@ -101,39 +101,9 @@
     }
   </style>
 
-  <style id="tg-hub-back-style">
-    a.tg-hub-back {
-      position: fixed;
-      left: 10px;
-      bottom: 10px;
-      z-index: 10000;
-      display: inline-flex;
-      align-items: center;
-      padding: 0.45rem 0.8rem;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 2px solid rgba(14, 165, 233, 0.45);
-      color: #0369a1;
-      font: 700 0.8rem/1.2 system-ui, -apple-system, sans-serif;
-      text-decoration: none;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
-      -webkit-tap-highlight-color: transparent;
-    }
-    a.tg-hub-back:hover,
-    a.tg-hub-back:focus-visible {
-      border-color: #38bdf8;
-      outline: none;
-    }
-    @media print {
-      a.tg-hub-back { display: none !important; }
-    }
-  </style>
 
 </head>
 <body class="bg-gradient-to-b from-sky-300 via-sky-200 to-amber-100 min-h-screen flex flex-col justify-between relative overflow-hidden select-none">
-
-  <a class="tg-hub-back" href="../index.html">← Back to Teaching Games</a>
-
 
   <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
     <!-- Sun -->
@@ -155,9 +125,9 @@
   <header class="relative z-10 w-full px-4 sm:px-8 pt-3 pb-2 flex flex-wrap items-center justify-between gap-3 bg-white/75 backdrop-blur-md border-b-4 border-amber-300 shadow-md">
     <!-- Title & Team Identity -->
     <div class="flex items-center gap-3">
-      <div class="w-12 h-12 rounded-2xl bg-amber-400 border-4 border-amber-500 flex items-center justify-center text-2xl shadow-md transform -rotate-3">
+      <a href="../index.html" class="w-12 h-12 rounded-2xl bg-amber-400 border-4 border-amber-500 flex items-center justify-center text-2xl shadow-md transform -rotate-3 no-underline cursor-pointer hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
         🚂
-      </div>
+      </a>
       <div>
         <h1 class="text-xl sm:text-2xl font-black tracking-wide text-sky-900 leading-tight">
           The Alphabet Express

@@ -112,39 +112,9 @@
     }
   </style>
 
-  <style id="tg-hub-back-style">
-    a.tg-hub-back {
-      position: fixed;
-      left: 10px;
-      bottom: 10px;
-      z-index: 10000;
-      display: inline-flex;
-      align-items: center;
-      padding: 0.45rem 0.8rem;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 2px solid rgba(14, 165, 233, 0.45);
-      color: #0369a1;
-      font: 700 0.8rem/1.2 system-ui, -apple-system, sans-serif;
-      text-decoration: none;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
-      -webkit-tap-highlight-color: transparent;
-    }
-    a.tg-hub-back:hover,
-    a.tg-hub-back:focus-visible {
-      border-color: #38bdf8;
-      outline: none;
-    }
-    @media print {
-      a.tg-hub-back { display: none !important; }
-    }
-  </style>
 
 </head>
 <body class="relative text-slate-800 flex flex-col min-h-screen">
-
-  <a class="tg-hub-back" href="../index.html">← Back to Teaching Games</a>
-
 
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
     <!-- Fluffy Sun -->
@@ -178,7 +148,7 @@
   <header class="relative z-20 w-full px-4 pt-3 pb-2 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
     <!-- Title and Conductor Mascot -->
     <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-3xl shadow-lg border-2 border-amber-300">
-      <div class="text-4xl sm:text-5xl animate-bounce" style="animation-duration: 2s;">🐻🚂</div>
+      <a href="../index.html" class="text-4xl sm:text-5xl animate-bounce no-underline cursor-pointer hover:brightness-110" style="animation-duration: 2s;" title="Back to Teaching Games" aria-label="Back to Teaching Games">🐻🚂</a>
       <div>
         <h1 class="font-title text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-wide font-black leading-tight drop-shadow-sm">
           The Alphabet Express!

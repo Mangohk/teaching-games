@@ -77,10 +77,75 @@
       gap: 12px;
     }
 
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      border: 3px solid #1d4ed8;
+      box-shadow: 0 4px 0 #1e3a8a, 0 6px 12px rgba(15, 23, 42, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .brand-logo:hover,
+    .brand-logo:focus-visible {
+      filter: brightness(1.08);
+      outline: none;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy h1 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #0f172a;
+      line-height: 1.15;
+    }
+
+    .brand-copy p {
+      margin-top: 2px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+
     .badge-group {
       display: flex;
       align-items: center;
       gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    @media (max-width: 720px) {
+      .brand-copy h1 { font-size: 18px; }
+      .brand-copy p { font-size: 12px; }
+      .brand-logo { width: 42px; height: 42px; font-size: 22px; }
     }
 
     .stat-pill {
@@ -530,45 +595,24 @@
     }
   </style>
 
-  <style id="tg-hub-back-style">
-    a.tg-hub-back {
-      position: fixed;
-      left: 10px;
-      bottom: 10px;
-      z-index: 10000;
-      display: inline-flex;
-      align-items: center;
-      padding: 0.45rem 0.8rem;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 2px solid rgba(14, 165, 233, 0.45);
-      color: #0369a1;
-      font: 700 0.8rem/1.2 system-ui, -apple-system, sans-serif;
-      text-decoration: none;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
-      -webkit-tap-highlight-color: transparent;
-    }
-    a.tg-hub-back:hover,
-    a.tg-hub-back:focus-visible {
-      border-color: #38bdf8;
-      outline: none;
-    }
-    @media print {
-      a.tg-hub-back { display: none !important; }
-    }
-  </style>
 
 </head>
 <body>
-
-  <a class="tg-hub-back" href="../index.html">← Back to Teaching Games</a>
-
 
   <!-- Main Game Card Frame -->
   <div id="game-container">
     <canvas id="confetti-canvas"></canvas>
 
     <div class="game-header">
+      <div class="brand-block">
+        <a class="brand-logo" href="../index.html" title="Back to Teaching Games" aria-label="Back to Teaching Games">🌏</a>
+        <div class="brand-copy">
+          <h1>Global Manners Passport</h1>
+          <p>P5 reading • Good manners around the world</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
       <div class="badge-group">
         <span class="stat-pill q-pill">
           <i class="fa-solid fa-map-location-dot"></i> Question <span id="q-number">1</span>/10
@@ -588,6 +632,7 @@
         <button class="btn-tool" onclick="restartGame()" title="Restart Quiz">
           <i class="fa-solid fa-rotate-right"></i> Reset
         </button>
+      </div>
       </div>
     </div>
 
