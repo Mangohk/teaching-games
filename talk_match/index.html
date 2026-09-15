@@ -205,6 +205,7 @@
   </div>
 
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-40 hidden"></canvas>
+  <audio id="voicePlayer" playsinline preload="auto"></audio>
 
   <script>
     // Authentic questions and multiple answers from the student exercise sheets
@@ -328,25 +329,36 @@
     /**
      * Pre-recorded clips: questions = boy, answers = higher-pitch boy,
      * oops/win = higher-pitch young woman (~18).
-     * Browsers block sound until a tap, so the opening question is replayed
-     * on the first pointer down if autoplay was denied.
+     * Browsers block sound until a tap. The first tap on the page plays
+     * the current question (that tap is not used as an answer).
      */
     let currentClip = null;
     let pendingSpokenClip = null;
+    let currentQuestionSpoken = false;
+    const voicePlayer = document.getElementById('voicePlayer');
 
     function stopSpokenClip() {
-      if (currentClip) {
-        currentClip.pause();
-        currentClip.onended = null;
-        currentClip.onerror = null;
-        currentClip = null;
+      if (voicePlayer) {
+        voicePlayer.onended = null;
+        voicePlayer.onerror = null;
+        voicePlayer.onplaying = null;
+        voicePlayer.pause();
       }
+      currentClip = null;
     }
 
     function unlockAudioFromGesture() {
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
       } catch (e) {}
+    }
+
+    function clipUrl(src) {
+      try {
+        return new URL(src, document.baseURI).href;
+      } catch (e) {
+        return src;
+      }
     }
 
     function playSpokenClip(src, onEndCallback = null) {
@@ -356,32 +368,42 @@
         if (onEndCallback) setTimeout(onEndCallback, 200);
         return;
       }
-      const clip = new Audio(src);
-      currentClip = clip;
-      const finish = () => {
-        if (currentClip === clip) currentClip = null;
+      const url = clipUrl(src);
+      const isQuestion = QUESTIONS_DATA.some(function (q) { return q.questionAudio === src; });
+      voicePlayer.src = url;
+      voicePlayer.playsInline = true;
+      currentClip = voicePlayer;
+      const finish = function () {
+        if (currentClip === voicePlayer) currentClip = null;
         if (onEndCallback) onEndCallback();
       };
-      clip.addEventListener('ended', finish, { once: true });
-      clip.addEventListener('error', finish, { once: true });
-      const playAttempt = clip.play();
+      voicePlayer.onended = finish;
+      voicePlayer.onerror = function () {
+        pendingSpokenClip = { src: src, onEndCallback: onEndCallback };
+        finish();
+      };
+      voicePlayer.onplaying = function () {
+        if (isQuestion) currentQuestionSpoken = true;
+      };
+      const playAttempt = voicePlayer.play();
       if (playAttempt && typeof playAttempt.catch === 'function') {
-        playAttempt.catch(() => {
-          if (currentClip === clip) {
-            pendingSpokenClip = { src: src, onEndCallback: onEndCallback };
-          }
+        playAttempt.catch(function () {
+          pendingSpokenClip = { src: src, onEndCallback: onEndCallback };
         });
       }
     }
 
-    document.addEventListener('pointerdown', function onFirstAudioGesture(event) {
+    document.addEventListener('click', function onUnlockClick(event) {
       unlockAudioFromGesture();
-      if (!pendingSpokenClip) return;
-      event.preventDefault();
-      event.stopPropagation();
+      if (currentQuestionSpoken && !pendingSpokenClip) return;
       const pending = pendingSpokenClip;
       pendingSpokenClip = null;
-      playSpokenClip(pending.src, pending.onEndCallback);
+      const q = QUESTIONS_DATA[currentIndex];
+      const src = pending ? pending.src : (q && q.questionAudio);
+      const cb = pending ? pending.onEndCallback : null;
+      if (!src) return;
+      playSpokenClip(src, cb);
+      event.stopImmediatePropagation();
     }, true);
 
     function renderCurrentQuestion() {
@@ -398,12 +420,10 @@
       document.getElementById('btnNextQ').disabled = (currentIndex === QUESTIONS_DATA.length - 1);
 
       // Star progress
+      currentQuestionSpoken = false;
       renderStars();
 
-      // Speak question automatically with child tone
-      setTimeout(() => {
-        playSpokenClip(q.questionAudio);
-      }, 350);
+      playSpokenClip(q.questionAudio);
 
       // Prepare choices: 1 correct + 2 distractors (shuffled)
       const options = [
