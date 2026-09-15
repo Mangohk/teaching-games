@@ -328,8 +328,11 @@
     /**
      * Pre-recorded clips: questions = boy, answers = higher-pitch boy,
      * oops/win = higher-pitch young woman (~18).
+     * Browsers block sound until a tap, so the opening question is replayed
+     * on the first pointer down if autoplay was denied.
      */
     let currentClip = null;
+    let pendingSpokenClip = null;
 
     function stopSpokenClip() {
       if (currentClip) {
@@ -340,8 +343,15 @@
       }
     }
 
+    function unlockAudioFromGesture() {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+      } catch (e) {}
+    }
+
     function playSpokenClip(src, onEndCallback = null) {
       stopSpokenClip();
+      pendingSpokenClip = null;
       if (!audioEnabled) {
         if (onEndCallback) setTimeout(onEndCallback, 200);
         return;
@@ -354,8 +364,25 @@
       };
       clip.addEventListener('ended', finish, { once: true });
       clip.addEventListener('error', finish, { once: true });
-      clip.play().catch(finish);
+      const playAttempt = clip.play();
+      if (playAttempt && typeof playAttempt.catch === 'function') {
+        playAttempt.catch(() => {
+          if (currentClip === clip) {
+            pendingSpokenClip = { src: src, onEndCallback: onEndCallback };
+          }
+        });
+      }
     }
+
+    document.addEventListener('pointerdown', function onFirstAudioGesture(event) {
+      unlockAudioFromGesture();
+      if (!pendingSpokenClip) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const pending = pendingSpokenClip;
+      pendingSpokenClip = null;
+      playSpokenClip(pending.src, pending.onEndCallback);
+    }, true);
 
     function renderCurrentQuestion() {
       const q = QUESTIONS_DATA[currentIndex];
