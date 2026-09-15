@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class High Scores — Teaching Games</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --ink: #0f172a;
+      --panel: rgba(255, 255, 255, 0.96);
+      --shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Nunito', system-ui, sans-serif;
+      font-weight: 700;
+      color: var(--ink);
+      background: linear-gradient(165deg, #e0f2fe 0%, #fce7f3 45%, #fef9c3 100%);
+      padding: clamp(1rem, 4vw, 2.5rem);
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: clamp(1.25rem, 3vw, 2rem); }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .top-nav a {
+      font-weight: 800;
+      color: #0369a1;
+      text-decoration: none;
+      background: var(--panel);
+      border: 3px solid rgba(14, 165, 233, 0.35);
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+    .top-nav a:hover,
+    .top-nav a:focus-visible {
+      border-color: #38bdf8;
+      outline: none;
+    }
+    .refresh-btn {
+      font-family: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      color: #0369a1;
+      background: var(--panel);
+      border: 3px solid rgba(14, 165, 233, 0.35);
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+    }
+    .refresh-btn:hover,
+    .refresh-btn:focus-visible { border-color: #38bdf8; outline: none; }
+    .refresh-btn:disabled { opacity: 0.65; cursor: default; }
+    h1 {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      letter-spacing: 0.03em;
+      margin: 0 0 0.35rem;
+      color: #0c4a6e;
+      text-shadow: 2px 2px 0 #fff;
+    }
+    .sub { margin: 0; color: #475569; font-size: clamp(0.95rem, 2.5vw, 1.1rem); }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.65rem;
+      margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+    }
+    .filter-btn {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      letter-spacing: 0.02em;
+      padding: 0.65rem 1.15rem;
+      border-radius: 999px;
+      border: 3px solid rgba(14, 165, 233, 0.35);
+      background: var(--panel);
+      color: #0369a1;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+    .filter-btn.active {
+      background: #0ea5e9;
+      border-color: #0284c7;
+      color: #fff;
+      box-shadow: 0 4px 0 #0369a1;
+    }
+    .boards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: clamp(1rem, 3vw, 1.5rem);
+    }
+    .board {
+      background: var(--panel);
+      border-radius: 24px;
+      padding: 1.25rem 1.15rem 1.1rem;
+      border: 3px solid rgba(14, 165, 233, 0.35);
+      box-shadow: var(--shadow);
+    }
+    .board[hidden] { display: none !important; }
+    .board-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+    .board-head h2 {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 0 0 0.25rem;
+      color: #0369a1;
+    }
+    .board-meta { margin: 0; font-size: 0.78rem; color: #64748b; }
+    .play-link {
+      flex: 0 0 auto;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #0284c7;
+      text-decoration: none;
+      border: 2px solid #7dd3fc;
+      border-radius: 999px;
+      padding: 0.28rem 0.65rem;
+      background: #f0f9ff;
+    }
+    .skill-tag {
+      display: inline-block;
+      margin-top: 0.2rem;
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 2px solid transparent;
+    }
+    .skill-tag[data-skill="time"] { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+    .skill-tag[data-skill="directions"] { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+    .skill-tag[data-skill="grammar"] { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+    .skill-tag[data-skill="manners"] { background: #ede9fe; color: #5b21b6; border-color: #c4b5fd; }
+    .rows { list-style: none; margin: 0; padding: 0; }
+    .rows li {
+      display: grid;
+      grid-template-columns: 2rem 1fr auto;
+      gap: 0.45rem;
+      align-items: center;
+      padding: 0.42rem 0.2rem;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      font-size: 0.88rem;
+    }
+    .rows li:last-child { border-bottom: 0; }
+    .rows li.gold { background: #fffbeb; border-radius: 10px; padding-left: 0.35rem; padding-right: 0.35rem; }
+    .rank { font-weight: 800; color: #0369a1; }
+    .who { min-width: 0; }
+    .player { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail { display: block; font-size: 0.72rem; color: #64748b; }
+    .val { font-weight: 800; color: #0c4a6e; white-space: nowrap; }
+    .status {
+      margin: 0;
+      padding: 0.6rem 0.2rem;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .hint { margin-top: 1.75rem; text-align: center; font-size: 0.8rem; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-nav">
+      <a href="./index.html">← Games</a>
+      <button type="button" class="refresh-btn" id="refreshBtn">Refresh scores</button>
+    </div>
+    <header>
+      <h1>Class High Scores</h1>
+      <p class="sub">Top class records for games that save a leaderboard.</p>
+    </header>
+    <div class="filter-bar" role="group" aria-label="Year level">
+      <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="filter-btn" data-filter="p4" aria-pressed="false">Primary 4</button>
+      <button type="button" class="filter-btn" data-filter="p5" aria-pressed="false">Primary 5</button>
+    </div>
+    <div class="boards" id="boards"></div>
+    <p class="hint">Faster times win on Time Challenge and Grammar Showdown. Other games rank by highest points.</p>
+  </div>
+  <script src="./scores-api.js"></script>
+  <script>
+    (function () {
+      var GAMES = [
+        { id: 'balloon-time', title: 'Time Garden', year: 'p4', skill: 'time', href: './balloon-time/index.html', note: 'Points' },
+        { id: 'time-select', title: 'Time Challenge', year: 'p4', skill: 'time', href: './time-select/index.html', note: 'Fastest time' },
+        { id: 'map-direction', title: 'HK Direction Master', year: 'p4', skill: 'directions', href: './map-direction/index.html', note: 'Points' },
+        { id: 'Grammar_showdown', title: 'Grammar Showdown', year: 'p5', skill: 'grammar', href: './Grammar_showdown/index.html', note: 'Fastest time' },
+        { id: 'global_manner_quiz', title: 'Global Manners Passport', year: 'p5', skill: 'manners', href: './global_manner_quiz/index.html', note: 'Points' },
+        { id: 'manners_morph', title: 'Manners Morph', year: 'p5', skill: 'manners', href: './manners_morph/index.html', note: 'Points' },
+        { id: 'manner_slicer', title: 'Manner Slicer', year: 'p5', skill: 'manners', href: './manner_slicer/index.html', note: 'Points' }
+      ];
+
+      var boardsEl = document.getElementById('boards');
+      var refreshBtn = document.getElementById('refreshBtn');
+      var api = window.TeachingGamesScores;
+
+      function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+        });
+      }
+
+      function yearLabel(year) {
+        return year === 'p4' ? 'Primary 4' : 'Primary 5';
+      }
+
+      function renderShell() {
+        boardsEl.innerHTML = GAMES.map(function (game) {
+          return '<article class="board" data-year="' + game.year + '" data-game="' + game.id + '">' +
+            '<div class="board-head">' +
+              '<div>' +
+                '<h2>' + esc(game.title) + '</h2>' +
+                '<p class="board-meta">' + yearLabel(game.year) + ' · ' + esc(game.note) + '</p>' +
+                '<span class="skill-tag" data-skill="' + game.skill + '">' + game.skill + '</span>' +
+              '</div>' +
+              '<a class="play-link" href="' + game.href + '">Play</a>' +
+            '</div>' +
+            '<p class="status">Loading class scores…</p>' +
+          '</article>';
+        }).join('');
+      }
+
+      function rowHtml(entry, index) {
+        var extra = [];
+        if (entry.level) extra.push(entry.level);
+        if (entry.extra) extra.push(entry.extra);
+        var date = api.friendlyDate(entry.timestamp || entry.date);
+        if (date) extra.push(date);
+        var medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : String(index + 1);
+        return '<li' + (index === 0 ? ' class="gold"' : '') + '>' +
+          '<span class="rank">' + medal + '</span>' +
+          '<span class="who">' +
+            '<span class="player">' + esc(entry.player || 'Player') + '</span>' +
+            (extra.length ? '<span class="detail">' + esc(extra.join(' · ')) + '</span>' : '') +
+          '</span>' +
+          '<span class="val">' + esc(api.formatScore(entry)) + '</span>' +
+        '</li>';
+      }
+
+      function fillBoard(game) {
+        var article = boardsEl.querySelector('[data-game="' + game.id + '"]');
+        if (!article || !api) return Promise.resolve();
+        return api.loadScores(game.id, 8).then(function (scores) {
+          if (!scores || !scores.length) {
+            article.querySelector('.status, .rows').outerHTML = '<p class="status">No scores yet. Be the first in class!</p>';
+            return;
+          }
+          article.querySelector('.status, .rows').outerHTML =
+            '<ol class="rows">' + scores.map(rowHtml).join('') + '</ol>';
+        }).catch(function () {
+          article.querySelector('.status, .rows').outerHTML =
+            '<p class="status">Could not load scores just now.</p>';
+        });
+      }
+
+      function loadAll() {
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = 'Refreshing…';
+        renderShell();
+        return Promise.all(GAMES.map(fillBoard)).finally(function () {
+          refreshBtn.disabled = false;
+          refreshBtn.textContent = 'Refresh scores';
+        });
+      }
+
+      document.querySelectorAll('.filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-filter');
+          document.querySelectorAll('.filter-btn').forEach(function (other) {
+            var on = other.getAttribute('data-filter') === id;
+            other.classList.toggle('active', on);
+            other.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+          boardsEl.querySelectorAll('.board').forEach(function (board) {
+            board.hidden = id !== 'all' && board.getAttribute('data-year') !== id;
+          });
+        });
+      });
+
+      refreshBtn.addEventListener('click', loadAll);
+
+      if (!api) {
+        boardsEl.innerHTML = '<p class="status">Score service is not available on this page.</p>';
+      } else {
+        loadAll();
+      }
+    })();
+  </script>
+</body>
+</html>

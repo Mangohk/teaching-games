@@ -46,6 +46,29 @@
       font-size: clamp(0.95rem, 2.5vw, 1.1rem);
       color: #475569;
     }
+    .hub-scores {
+      margin: 1rem 0 0;
+    }
+    .scores-link {
+      display: inline-block;
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 400;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: #92400e;
+      background: #fef3c7;
+      border: 3px solid #fcd34d;
+      border-radius: 999px;
+      padding: 0.5rem 1.1rem;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+    .scores-link:hover,
+    .scores-link:focus-visible {
+      border-color: #f59e0b;
+      outline: none;
+      transform: translateY(-2px);
+    }
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
@@ -213,6 +236,7 @@
     <header>
       <h1>Teaching Games</h1>
       <p class="sub">Pick a year level to filter, or browse all games below.</p>
+      <p class="hub-scores"><a class="scores-link" href="./scores.html">🏆 Class high scores</a></p>
     </header>
     <div class="filter-bar" role="group" aria-label="Year level">
       <button type="button" class="filter-btn" data-filter="all" aria-pressed="false">All</button>
