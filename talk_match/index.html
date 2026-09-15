@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Talk &amp; Match!</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Fredoka', 'Comic Neue', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    @keyframes floatBubble {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+    @keyframes popEffect {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35) rotate(8deg); }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    @keyframes celebrateJump {
+      0%, 100% { transform: scale(1); }
+      40% { transform: scale(1.08) translateY(-10px); }
+      70% { transform: scale(0.97) translateY(4px); }
+    }
+    .animate-float {
+      animation: floatBubble 3.5s ease-in-out infinite;
+    }
+    .animate-wiggle {
+      animation: wiggle 0.35s ease-in-out 3;
+    }
+    .animate-celebrate {
+      animation: celebrateJump 0.6s ease-in-out;
+    }
+    .pop-out {
+      animation: popEffect 0.35s forwards ease-out;
+    }
+    .big-card-shadow {
+      box-shadow: 0 10px 0px rgba(0,0,0,0.12);
+    }
+    .big-card-shadow:active {
+      box-shadow: 0 3px 0px rgba(0,0,0,0.2);
+      transform: translateY(7px);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-sky-200 via-amber-50 to-emerald-100 min-h-screen overflow-x-hidden text-slate-800 flex flex-col justify-between select-none">
+
+  <header class="w-full bg-white/95 backdrop-blur border-b-4 border-amber-300 px-4 py-2 sm:py-3 shadow-md flex items-center justify-between z-30">
+    <div class="flex items-center space-x-3">
+      <a href="../index.html" class="bg-amber-400 text-amber-950 p-2 sm:p-2.5 rounded-2xl shadow border-2 border-amber-500 flex items-center justify-center text-2xl sm:text-3xl no-underline cursor-pointer hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        🧒
+      </a>
+      <div>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-amber-900 tracking-wide flex items-center gap-2">
+          <span>Talk &amp; Match!</span>
+          <span class="text-xs sm:text-sm bg-orange-500 text-white font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">P1 English</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-600 font-medium hidden sm:block">1 Question at a Time • Child Voice Mode</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Team Score Counters for classroom fun -->
+      <div class="flex items-center bg-amber-100 border-2 border-amber-300 rounded-2xl px-2.5 py-1 text-xs sm:text-sm gap-2">
+        <div class="flex items-center gap-1 font-bold text-emerald-700">
+          <span>🐜 Tammy:</span>
+          <span id="scoreTammy" class="bg-white px-2 py-0.5 rounded-lg border border-emerald-300">0</span>
+        </div>
+        <span class="text-amber-400">|</span>
+        <div class="flex items-center gap-1 font-bold text-indigo-700">
+          <span>🐜 Sammy:</span>
+          <span id="scoreSammy" class="bg-white px-2 py-0.5 rounded-lg border border-indigo-300">0</span>
+        </div>
+      </div>
+
+      <!-- Display Style Switcher -->
+      <div class="flex bg-slate-200 p-1 rounded-2xl border-2 border-slate-300">
+        <button id="btnViewCards" onclick="setViewMode('cards')" class="px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-amber-400 text-amber-950 shadow">
+          📋 Big Cards
+        </button>
+        <button id="btnViewBalloons" onclick="setViewMode('balloons')" class="px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all text-slate-600 hover:text-slate-900">
+          🎈 Balloons
+        </button>
+      </div>
+
+      <!-- Child Voice Indicator / Mute -->
+      <button onclick="toggleAudio()" id="btnAudio" title="Child Voice Audio" class="px-2.5 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-800 rounded-2xl border-2 border-pink-300 text-sm font-bold flex items-center gap-1.5 transition active:scale-95">
+        <span id="audioIcon">🔊</span>
+        <span class="hidden md:inline text-xs">Child Voice</span>
+      </button>
+
+      <button onclick="toggleFullScreen()" title="Full Screen for Whiteboard" class="p-2 sm:p-2.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-2xl border-2 border-purple-300 text-lg transition active:scale-95">
+        ⛶
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-center relative">
+    
+    <!-- Top Progress Tracker: Question X of 5 -->
+    <div class="mb-4 bg-white/90 backdrop-blur rounded-3xl p-3 border-3 border-amber-300 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span class="bg-amber-500 text-white font-extrabold text-sm sm:text-base px-3.5 py-1 rounded-xl shadow">
+          Question <span id="currentQNumber">1</span> of 5
+        </span>
+        <div id="starProgress" class="flex gap-1.5 text-xl sm:text-2xl">
+          <!-- Populated with star badges -->
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="replayCurrentQuestionVoice()" class="bg-sky-500 hover:bg-sky-600 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl shadow transition flex items-center gap-1.5">
+          <span>📢 Read to Me</span>
+        </button>
+        <button onclick="restartQuiz()" class="bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 font-bold text-xs sm:text-sm px-3 py-1.5 rounded-xl transition">
+          🔄 Start Over
+        </button>
+      </div>
+    </div>
+
+    <!-- Central Focus Card: ONE QUESTION AT A TIME -->
+    <div id="questionCard" class="w-full bg-white rounded-3xl border-4 border-sky-400 p-5 sm:p-7 text-center shadow-xl relative mb-6 transition-all duration-300">
+      
+      <!-- Speaker character badge -->
+      <div class="absolute -top-7 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-extrabold text-sm sm:text-base px-5 py-1.5 rounded-full border-3 border-white shadow-md">
+        <span id="qAvatar" class="text-xl">👦</span>
+        <span id="qSpeakerName">Friend Asks:</span>
+      </div>
+
+      <!-- Prompt text -->
+      <div class="pt-3 pb-2">
+        <h2 id="questionPrompt" class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight tracking-wide drop-shadow-sm">
+          Hi, my name is Tom. Nice to meet you.
+        </h2>
+        <p id="questionHint" class="text-xs sm:text-sm text-sky-600 font-semibold mt-2">
+          👉 Tap the speaker to hear, then touch the best reply below!
+        </p>
+      </div>
+
+      <!-- Quick sound replay icon on card -->
+      <button onclick="replayCurrentQuestionVoice()" class="absolute bottom-3 right-4 p-2 bg-sky-100 hover:bg-sky-200 text-sky-700 rounded-2xl text-xl sm:text-2xl active:scale-90 transition shadow-sm" title="Listen in Child Voice">
+        🗣️
+      </button>
+    </div>
+
+    <!-- Choices Area (One single view at a time: Big Cards or Balloons) -->
+    <div id="choicesSection" class="w-full">
+      <!-- Injected by JavaScript based on active question -->
+    </div>
+
+  </main>
+
+  <footer class="w-full bg-white/90 border-t-2 border-slate-200 px-4 py-2 flex flex-wrap items-center justify-between text-xs sm:text-sm text-slate-600 gap-2">
+    <div class="flex items-center gap-3">
+      <span class="font-bold text-slate-700">Quick Team Point:</span>
+      <button onclick="addPoint('Tammy')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-1 rounded-xl shadow active:scale-95 transition">
+        +1 Team Tammy 🐜
+      </button>
+      <button onclick="addPoint('Sammy')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold px-3 py-1 rounded-xl shadow active:scale-95 transition">
+        +1 Team Sammy 🐜
+      </button>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btnPrevQ" onclick="prevQuestion()" class="bg-slate-200 hover:bg-slate-300 font-bold px-3 py-1 rounded-xl text-slate-700 disabled:opacity-40" disabled>
+        ⬅️ Back
+      </button>
+      <button id="btnNextQ" onclick="skipToNextQuestion()" class="bg-slate-200 hover:bg-slate-300 font-bold px-3 py-1 rounded-xl text-slate-700">
+        Next ➡️
+      </button>
+    </div>
+  </footer>
+
+  <div id="winModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white border-4 border-amber-400 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl transform transition-all animate-bounce">
+      <div class="text-6xl mb-3">🎉⭐👏</div>
+      <h3 class="text-3xl font-extrabold text-amber-900 mb-2">SUPER DUPER JOB, P1!</h3>
+      <p class="text-slate-600 text-base mb-5 font-medium">You answered every English question with flying colors!</p>
+      
+      <div class="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 mb-6 text-sm">
+        <p class="font-bold text-amber-800 mb-1">🐜 Ants Classroom Cheer:</p>
+        <p class="italic text-slate-700">"Tap tap pat! We are glad upon the mat!"</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="restartQuiz()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold px-6 py-3 rounded-2xl text-lg shadow-lg transition">
+          Play Again 🔄
+        </button>
+        <button onclick="closeWinModal()" class="bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 font-bold px-5 py-3 rounded-2xl transition">
+          Look at Board 👁️
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-40 hidden"></canvas>
+
+  <script>
+    // Authentic questions and multiple answers from the student exercise sheets
+    const QUESTIONS_DATA = [
+      {
+        id: 1,
+        letter: "a",
+        speaker: "Tom",
+        avatar: "👦",
+        question: "Hi, my name is Tom. Nice to meet you.",
+        correctAnswer: "Hi, Tom. Nice to meet you.",
+        distractors: [
+          "I am good, thank you.",
+          "I am six years old."
+        ]
+      },
+      {
+        id: 2,
+        letter: "d",
+        speaker: "Dan's Friend",
+        avatar: "👧",
+        question: "How are you, Dan?",
+        correctAnswer: "I am good, thank you.",
+        distractors: [
+          "My name is Ken.",
+          "I am in Class 1E."
+        ]
+      },
+      {
+        id: 3,
+        letter: "c",
+        speaker: "Classmate",
+        avatar: "🧒",
+        question: "What is your name?",
+        correctAnswer: "My name is Ken.",
+        distractors: [
+          "I am six years old.",
+          "Hi, Tom. Nice to meet you."
+        ]
+      },
+      {
+        id: 4,
+        letter: "b",
+        speaker: "Teacher / Friend",
+        avatar: "🎒",
+        question: "What class are you in?",
+        correctAnswer: "I am in Class 1E.",
+        distractors: [
+          "I am good, thank you.",
+          "My name is Ken."
+        ]
+      },
+      {
+        id: 5,
+        letter: "e",
+        speaker: "Little Sister",
+        avatar: "🎂",
+        question: "How old are you?",
+        correctAnswer: "I am six years old.",
+        distractors: [
+          "I am in Class 1E.",
+          "Hi, Tom. Nice to meet you."
+        ]
+      }
+    ];
+
+    let currentIndex = 0;
+    let completedQuestionIds = new Set();
+    let currentViewMode = 'cards'; // 'cards' or 'balloons'
+    let audioEnabled = true;
+    let scoreTammy = 0;
+    let scoreSammy = 0;
+
+    // Web Audio synthesizer for tactile classroom chimes
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playBeep(freq, type = 'triangle', duration = 0.15) {
+      if (!audioEnabled) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function soundSuccess() {
+      playBeep(523.25, 'sine', 0.1);
+      setTimeout(() => playBeep(659.25, 'sine', 0.12), 90);
+      setTimeout(() => playBeep(783.99, 'sine', 0.15), 180);
+      setTimeout(() => playBeep(1046.50, 'sine', 0.25), 280);
+    }
+
+    function soundWrong() {
+      playBeep(240, 'sawtooth', 0.15);
+      setTimeout(() => playBeep(190, 'sawtooth', 0.22), 120);
+    }
+
+    function soundPop() {
+      playBeep(650, 'sine', 0.08);
+      setTimeout(() => playBeep(900, 'sine', 0.1), 40);
+    }
+
+    /**
+     * Synthesizes speech with a child-like pitch and cadence.
+     * Higher pitch (1.45 - 1.55) paired with a relaxed rate (0.86 - 0.90)
+     * produces a bright, friendly voice tailored for young EFL learners.
+     */
+    function speakChildVoice(text, onEndCallback = null) {
+      if (!audioEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.pitch = 1.48; // Higher pitch simulates a child's natural frequency
+      utterance.rate = 0.88;  // Slower, articulate speed for P1 comprehension
+
+      // Look for natural sounding female or youthful English voices if installed
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        const preferredVoice = voices.find(v => 
+          (v.lang.startsWith('en') && (
+            v.name.includes('Junior') ||
+            v.name.includes('Child') ||
+            v.name.includes('Samantha') ||
+            v.name.includes('Victoria') ||
+            v.name.includes('Google US English') ||
+            v.name.includes('Zira')
+          ))
+        ) || voices.find(v => v.lang.startsWith('en'));
+
+        if (preferredVoice) utterance.voice = preferredVoice;
+      }
+
+      if (onEndCallback) {
+        utterance.onend = onEndCallback;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Pre-fetch voices for iOS and Chromium browsers
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
+    function renderCurrentQuestion() {
+      const q = QUESTIONS_DATA[currentIndex];
+      
+      // Update Question Meta
+      document.getElementById('currentQNumber').innerText = currentIndex + 1;
+      document.getElementById('qAvatar').innerText = q.avatar;
+      document.getElementById('qSpeakerName').innerText = `${q.speaker} Asks:`;
+      document.getElementById('questionPrompt').innerText = `"${q.question}"`;
+
+      // Update Nav Buttons
+      document.getElementById('btnPrevQ').disabled = (currentIndex === 0);
+      document.getElementById('btnNextQ').disabled = (currentIndex === QUESTIONS_DATA.length - 1);
+
+      // Star progress
+      renderStars();
+
+      // Speak question automatically with child tone
+      setTimeout(() => {
+        speakChildVoice(q.question);
+      }, 350);
+
+      // Prepare choices: 1 correct + 2 distractors (shuffled)
+      const options = [
+        { text: q.correctAnswer, isCorrect: true, letter: q.letter },
+        ...q.distractors.map(d => ({ text: d, isCorrect: false, letter: '' }))
+      ].sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('choicesSection');
+      container.innerHTML = '';
+
+      if (currentViewMode === 'cards') {
+        renderCardOptions(container, options);
+      } else {
+        renderBalloonOptions(container, options);
+      }
+    }
+
+    function renderCardOptions(container, options) {
+      const cardGrid = document.createElement('div');
+      cardGrid.className = 'grid grid-cols-1 gap-3 sm:gap-4 max-w-3xl mx-auto';
+
+      const colorPalette = [
+        { bg: 'bg-emerald-500 hover:bg-emerald-600', border: 'border-emerald-600', tag: 'bg-emerald-700' },
+        { bg: 'bg-amber-500 hover:bg-amber-600', border: 'border-amber-600', tag: 'bg-amber-700' },
+        { bg: 'bg-sky-500 hover:bg-sky-600', border: 'border-sky-600', tag: 'bg-sky-700' }
+      ];
+
+      const optionLabels = ['A', 'B', 'C'];
+
+      options.forEach((opt, idx) => {
+        const theme = colorPalette[idx % colorPalette.length];
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left p-4 sm:p-5 rounded-3xl border-b-8 ${theme.bg} ${theme.border} text-white font-extrabold flex items-center justify-between transition-all big-card-shadow active:scale-98`;
+        
+        btn.innerHTML = `
+          <div class="flex items-center gap-3 sm:gap-4">
+            <span class="${theme.tag} text-white text-base sm:text-xl font-black w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-inner">
+              ${optionLabels[idx]}
+            </span>
+            <span class="text-xl sm:text-2xl md:text-3xl drop-shadow-sm leading-snug">
+              ${opt.text}
+            </span>
+          </div>
+          <span class="text-2xl sm:text-3xl ml-2">👉</span>
+        `;
+
+        btn.onclick = () => handleAnswerSelected(btn, opt.isCorrect, opt.text);
+        cardGrid.appendChild(btn);
+      });
+
+      container.appendChild(cardGrid);
+    }
+
+    function renderBalloonOptions(container, options) {
+      const balloonGrid = document.createElement('div');
+      balloonGrid.className = 'grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 max-w-4xl mx-auto';
+
+      const colors = [
+        'bg-rose-500 border-rose-600',
+        'bg-amber-500 border-amber-600',
+        'bg-sky-500 border-sky-600'
+      ];
+
+      options.forEach((opt, idx) => {
+        const colorClass = colors[idx % colors.length];
+        const balloon = document.createElement('div');
+        balloon.className = `animate-float p-5 sm:p-6 rounded-3xl border-b-8 text-white font-bold cursor-pointer text-center big-card-shadow transition active:scale-90 flex flex-col items-center justify-center min-h-[140px] sm:min-h-[160px] ${colorClass}`;
+        
+        balloon.innerHTML = `
+          <div class="text-4xl mb-1">🎈</div>
+          <p class="text-lg sm:text-xl md:text-2xl drop-shadow leading-snug">${opt.text}</p>
+          <span class="text-xs text-white/90 font-bold mt-2 bg-black/15 px-3 py-1 rounded-full">Tap to Pop!</span>
+        `;
+
+        balloon.onclick = () => handleAnswerSelected(balloon, opt.isCorrect, opt.text, true);
+        balloonGrid.appendChild(balloon);
+      });
+
+      container.appendChild(balloonGrid);
+    }
+
+    function handleAnswerSelected(element, isCorrect, text, isBalloon = false) {
+      if (element.dataset.locked === 'true') return;
+
+      if (isCorrect) {
+        // SUCCESS
+        element.dataset.locked = 'true';
+        if (isBalloon) {
+          soundPop();
+          element.classList.add('pop-out', 'pointer-events-none');
+        } else {
+          soundSuccess();
+          element.disabled = true;
+          element.classList.add('animate-celebrate', 'ring-4', 'ring-white', 'pointer-events-none');
+        }
+
+        completedQuestionIds.add(QUESTIONS_DATA[currentIndex].id);
+        renderStars();
+
+        // Cheerful child voice praise
+        speakChildVoice(text, () => {
+          setTimeout(() => {
+            if (completedQuestionIds.size === QUESTIONS_DATA.length) {
+              showWinCelebration();
+            } else {
+              skipToNextQuestion();
+            }
+          }, 300);
+        });
+
+      } else {
+        // FRIENDLY RETRY (NO PENALTY) — dimmed choice stays inactive
+        element.dataset.locked = 'true';
+        if (!isBalloon) element.disabled = true;
+        element.classList.add('animate-wiggle', 'opacity-70', 'pointer-events-none', 'cursor-default');
+        soundWrong();
+        speakChildVoice("Oops, let's try another one!");
+        setTimeout(() => {
+          element.classList.remove('animate-wiggle');
+        }, 500);
+      }
+    }
+
+    function replayCurrentQuestionVoice() {
+      const q = QUESTIONS_DATA[currentIndex];
+      if (q) speakChildVoice(q.question);
+    }
+
+    function renderStars() {
+      const starContainer = document.getElementById('starProgress');
+      starContainer.innerHTML = '';
+      QUESTIONS_DATA.forEach(q => {
+        const star = document.createElement('span');
+        star.innerText = completedQuestionIds.has(q.id) ? '⭐' : '⚪';
+        starContainer.appendChild(star);
+      });
+    }
+
+    function skipToNextQuestion() {
+      if (currentIndex < QUESTIONS_DATA.length - 1) {
+        currentIndex++;
+        renderCurrentQuestion();
+      } else if (completedQuestionIds.size === QUESTIONS_DATA.length) {
+        showWinCelebration();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const btnCards = document.getElementById('btnViewCards');
+      const btnBalloons = document.getElementById('btnViewBalloons');
+
+      if (mode === 'cards') {
+        btnCards.className = "px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-amber-400 text-amber-950 shadow";
+        btnBalloons.className = "px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all text-slate-600 hover:text-slate-900";
+      } else {
+        btnBalloons.className = "px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-amber-400 text-amber-950 shadow";
+        btnCards.className = "px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all text-slate-600 hover:text-slate-900";
+      }
+      renderCurrentQuestion();
+    }
+
+    function restartQuiz() {
+      closeWinModal();
+      completedQuestionIds.clear();
+      currentIndex = 0;
+      renderCurrentQuestion();
+    }
+
+    function addPoint(team) {
+      playBeep(520, 'triangle', 0.1);
+      if (team === 'Tammy') {
+        scoreTammy++;
+        document.getElementById('scoreTammy').innerText = scoreTammy;
+      } else {
+        scoreSammy++;
+        document.getElementById('scoreSammy').innerText = scoreSammy;
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById('audioIcon');
+      icon.innerText = audioEnabled ? '🔊' : '🔇';
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function showWinCelebration() {
+      soundSuccess();
+      document.getElementById('winModal').classList.remove('hidden');
+      launchConfetti();
+      speakChildVoice("Hooray! Super job, class! You are all stars!");
+    }
+
+    function closeWinModal() {
+      document.getElementById('winModal').classList.add('hidden');
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      canvas.classList.remove('hidden');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'];
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * -canvas.height,
+          size: Math.random() * 8 + 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 3,
+          vy: Math.random() * 4 + 3,
+          rot: Math.random() * 360
+        });
+      }
+
+      let frames = 0;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += 3;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        frames++;
+        if (frames < 140) {
+          requestAnimationFrame(render);
+        } else {
+          canvas.classList.add('hidden');
+        }
+      }
+      render();
+    }
+
+    window.onload = function() {
+      renderCurrentQuestion();
+    };
+  </script>
+</body>
+</html>
