@@ -17,6 +17,11 @@
       -webkit-user-select: none;
       touch-action: none; /* Prevent default scrolling for smooth blade swiping */
     }
+    input, textarea, select {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      touch-action: manipulation;
+    }
     .font-action {
       font-family: 'Nunito', sans-serif;
     }
@@ -1753,7 +1758,7 @@
       const input = document.getElementById('hofPlayerNameInput');
       const status = document.getElementById('hofSubmitStatus');
       const btn = document.getElementById('hofSaveScoreBtn');
-      const name = input.value.trim() || "Ninja Student";
+      const name = (input.value || '').replace(/\s+/g, ' ').trim() || "Ninja Student";
 
       const accuracy = state.totalSwipes > 0 
         ? Math.round((state.correctSlices / state.totalSwipes) * 100) 

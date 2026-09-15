@@ -39,6 +39,11 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
+    input, textarea, select {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      touch-action: manipulation;
+    }
 
     body {
       background-color: var(--bg-dark);
@@ -1828,6 +1833,7 @@
 
     // Keyboard controls (Arrow keys for sorting & advancing)
     window.addEventListener('keydown', (e) => {
+      if (e.target && e.target.closest && e.target.closest('input, textarea, select')) return;
       if (currentMode === 'sorter' && !isRoundLocked) {
         if (e.key === 'ArrowLeft') {
           handleSortChoice('adjective');

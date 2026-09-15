@@ -26,6 +26,29 @@
     });
   }
 
+  function normalizePlayerName(value) {
+    return String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+  }
+
+  function ensureInputTypingStyles() {
+    if (typeof document === 'undefined' || document.getElementById('tg-player-input-fix')) return;
+    if (!document.head) {
+      document.addEventListener('DOMContentLoaded', ensureInputTypingStyles);
+      return;
+    }
+    var style = document.createElement('style');
+    style.id = 'tg-player-input-fix';
+    style.textContent =
+      'input, textarea, select{' +
+        'user-select:text!important;' +
+        '-webkit-user-select:text!important;' +
+        '-moz-user-select:text!important;' +
+        'touch-action:manipulation;' +
+      '}';
+    document.head.appendChild(style);
+  }
+  ensureInputTypingStyles();
+
   function friendlyDate(value) {
     if (!value) return '';
     var date = value instanceof Date ? value : new Date(value);
@@ -64,7 +87,7 @@
     return requestJson(API_URL + '?' + queryString({
       action: 'submit',
       game_id: payload.game_id,
-      player: payload.player,
+      player: normalizePlayerName(payload.player).slice(0, 40),
       score: payload.score,
       score_type: payload.score_type || 'points',
       level: payload.level || '',
@@ -89,7 +112,7 @@
       '.tg-scores-val{font-weight:800;flex:0 0 auto;}',
       '.tg-scores-empty{margin:0;font-size:0.8rem;opacity:0.72;}',
       '.tg-scores-form{display:flex;gap:0.4rem;margin:0 0 0.5rem;}',
-      '.tg-scores-form input{flex:1;min-width:0;border:2px solid rgba(15,23,42,0.16);border-radius:10px;padding:0.45rem 0.6rem;font:inherit;}',
+      '.tg-scores-form input{flex:1;min-width:0;border:2px solid rgba(15,23,42,0.16);border-radius:10px;padding:0.45rem 0.6rem;font:inherit;user-select:text;-webkit-user-select:text;}',
       '.tg-scores-form button{border:0;border-radius:10px;padding:0.45rem 0.75rem;font:inherit;font-weight:800;cursor:pointer;background:#0ea5e9;color:#fff;}',
       '.tg-scores-form button:disabled{opacity:0.65;cursor:default;}',
       '.tg-scores-status{margin:0 0 0.4rem;font-size:0.75rem;font-weight:700;}'
@@ -135,7 +158,7 @@
   }
 
   async function submitAndShow(options) {
-    var player = String((options && options.player) || '').trim();
+    var player = normalizePlayerName((options && options.player) || '');
     if (!player || !options || options.score == null) return null;
     await saveScore({
       game_id: options.gameId,
@@ -176,7 +199,7 @@
     fillList(board, options.gameId, { limit: options.limit || 8 });
 
     button.addEventListener('click', function () {
-      var player = input.value.trim();
+      var player = normalizePlayerName(input.value);
       var score = typeof options.getScore === 'function' ? options.getScore() : options.score;
       if (!player) {
         status.hidden = false;

@@ -32,6 +32,11 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
+    input, textarea, select {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      touch-action: manipulation;
+    }
 
     body {
       background: radial-gradient(circle at 50% 20%, #bae6fd 0%, #0284c7 100%);

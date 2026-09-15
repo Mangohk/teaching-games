@@ -22,6 +22,10 @@
       min-height: 100vh;
       user-select: none;
     }
+    input, textarea, select {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
     .font-fredoka {
       font-family: 'Fredoka', cursive, sans-serif;
     }
@@ -1111,6 +1115,7 @@
 
     // Keyboard navigation bindings
     window.addEventListener('keydown', (e) => {
+      if (e.target && e.target.closest && e.target.closest('input, textarea, select')) return;
       const gameScreen = document.getElementById('gameScreen');
       if (!gameScreen || gameScreen.classList.contains('hidden')) return;
 
