@@ -215,7 +215,9 @@
         speaker: "Tom",
         avatar: "👦",
         question: "Hi, my name is Tom. Nice to meet you.",
+        questionAudio: "audio/q1.mp3",
         correctAnswer: "Hi, Tom. Nice to meet you.",
+        answerAudio: "audio/a1.mp3",
         distractors: [
           "I am good, thank you.",
           "I am six years old."
@@ -227,7 +229,9 @@
         speaker: "Dan's Friend",
         avatar: "👧",
         question: "How are you, Dan?",
+        questionAudio: "audio/q2.mp3",
         correctAnswer: "I am good, thank you.",
+        answerAudio: "audio/a2.mp3",
         distractors: [
           "My name is Ken.",
           "I am in Class 1E."
@@ -239,7 +243,9 @@
         speaker: "Classmate",
         avatar: "🧒",
         question: "What is your name?",
+        questionAudio: "audio/q3.mp3",
         correctAnswer: "My name is Ken.",
+        answerAudio: "audio/a3.mp3",
         distractors: [
           "I am six years old.",
           "Hi, Tom. Nice to meet you."
@@ -251,7 +257,9 @@
         speaker: "Teacher / Friend",
         avatar: "🎒",
         question: "What class are you in?",
+        questionAudio: "audio/q4.mp3",
         correctAnswer: "I am in Class 1E.",
+        answerAudio: "audio/a4.mp3",
         distractors: [
           "I am good, thank you.",
           "My name is Ken."
@@ -263,7 +271,9 @@
         speaker: "Little Sister",
         avatar: "🎂",
         question: "How old are you?",
+        questionAudio: "audio/q5.mp3",
         correctAnswer: "I am six years old.",
+        answerAudio: "audio/a5.mp3",
         distractors: [
           "I am in Class 1E.",
           "Hi, Tom. Nice to meet you."
@@ -316,48 +326,35 @@
     }
 
     /**
-     * Synthesizes speech with a child-like pitch and cadence.
-     * Higher pitch (1.45 - 1.55) paired with a relaxed rate (0.86 - 0.90)
-     * produces a bright, friendly voice tailored for young EFL learners.
+     * Pre-recorded clips: questions = boy, answers = higher-pitch boy,
+     * oops/win = higher-pitch young woman (~18).
      */
-    function speakChildVoice(text, onEndCallback = null) {
-      if (!audioEnabled || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
+    let currentClip = null;
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.pitch = 1.48; // Higher pitch simulates a child's natural frequency
-      utterance.rate = 0.88;  // Slower, articulate speed for P1 comprehension
-
-      // Look for natural sounding female or youthful English voices if installed
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        const preferredVoice = voices.find(v => 
-          (v.lang.startsWith('en') && (
-            v.name.includes('Junior') ||
-            v.name.includes('Child') ||
-            v.name.includes('Samantha') ||
-            v.name.includes('Victoria') ||
-            v.name.includes('Google US English') ||
-            v.name.includes('Zira')
-          ))
-        ) || voices.find(v => v.lang.startsWith('en'));
-
-        if (preferredVoice) utterance.voice = preferredVoice;
+    function stopSpokenClip() {
+      if (currentClip) {
+        currentClip.pause();
+        currentClip.onended = null;
+        currentClip.onerror = null;
+        currentClip = null;
       }
-
-      if (onEndCallback) {
-        utterance.onend = onEndCallback;
-      }
-
-      window.speechSynthesis.speak(utterance);
     }
 
-    // Pre-fetch voices for iOS and Chromium browsers
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
+    function playSpokenClip(src, onEndCallback = null) {
+      stopSpokenClip();
+      if (!audioEnabled) {
+        if (onEndCallback) setTimeout(onEndCallback, 200);
+        return;
+      }
+      const clip = new Audio(src);
+      currentClip = clip;
+      const finish = () => {
+        if (currentClip === clip) currentClip = null;
+        if (onEndCallback) onEndCallback();
       };
+      clip.addEventListener('ended', finish, { once: true });
+      clip.addEventListener('error', finish, { once: true });
+      clip.play().catch(finish);
     }
 
     function renderCurrentQuestion() {
@@ -378,7 +375,7 @@
 
       // Speak question automatically with child tone
       setTimeout(() => {
-        speakChildVoice(q.question);
+        playSpokenClip(q.questionAudio);
       }, 350);
 
       // Prepare choices: 1 correct + 2 distractors (shuffled)
@@ -480,7 +477,7 @@
         renderStars();
 
         // Cheerful child voice praise
-        speakChildVoice(text, () => {
+        playSpokenClip(QUESTIONS_DATA[currentIndex].answerAudio, () => {
           setTimeout(() => {
             if (completedQuestionIds.size === QUESTIONS_DATA.length) {
               showWinCelebration();
@@ -496,7 +493,7 @@
         if (!isBalloon) element.disabled = true;
         element.classList.add('animate-wiggle', 'opacity-70', 'pointer-events-none', 'cursor-default');
         soundWrong();
-        speakChildVoice("Oops, let's try another one!");
+        playSpokenClip("audio/oops.mp3");
         setTimeout(() => {
           element.classList.remove('animate-wiggle');
         }, 500);
@@ -505,7 +502,7 @@
 
     function replayCurrentQuestionVoice() {
       const q = QUESTIONS_DATA[currentIndex];
-      if (q) speakChildVoice(q.question);
+      if (q) playSpokenClip(q.questionAudio);
     }
 
     function renderStars() {
@@ -571,6 +568,7 @@
       audioEnabled = !audioEnabled;
       const icon = document.getElementById('audioIcon');
       icon.innerText = audioEnabled ? '🔊' : '🔇';
+      if (!audioEnabled) stopSpokenClip();
     }
 
     function toggleFullScreen() {
@@ -585,7 +583,7 @@
       soundSuccess();
       document.getElementById('winModal').classList.remove('hidden');
       launchConfetti();
-      speakChildVoice("Hooray! Super job, class! You are all stars!");
+      playSpokenClip("audio/win.mp3");
     }
 
     function closeWinModal() {
