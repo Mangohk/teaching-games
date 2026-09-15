@@ -73,8 +73,37 @@
       box-shadow: 0 0 0 3px #FBBF24, 0 6px 12px rgba(0, 0, 0, 0.4) !important;
     }
   </style>
+  <style id="tg-hub-back-style">
+    a.tg-hub-back {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 10000;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid rgba(14, 165, 233, 0.45);
+      color: #0369a1;
+      font: 700 0.8rem/1.2 system-ui, -apple-system, sans-serif;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+      -webkit-tap-highlight-color: transparent;
+    }
+    a.tg-hub-back:hover,
+    a.tg-hub-back:focus-visible {
+      border-color: #38bdf8;
+      outline: none;
+    }
+    @media print {
+      a.tg-hub-back { display: none !important; }
+    }
+  </style>
 </head>
 <body class="bg-gradient-to-b from-stone-900 via-stone-850 to-stone-950 min-h-screen text-stone-100 flex flex-col p-2 sm:p-4 selection:bg-amber-400 selection:text-stone-950">
+
+  <a class="tg-hub-back" href="../index.html">← Back to Teaching Games</a>
 
   <div class="max-w-5xl w-full mx-auto flex-1 flex flex-col space-y-3">
     
