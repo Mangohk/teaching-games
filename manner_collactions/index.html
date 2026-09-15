@@ -1001,14 +1001,17 @@
       const feedback = document.getElementById('sentenceFeedbackBox');
       feedback.classList.add('hidden');
 
+      let sentenceLocked = false;
       item.choices.forEach(choice => {
         const btn = document.createElement('button');
         btn.className = "bg-stone-800 hover:bg-stone-700 text-white font-black py-3 px-4 rounded-2xl border-2 border-stone-600 transition active:scale-95 shadow text-xs sm:text-sm flex items-center justify-center gap-1.5";
         btn.textContent = choice.text;
 
         btn.onclick = () => {
+          if (sentenceLocked) return;
           sound.init();
           if (choice.correct) {
+            sentenceLocked = true;
             sound.playCorrect();
             state.score += 100;
             state.streak++;
@@ -1016,6 +1019,9 @@
             feedback.innerHTML = choice.feedback;
             btn.className = "btn-3d-emerald py-3 px-4 rounded-2xl text-xs sm:text-sm";
             document.getElementById('sentenceMainText').innerHTML = item.mainSentence.replace('[ _____ ]', `<strong class="text-emerald-300 underline underline-offset-4">${choice.text.split(' ')[0]}</strong>`);
+            Array.from(choicesGrid.querySelectorAll('button')).forEach(function (other) {
+              other.disabled = true;
+            });
             speakText(item.audioSentence);
           } else {
             sound.playWrong();
@@ -1023,6 +1029,8 @@
             state.score = Math.max(0, state.score - 20);
             feedback.className = "p-3 rounded-2xl text-xs sm:text-sm font-black bg-rose-900 border-2 border-rose-400 text-rose-200 block";
             feedback.innerHTML = choice.feedback;
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
           }
           updateStatsUI();
         };

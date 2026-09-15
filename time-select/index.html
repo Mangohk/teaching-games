@@ -361,10 +361,15 @@
       <h1 class="game-font" id="winTitle">Congratulations!</h1>
       <p id="winMessage"></p>
       <p class="time-used-line" id="timeUsedLine"></p>
+      <div id="highScoresBox" class="tg-scores-box">
+        <h3>Fastest class times</h3>
+        <div id="highScoresList"></div>
+      </div>
       <button type="button" class="btn-primary" id="playAgainBtn">Play again</button>
     </div>
   </div>
 
+  <script src="../scores-api.js"></script>
   <script>
 (function () {
   'use strict';
@@ -550,6 +555,24 @@
     winMessage.textContent = 'You matched all ' + WIN_STARS + ' times, ' + displayName + '!';
     timeUsedLine.innerHTML = 'Time used: <strong>' + timeStr + '</strong>';
     winOverlay.hidden = false;
+
+    var api = window.TeachingGamesScores;
+    var listEl = document.getElementById('highScoresList');
+    if (api && listEl && timerStarted && isFinite(elapsedMs)) {
+      api.submitAndShow({
+        gameId: 'time-select',
+        player: displayName,
+        score: Number((elapsedMs / 1000).toFixed(1)),
+        scoreType: 'seconds',
+        extra: '10 stars',
+        listEl: listEl,
+        limit: 8
+      }).catch(function () {
+        api.fillList(listEl, 'time-select', { limit: 8 });
+      });
+    } else if (api && listEl) {
+      api.fillList(listEl, 'time-select', { limit: 8 });
+    }
   }
 
   function startGame() {

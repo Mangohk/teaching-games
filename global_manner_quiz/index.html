@@ -642,6 +642,7 @@
         <p>
           Welcome, P5 Manners Detectives! Fly around the world, answer 10 questions from textbook pages 2–3, collect all 10 passport stamps, and prove you're a polite global citizen!
         </p>
+        <input type="text" id="player-name-input" maxlength="24" autocomplete="nickname" placeholder="Your name (optional)" style="width:100%;margin:0 0 16px;padding:12px 14px;border:2px solid #93c5fd;border-radius:12px;font:inherit;font-weight:700;text-align:center;">
         <button class="btn-large" onclick="startGame()">
           <i class="fa-solid fa-play"></i> Start Mission
         </button>
@@ -673,6 +674,10 @@
         <div style="background: #eff6ff; border: 2px dashed #93c5fd; border-radius: 14px; padding: 12px 18px; margin-bottom: 22px; font-weight: 700; color: #1e40af;">
           🌟 Golden Rule Master: <em>"You should respect one another's cultures."</em> (Line 31)
         </div>
+        <div id="high-scores-box" class="tg-scores-box" style="margin-bottom: 18px;">
+          <h3>Class high scores</h3>
+          <div id="high-scores-list"></div>
+        </div>
         <button class="btn-large" onclick="restartGame()">
           <i class="fa-solid fa-rotate-right"></i> Play Again
         </button>
@@ -681,6 +686,7 @@
 
   </div>
 
+  <script src="../scores-api.js"></script>
   <script>
     /**
      * 10 Curriculum-Aligned Questions covering Lines 1–31
@@ -699,7 +705,7 @@
         ],
         answer: 1,
         clue: "Look at lines 2–3: 'You don't want people to think you are rude!'",
-        feedback: "Correct! We want people in other countries to know we are polite and considerate."
+        feedback: "We want people in other countries to know we are polite and considerate."
       },
       {
         country: "India & Thailand",
@@ -804,7 +810,7 @@
         ],
         answer: 0,
         clue: "Lines 23–24: 'The table should be clean and tidy when we finish eating.'",
-        feedback: "Correct! In the West, eating messily is considered impolite table manners."
+        feedback: "In the West, eating messily is considered impolite table manners."
       },
       {
         country: "Japan",
@@ -841,6 +847,7 @@
     let currentQ = 0;
     let score = 0;
     let streak = 0;
+    let playerDisplayName = 'Explorer';
     let soundEnabled = true;
     let answered = false;
     let synth = null;
@@ -1056,11 +1063,29 @@
       }
 
       modal.classList.add('active');
+
+      const api = window.TeachingGamesScores;
+      const listEl = document.getElementById('high-scores-list');
+      if (api && listEl) {
+        api.submitAndShow({
+          gameId: 'global_manner_quiz',
+          player: playerDisplayName,
+          score: score,
+          scoreType: 'points',
+          extra: score >= 1000 ? 'passport complete' : '',
+          listEl: listEl,
+          limit: 8
+        }).catch(function () {
+          api.fillList(listEl, 'global_manner_quiz', { limit: 8 });
+        });
+      }
     }
 
     function startGame() {
       initAudio();
       playTone('click');
+      const nameInput = document.getElementById('player-name-input');
+      playerDisplayName = (nameInput && nameInput.value.trim()) || 'Explorer';
       document.getElementById('start-modal').classList.remove('active');
       restartGame();
     }

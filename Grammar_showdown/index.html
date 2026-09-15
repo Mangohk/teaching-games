@@ -334,7 +334,7 @@
       </div>
 
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-        <span class="text-[11px] text-slate-400 font-semibold">Scores stored for your class session</span>
+        <span class="text-[11px] text-slate-400 font-semibold">Scores saved to the class Google Sheet</span>
         <button onclick="closeHallOfFame()" class="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold font-fredoka text-xs">
           Close
         </button>
@@ -394,6 +394,7 @@
     Grammar Showdown • Verbs vs Adjectives • Designed with love for classrooms & young writers!
   </footer>
 
+  <script src="../scores-api.js"></script>
   <script>
     // ==========================================
     // 1. COMPREHENSIVE WORD LIBRARIES (3 LEVELS)
@@ -510,7 +511,7 @@
       { word: "radiant", type: "adj", emoji: "🌟", phonics: "ray · dee · uhnt", hint: "The bride showed a radiant and joyful smile." }
     ];
 
-    let hallOfFame = [
+    const SEED_HALL_OF_FAME = [
       { name: "SpeedySam", avatar: "⚡", level: "standard", time: 14.8, date: "Today" },
       { name: "SunnySophie", avatar: "🦄", level: "intermediate", time: 15.6, date: "Today" },
       { name: "BrainyBella", avatar: "🚀", level: "advanced", time: 16.4, date: "Today" },
@@ -523,6 +524,60 @@
       { name: "WordWizard", avatar: "🦄", level: "advanced", time: 23.5, date: "Yesterday" },
       { name: "CuriousFox", avatar: "🦊", level: "standard", time: 26.4, date: "2 days ago" }
     ];
+    let hallOfFame = [];
+    let hofLoadedFromCloud = false;
+
+    function rowToHallOfFame(row) {
+      const api = window.TeachingGamesScores;
+      return {
+        name: row.player || 'Champion',
+        avatar: row.extra || '⭐',
+        level: row.level || 'standard',
+        time: Number(row.score),
+        date: (api && api.friendlyDate(row.timestamp)) || String(row.date || '')
+      };
+    }
+
+    async function refreshHallOfFameFromCloud() {
+      const api = window.TeachingGamesScores;
+      if (!api) {
+        if (!hallOfFame.length) hallOfFame = SEED_HALL_OF_FAME.slice();
+        return false;
+      }
+      try {
+        const rows = await api.loadScores('Grammar_showdown', 40);
+        hallOfFame = rows.map(rowToHallOfFame);
+        hofLoadedFromCloud = true;
+        return true;
+      } catch (err) {
+        if (!hofLoadedFromCloud && !hallOfFame.length) {
+          hallOfFame = SEED_HALL_OF_FAME.slice();
+        }
+        return false;
+      }
+    }
+
+    function updateHallOfFameRankBanner(entry) {
+      const sameLevelList = hallOfFame.filter(e => e.level === currentDifficulty);
+      const rankIndex = sameLevelList.findIndex(e =>
+        e.name === entry.name && e.level === entry.level && Number(e.time) === Number(entry.time)
+      ) + 1;
+      const rankBanner = document.getElementById('hallOfFameRankBanner');
+      const lvlName = currentDifficulty === 'advanced'
+        ? 'Advanced 🚀'
+        : (currentDifficulty === 'intermediate' ? 'Intermediate ⚡' : 'Standard 🌟');
+
+      if (rankIndex === 1) {
+        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2 animate-bounce';
+        rankBanner.innerHTML = `👑 AMAZING! You took the <span class="underline font-black">#1 SPOT</span> on the ${lvlName} Hall of Fame!`;
+      } else if (rankIndex > 0) {
+        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2';
+        rankBanner.innerHTML = `<span>👑</span> You ranked <span id="newLeaderboardRank" class="underline font-black">#${rankIndex}</span> on the ${lvlName} Hall of Fame!`;
+      } else {
+        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2';
+        rankBanner.innerHTML = `<span>👑</span> Your time is on the ${lvlName} Hall of Fame!`;
+      }
+    }
 
     // Core Game State Variables
     let currentDifficulty = "standard"; // "standard", "intermediate", "advanced"
@@ -718,9 +773,23 @@
       phonicsPill.classList.add('hidden');
       phonicsPill.textContent = q.phonics;
 
-      // Prepare sentence hint text
-      document.getElementById('hintWordSpot').textContent = q.word;
-      hintBubble.innerHTML = `“${q.hint}”`;
+      // Keep #hintWordSpot in the DOM so later cards can update it.
+      const hintSpot = document.getElementById('hintWordSpot');
+      if (hintSpot) hintSpot.textContent = q.word;
+      const hintSource = String(q.hint || '');
+      const hasWord = hintSource.toLowerCase().includes(String(q.word || '').toLowerCase());
+      if (!hasWord) {
+        hintBubble.innerHTML = `“${hintSource}”`;
+        const strong = document.createElement('strong');
+        strong.className = 'underline';
+        strong.id = 'hintWordSpot';
+        strong.textContent = q.word;
+        hintBubble.appendChild(document.createTextNode(' '));
+        hintBubble.appendChild(strong);
+      } else {
+        const escaped = String(q.word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        hintBubble.innerHTML = `“${hintSource.replace(new RegExp(escaped, 'i'), '<strong class="underline" id="hintWordSpot">$&</strong>')}”`;
+      }
 
       // Auto-pronounce for accessibility
       setTimeout(() => {
@@ -859,7 +928,6 @@
       document.getElementById('finalTotalTime').textContent = totalElapsedTime.toFixed(1) + 's';
       document.getElementById('finalPenaltySummary').textContent = `${mistakeCount} (+${penaltySeconds.toFixed(0)}s)`;
 
-      // Save to in-memory leaderboard
       const newEntry = {
         name: currentPlayerName,
         avatar: selectedAvatar,
@@ -870,29 +938,29 @@
 
       hallOfFame.push(newEntry);
       hallOfFame.sort((a, b) => a.time - b.time);
-
-      // Rank calculation
-      const sameLevelList = hallOfFame.filter(e => e.level === currentDifficulty);
-      const rankIndex = sameLevelList.indexOf(newEntry) + 1;
-      const rankBanner = document.getElementById('hallOfFameRankBanner');
-
-      const lvlName = currentDifficulty === 'advanced' 
-        ? 'Advanced 🚀' 
-        : (currentDifficulty === 'intermediate' ? 'Intermediate ⚡' : 'Standard 🌟');
-
-      if (rankIndex === 1) {
-        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2 animate-bounce';
-        rankBanner.innerHTML = `👑 AMAZING! You took the <span class="underline font-black">#1 SPOT</span> on the ${lvlName} Hall of Fame!`;
-      } else {
-        rankBanner.className = 'w-full p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 font-bold font-fredoka text-base mb-6 flex items-center justify-center gap-2';
-        rankBanner.innerHTML = `<span>👑</span> You ranked <span id="newLeaderboardRank" class="underline font-black">#${rankIndex}</span> on the ${lvlName} Hall of Fame!`;
-      }
+      updateHallOfFameRankBanner(newEntry);
 
       document.getElementById('gameScreen').classList.add('hidden');
       document.getElementById('resultsScreen').classList.remove('hidden');
 
       playSound('victory');
       triggerConfetti();
+
+      const api = window.TeachingGamesScores;
+      if (api) {
+        api.saveScore({
+          game_id: 'Grammar_showdown',
+          player: currentPlayerName,
+          score: newEntry.time,
+          score_type: 'seconds',
+          level: currentDifficulty,
+          extra: selectedAvatar
+        }).then(function () {
+          return refreshHallOfFameFromCloud();
+        }).then(function () {
+          updateHallOfFameRankBanner(newEntry);
+        }).catch(function () { /* keep the local score if the sheet is unavailable */ });
+      }
     }
 
     function restartGame() {
@@ -979,7 +1047,12 @@
       renderHallOfFameEntries();
       document.getElementById('hallOfFameModal').classList.remove('hidden');
       playSound('click');
+      refreshHallOfFameFromCloud().then(function () {
+        renderHallOfFameEntries();
+      });
     }
+
+    refreshHallOfFameFromCloud();
 
     function closeHallOfFame() {
       document.getElementById('hallOfFameModal').classList.add('hidden');

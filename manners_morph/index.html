@@ -702,17 +702,18 @@
       inset: 0;
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(5px);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 100;
       padding: 16px;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.3s ease;
+      transition: opacity 0.3s ease;
     }
 
     .modal-backdrop.show {
+      display: flex;
       opacity: 1;
       pointer-events: auto;
     }
@@ -1027,7 +1028,7 @@
     </section>
 
     <!-- Modal Victory Screen -->
-    <div class="modal-backdrop" id="victoryModal">
+    <div class="modal-backdrop" id="victoryModal" hidden aria-hidden="true" inert>
       <div class="trophy-card">
         <div class="trophy-emoji">🏆</div>
         <h2 style="font-family: var(--font-display); font-size: 32px; color: #0f172a; margin-bottom: 8px;">
@@ -1045,6 +1046,7 @@
           </div>
         </div>
 
+        <div id="hof-save-box"></div>
         <button class="btn-big-play" onclick="restartCurrentMission()">
           <i class="fa-solid fa-rotate-right"></i> Play Another Round
         </button>
@@ -1169,6 +1171,7 @@
     </div>
   </article>
 
+  <script src="../scores-api.js"></script>
   <script>
     let isSoundOn = true;
     let audioSynth = null;
@@ -1747,11 +1750,30 @@
       playTone('fanfare');
       fireConfetti();
       document.getElementById('victoryMsg').textContent = msg;
-      document.getElementById('victoryModal').classList.add('show');
+      const victoryModal = document.getElementById('victoryModal');
+      victoryModal.hidden = false;
+      victoryModal.removeAttribute('inert');
+      victoryModal.setAttribute('aria-hidden', 'false');
+      victoryModal.classList.add('show');
+      const api = window.TeachingGamesScores;
+      const box = document.getElementById('hof-save-box');
+      if (api && box) {
+        api.mountSaveBox(box, {
+          gameId: 'manners_morph',
+          title: 'Save your class high score',
+          getScore: function () { return score; },
+          scoreType: 'points',
+          getLevel: function () { return currentMode || ''; }
+        });
+      }
     }
 
     function restartCurrentMission() {
-      document.getElementById('victoryModal').classList.remove('show');
+      const victoryModal = document.getElementById('victoryModal');
+      victoryModal.classList.remove('show');
+      victoryModal.hidden = true;
+      victoryModal.setAttribute('inert', '');
+      victoryModal.setAttribute('aria-hidden', 'true');
       resetCurrentMode();
     }
 

@@ -491,7 +491,7 @@
 
         <div class="flex justify-between items-center pt-3 border-t border-stone-800 mt-2 shrink-0">
           <button id="resetLeaderboardBtn" class="text-[11px] text-stone-500 hover:text-stone-300 underline font-bold">
-            Reset to default scores
+            Reload class scores
           </button>
           <button id="closeHofFooterBtn" class="btn-3d-green text-white font-black py-2 px-6 rounded-xl text-xs sm:text-sm">
             Ready to Slice! ⚔️
@@ -592,6 +592,7 @@
 
   </div>
 
+  <script src="../scores-api.js"></script>
   <script>
     /* Web Audio API Sound Synthesizer (Realistic blade swoosh, juicy fruit slice, combo fanfare) */
     class FruitSoundEngine {
@@ -1580,7 +1581,43 @@
       { name: "Marcus (4B)", score: 880, accuracy: "85%", title: "Speedy Ninja" }
     ];
 
-    let hallOfFameData = [...DEFAULT_HALL_OF_FAME];
+    let hallOfFameData = [];
+    let hofLoadedFromCloud = false;
+
+    function rowToSlicerHof(row) {
+      const score = Number(row.score) || 0;
+      const extra = String(row.extra || '');
+      const accMatch = extra.match(/accuracy=(\d+)/);
+      const accuracyVal = accMatch ? Number(accMatch[1]) : 0;
+      return {
+        name: row.player || 'Anonymous Ninja',
+        score: score,
+        accuracy: accMatch ? accuracyVal + '%' : (extra || '—'),
+        title: getPlayerNinjaTitle(score, accuracyVal)
+      };
+    }
+
+    async function refreshHallOfFameFromCloud() {
+      const api = window.TeachingGamesScores;
+      if (!api) {
+        if (!hallOfFameData.length) hallOfFameData = [...DEFAULT_HALL_OF_FAME];
+        renderHallOfFame();
+        return false;
+      }
+      try {
+        const rows = await api.loadScores('manner_slicer', 30);
+        hallOfFameData = rows.map(rowToSlicerHof);
+        hofLoadedFromCloud = true;
+        renderHallOfFame();
+        return true;
+      } catch (err) {
+        if (!hofLoadedFromCloud && !hallOfFameData.length) {
+          hallOfFameData = [...DEFAULT_HALL_OF_FAME];
+        }
+        renderHallOfFame();
+        return false;
+      }
+    }
 
     function getPlayerNinjaTitle(score, accuracyVal) {
       if (score >= 1500) return "Katana Grandmaster 👑";
@@ -1638,6 +1675,18 @@
       });
       hallOfFameData.sort((a, b) => b.score - a.score);
       renderHallOfFame();
+
+      const api = window.TeachingGamesScores;
+      if (!api) return Promise.resolve();
+      return api.saveScore({
+        game_id: 'manner_slicer',
+        player: cleanName,
+        score: score,
+        score_type: 'points',
+        extra: 'accuracy=' + accuracy
+      }).then(function () {
+        return refreshHallOfFameFromCloud();
+      });
     }
 
     function endGame() {
@@ -1682,7 +1731,10 @@
     function openHallOfFame() {
       renderHallOfFame();
       hallOfFameModal.classList.remove('hidden');
+      refreshHallOfFameFromCloud();
     }
+
+    refreshHallOfFameFromCloud();
     function closeHallOfFame() {
       hallOfFameModal.classList.add('hidden');
     }
@@ -1691,9 +1743,9 @@
     document.getElementById('closeHallOfFameBtn').addEventListener('click', closeHallOfFame);
     document.getElementById('closeHofFooterBtn').addEventListener('click', closeHallOfFame);
     document.getElementById('resetLeaderboardBtn').addEventListener('click', () => {
-      hallOfFameData = [...DEFAULT_HALL_OF_FAME];
-      renderHallOfFame();
-      showToast("Leaderboard restored to defaults!", true);
+      refreshHallOfFameFromCloud().then(function (ok) {
+        showToast(ok ? "Class scores reloaded!" : "Could not reload class scores.", true);
+      });
     });
 
     // Hall of Fame Save Button on Game Over screen
@@ -1707,16 +1759,22 @@
         ? Math.round((state.correctSlices / state.totalSwipes) * 100) 
         : 100;
 
-      addScoreToHallOfFame(name, state.score, accuracy);
-
       btn.disabled = true;
-      btn.textContent = 'Saved! ✓';
-      status.textContent = `🌟 Awesome! "${name}" added with ${state.score} pts!`;
+      btn.textContent = 'Saving…';
+      status.textContent = `Saving "${name}" to the class sheet…`;
       status.classList.remove('hidden');
-      
-      setTimeout(() => {
-        openHallOfFame();
-      }, 700);
+
+      Promise.resolve(addScoreToHallOfFame(name, state.score, accuracy)).then(function () {
+        btn.textContent = 'Saved! ✓';
+        status.textContent = `🌟 Awesome! "${name}" added with ${state.score} pts!`;
+        setTimeout(() => {
+          openHallOfFame();
+        }, 700);
+      }).catch(function () {
+        btn.disabled = false;
+        btn.textContent = 'Save 🌟';
+        status.textContent = 'Could not save to the class sheet. Try again.';
+      });
     });
 
     // Speed Controls

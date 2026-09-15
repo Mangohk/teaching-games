@@ -287,6 +287,10 @@
             <div id="modal-icon" class="text-6xl mb-4">🛑</div>
             <h2 id="modal-title" class="text-3xl font-bold mb-2">Message</h2>
             <p id="modal-body" class="text-xl text-gray-700 mb-6 font-medium"></p>
+            <div id="high-scores-box" class="tg-scores-box" hidden>
+              <h3>Class high scores</h3>
+              <div id="high-scores-list"></div>
+            </div>
             <button id="modal-btn" onclick="closeModal()" class="px-8 py-3 rounded-xl font-bold text-lg shadow-md active:translate-y-1 active:shadow-none text-white">Continue</button>
         </div>
     </div>
@@ -328,6 +332,7 @@
         </div>
     </div>
 
+    <script src="../scores-api.js"></script>
     <script>
         const GRID_SIZE = 7;
         const TOTAL_QUESTIONS = 9;
@@ -418,6 +423,8 @@
             titleEl.innerText = title;
             bodyEl.innerText = body;
             iconEl.innerText = icon;
+            const scoresBox = document.getElementById('high-scores-box');
+            if (scoresBox) scoresBox.hidden = type !== 'gameover';
 
             card.className = 'modal-content';
             if (type === 'error') {
@@ -430,11 +437,11 @@
                 titleEl.className = 'text-3xl font-bold text-amber-600 mb-2';
                 btnEl.className = 'bg-amber-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-[0_4px_0_#b45309] active:translate-y-1 active:shadow-none';
                 btnEl.innerText = 'Got it!';
-            } else if (type === 'success') {
+            } else if (type === 'success' || type === 'gameover') {
                 card.classList.add('modal-success');
                 titleEl.className = 'text-3xl font-bold text-green-600 mb-2';
                 btnEl.className = 'bg-green-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-[0_4px_0_#15803d] active:translate-y-1 active:shadow-none';
-                btnEl.innerText = 'Next Question!';
+                btnEl.innerText = type === 'gameover' ? 'Awesome!' : 'Next Question!';
             }
             overlay.style.display = 'flex';
         }
@@ -591,9 +598,25 @@
             openModal(
                 "Game Complete!",
                 `${playerDisplayName}, you are a Direction Master!\nFinal Score: ${score}\nTotal Time: ${finalTime}`,
-                'success',
+                'gameover',
                 '🏆'
             );
+
+            const api = window.TeachingGamesScores;
+            const listEl = document.getElementById('high-scores-list');
+            if (api && listEl) {
+                api.submitAndShow({
+                    gameId: 'map-direction',
+                    player: playerDisplayName,
+                    score: score,
+                    scoreType: 'points',
+                    extra: 'time=' + finalTime,
+                    listEl: listEl,
+                    limit: 8
+                }).catch(function () {
+                    api.fillList(listEl, 'map-direction', { limit: 8 });
+                });
+            }
         }
 
         function resetGame() {
