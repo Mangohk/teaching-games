@@ -1,0 +1,16 @@
+---
+description: Bump the hub last-updated stamp on every shippable change
+alwaysApply: true
+---
+
+# Hub version stamp
+
+Whenever you change any game, the hub, scores, or other player-facing files, also update the quiet stamp in `index.html`:
+
+```html
+<p class="hub-updated">Updated D MMM YYYY, HH:mm</p>
+```
+
+- Use the current local time in `UTC+8` (Hong Kong).
+- Include both date and time so same-day versions can be told apart.
+- Do this in the same edit as the feature/fix, even if the hub layout did not otherwise change.
