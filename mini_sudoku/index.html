@@ -503,7 +503,6 @@
         <div class="difficulty" id="difficulty" role="group" aria-label="難度">
           <button type="button" data-diff="easy" class="active">簡單</button>
           <button type="button" data-diff="medium">中等</button>
-          <button type="button" data-diff="hard">困難</button>
         </div>
         <div class="status" id="status" aria-live="polite">選格開始</div>
       </div>
@@ -545,7 +544,8 @@
   <script>
     const SIZE = 4;
     const BOX = 2;
-    const DIFFICULTY = { easy: 8, medium: 6, hard: 4 };
+    // Target clue counts. Digging stops early if removing another clue would leave >1 solution.
+    const DIFFICULTY = { easy: 8, medium: 6 };
     const I18N = {
       zh: {
         htmlLang: "zh-Hant",
@@ -557,7 +557,6 @@
         language: "語言",
         easy: "簡單",
         medium: "中等",
-        hard: "困難",
         startHint: "選格開始",
         board: "4×4 數獨棋盤",
         erase: "清除",
@@ -588,7 +587,6 @@
         language: "Language",
         easy: "Easy",
         medium: "Medium",
-        hard: "Hard",
         startHint: "Pick a cell",
         board: "4×4 Sudoku board",
         erase: "Erase",
@@ -638,7 +636,6 @@
       document.getElementById("difficulty").setAttribute("aria-label", t("difficulty"));
       document.getElementById("difficulty").querySelector('[data-diff="easy"]').textContent = t("easy");
       document.getElementById("difficulty").querySelector('[data-diff="medium"]').textContent = t("medium");
-      document.getElementById("difficulty").querySelector('[data-diff="hard"]').textContent = t("hard");
       document.getElementById("lang-switch").setAttribute("aria-label", t("language"));
       boardEl.setAttribute("aria-label", t("board"));
       document.getElementById("btn-erase").textContent = t("erase");
@@ -712,20 +709,61 @@
       return true;
     }
 
+    /** Count solutions up to `limit` (usually 2) so we can detect uniqueness quickly. */
+    function countSolutions(grid, limit = 2) {
+      const g = grid.slice();
+      let count = 0;
+
+      function dfs() {
+        if (count >= limit) return;
+        let empty = -1;
+        for (let i = 0; i < g.length; i++) {
+          if (g[i] === 0) {
+            empty = i;
+            break;
+          }
+        }
+        if (empty === -1) {
+          count++;
+          return;
+        }
+        const r = Math.floor(empty / SIZE);
+        const c = empty % SIZE;
+        for (let num = 1; num <= SIZE; num++) {
+          if (!isValid(g, r, c, num)) continue;
+          g[empty] = num;
+          dfs();
+          g[empty] = 0;
+          if (count >= limit) return;
+        }
+      }
+
+      dfs();
+      return count;
+    }
+
     function generateSolution() {
       const grid = Array(SIZE * SIZE).fill(0);
       solve(grid);
       return grid;
     }
 
-    function makePuzzle(sol, clues) {
-      const p = [...sol];
+    /**
+     * Dig clues from a full solution, only keeping removals that leave exactly one solution.
+     * Stops when we reach `targetClues` or no more safe removals remain.
+     */
+    function makePuzzle(sol, targetClues) {
+      const p = sol.slice();
       const positions = shuffle([...Array(SIZE * SIZE).keys()]);
-      let remaining = SIZE * SIZE;
       for (const pos of positions) {
-        if (remaining <= clues) break;
+        const cluesLeft = p.reduce((n, v) => n + (v !== 0 ? 1 : 0), 0);
+        if (cluesLeft <= targetClues) break;
+        if (p[pos] === 0) continue;
+        const saved = p[pos];
         p[pos] = 0;
-        remaining--;
+        if (countSolutions(p, 2) !== 1) {
+          p[pos] = saved;
+        }
       }
       return p;
     }
