@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>四宮數獨 · Mini Sudoku</title>
+  <title>Mini Sudoku</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -543,25 +543,25 @@
     <header>
       <div class="title-row">
         <a class="hub-home" href="../index.html" title="Back to Teaching Games" aria-label="Back to Teaching Games">🧒</a>
-        <h1 class="brand"><span id="brand-title">四宮數獨</span><span class="brand-sub" id="brand-sub">Mini Sudoku 4×4</span></h1>
+        <h1 class="brand"><span id="brand-title">Mini Sudoku</span><span class="brand-sub" id="brand-sub">4×4 Puzzle</span></h1>
       </div>
-      <p class="tagline" id="tagline">在每個 2×2 宮、每列與每欄填入 1–4，不可重複</p>
+      <p class="tagline" id="tagline">Fill each 2×2 box, row, and column with 1–4. No repeats.</p>
     </header>
 
     <div class="panel" id="panel">
       <div class="toolbar">
-        <div class="difficulty" id="difficulty" role="group" aria-label="難度">
-          <button type="button" data-diff="easy" class="active">簡單</button>
-          <button type="button" data-diff="medium">中等</button>
+        <div class="difficulty" id="difficulty" role="group" aria-label="Difficulty">
+          <button type="button" data-diff="easy" class="active">Easy</button>
+          <button type="button" data-diff="medium">Medium</button>
         </div>
-        <div class="status" id="status" aria-live="polite">選格開始</div>
+        <div class="status" id="status" aria-live="polite">Pick a cell</div>
       </div>
 
       <div class="board-wrap">
-        <div class="board" id="board" role="grid" aria-label="4×4 數獨棋盤"></div>
-        <div class="lang-switch" id="lang-switch" role="group" aria-label="語言">
-          <button type="button" data-lang="zh" class="active" aria-pressed="true">中</button>
-          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <div class="board" id="board" role="grid" aria-label="4×4 Sudoku board"></div>
+        <div class="lang-switch" id="lang-switch" role="group" aria-label="Language">
+          <button type="button" data-lang="zh" aria-pressed="false">中</button>
+          <button type="button" data-lang="en" class="active" aria-pressed="true">EN</button>
         </div>
       </div>
 
@@ -570,22 +570,22 @@
         <button type="button" data-num="2">2</button>
         <button type="button" data-num="3">3</button>
         <button type="button" data-num="4">4</button>
-        <button type="button" class="erase" data-num="0" id="btn-erase">清除</button>
+        <button type="button" class="erase" data-num="0" id="btn-erase">Erase</button>
       </div>
 
       <div class="actions">
-        <button type="button" class="btn-primary" id="btn-new">新遊戲</button>
-        <button type="button" class="btn-ghost" id="btn-check">檢查</button>
-        <button type="button" class="btn-accent" id="btn-reset">重設</button>
+        <button type="button" class="btn-primary" id="btn-new">New</button>
+        <button type="button" class="btn-ghost" id="btn-check">Check</button>
+        <button type="button" class="btn-accent" id="btn-reset">Reset</button>
       </div>
 
-      <p class="hint" id="hint">可用鍵盤 1–4，或 Delete / Backspace 清除所選格子</p>
+      <p class="hint" id="hint">Use keys 1–4, or Delete / Backspace to clear a cell</p>
 
       <div class="win-overlay" id="win">
         <div class="win-card">
-          <h2 id="win-title">過關了</h2>
-          <p id="win-body">這盤數獨解開了</p>
-          <button type="button" class="btn-primary" id="btn-again" style="padding: 0 1.4rem; height: 44px; border-radius: 12px;">再來一局</button>
+          <h2 id="win-title">You win</h2>
+          <p id="win-body">This puzzle is solved</p>
+          <button type="button" class="btn-primary" id="btn-again" style="padding: 0 1.4rem; height: 44px; border-radius: 12px;">Play again</button>
         </div>
       </div>
     </div>
@@ -669,7 +669,7 @@
     let selected = 0;
     let difficulty = "easy";
     let won = false;
-    let lang = localStorage.getItem("sudoku-lang") === "en" ? "en" : "zh";
+    let lang = localStorage.getItem("sudoku-lang") === "zh" ? "zh" : "en";
     let lastStatus = { key: "startHint", kind: "", args: [] };
 
     function t(key, ...args) {
