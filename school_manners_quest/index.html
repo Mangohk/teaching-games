@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Manners Quest - P5 Online Board Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Fredoka', 'cursive', 'sans-serif'],
+            body: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            board: {
+              red: '#ef4444',
+              blue: '#3b82f6',
+              green: '#10b981',
+              yellow: '#f59e0b',
+            }
+          },
+          animation: {
+            'bounce-gentle': 'bounceGentle 1.6s infinite',
+            'hop': 'hop 0.4s ease-out',
+            'shake': 'shake 0.45s ease-in-out',
+            'roll': 'diceRoll 0.8s cubic-bezier(0.2, 0.8, 0.3, 1)',
+            'pulse-glow': 'pulseGlow 2s infinite',
+          },
+          keyframes: {
+            bounceGentle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' },
+            },
+            hop: {
+              '0%': { transform: 'scale(1) translateY(0)' },
+              '50%': { transform: 'scale(1.25) translateY(-14px)' },
+              '100%': { transform: 'scale(1) translateY(0)' },
+            },
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '20%, 60%': { transform: 'translateX(-8px)' },
+              '40%, 80%': { transform: 'translateX(8px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)' },
+              '50%': { boxShadow: '0 0 30px rgba(245, 158, 11, 0.8)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .font-display {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    
+    /* Board Grid & Path Aesthetics */
+    .tile {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .tile.active-step {
+      transform: scale(1.05);
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      z-index: 10;
+    }
+
+    /* Player Token Floating Style */
+    .player-token {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+
+    /* 3D-Look Dice Container */
+    .dice-box {
+      perspective: 800px;
+    }
+    .dice-cube {
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+    }
+
+    /* Particle celebration canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99999;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden p-2 sm:p-4">
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Top Header & Game Status Bar -->
+  <header class="w-full max-w-7xl mx-auto bg-white/95 backdrop-blur-md rounded-2xl px-5 py-3 shadow-xl border-2 border-slate-300 flex flex-wrap items-center justify-between gap-3 mb-2 z-20">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center text-2xl shadow-md font-display no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        🎲
+      </a>
+      <div>
+        <h1 class="font-display text-2xl sm:text-3xl text-slate-900 leading-tight flex items-center gap-2">
+          <span>School Manners Quest</span>
+          <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">P5 Grammar Board</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-500 font-bold">
+          Should &amp; Shouldn't • Adverbs of Manner • In order to &amp; In order not to
+        </p>
+      </div>
+    </div>
+
+    <!-- Active Turn Pill & Utility Controls -->
+    <div class="flex items-center gap-3">
+      <div id="currentTurnBadge" class="flex items-center gap-2 px-4 py-2 rounded-xl text-white font-display text-lg sm:text-xl shadow-md transition-all duration-300 bg-red-500">
+        <span id="currentTurnIcon">🦁</span>
+        <span id="currentTurnName">Team Red's Turn</span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button onclick="openStarterModal()" id="randomStarterBtn" class="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-white font-display text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-md transition" title="Pick Random Starting Team">
+          <i class="fa-solid fa-shuffle text-sm"></i>
+          <span>Pick 1st Team</span>
+        </button>
+        <button onclick="toggleSound()" id="soundBtn" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition" title="Toggle Sound">
+          <i id="soundIcon" class="fa-solid fa-volume-high text-lg text-blue-600"></i>
+        </button>
+        <button onclick="toggleRulesModal()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold text-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-circle-question text-amber-500"></i>
+          <span class="hidden sm:inline">How to Play</span>
+        </button>
+        <button onclick="resetGame()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition" title="Restart Game">
+          <i class="fa-solid fa-rotate-right text-lg text-rose-500"></i>
+        </button>
+        <button onclick="toggleFullscreen()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition" title="Full Screen">
+          <i class="fa-solid fa-expand text-lg text-slate-700"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row gap-4 mb-2">
+    
+    <!-- LEFT PANEL: The 24-Tile Snake Board -->
+    <section class="flex-1 bg-white rounded-3xl p-4 sm:p-5 shadow-2xl border-4 border-slate-200 flex flex-col justify-between relative overflow-hidden">
+      
+      <!-- Live Turn Sequence Strip -->
+      <div class="mb-2.5 px-3 py-2 bg-gradient-to-r from-slate-50 via-amber-50 to-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-slate-600">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 bg-amber-500 text-white rounded-md font-display tracking-wide uppercase text-[10px]">Turn Order</span>
+          <span id="turnOrderSequenceText" class="text-slate-700 font-display">🦁 Red ➔ 🐬 Blue ➔ 🐸 Green ➔ ⭐ Yellow ➔ 🦉 Purple</span>
+        </div>
+        <button onclick="openStarterModal()" class="text-amber-700 hover:text-amber-800 underline flex items-center gap-1 transition">
+          <i class="fa-solid fa-dice text-amber-500"></i> Re-spin 1st Team
+        </button>
+      </div>
+
+      <!-- Team Status Bar (5 Groups) -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
+        <!-- Team 1 -->
+        <div id="teamCard0" class="team-card bg-red-50 border-2 border-red-400 rounded-xl p-2 flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-xl sm:text-2xl">🦁</span>
+            <div>
+              <div class="font-display text-xs sm:text-sm font-bold text-red-900 leading-none">Red Lions</div>
+              <div class="text-[10px] sm:text-xs text-red-700 font-bold mt-0.5">Tile: <span id="posLabel0" class="text-xs sm:text-sm font-display text-red-600">START</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span id="orderBadge0" class="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-amber-200 text-amber-900">#1</span>
+            <span id="rankBadge0" class="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-md bg-red-200 text-red-800">1st</span>
+          </div>
+        </div>
+
+        <!-- Team 2 -->
+        <div id="teamCard1" class="team-card bg-blue-50 border-2 border-blue-400 rounded-xl p-2 flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-xl sm:text-2xl">🐬</span>
+            <div>
+              <div class="font-display text-xs sm:text-sm font-bold text-blue-900 leading-none">Blue Dolphins</div>
+              <div class="text-[10px] sm:text-xs text-blue-700 font-bold mt-0.5">Tile: <span id="posLabel1" class="text-xs sm:text-sm font-display text-blue-600">START</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span id="orderBadge1" class="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-slate-200 text-slate-700">#2</span>
+            <span id="rankBadge1" class="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-md bg-blue-200 text-blue-800">1st</span>
+          </div>
+        </div>
+
+        <!-- Team 3 -->
+        <div id="teamCard2" class="team-card bg-emerald-50 border-2 border-emerald-400 rounded-xl p-2 flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-xl sm:text-2xl">🐸</span>
+            <div>
+              <div class="font-display text-xs sm:text-sm font-bold text-emerald-900 leading-none">Green Frogs</div>
+              <div class="text-[10px] sm:text-xs text-emerald-700 font-bold mt-0.5">Tile: <span id="posLabel2" class="text-xs sm:text-sm font-display text-emerald-600">START</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span id="orderBadge2" class="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-slate-200 text-slate-700">#3</span>
+            <span id="rankBadge2" class="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-md bg-emerald-200 text-emerald-800">1st</span>
+          </div>
+        </div>
+
+        <!-- Team 4 -->
+        <div id="teamCard3" class="team-card bg-amber-50 border-2 border-amber-400 rounded-xl p-2 flex items-center justify-between shadow-sm transition">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-xl sm:text-2xl">⭐</span>
+            <div>
+              <div class="font-display text-xs sm:text-sm font-bold text-amber-900 leading-none">Yellow Stars</div>
+              <div class="text-[10px] sm:text-xs text-amber-700 font-bold mt-0.5">Tile: <span id="posLabel3" class="text-xs sm:text-sm font-display text-amber-600">START</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span id="orderBadge3" class="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-slate-200 text-slate-700">#4</span>
+            <span id="rankBadge3" class="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-md bg-amber-200 text-amber-800">1st</span>
+          </div>
+        </div>
+
+        <!-- Team 5 -->
+        <div id="teamCard4" class="team-card bg-purple-50 border-2 border-purple-400 rounded-xl p-2 flex items-center justify-between shadow-sm transition col-span-2 sm:col-span-1">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-xl sm:text-2xl">🦉</span>
+            <div>
+              <div class="font-display text-xs sm:text-sm font-bold text-purple-900 leading-none">Purple Owls</div>
+              <div class="text-[10px] sm:text-xs text-purple-700 font-bold mt-0.5">Tile: <span id="posLabel4" class="text-xs sm:text-sm font-display text-purple-600">START</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span id="orderBadge4" class="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-slate-200 text-slate-700">#5</span>
+            <span id="rankBadge4" class="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-md bg-purple-200 text-purple-800">1st</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 25-Tile Game Board Track (5x5 Grid: START + 24 Numbered Tiles) -->
+      <div id="boardTrack" class="grid grid-cols-5 gap-1.5 sm:gap-2 my-2 flex-1">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Dice & Active Team Controls -->
+    <aside class="w-full lg:w-80 flex flex-col justify-between bg-white rounded-3xl p-4 sm:p-5 shadow-2xl border-4 border-slate-200 shrink-0">
+      <div>
+        <div class="text-xs font-extrabold uppercase tracking-widest text-slate-400 text-center mb-1">
+          Now Taking Turn
+        </div>
+        <div id="activePlayerBox" class="p-3.5 rounded-2xl text-white shadow-lg flex items-center justify-center gap-3 bg-red-500 transition-all duration-300">
+          <span id="activePlayerIconBig" class="text-3xl">🦁</span>
+          <span id="activePlayerTitle" class="font-display text-xl font-bold">Red Lions</span>
+        </div>
+
+        <!-- 3D Dice Display Box -->
+        <div class="my-4 flex flex-col items-center justify-center bg-slate-50 rounded-2xl p-5 border-2 border-dashed border-slate-300">
+          <div class="dice-box w-24 h-24 flex items-center justify-center">
+            <div id="diceFace" class="w-20 h-20 bg-white border-4 border-slate-800 rounded-2xl shadow-2xl flex items-center justify-center font-display text-4xl text-slate-800 transition-all duration-300">
+              🎲
+            </div>
+          </div>
+
+          <p id="diceStatusText" class="font-display text-xs sm:text-sm text-slate-600 mt-3 text-center">
+            Faces: <strong>1, 2, 3, 4, 😊 Happy, ⭐ Super Star</strong>
+          </p>
+
+          <!-- Big Roll Button -->
+          <button id="rollDiceBtn" onclick="triggerDiceRoll()" class="mt-3 w-full py-3.5 px-5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-white font-display text-xl rounded-2xl shadow-lg border-b-4 border-amber-800 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-dice text-xl"></i>
+            <span>ROLL THE DICE!</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Hints -->
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3">
+        <div class="space-y-1 text-xs text-amber-900 font-medium">
+          <div><strong class="text-amber-700">😊 Happy Face:</strong> Appoint 1 group to act with an adverb &amp; move <strong>+1 step</strong> free!</div>
+          <div><strong class="text-amber-700">⭐ Super Star:</strong> Whole class does teacher's action! Teacher selects teams that did it well to move <strong>+2 steps</strong>!</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ================= QUESTION MODAL (Full E-Whiteboard View) ================= -->
+  <div id="questionModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-4 border-blue-400 shadow-2xl max-w-3xl w-full p-6 sm:p-8 flex flex-col justify-between animate-hop relative overflow-hidden">
+      
+      <!-- Question Category & Timer Tag -->
+      <div class="flex items-center justify-between pb-3 border-b-2 border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <span id="qCategoryBadge" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-xl font-display text-sm sm:text-base font-bold flex items-center gap-2">
+            <span>🎯</span> <span id="qCategoryText">Grammar Challenge</span>
+          </span>
+          <span id="qTeamTag" class="text-xs sm:text-sm font-bold text-slate-500">For: Team Red</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs uppercase tracking-widest font-extrabold text-slate-400">Dice Value:</span>
+          <span id="qDiceBadge" class="w-8 h-8 rounded-lg bg-amber-500 text-white font-display font-bold text-lg flex items-center justify-center shadow">
+            4
+          </span>
+        </div>
+      </div>
+
+      <!-- Picture / Visual Scene Container (Helps comprehension) -->
+      <div id="qVisualSection" class="mt-3 flex items-center justify-center gap-4 bg-gradient-to-r from-slate-50 via-blue-50/40 to-slate-50 rounded-2xl p-2.5 border border-slate-200">
+        <div id="qIllustrationSlot" class="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 bg-white rounded-xl shadow-inner border border-slate-200 overflow-hidden">
+          <!-- Injected SVG Picture -->
+        </div>
+        <div class="text-left flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span id="qSituationTag" class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[11px] uppercase tracking-wide">
+              📍 Classroom
+            </span>
+            <span id="qQuestionIdTag" class="text-[11px] font-extrabold text-slate-400">
+              Q1 / 30
+            </span>
+          </div>
+          <p id="qVisualHelperText" class="text-xs sm:text-sm font-semibold text-slate-600 leading-snug">
+            Look at the picture to understand the school manner and choose the best word!
+          </p>
+        </div>
+      </div>
+
+      <!-- Question Prompt Area -->
+      <div class="my-4 text-center">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Choose the best answer:</p>
+        <h3 id="qPromptText" class="font-display text-xl sm:text-3xl text-slate-900 leading-snug">
+          "We should listen carefully in class _______ learn well."
+        </h3>
+      </div>
+
+      <!-- 3 Multiple Choice Options -->
+      <div id="qOptionsContainer" class="space-y-2.5 sm:space-y-3 mb-4">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Feedback Area -->
+      <div id="qFeedbackBox" class="hidden rounded-2xl p-3 text-center font-display text-lg sm:text-xl transition-all">
+        <!-- Message here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FORFEIT / MIME TASK MODAL ================= -->
+  <div id="forfeitModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-4 border-rose-500 shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-center animate-shake relative overflow-hidden">
+      
+      <span class="px-4 py-1.5 bg-rose-100 text-rose-800 rounded-full font-display text-lg font-bold inline-block mb-3">
+        🎭 OOPS! MIME FORFEIT CHALLENGE!
+      </span>
+
+      <div class="w-20 h-20 bg-rose-100 text-rose-600 rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-inner mb-3">
+        🤪
+      </div>
+
+      <h3 class="font-display text-3xl sm:text-4xl text-slate-900 mb-2">
+        Wrong Answer!
+      </h3>
+      <p class="text-base sm:text-lg text-slate-600 font-semibold mb-4">
+        Your team doesn't move this turn. The representative must act out this manner task in front of the class!
+      </p>
+
+      <!-- The Funny Mime Task Card -->
+      <div class="bg-gradient-to-r from-amber-50 via-rose-50 to-amber-50 border-3 border-dashed border-rose-400 rounded-2xl p-6 mb-6 shadow-inner">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-rose-600 block mb-1">Your Performance Task:</span>
+        <div id="forfeitActionText" class="font-display text-2xl sm:text-3xl text-rose-900 font-bold leading-relaxed">
+          "Run slowly like a tired sloth in the corridor!"
+        </div>
+        <p class="text-xs text-slate-500 font-bold mt-2">👉 The class will watch and decide if your acting is good!</p>
+      </div>
+
+      <!-- Completed Task Button -->
+      <button onclick="completeForfeit()" class="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-display text-2xl rounded-2xl shadow-lg transition flex items-center justify-center gap-3">
+        <i class="fa-solid fa-check"></i>
+        <span>Task Completed! Next Team's Turn 👉</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= HAPPY FACE BONUS MODAL ================= -->
+  <div id="happyFaceModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-4 border-amber-400 shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-center animate-hop relative overflow-hidden">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100 text-amber-800 rounded-full font-display text-lg font-bold mb-3">
+        <span>😊</span> HAPPY FACE LUCKY ROLL!
+      </div>
+      <div class="text-6xl my-1 animate-bounce-gentle">🎉</div>
+      <h3 class="font-display text-3xl sm:text-4xl text-slate-900 mb-2">
+        Appoint a Group Challenge!
+      </h3>
+      <p class="text-base sm:text-lg text-slate-600 font-semibold mb-4">
+        Your team gets <strong class="text-emerald-600">+1 STEP FORWARD</strong> automatically! No questions needed!
+      </p>
+
+      <!-- Appointed Action Box -->
+      <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-3 border-dashed border-amber-400 rounded-2xl p-5 mb-5 shadow-inner">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-amber-700 block mb-1">Select Which Group Must Perform:</span>
+        <div id="happyTargetGroupButtons" class="flex flex-wrap items-center justify-center gap-2 my-3">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-amber-200">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-amber-600 block mb-1">Manner Action to Act Out:</span>
+          <div id="happyActionPrompt" class="font-display text-xl sm:text-2xl text-amber-900 font-bold">
+            "Wait in line IMPATIENTLY (sigh, tap foot, check watch)!"
+          </div>
+          <button onclick="randomizeHappyAction()" class="mt-2 px-3 py-1 bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-bold rounded-lg transition">
+            🔄 Spin Another Action
+          </button>
+        </div>
+      </div>
+
+      <button onclick="completeHappyFaceBonus()" class="w-full py-4 px-6 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-display text-2xl rounded-2xl shadow-lg transition flex items-center justify-center gap-3">
+        <i class="fa-solid fa-person-walking-arrow-right"></i>
+        <span>Action Done! Move +1 Step &amp; Continue 👉</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= SUPER STAR WHOLE CLASS MODAL ================= -->
+  <div id="superStarModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-4 border-purple-500 shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-center animate-hop relative overflow-hidden">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-100 text-purple-800 rounded-full font-display text-lg font-bold mb-3">
+        <span>⭐</span> SUPER STAR: WHOLE CLASS EVENT!
+      </div>
+      <div class="text-6xl my-1 animate-bounce-gentle">🌟</div>
+      <h3 class="font-display text-3xl sm:text-4xl text-purple-900 mb-2">
+        EVERYONE STAND UP!
+      </h3>
+      <p class="text-base sm:text-lg text-slate-600 font-semibold mb-3">
+        The whole class must do this action together! If performed correctly, teams can move <strong class="text-purple-600">+2 STEPS FORWARD</strong>!
+      </p>
+
+      <!-- Whole Class Action Card -->
+      <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-3 border-dashed border-purple-400 rounded-2xl p-5 mb-4 shadow-inner">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-purple-600 block mb-1">Teacher &amp; Class Manner Task:</span>
+        <div id="superStarActionPrompt" class="font-display text-xl sm:text-2xl text-purple-900 font-bold leading-relaxed">
+          "Chew food VERY POLITELY with mouth tightly closed, then wipe desk CLEANLY!" 🤐🧽
+        </div>
+        <button onclick="randomizeSuperStarAction()" class="mt-2.5 px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 text-xs font-bold rounded-lg transition">
+          🔄 Spin Another Class Action
+        </button>
+      </div>
+
+      <!-- Teacher Evaluation / Team Selection Panel -->
+      <div class="bg-slate-50 border-2 border-purple-200 rounded-2xl p-3 sm:p-4 mb-4 text-left">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+          <span class="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-purple-900 flex items-center gap-1.5">
+            <span>👩‍🏫</span> Teacher's Check: Select Teams That Did It Well:
+          </span>
+          <div class="flex items-center gap-1.5">
+            <button onclick="selectAllSuperStarTeams(true)" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg text-xs font-bold transition shadow-sm">
+              ✔ Select All (All 5)
+            </button>
+            <button onclick="selectAllSuperStarTeams(false)" class="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 rounded-lg text-xs font-bold transition shadow-sm">
+              ✕ Clear All
+            </button>
+          </div>
+        </div>
+
+        <!-- 5 Interactive Team Toggle Buttons -->
+        <div id="superStarTeamToggles" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <!-- Injected via JavaScript -->
+        </div>
+        <p class="text-[11px] text-slate-500 font-bold mt-2 text-center">
+          👉 Tap any team button to toggle them ON / OFF. Only checked teams will move +2 steps!
+        </p>
+      </div>
+
+      <button id="confirmSuperStarBtn" onclick="completeSuperStarBonus()" class="w-full py-4 px-6 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-display text-xl sm:text-2xl rounded-2xl shadow-lg transition flex items-center justify-center gap-3">
+        <i class="fa-solid fa-star"></i>
+        <span id="superStarConfirmBtnText">Move Selected Teams (+2 Steps) 👉</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= VICTORY / WINNER MODAL ================= -->
+  <div id="winnerModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-4 border-amber-400 shadow-2xl max-w-xl w-full p-8 text-center animate-hop">
+      <div class="text-7xl mb-2 animate-bounce-gentle">🏆</div>
+      <span class="px-4 py-1 bg-amber-100 text-amber-800 rounded-full font-display text-base font-bold">GAME OVER</span>
+      <h2 id="winnerTitle" class="font-display text-4xl sm:text-5xl text-slate-900 mt-2 mb-1">
+        Team Red Wins!
+      </h2>
+      <p class="text-lg text-slate-600 font-semibold mb-6">
+        Congratulations! You have mastered all the school rules and reached the finish line first!
+      </p>
+
+      <div id="winnerBanner" class="p-5 rounded-2xl bg-amber-500 text-white font-display text-3xl shadow-lg mb-6">
+        🌟 SCHOOL MANNERS CHAMPIONS 🌟
+      </div>
+
+      <button onclick="resetGame()" class="py-4 px-8 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-display text-2xl rounded-2xl shadow-lg transition">
+        <i class="fa-solid fa-rotate-right mr-2"></i> Play Another Round
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= HOW TO PLAY MODAL ================= -->
+  <div id="rulesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="toggleRulesModal()">
+    <div class="bg-white rounded-3xl border-4 border-slate-200 shadow-2xl max-w-xl w-full p-6 sm:p-8" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+        <h3 class="font-display text-2xl text-slate-900 flex items-center gap-2">
+          <span>📜</span> How to Play School Manners Quest
+        </h3>
+        <button onclick="toggleRulesModal()" class="text-slate-400 hover:text-slate-700 text-2xl p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-slate-700 text-sm sm:text-base">
+        <div class="flex items-start gap-3 bg-blue-50 p-3 rounded-xl">
+          <span class="text-2xl">1️⃣</span>
+          <p><strong>Roll the 6-Sided Dice:</strong> Rolls <strong>1, 2, 3, 4, 😊 Happy Face, or ⭐ Super Star</strong>.</p>
+        </div>
+        <div class="flex items-start gap-3 bg-emerald-50 p-3 rounded-xl">
+          <span class="text-2xl">2️⃣</span>
+          <p><strong>Numbers (1-4):</strong> Answer 1 question from 5 types (Adverb, Should/Shouldn't, In order to/not to, Verb collocations, or Find the Mistake). Correct = move that number!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-amber-50 p-3 rounded-xl">
+          <span class="text-2xl">3️⃣</span>
+          <p><strong>😊 Happy Face:</strong> Appoint any other group to act out a manner with an adverb. Move <strong>+1 step free</strong> (no questions needed)!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-purple-50 p-3 rounded-xl">
+          <span class="text-2xl">4️⃣</span>
+          <p><strong>⭐ Super Star:</strong> Whole class stands up to do the manner action! The teacher selects teams that performed correctly to advance <strong>+2 steps</strong>!</p>
+        </div>
+        <div class="flex items-start gap-3 bg-rose-50 p-3 rounded-xl">
+          <span class="text-2xl">5️⃣</span>
+          <p><strong>Wrong Answer = Mime Forfeit:</strong> No movement! The representative must perform the funny manner mime!</p>
+        </div>
+      </div>
+
+      <button onclick="toggleRulesModal()" class="mt-6 w-full py-3 bg-blue-600 text-white font-display text-xl rounded-xl">
+        Got it! Let's Play!
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= RANDOM FIRST TEAM ROULETTE MODAL ================= -->
+  <div id="starterModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-4 border-amber-400 shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-center animate-hop relative overflow-hidden">
+      
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100 text-amber-800 rounded-full font-display text-base sm:text-lg font-bold mb-3">
+        <span>🎲</span> STARTING TEAM RANDOMIZER
+      </div>
+
+      <h3 class="font-display text-3xl sm:text-4xl text-slate-900 mb-2">
+        Who Will Start First?
+      </h3>
+      <p class="text-sm sm:text-base text-slate-600 font-semibold mb-6">
+        Spin the wheel to pick Group #1! The remaining groups will follow in clockwise cycle.
+      </p>
+
+      <!-- 5 Team Carousel Cards -->
+      <div id="rouletteCardsContainer" class="grid grid-cols-5 gap-2 sm:gap-3 mb-6">
+        <div id="spinnerCard0" class="p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150">
+          <span class="text-3xl sm:text-4xl mb-1">🦁</span>
+          <span class="font-display text-xs sm:text-sm font-bold text-slate-800">Red</span>
+        </div>
+        <div id="spinnerCard1" class="p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150">
+          <span class="text-3xl sm:text-4xl mb-1">🐬</span>
+          <span class="font-display text-xs sm:text-sm font-bold text-slate-800">Blue</span>
+        </div>
+        <div id="spinnerCard2" class="p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150">
+          <span class="text-3xl sm:text-4xl mb-1">🐸</span>
+          <span class="font-display text-xs sm:text-sm font-bold text-slate-800">Green</span>
+        </div>
+        <div id="spinnerCard3" class="p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150">
+          <span class="text-3xl sm:text-4xl mb-1">⭐</span>
+          <span class="font-display text-xs sm:text-sm font-bold text-slate-800">Yellow</span>
+        </div>
+        <div id="spinnerCard4" class="p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150">
+          <span class="text-3xl sm:text-4xl mb-1">🦉</span>
+          <span class="font-display text-xs sm:text-sm font-bold text-slate-800">Purple</span>
+        </div>
+      </div>
+
+      <!-- Result Announcement Box -->
+      <div id="spinResultBox" class="hidden bg-gradient-to-r from-amber-50 to-orange-50 border-3 border-dashed border-amber-400 rounded-2xl p-4 sm:p-5 mb-6 text-center animate-hop">
+        <div class="text-xs uppercase tracking-widest font-extrabold text-amber-700">Winner Picked:</div>
+        <div id="pickedTeamBanner" class="font-display text-2xl sm:text-3xl font-bold my-1 text-slate-900">
+          🎉 Green Frogs Starts First!
+        </div>
+        <div id="cyclicalOrderPreview" class="text-xs sm:text-sm text-slate-600 font-bold mt-2 pt-2 border-t border-amber-200">
+          Turn Order: Green ➔ Yellow ➔ Purple ➔ Red ➔ Blue
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <button id="spinRouletteBtn" onclick="startRouletteSpin()" class="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-white font-display text-xl sm:text-2xl rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shuffle"></i>
+          <span>SPIN TO PICK #1!</span>
+        </button>
+
+        <button id="confirmStarterBtn" onclick="closeStarterModal()" class="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-display text-xl sm:text-2xl rounded-2xl shadow-lg transition hidden items-center justify-center gap-2">
+          <i class="fa-solid fa-play"></i>
+          <span>Start Quest with Picked Team! 👉</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* ================= Web Audio API Synthesizer ================= */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playTone(freq, type, duration, delay = 0) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const now = audioCtx.currentTime + delay;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+      } catch (e) {
+        console.debug('Audio error', e);
+      }
+    }
+
+    function playDiceRollSound() {
+      if (!soundEnabled) return;
+      for (let i = 0; i < 6; i++) {
+        playTone(300 + Math.random() * 200, 'square', 0.05, i * 0.08);
+      }
+    }
+
+    function playCorrectChime() {
+      if (!soundEnabled) return;
+      playTone(523.25, 'sine', 0.15, 0);     // C5
+      playTone(659.25, 'sine', 0.15, 0.1);   // E5
+      playTone(783.99, 'sine', 0.2, 0.2);    // G5
+      playTone(1046.50, 'sine', 0.4, 0.3);   // C6
+    }
+
+    function playWrongBuzzer() {
+      if (!soundEnabled) return;
+      playTone(200, 'sawtooth', 0.2, 0);
+      playTone(150, 'sawtooth', 0.35, 0.2);
+    }
+
+    function playFanfare() {
+      if (!soundEnabled) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+      notes.forEach((n, idx) => {
+        playTone(n, 'triangle', 0.25, idx * 0.14);
+      });
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      if (soundEnabled) {
+        icon.className = 'fa-solid fa-volume-high text-lg text-blue-600';
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark text-lg text-slate-400';
+      }
+    }
+
+    /* ================= 5 Teams Configuration ================= */
+    const TOTAL_TILES = 24;
+    const baseTeamsData = [
+      { id: 0, name: 'Red Lions', icon: '🦁', color: 'red', bgClass: 'bg-red-500', pos: 0 },
+      { id: 1, name: 'Blue Dolphins', icon: '🐬', color: 'blue', bgClass: 'bg-blue-500', pos: 0 },
+      { id: 2, name: 'Green Frogs', icon: '🐸', color: 'emerald', bgClass: 'bg-emerald-500', pos: 0 },
+      { id: 3, name: 'Yellow Stars', icon: '⭐', color: 'amber', bgClass: 'bg-amber-500', pos: 0 },
+      { id: 4, name: 'Purple Owls', icon: '🦉', color: 'purple', bgClass: 'bg-purple-500', pos: 0 }
+    ];
+
+    let teams = [...baseTeamsData];
+    let currentTeamIndex = 0;
+    let pendingDiceRoll = 0;
+    let rolledSpecial = null; // 'happy' or 'superstar' or null
+    let isRolling = false;
+    let isAnswering = false;
+    let isSpinningStarter = false;
+
+    /* ================= Random Starting Team Roulette Logic ================= */
+    function openStarterModal() {
+      if (isRolling || isAnswering || isSpinningStarter) return;
+      const modal = document.getElementById('starterModal');
+      document.getElementById('spinResultBox').classList.add('hidden');
+      document.getElementById('confirmStarterBtn').classList.add('hidden');
+      document.getElementById('confirmStarterBtn').classList.remove('flex');
+      const spinBtn = document.getElementById('spinRouletteBtn');
+      spinBtn.disabled = false;
+      spinBtn.classList.remove('opacity-50', 'pointer-events-none', 'hidden');
+
+      // Clear all active card rings
+      for (let i = 0; i < 5; i++) {
+        const card = document.getElementById(`spinnerCard${i}`);
+        if (card) {
+          card.className = 'p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150';
+        }
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      playTone(523, 'sine', 0.15);
+    }
+
+    function closeStarterModal() {
+      const modal = document.getElementById('starterModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function startRouletteSpin() {
+      if (isSpinningStarter) return;
+      isSpinningStarter = true;
+
+      const spinBtn = document.getElementById('spinRouletteBtn');
+      spinBtn.disabled = true;
+      spinBtn.classList.add('opacity-50', 'pointer-events-none');
+      document.getElementById('spinResultBox').classList.add('hidden');
+
+      let currentHighlit = 0;
+      let stepCount = 0;
+      // Random target total steps (between 25 and 35 steps)
+      const totalSteps = 25 + Math.floor(Math.random() * 10);
+      let stepDelay = 60;
+
+      function step() {
+        // Remove highlight from all
+        for (let i = 0; i < 5; i++) {
+          const card = document.getElementById(`spinnerCard${i}`);
+          if (card) {
+            card.className = 'p-3 sm:p-4 rounded-2xl border-3 border-slate-200 bg-slate-50 flex flex-col items-center justify-center transition-all duration-150';
+          }
+        }
+
+        // Highlight current
+        const targetCard = document.getElementById(`spinnerCard${currentHighlit}`);
+        if (targetCard) {
+          targetCard.className = 'p-3 sm:p-4 rounded-2xl border-4 border-amber-500 bg-amber-100 scale-110 shadow-lg flex flex-col items-center justify-center transition-all duration-150';
+        }
+
+        playTone(350 + currentHighlit * 60, 'square', 0.04);
+
+        stepCount++;
+        currentHighlit = (currentHighlit + 1) % 5;
+
+        if (stepCount < totalSteps) {
+          // Progressively slow down near the end
+          if (stepCount > totalSteps - 10) {
+            stepDelay += 28;
+          }
+          setTimeout(step, stepDelay);
+        } else {
+          // Stopped! Determine picked team id
+          const winnerId = (currentHighlit - 1 + 5) % 5;
+          finishRouletteSpin(winnerId);
+        }
+      }
+
+      step();
+    }
+
+    function finishRouletteSpin(winnerId) {
+      isSpinningStarter = false;
+
+      // Card highlight effect
+      for (let i = 0; i < 5; i++) {
+        const card = document.getElementById(`spinnerCard${i}`);
+        if (i === winnerId) {
+          card.className = 'p-3 sm:p-4 rounded-2xl border-4 border-emerald-500 bg-emerald-100 scale-110 shadow-2xl flex flex-col items-center justify-center transition-all duration-300 animate-hop';
+        } else {
+          card.className = 'p-3 sm:p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 opacity-60 flex flex-col items-center justify-center transition-all duration-150';
+        }
+      }
+
+      playFanfare();
+      fireConfetti(0.5, 0.4);
+
+      // Reorder teams cyclically starting from winnerId
+      reorderTeamsStartingFrom(winnerId);
+
+      // Update Result Announcement Box
+      const pickedTeam = baseTeamsData[winnerId];
+      const resultBox = document.getElementById('spinResultBox');
+      resultBox.classList.remove('hidden');
+
+      document.getElementById('pickedTeamBanner').innerHTML = `
+        <span class="text-3xl">${pickedTeam.icon}</span> 
+        <span class="text-emerald-700">${pickedTeam.name}</span> Starts as #1!
+      `;
+
+      const cycleNames = teams.map((t, idx) => `<span class="font-extrabold text-slate-800">${idx + 1}. ${t.icon} ${t.name}</span>`).join(' ➔ ');
+      document.getElementById('cyclicalOrderPreview').innerHTML = `
+        <div class="text-[11px] text-amber-800 uppercase tracking-wider mb-1">New Turn Sequence:</div>
+        <div>${cycleNames}</div>
+      `;
+
+      // Show Confirm Button, Hide Spin Button
+      document.getElementById('spinRouletteBtn').classList.add('hidden');
+      const confirmBtn = document.getElementById('confirmStarterBtn');
+      confirmBtn.classList.remove('hidden');
+      confirmBtn.classList.add('flex');
+    }
+
+    function reorderTeamsStartingFrom(startId) {
+      // Find where startId is in current baseTeamsData
+      const foundIdx = baseTeamsData.findIndex(t => t.id === startId);
+      if (foundIdx === -1) return;
+
+      // Cyclical reorder: start at foundIdx and wrap around
+      const reordered = [];
+      for (let i = 0; i < baseTeamsData.length; i++) {
+        const targetIdx = (foundIdx + i) % baseTeamsData.length;
+        // Keep their current board pos if game was already underway
+        const existingTeam = teams.find(t => t.id === baseTeamsData[targetIdx].id);
+        const curPos = existingTeam ? existingTeam.pos : 0;
+        reordered.push({ ...baseTeamsData[targetIdx], pos: curPos });
+      }
+
+      teams = reordered;
+      currentTeamIndex = 0; // The picked team plays 1st!
+
+      updateTurnSequenceUI();
+      updateTurnUI();
+      renderPlayerTokens();
+    }
+
+    function updateTurnSequenceUI() {
+      // Update top sequence banner
+      const sequenceText = teams.map((t, i) => `${t.icon} ${t.name.split(' ')[0]}`).join(' ➔ ');
+      const seqEl = document.getElementById('turnOrderSequenceText');
+      if (seqEl) seqEl.textContent = sequenceText;
+
+      // Update #1 to #5 order badges on cards
+      teams.forEach((team, turnIdx) => {
+        const badge = document.getElementById(`orderBadge${team.id}`);
+        if (badge) {
+          badge.textContent = `#${turnIdx + 1}`;
+          if (turnIdx === 0) {
+            badge.className = 'text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-amber-500 text-white shadow-sm';
+          } else {
+            badge.className = 'text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-slate-200 text-slate-700';
+          }
+        }
+      });
+    }
+
+    /* ================= Board Tile Definitions ================= */
+    /* Tile 0 is START (not counted as step #1). Numbered tiles are #1 to #24 */
+    const tileThemes = [
+      { id: 0, label: 'START', icon: '🏁', type: 'start', desc: 'All teams start here!' },
+      { id: 1, label: 'Classroom', icon: '✏️', type: 'normal', desc: 'Listen carefully' },
+      { id: 2, label: 'Corridor', icon: '🚶‍♂️', type: 'normal', desc: 'Walk slowly' },
+      { id: 3, label: 'Library', icon: '📖', type: 'normal', desc: 'Turn pages gently' },
+      { id: 4, label: 'Star Boost', icon: '⭐', type: 'boost', desc: 'Good manners!' },
+      { id: 5, label: 'Tuck Shop', icon: '🥪', type: 'normal', desc: 'Wait patiently' },
+      { id: 6, label: 'Lunchtime', icon: '🍱', type: 'normal', desc: 'Chew quietly' },
+      { id: 7, label: 'Wet Floor', icon: '⚠️', type: 'trap', desc: 'Careful! Don\'t slip' },
+      { id: 8, label: 'Staircase', icon: '🪜', type: 'normal', desc: 'Hold handrails' },
+      { id: 9, label: 'Playground', icon: '⚽', type: 'normal', desc: 'Play politely' },
+      { id: 10, label: 'Clean Desk', icon: '🧽', type: 'boost', desc: 'Tidy desks!' },
+      { id: 11, label: 'Hall Assembly', icon: '🏛️', type: 'normal', desc: 'Sit straight' },
+      { id: 12, label: 'Reading Desk', icon: '📚', type: 'normal', desc: 'Whisper softly' },
+      { id: 13, label: 'Banana Peel', icon: '🍌', type: 'trap', desc: 'Watch your step!' },
+      { id: 14, label: 'Tuck Shop Line', icon: '🪙', type: 'normal', desc: 'Queue patiently' },
+      { id: 15, label: 'No Shouting', icon: '🤫', type: 'normal', desc: 'Be considerate' },
+      { id: 16, label: 'Super Helper', icon: '🌟', type: 'boost', desc: 'Kind student!' },
+      { id: 17, label: 'Water Cooler', icon: '💧', type: 'normal', desc: 'Turn off tap tightly' },
+      { id: 18, label: 'Art Room', icon: '🎨', type: 'normal', desc: 'Pack up neatly' },
+      { id: 19, label: 'Fast Runner', icon: '🏃‍♂️', type: 'trap', desc: 'Don\'t run wild!' },
+      { id: 20, label: 'Clean Hands', icon: '🧼', type: 'boost', desc: 'Wash before lunch' },
+      { id: 21, label: 'Quiet Study', icon: '📝', type: 'normal', desc: 'Focus in class' },
+      { id: 22, label: 'Left Side', icon: '🚶‍♀️', type: 'normal', desc: 'Keep to left' },
+      { id: 23, label: 'Golden Trophy', icon: '👑', type: 'boost', desc: 'Almost there!' },
+      { id: 24, label: 'GOAL!', icon: '🏆', type: 'finish', desc: 'Manners Masters!' }
+    ];
+
+    /* Reusable SVG graphics to visually illustrate manners and prevent any broken external URLs */
+    const visualSVGs = {
+      eatPolitely: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="45" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>
+          <ellipse cx="50" cy="62" rx="30" ry="14" fill="#FFFFFF" stroke="#D97706" stroke-width="2"/>
+          <circle cx="38" cy="60" r="7" fill="#F87171"/>
+          <circle cx="58" cy="59" r="6" fill="#34D399"/>
+          <path d="M40 38 Q50 30 60 38" stroke="#78350F" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="36" cy="42" r="3" fill="#78350F"/>
+          <circle cx="64" cy="42" r="3" fill="#78350F"/>
+          <path d="M44 48 Q50 51 56 48" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="50" y="88" font-size="9" font-family="sans-serif" font-weight="bold" fill="#B45309" text-anchor="middle">Mouth Closed 🤐</text>
+        </svg>`,
+      libraryQuiet: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="25" width="70" height="52" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="3"/>
+          <path d="M50 25 L50 77" stroke="#1D4ED8" stroke-width="3"/>
+          <path d="M22 36 H43 M22 46 H43 M22 56 H38" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M57 36 H78 M57 46 H78 M57 56 H73" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="76" cy="24" r="14" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+          <text x="76" y="28" font-size="12" font-family="sans-serif" font-weight="bold" fill="#DC2626" text-anchor="middle">🤫</text>
+          <text x="50" y="90" font-size="9" font-family="sans-serif" font-weight="bold" fill="#1E40AF" text-anchor="middle">Quiet Reading</text>
+        </svg>`,
+      wetFloorSlip: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 12 L88 78 H12 Z" fill="#FEF08A" stroke="#CA8A04" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="50" cy="35" r="5" fill="#854D0E"/>
+          <path d="M50 43 L45 56 L35 58 M50 48 L62 55 L70 50 M45 56 L42 70" stroke="#854D0E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M28 72 Q38 68 50 72 Q62 76 72 72" stroke="#0284C7" stroke-width="3" stroke-linecap="round"/>
+          <text x="50" y="92" font-size="8.5" font-family="sans-serif" font-weight="bold" fill="#A16207" text-anchor="middle">Caution Wet ⚠️</text>
+        </svg>`,
+      queuePatient: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="20" width="80" height="60" rx="12" fill="#F0FDF4" stroke="#16A34A" stroke-width="2.5"/>
+          <circle cx="30" cy="40" r="7" fill="#3B82F6"/>
+          <path d="M30 47 V65" stroke="#3B82F6" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="52" cy="40" r="7" fill="#10B981"/>
+          <path d="M52 47 V65" stroke="#10B981" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="74" cy="40" r="7" fill="#F59E0B"/>
+          <path d="M74 47 V65" stroke="#F59E0B" stroke-width="4" stroke-linecap="round"/>
+          <path d="M22 72 H80" stroke="#059669" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="50" y="90" font-size="9" font-family="sans-serif" font-weight="bold" fill="#15803D" text-anchor="middle">Line Up Patiently 🚶</text>
+        </svg>`,
+      wipeDesk: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="38" width="70" height="32" rx="4" fill="#E2E8F0" stroke="#64748B" stroke-width="2.5"/>
+          <rect x="42" y="30" width="22" height="14" rx="4" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
+          <path d="M25 48 Q35 44 45 48 Q55 52 65 48" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"/>
+          <text x="24" y="32" font-size="12">✨</text>
+          <text x="76" y="36" font-size="12">✨</text>
+          <text x="50" y="88" font-size="9" font-family="sans-serif" font-weight="bold" fill="#0369A1" text-anchor="middle">Wipe Cleanly 🧽</text>
+        </svg>`,
+      listenClass: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="45" cy="50" r="28" fill="#EDE9FE" stroke="#7C3AED" stroke-width="3"/>
+          <circle cx="45" cy="42" r="10" fill="#8B5CF6"/>
+          <path d="M30 68 Q45 56 60 68" stroke="#7C3AED" stroke-width="4" stroke-linecap="round"/>
+          <path d="M72 38 Q82 46 72 56 M78 30 Q92 46 78 64" stroke="#EC4899" stroke-width="3" stroke-linecap="round"/>
+          <text x="50" y="90" font-size="9" font-family="sans-serif" font-weight="bold" fill="#6D28D9" text-anchor="middle">Listen Carefully 👂</text>
+        </svg>`,
+      stairsSafety: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 78 H35 V62 H55 V46 H75 V30 H88" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 62 L85 18" stroke="#3B82F6" stroke-width="3" stroke-dasharray="4 3"/>
+          <circle cx="50" cy="30" r="6" fill="#10B981"/>
+          <text x="50" y="90" font-size="8.5" font-family="sans-serif" font-weight="bold" fill="#047857" text-anchor="middle">Keep Left on Stairs 🪜</text>
+        </svg>`,
+      waterTap: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 50 H55 V60 H40 V72" stroke="#64748B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="42" y="36" width="18" height="10" rx="3" fill="#EF4444" stroke="#B91C1C" stroke-width="2"/>
+          <circle cx="40" cy="80" r="3.5" fill="#0284C7"/>
+          <text x="50" y="92" font-size="8.5" font-family="sans-serif" font-weight="bold" fill="#0369A1" text-anchor="middle">Turn Off Tightly 💧</text>
+        </svg>`,
+      superShield: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 14 L80 26 V52 Q80 76 50 88 Q20 76 20 52 V26 Z" fill="#FEE2E2" stroke="#DC2626" stroke-width="3.5"/>
+          <path d="M35 38 L65 64 M65 38 L35 64" stroke="#B91C1C" stroke-width="5" stroke-linecap="round"/>
+          <text x="50" y="94" font-size="8" font-family="sans-serif" font-weight="bold" fill="#991B1B" text-anchor="middle">in order NOT to 🛡️</text>
+        </svg>`,
+      bullseyeTarget: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="38" fill="#DCFCE7" stroke="#16A34A" stroke-width="3"/>
+          <circle cx="50" cy="50" r="26" fill="#FFFFFF" stroke="#16A34A" stroke-width="2.5"/>
+          <circle cx="50" cy="50" r="14" fill="#EF4444"/>
+          <circle cx="50" cy="50" r="5" fill="#FFFFFF"/>
+          <path d="M22 22 L45 45" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round"/>
+          <text x="50" y="94" font-size="8.5" font-family="sans-serif" font-weight="bold" fill="#166534" text-anchor="middle">in order to (Aim) 🎯</text>
+        </svg>`,
+      detectiveInspect: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="44" cy="44" r="26" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5"/>
+          <line x1="63" y1="63" x2="84" y2="84" stroke="#78350F" stroke-width="6" stroke-linecap="round"/>
+          <text x="44" y="49" font-size="16" font-family="sans-serif" font-weight="bold" fill="#B45309" text-anchor="middle">🔍</text>
+          <text x="50" y="94" font-size="8.5" font-family="sans-serif" font-weight="bold" fill="#92400E" text-anchor="middle">Spot the Mistake!</text>
+        </svg>`,
+      raiseHandPolite: `
+        <svg viewBox="0 0 100 100" class="w-20 h-20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="18" y="58" width="64" height="26" rx="6" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2"/>
+          <circle cx="50" cy="46" r="11" fill="#FBCFE8"/>
+          <path d="M62 48 L72 20" stroke="#DB2777" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="72" cy="18" r="4" fill="#DB2777"/>
+          <text x="32" y="32" font-size="12">🙋‍♂️</text>
+          <text x="50" y="94" font-size="8.5" font-family="sans-serif" font-weight="bold" fill="#9D174D" text-anchor="middle">Raise Hands Politely</text>
+        </svg>`
+    };
+
+    /* 30 Complete P5 Questions: 6 per question type across 5 school stations */
+    const questionBank = [
+      // ================= TYPE 1: ADVERBS OF MANNER (Questions 1 - 6) =================
+      {
+        id: 1,
+        type: 'adverb',
+        category: '🏷️ Type 1: Adverb of Manner',
+        situation: '🍱 Lunchtime in Classroom',
+        svgKey: 'eatPolitely',
+        visualHint: 'Look at the picture: chew with lips closed and without loud clattering sounds!',
+        prompt: 'At lunchtime, we should chew our food _______ with our mouths closed.',
+        options: [
+          { text: 'quietly', correct: true },
+          { text: 'quiet', correct: false },
+          { text: 'noisy', correct: false }
+        ],
+        hint: 'Use an adverb ending in -ly (quiet + ly) to tell HOW we should chew!'
+      },
+      {
+        id: 2,
+        type: 'adverb',
+        category: '🏷️ Type 1: Adverb of Manner',
+        situation: '🥪 Tuck Shop Queue',
+        svgKey: 'queuePatient',
+        visualHint: 'Look at the queue: waiting calmly without pushing or complaining.',
+        prompt: 'We should wait _______ in the tuck shop queue until it is our turn.',
+        options: [
+          { text: 'patiently', correct: true },
+          { text: 'impatiently', correct: false },
+          { text: 'patient', correct: false }
+        ],
+        hint: 'Patient (adjective) + ly = patiently (with good patience)!'
+      },
+      {
+        id: 3,
+        type: 'adverb',
+        category: '🏷️ Type 1: Adverb of Manner',
+        situation: '📖 School Library',
+        svgKey: 'libraryQuiet',
+        visualHint: 'Notice the quiet reading room: turning delicate pages without ripping them.',
+        prompt: 'In the school library, we should turn book pages _______ so they do not tear.',
+        options: [
+          { text: 'gently', correct: true },
+          { text: 'gentle', correct: false },
+          { text: 'roughly', correct: false }
+        ],
+        hint: 'Gentle ➔ gently. We handle books in a kind and gentle way.'
+      },
+      {
+        id: 4,
+        type: 'adverb',
+        category: '🏷️ Type 1: Adverb of Manner',
+        situation: '🍱 Lunch Cleanup',
+        svgKey: 'wipeDesk',
+        visualHint: 'See the sparkling clean desk after eating lunch.',
+        prompt: 'After finishing our lunchboxes, we should wipe our desks _______.',
+        options: [
+          { text: 'cleanly', correct: true },
+          { text: 'clean', correct: false },
+          { text: 'dirtily', correct: false }
+        ],
+        hint: 'Clean + ly = cleanly! It describes how we wipe the desk.'
+      },
+      {
+        id: 5,
+        type: 'adverb',
+        category: '🏷️ Type 1: Adverb of Manner',
+        situation: '🏛️ School Hall Assembly',
+        svgKey: 'listenClass',
+        visualHint: 'Applauding the student choir after an amazing performance.',
+        prompt: 'When our classmates finish their performance on stage, we should clap _______.',
+        options: [
+          { text: 'enthusiastically', correct: true },
+          { text: 'enthusiastic', correct: false },
+          { text: 'reluctant', correct: false }
+        ],
+        hint: 'Clap with great energy and excitement: enthusiastically!'
+      },
+      {
+        id: 6,
+        type: 'adverb',
+        category: '🏷️ Type 1: Adverb of Manner',
+        situation: '🚶 Staircase & Corridor',
+        svgKey: 'stairsSafety',
+        visualHint: 'Holding handrails and taking one step at a time.',
+        prompt: 'The stairs are steep. All students should walk _______ down to the playground.',
+        options: [
+          { text: 'carefully', correct: true },
+          { text: 'careful', correct: false },
+          { text: 'carelessly', correct: false }
+        ],
+        hint: 'Careful (adjective) + ly = carefully (showing care for safety).'
+      },
+
+      // ================= TYPE 2: SHOULD VS. SHOULDN'T (Questions 7 - 12) =================
+      {
+        id: 7,
+        type: 'modal',
+        category: '🏷️ Type 2: Should vs. Shouldn\'t',
+        situation: '🚶 Corridors',
+        svgKey: 'wetFloorSlip',
+        visualHint: 'Running fast in the narrow corridor is dangerous for everyone.',
+        prompt: 'We _______ run or push our classmates along the narrow corridor.',
+        options: [
+          { text: 'shouldn\'t', correct: true },
+          { text: 'should', correct: false },
+          { text: 'must to', correct: false }
+        ],
+        hint: 'Running into others can cause injuries. We shouldn\'t do it!'
+      },
+      {
+        id: 8,
+        type: 'modal',
+        category: '🏷️ Type 2: Should vs. Shouldn\'t',
+        situation: '✏️ Classroom Lesson',
+        svgKey: 'raiseHandPolite',
+        visualHint: 'Notice the student raising one hand before speaking out.',
+        prompt: 'During lessons, we _______ raise our hands politely before asking a question.',
+        options: [
+          { text: 'should', correct: true },
+          { text: 'shouldn\'t', correct: false },
+          { text: 'cannot', correct: false }
+        ],
+        hint: 'Raising hands is good classroom etiquette. We should do it!'
+      },
+      {
+        id: 9,
+        type: 'modal',
+        category: '🏷️ Type 2: Should vs. Shouldn\'t',
+        situation: '🍱 Lunchtime at Desks',
+        svgKey: 'eatPolitely',
+        visualHint: 'Speaking with mouth full can spit food across the table!',
+        prompt: 'We _______ talk loudly with a mouth full of rice and vegetables.',
+        options: [
+          { text: 'shouldn\'t', correct: true },
+          { text: 'should', correct: false },
+          { text: 'always', correct: false }
+        ],
+        hint: 'Talking with food in your mouth is impolite and messy!'
+      },
+      {
+        id: 10,
+        type: 'modal',
+        category: '🏷️ Type 2: Should vs. Shouldn\'t',
+        situation: '📖 School Library',
+        svgKey: 'libraryQuiet',
+        visualHint: 'Drinks and food spill easily on expensive library storybooks.',
+        prompt: 'Students _______ bring open cups of juice or snacks into the library.',
+        options: [
+          { text: 'shouldn\'t', correct: true },
+          { text: 'should', correct: false },
+          { text: 'must', correct: false }
+        ],
+        hint: 'Food and drinks damage books! We shouldn\'t bring them in.'
+      },
+      {
+        id: 11,
+        type: 'modal',
+        category: '🏷️ Type 2: Should vs. Shouldn\'t',
+        situation: '💧 Water Cooler Area',
+        svgKey: 'waterTap',
+        visualHint: 'Tightly closing the tap so precious drinking water is saved.',
+        prompt: 'After filling our water bottles, we _______ turn off the tap tightly.',
+        options: [
+          { text: 'should', correct: true },
+          { text: 'shouldn\'t', correct: false },
+          { text: 'never', correct: false }
+        ],
+        hint: 'Conserving water is a good habit. We should turn it off tightly!'
+      },
+      {
+        id: 12,
+        type: 'modal',
+        category: '🏷️ Type 2: Should vs. Shouldn\'t',
+        situation: '🏛️ Morning Assembly',
+        svgKey: 'listenClass',
+        visualHint: 'Headmaster giving morning announcements from the podium.',
+        prompt: 'We _______ whisper or giggle noisily while the teacher is speaking on stage.',
+        options: [
+          { text: 'shouldn\'t', correct: true },
+          { text: 'should', correct: false },
+          { text: 'ought', correct: false }
+        ],
+        hint: 'Whispering interrupts the assembly. We shouldn\'t do it!'
+      },
+
+      // ================= TYPE 3: IN ORDER TO VS. IN ORDER NOT TO (Questions 13 - 18) =================
+      {
+        id: 13,
+        type: 'purpose',
+        category: '🏷️ Type 3: In order to / In order not to',
+        situation: '🚶 Wet Corridor Floor',
+        svgKey: 'superShield',
+        visualHint: 'The yellow floor is slippery: shield gesture (🙅‍♂️) to prevent falling!',
+        prompt: 'We should walk slowly on rainy days _______ slip on the wet floor.',
+        options: [
+          { text: 'in order not to', correct: true },
+          { text: 'in order to', correct: false },
+          { text: 'in order for', correct: false }
+        ],
+        hint: 'Slipping is an accident we want to PREVENT: use "in order not to"!'
+      },
+      {
+        id: 14,
+        type: 'purpose',
+        category: '🏷️ Type 3: In order to / In order not to',
+        situation: '✏️ English Lesson',
+        svgKey: 'bullseyeTarget',
+        visualHint: 'Aiming high for the exam: target arrow gesture (🎯)!',
+        prompt: 'We listen attentively to Miss Chan _______ understand the grammar rules.',
+        options: [
+          { text: 'in order to', correct: true },
+          { text: 'in order not to', correct: false },
+          { text: 'so in order to', correct: false }
+        ],
+        hint: 'Understanding the lesson is a positive learning goal: use "in order to"!'
+      },
+      {
+        id: 15,
+        type: 'purpose',
+        category: '🏷️ Type 3: In order to / In order not to',
+        situation: '📖 Study Desk in Library',
+        svgKey: 'superShield',
+        visualHint: 'Speaking in a whisper so you do not break others\' concentration.',
+        prompt: 'Jason speaks in a low whisper _______ disturb his classmates who are reading.',
+        options: [
+          { text: 'in order not to', correct: true },
+          { text: 'in order to', correct: false },
+          { text: 'in order to not', correct: false }
+        ],
+        hint: 'Disturbing readers is bad! Use "in order not to" (remember: NOT before TO)!'
+      },
+      {
+        id: 16,
+        type: 'purpose',
+        category: '🏷️ Type 3: In order to / In order not to',
+        situation: '🍱 Classroom Lunch',
+        svgKey: 'superShield',
+        visualHint: 'Spilling hot soup could burn your hands or classmates!',
+        prompt: 'We carry our soup bowl with both hands _______ spill it onto our desk.',
+        options: [
+          { text: 'in order not to', correct: true },
+          { text: 'in order to', correct: false },
+          { text: 'so to not', correct: false }
+        ],
+        hint: 'Preventing a messy spill: use "in order not to"!'
+      },
+      {
+        id: 17,
+        type: 'purpose',
+        category: '🏷️ Type 3: In order to / In order not to',
+        situation: '🥪 Tuck Shop Queue',
+        svgKey: 'bullseyeTarget',
+        visualHint: 'Buying delicious sandwiches and milk safely and orderly.',
+        prompt: 'Students line up in single file _______ buy their recess snacks safely.',
+        options: [
+          { text: 'in order to', correct: true },
+          { text: 'in order not to', correct: false },
+          { text: 'in order for to', correct: false }
+        ],
+        hint: 'Buying snacks safely is the goal (🎯): use "in order to"!'
+      },
+      {
+        id: 18,
+        type: 'purpose',
+        category: '🏷️ Type 3: In order to / In order not to',
+        situation: '💧 Washroom & Basin',
+        svgKey: 'superShield',
+        visualHint: 'Stopping drips so that water is not wasted.',
+        prompt: 'We shut the tap firmly _______ waste precious water.',
+        options: [
+          { text: 'in order not to', correct: true },
+          { text: 'in order to', correct: false },
+          { text: 'in order to not', correct: false }
+        ],
+        hint: 'Waste = bad result to avoid! Use "in order not to"!'
+      },
+
+      // ================= TYPE 4: VERB + ADVERB COLLOCATIONS (Questions 19 - 24) =================
+      {
+        id: 19,
+        type: 'collocation',
+        category: '🏷️ Type 4: Verb + Adverb Collocation',
+        situation: '📖 Library Books',
+        svgKey: 'libraryQuiet',
+        visualHint: 'Flipping through paper pages without tearing them.',
+        prompt: 'Which verb matches best? "We should _______ book pages gently."',
+        options: [
+          { text: 'turn', correct: true },
+          { text: 'kick', correct: false },
+          { text: 'drop', correct: false }
+        ],
+        hint: 'We "turn" pages gently in books!'
+      },
+      {
+        id: 20,
+        type: 'collocation',
+        category: '🏷️ Type 4: Verb + Adverb Collocation',
+        situation: '🍱 Eating Lunch at Desks',
+        svgKey: 'wipeDesk',
+        visualHint: 'Using a clean damp cloth on the surface of the desk.',
+        prompt: 'Which verb matches best? "We should _______ our desks cleanly with a cloth."',
+        options: [
+          { text: 'wipe', correct: true },
+          { text: 'shout', correct: false },
+          { text: 'bite', correct: false }
+        ],
+        hint: 'We "wipe" our desks cleanly after eating meals!'
+      },
+      {
+        id: 21,
+        type: 'collocation',
+        category: '🏷️ Type 4: Verb + Adverb Collocation',
+        situation: '🚶 Staircase Handrail',
+        svgKey: 'stairsSafety',
+        visualHint: 'Gripping the safety handrail firmly with your hand.',
+        prompt: 'Which verb matches best? "We should _______ the handrail tightly on the stairs."',
+        options: [
+          { text: 'hold', correct: true },
+          { text: 'whisper', correct: false },
+          { text: 'eat', correct: false }
+        ],
+        hint: 'We "hold" the handrail tightly for balance.'
+      },
+      {
+        id: 22,
+        type: 'collocation',
+        category: '🏷️ Type 4: Verb + Adverb Collocation',
+        situation: '✏️ Lesson Discussions',
+        svgKey: 'raiseHandPolite',
+        visualHint: 'Raising an arm straight up in class.',
+        prompt: 'Which verb matches best? "Students should _______ their hands politely to answer."',
+        options: [
+          { text: 'raise', correct: true },
+          { text: 'throw', correct: false },
+          { text: 'slide', correct: false }
+        ],
+        hint: 'We "raise" our hands politely before speaking!'
+      },
+      {
+        id: 23,
+        type: 'collocation',
+        category: '🏷️ Type 4: Verb + Adverb Collocation',
+        situation: '🏛️ Hall Assembly',
+        svgKey: 'listenClass',
+        visualHint: 'Sitting with good posture without slouching or lying down.',
+        prompt: 'Which verb matches best? "During the assembly, we should _______ straight on the floor."',
+        options: [
+          { text: 'sit', correct: true },
+          { text: 'run', correct: false },
+          { text: 'spill', correct: false }
+        ],
+        hint: 'We "sit" straight and quietly during assembly.'
+      },
+      {
+        id: 24,
+        type: 'collocation',
+        category: '🏷️ Type 4: Verb + Adverb Collocation',
+        situation: '🥪 Tuck Shop Window',
+        svgKey: 'queuePatient',
+        visualHint: 'Remaining calm in the queue line.',
+        prompt: 'Which verb matches best? "We should _______ patiently in line for lunchboxes."',
+        options: [
+          { text: 'wait', correct: true },
+          { text: 'shout', correct: false },
+          { text: 'rush', correct: false }
+        ],
+        hint: 'We "wait" or "queue" patiently in line.'
+      },
+
+      // ================= TYPE 5: SPOT THE MISTAKE / GRAMMAR DETECTIVE (Questions 25 - 30) =================
+      {
+        id: 25,
+        type: 'detective',
+        category: '🏷️ Type 5: Spot the Mistake (Detective)',
+        situation: '🚶 Corridor Rules',
+        svgKey: 'detectiveInspect',
+        visualHint: 'Detective clue: Adjective vs. Adverb! How do we walk?',
+        prompt: 'Spot the mistake: "We should walk careful along the corridor."',
+        options: [
+          { text: '"careful" should be "carefully"', correct: true },
+          { text: '"walk" should be "walking"', correct: false },
+          { text: '"should" should be "shouldn\'t"', correct: false }
+        ],
+        hint: 'We need an adverb of manner ending in -ly to describe the verb "walk"!'
+      },
+      {
+        id: 26,
+        type: 'detective',
+        category: '🏷️ Type 5: Spot the Mistake (Detective)',
+        situation: '🍱 Lunch Rules',
+        svgKey: 'detectiveInspect',
+        visualHint: 'Detective clue: Base verb rule! What happens to verbs after shouldn\'t?',
+        prompt: 'Spot the mistake: "Students shouldn\'t running between classroom desks."',
+        options: [
+          { text: '"running" should be "run"', correct: true },
+          { text: '"desks" should be "desk"', correct: false },
+          { text: '"between" should be "on"', correct: false }
+        ],
+        hint: 'Base Verb Rule: Never add -ing or -ed after should or shouldn\'t!'
+      },
+      {
+        id: 27,
+        type: 'detective',
+        category: '🏷️ Type 5: Spot the Mistake (Detective)',
+        situation: '🚶 Wet Stairs',
+        svgKey: 'detectiveInspect',
+        visualHint: 'Detective clue: Word order trap! Where does "not" belong?',
+        prompt: 'Spot the word order error: "We hold the handrail in order to not slip."',
+        options: [
+          { text: '"in order to not" ➔ "in order not to"', correct: true },
+          { text: '"handrail" is spelled wrong', correct: false },
+          { text: '"hold" should be "holds"', correct: false }
+        ],
+        hint: 'Shield rule: "not" MUST come before "to"! Say: "in order NOT to"!'
+      },
+      {
+        id: 28,
+        type: 'detective',
+        category: '🏷️ Type 5: Spot the Mistake (Detective)',
+        situation: '📖 Library Etiquette',
+        svgKey: 'detectiveInspect',
+        visualHint: 'Detective clue: Meaning test! Is shouting loudly allowed in a library?',
+        prompt: 'Spot the meaning mistake: "We should shout loudly in the library in order to read."',
+        options: [
+          { text: 'Change "should" to "shouldn\'t"', correct: true },
+          { text: 'Change "library" to "playground"', correct: false },
+          { text: 'Change "read" to "reading"', correct: false }
+        ],
+        hint: 'Check the meaning: Shouting loudly is rude in a quiet library!'
+      },
+      {
+        id: 29,
+        type: 'detective',
+        category: '🏷️ Type 5: Spot the Mistake (Detective)',
+        situation: '✏️ Spelling Detective',
+        svgKey: 'detectiveInspect',
+        visualHint: 'Detective clue: Check the spelling of the -ly adverb closely!',
+        prompt: 'Which adverb of manner has a spelling error?',
+        options: [
+          { text: '"politiely" (extra "i")', correct: true },
+          { text: '"quietly"', correct: false },
+          { text: '"neatly"', correct: false }
+        ],
+        hint: 'Polite + ly = politely. There is no extra "i" before the "e"!'
+      },
+      {
+        id: 30,
+        type: 'detective',
+        category: '🏷️ Type 5: Spot the Mistake (Detective)',
+        situation: '🥪 Recess Queue',
+        svgKey: 'detectiveInspect',
+        visualHint: 'Detective clue: Infinitives after "in order to" require base verbs!',
+        prompt: 'Spot the mistake: "We queue up patiently in order to bought our food."',
+        options: [
+          { text: '"bought" should be base verb "buy"', correct: true },
+          { text: '"patiently" should be "patient"', correct: false },
+          { text: '"queue" should be "queuing"', correct: false }
+        ],
+        hint: 'After "in order to", always keep the verb in its original base form!'
+      }
+    ];
+
+    /* ================= Manner Tasks for Happy Face and Super Star ================= */
+    const happyFaceTasks = [
+      "🎭 ACTION CHALLENGE: Walk in slow motion across the front like a sleepy robot! 🤖",
+      "🎭 ACTION CHALLENGE: Show the class how to chew food VERY POLITELY with mouth closed! 🤐",
+      "🎭 ACTION CHALLENGE: Pretend you are in a long queue waiting IMPATIENTLY (sigh & tap foot)! 😤",
+      "🎭 ACTION CHALLENGE: Pretend you are in a long queue waiting PATIENTLY (stand straight & smile)! 🧘‍♂️",
+      "🎭 ACTION CHALLENGE: Pretend to turn the pages of a giant book VERY GENTLY! 📖",
+      "🎭 ACTION CHALLENGE: Wipe your desk CLEANLY and vigorously with an imaginary cloth! 🧽",
+      "🎭 ACTION CHALLENGE: Run in place VERY SLOWLY as if running through sticky honey! 🍯",
+      "🎭 ACTION CHALLENGE: Whisper VERY SOFTLY: 'I always listen carefully in class!' 🤫"
+    ];
+
+    const superStarClassTasks = [
+      "🌟 WHOLE CLASS TASK: Everyone sit up straight and clap ENTHUSIASTICALLY together! 👏",
+      "🌟 WHOLE CLASS TASK: Everyone make the Superhero Shield 🙅‍♂️ and whisper 'IN ORDER NOT TO' softly!",
+      "🌟 WHOLE CLASS TASK: Everyone mime chewing lunch VERY QUIETLY with both hands on desk! 🍱",
+      "🌟 WHOLE CLASS TASK: Everyone raise your right hand VERY POLITELY and smile at teacher! 🙋‍♂️",
+      "🌟 WHOLE CLASS TASK: Everyone march on the spot VERY SAFELY and whisper '1, 2, 3... quiet!' 🚶‍♂️"
+    ];
+
+    /* ================= Forfeit Tasks for Wrong Answers ================= */
+    const forfeitTasks = [
+      "🎭 FORFEIT MIME: Walk slowly like a tired sloth in the corridor! 🦥",
+      "🎭 FORFEIT MIME: Pretend to eat lunch VERY NOISILY like a wild monkey! 🐒",
+      "🎭 FORFEIT MIME: Act like an IMPATIENT student tapping feet in the tuck shop! ⏳",
+      "🎭 FORFEIT MIME: Say 'I shouldn\'t run in the corridor' in a funny squeaky voice! 🐭",
+      "🎭 FORFEIT MIME: Turn imaginary book pages VERY GENTLY like a librarian! 📚"
+    ];
+
+    /* ================= Board Generation ================= */
+    function renderBoard() {
+      const boardContainer = document.getElementById('boardTrack');
+      boardContainer.innerHTML = '';
+
+      tileThemes.forEach(tile => {
+        let bgStyle = 'bg-slate-50 border-slate-300 text-slate-700';
+        let badgeHtml = `<span class="text-[10px] sm:text-xs font-display font-bold text-slate-400">#${tile.id}</span>`;
+
+        if (tile.type === 'start') {
+          bgStyle = 'bg-gradient-to-br from-indigo-500 to-blue-600 border-blue-700 text-white font-bold shadow-md';
+          badgeHtml = `<span class="px-1.5 py-0.5 rounded-md bg-white text-indigo-700 text-[10px] font-black tracking-wider">START</span>`;
+        } else if (tile.type === 'finish') {
+          bgStyle = 'bg-gradient-to-br from-amber-400 to-amber-500 border-amber-600 text-white font-bold shadow-lg';
+          badgeHtml = `<span class="px-1.5 py-0.5 rounded-md bg-amber-900/30 text-white text-[10px] font-black tracking-wider">GOAL #24</span>`;
+        } else if (tile.type === 'boost') {
+          bgStyle = 'bg-emerald-50 border-emerald-400 text-emerald-800';
+        } else if (tile.type === 'trap') {
+          bgStyle = 'bg-rose-50 border-rose-300 text-rose-800';
+        }
+
+        const tileEl = document.createElement('div');
+        tileEl.id = `tile-${tile.id}`;
+        tileEl.className = `tile ${bgStyle} border-2 rounded-2xl p-1.5 sm:p-2 flex flex-col justify-between items-center text-center shadow-sm relative min-h-[68px] sm:min-h-[82px]`;
+
+        tileEl.innerHTML = `
+          <div class="flex items-center justify-between w-full px-1">
+            ${badgeHtml}
+            <span class="text-xs sm:text-sm">${tile.icon}</span>
+          </div>
+          <div class="font-display text-[11px] sm:text-xs leading-tight font-bold line-clamp-1 ${tile.type === 'start' ? 'text-white' : ''}">${tile.label}</div>
+          
+          <!-- Tokens Container inside tile -->
+          <div id="tokens-slot-${tile.id}" class="flex items-center justify-center gap-1 flex-wrap min-h-[22px] w-full mt-1"></div>
+        `;
+
+        boardContainer.appendChild(tileEl);
+      });
+
+      renderPlayerTokens();
+    }
+
+    /* ================= Render Tokens on Board ================= */
+    function renderPlayerTokens() {
+      for (let i = 0; i <= TOTAL_TILES; i++) {
+        const slot = document.getElementById(`tokens-slot-${i}`);
+        if (slot) slot.innerHTML = '';
+      }
+
+      teams.forEach(team => {
+        const slot = document.getElementById(`tokens-slot-${team.pos}`);
+        if (slot) {
+          const token = document.createElement('span');
+          token.className = `player-token inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-xs sm:text-sm border-2 border-white shadow-md ${team.bgClass}`;
+          token.textContent = team.icon;
+          token.title = `${team.name} (${team.pos === 0 ? 'START' : 'Tile ' + team.pos})`;
+          slot.appendChild(token);
+        }
+
+        const posLbl = document.getElementById(`posLabel${team.id}`);
+        if (posLbl) {
+          posLbl.textContent = team.pos === 0 ? 'START' : `Tile ${team.pos}`;
+        }
+      });
+
+      updateRankings();
+    }
+
+    function updateRankings() {
+      const sorted = [...teams].sort((a, b) => b.pos - a.pos);
+      sorted.forEach((team, idx) => {
+        const badge = document.getElementById(`rankBadge${team.id}`);
+        if (badge) {
+          badge.textContent = `${idx + 1}${getOrdinal(idx + 1)}`;
+        }
+      });
+    }
+
+    function getOrdinal(n) {
+      if (n === 1) return 'st';
+      if (n === 2) return 'nd';
+      if (n === 3) return 'rd';
+      return 'th';
+    }
+
+    /* ================= 6-Sided Custom Dice Logic =================
+       Faces: 1, 2, 3, 4, 😊 (Happy Face), ⭐ (Super Star)
+    ============================================================= */
+    const customDiceFaces = [
+      { type: 'number', value: 1, display: '1' },
+      { type: 'number', value: 2, display: '2' },
+      { type: 'number', value: 3, display: '3' },
+      { type: 'number', value: 4, display: '4' },
+      { type: 'happy', value: 1, display: '😊' },
+      { type: 'superstar', value: 2, display: '⭐' }
+    ];
+
+    function triggerDiceRoll() {
+      if (isRolling || isAnswering) return;
+      isRolling = true;
+
+      const diceBtn = document.getElementById('rollDiceBtn');
+      const diceFace = document.getElementById('diceFace');
+      const statusText = document.getElementById('diceStatusText');
+
+      diceBtn.disabled = true;
+      diceBtn.classList.add('opacity-50', 'pointer-events-none');
+      statusText.textContent = 'Rolling custom dice... 🎲';
+
+      playDiceRollSound();
+
+      let rollCount = 0;
+      const symbols = ['1', '2', '3', '4', '😊', '⭐'];
+
+      const rollInterval = setInterval(() => {
+        const randIdx = Math.floor(Math.random() * customDiceFaces.length);
+        diceFace.textContent = symbols[randIdx];
+        diceFace.style.transform = `rotate(${Math.random() * 30 - 15}deg) scale(1.1)`;
+        rollCount++;
+
+        if (rollCount > 10) {
+          clearInterval(rollInterval);
+
+          // Select outcome
+          const finalRoll = customDiceFaces[Math.floor(Math.random() * customDiceFaces.length)];
+          diceFace.textContent = finalRoll.display;
+          diceFace.style.transform = 'rotate(0deg) scale(1)';
+
+          if (finalRoll.type === 'number') {
+            pendingDiceRoll = finalRoll.value;
+            rolledSpecial = null;
+            playTone(440, 'triangle', 0.2);
+            statusText.innerHTML = `Rolled a <strong class="text-amber-600 text-xl">${pendingDiceRoll}</strong>! Answer the question!`;
+
+            setTimeout(() => {
+              isRolling = false;
+              openQuestionModal();
+            }, 900);
+
+          } else if (finalRoll.type === 'happy') {
+            pendingDiceRoll = 1; // +1 step bonus
+            rolledSpecial = 'happy';
+            playTone(659, 'sine', 0.25);
+            statusText.innerHTML = `Rolled <strong class="text-amber-600 text-xl">😊 Happy Face</strong>! Free +1 step bonus!`;
+
+            setTimeout(() => {
+              isRolling = false;
+              openHappyFaceModal();
+            }, 900);
+
+          } else if (finalRoll.type === 'superstar') {
+            pendingDiceRoll = 2; // +2 steps bonus
+            rolledSpecial = 'superstar';
+            playTone(783, 'triangle', 0.3);
+            statusText.innerHTML = `Rolled <strong class="text-purple-600 text-xl">⭐ Super Star</strong>! Whole Class Challenge!`;
+
+            setTimeout(() => {
+              isRolling = false;
+              openSuperStarModal();
+            }, 900);
+          }
+        }
+      }, 70);
+    }
+
+    /* ================= Happy Face Event Logic ================= */
+    function openHappyFaceModal() {
+      isAnswering = true;
+      const activeTeam = teams[currentTeamIndex];
+
+      // Populate button choices of other 4 groups
+      const container = document.getElementById('happyTargetGroupButtons');
+      container.innerHTML = '';
+
+      teams.forEach(t => {
+        if (t.id !== activeTeam.id) {
+          const btn = document.createElement('button');
+          btn.className = `px-3 py-1.5 rounded-xl text-white font-display text-sm font-bold shadow transition hover:scale-105 active:scale-95 ${t.bgClass}`;
+          btn.textContent = `${t.icon} ${t.name}`;
+          btn.onclick = () => {
+            document.querySelectorAll('#happyTargetGroupButtons button').forEach(b => b.classList.remove('ring-4', 'ring-amber-500'));
+            btn.classList.add('ring-4', 'ring-amber-500');
+            playTone(523, 'sine', 0.1);
+          };
+          container.appendChild(btn);
+        }
+      });
+
+      // Auto-select first target team
+      if (container.children.length > 0) {
+        container.children[0].classList.add('ring-4', 'ring-amber-500');
+      }
+
+      randomizeHappyAction();
+
+      const modal = document.getElementById('happyFaceModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function randomizeHappyAction() {
+      const task = happyFaceTasks[Math.floor(Math.random() * happyFaceTasks.length)];
+      document.getElementById('happyActionPrompt').textContent = task;
+      playTone(587, 'triangle', 0.1);
+    }
+
+    function completeHappyFaceBonus() {
+      const modal = document.getElementById('happyFaceModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+
+      playCorrectChime();
+      fireConfetti(0.5, 0.4);
+
+      // Move active team +1 step
+      moveCurrentTeam(1);
+    }
+
+    /* ================= Super Star Event Logic ================= */
+    let superStarSelectedTeamIds = new Set();
+
+    function openSuperStarModal() {
+      isAnswering = true;
+      randomizeSuperStarAction();
+
+      // By default, select all 5 teams so teacher can award all with one click
+      superStarSelectedTeamIds = new Set(teams.map(t => t.id));
+      renderSuperStarTeamToggles();
+
+      const modal = document.getElementById('superStarModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function randomizeSuperStarAction() {
+      const task = superStarClassTasks[Math.floor(Math.random() * superStarClassTasks.length)];
+      document.getElementById('superStarActionPrompt').textContent = task;
+      playTone(523, 'sine', 0.1);
+    }
+
+    function renderSuperStarTeamToggles() {
+      const container = document.getElementById('superStarTeamToggles');
+      if (!container) return;
+      container.innerHTML = '';
+
+      teams.forEach(t => {
+        const isSelected = superStarSelectedTeamIds.has(t.id);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => toggleSuperStarTeam(t.id);
+
+        if (isSelected) {
+          btn.className = `p-2 rounded-xl border-3 border-emerald-500 bg-emerald-50 text-emerald-950 flex flex-col items-center justify-between shadow-md transition-all scale-100 hover:scale-105 active:scale-95`;
+          btn.innerHTML = `
+            <span class="text-2xl mb-0.5">${t.icon}</span>
+            <span class="font-display text-xs font-bold truncate max-w-full">${t.name.split(' ')[0]}</span>
+            <span class="mt-1 px-1.5 py-0.5 rounded bg-emerald-600 text-white font-display text-[10px] font-bold">✔ +2 Steps</span>
+          `;
+        } else {
+          btn.className = `p-2 rounded-xl border-2 border-slate-300 bg-white text-slate-400 opacity-60 flex flex-col items-center justify-between transition-all hover:opacity-90 active:scale-95`;
+          btn.innerHTML = `
+            <span class="text-2xl mb-0.5 grayscale">${t.icon}</span>
+            <span class="font-display text-xs font-bold truncate max-w-full text-slate-500">${t.name.split(' ')[0]}</span>
+            <span class="mt-1 px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 font-display text-[10px] font-bold">✕ No Move</span>
+          `;
+        }
+        container.appendChild(btn);
+      });
+
+      // Update confirmation button label
+      const confirmText = document.getElementById('superStarConfirmBtnText');
+      if (confirmText) {
+        if (superStarSelectedTeamIds.size === 0) {
+          confirmText.textContent = 'No Teams Selected (Continue to Next Turn) 👉';
+        } else if (superStarSelectedTeamIds.size === teams.length) {
+          confirmText.textContent = 'All 5 Teams Did Great! Move All +2 Steps 👉';
+        } else {
+          confirmText.textContent = `Move ${superStarSelectedTeamIds.size} Selected Team(s) (+2 Steps) 👉`;
+        }
+      }
+    }
+
+    function toggleSuperStarTeam(teamId) {
+      if (superStarSelectedTeamIds.has(teamId)) {
+        superStarSelectedTeamIds.delete(teamId);
+        playTone(280, 'sine', 0.08);
+      } else {
+        superStarSelectedTeamIds.add(teamId);
+        playTone(587, 'triangle', 0.1);
+      }
+      renderSuperStarTeamToggles();
+    }
+
+    function selectAllSuperStarTeams(selectAll) {
+      if (selectAll) {
+        superStarSelectedTeamIds = new Set(teams.map(t => t.id));
+        playTone(659, 'sine', 0.1);
+      } else {
+        superStarSelectedTeamIds.clear();
+        playTone(330, 'sine', 0.1);
+      }
+      renderSuperStarTeamToggles();
+    }
+
+    function completeSuperStarBonus() {
+      const modal = document.getElementById('superStarModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+
+      const selectedTeams = teams.filter(t => superStarSelectedTeamIds.has(t.id));
+
+      if (selectedTeams.length === 0) {
+        // Teacher did not select any team
+        document.getElementById('diceStatusText').innerHTML = '⭐ <strong>Super Star completed!</strong> No teams advanced. Next turn!';
+        finishTurn();
+        return;
+      }
+
+      playFanfare();
+      fireConfetti(0.3, 0.5);
+      fireConfetti(0.7, 0.5);
+
+      const teamNames = selectedTeams.map(t => `${t.icon} ${t.name}`).join(', ');
+      document.getElementById('diceStatusText').innerHTML = `⭐ <strong>${selectedTeams.length} team(s)</strong> moved +2 steps: ${teamNames}!`;
+
+      // Step 1: Advance all selected teams by 1 step
+      setTimeout(() => {
+        selectedTeams.forEach(team => {
+          if (team.pos < TOTAL_TILES) {
+            team.pos++;
+            const curTile = document.getElementById(`tile-${team.pos}`);
+            if (curTile) curTile.classList.add('active-step');
+            setTimeout(() => {
+              if (curTile) curTile.classList.remove('active-step');
+            }, 300);
+          }
+        });
+        playTone(523, 'triangle', 0.12);
+        renderPlayerTokens();
+
+        // Step 2: Advance all selected teams by another 1 step
+        setTimeout(() => {
+          selectedTeams.forEach(team => {
+            if (team.pos < TOTAL_TILES) {
+              team.pos++;
+              const curTile = document.getElementById(`tile-${team.pos}`);
+              if (curTile) curTile.classList.add('active-step');
+              setTimeout(() => {
+                if (curTile) curTile.classList.remove('active-step');
+              }, 300);
+            }
+          });
+          playTone(659, 'triangle', 0.18);
+          renderPlayerTokens();
+
+          // Check if any team reached the GOAL!
+          setTimeout(() => {
+            const winners = selectedTeams.filter(t => t.pos >= TOTAL_TILES);
+            if (winners.length > 0) {
+              triggerWin(winners[0]);
+            } else {
+              finishTurn();
+            }
+          }, 600);
+
+        }, 450);
+      }, 300);
+    }
+
+    /* ================= Open Question Modal ================= */
+    let currentQuestion = null;
+
+    function openQuestionModal() {
+      isAnswering = true;
+      const activeTeam = teams[currentTeamIndex];
+
+      // Pick random question from the expanded 30-question bank
+      const qIndex = Math.floor(Math.random() * questionBank.length);
+      currentQuestion = questionBank[qIndex];
+
+      // Set category, team tag, and dice badge
+      document.getElementById('qCategoryText').textContent = currentQuestion.category;
+      document.getElementById('qTeamTag').textContent = `Representative: ${activeTeam.name}`;
+      document.getElementById('qDiceBadge').textContent = pendingDiceRoll;
+      document.getElementById('qPromptText').textContent = currentQuestion.prompt;
+
+      // Inject visual illustration picture & situation tags
+      const illustrationSlot = document.getElementById('qIllustrationSlot');
+      if (illustrationSlot) {
+        const svgContent = visualSVGs[currentQuestion.svgKey] || visualSVGs.bullseyeTarget;
+        illustrationSlot.innerHTML = svgContent;
+      }
+
+      const situationTag = document.getElementById('qSituationTag');
+      if (situationTag) {
+        situationTag.textContent = `📍 ${currentQuestion.situation}`;
+      }
+
+      const questionIdTag = document.getElementById('qQuestionIdTag');
+      if (questionIdTag) {
+        questionIdTag.textContent = `Q${currentQuestion.id} of ${questionBank.length}`;
+      }
+
+      const visualHelperText = document.getElementById('qVisualHelperText');
+      if (visualHelperText) {
+        visualHelperText.textContent = currentQuestion.visualHint || 'Look at the visual clue to help pick the right answer!';
+      }
+
+      const container = document.getElementById('qOptionsContainer');
+      container.innerHTML = '';
+
+      const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+      shuffledOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `w-full p-3.5 sm:p-4 text-left font-display text-base sm:text-xl rounded-2xl border-3 border-slate-300 hover:border-blue-500 bg-slate-50 hover:bg-blue-50 active:scale-98 transition flex items-center justify-between group shadow-sm`;
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold flex items-center justify-center text-sm sm:text-base group-hover:border-blue-500 group-hover:text-blue-600">
+              ${String.fromCharCode(65 + idx)}
+            </span>
+            <span class="text-slate-800">${opt.text}</span>
+          </div>
+          <i class="fa-solid fa-arrow-right text-slate-300 group-hover:text-blue-500"></i>
+        `;
+        btn.onclick = () => evaluateAnswer(opt, btn);
+        container.appendChild(btn);
+      });
+
+      const modal = document.getElementById('questionModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    /* ================= Evaluate Answer ================= */
+    function evaluateAnswer(selectedOpt, btnElement) {
+      const allButtons = document.querySelectorAll('#qOptionsContainer button');
+      allButtons.forEach(b => b.disabled = true);
+
+      const feedbackBox = document.getElementById('qFeedbackBox');
+      feedbackBox.classList.remove('hidden');
+
+      if (selectedOpt.correct) {
+        btnElement.classList.remove('bg-slate-50', 'border-slate-300');
+        btnElement.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+        
+        playCorrectChime();
+        fireConfetti(0.5, 0.4);
+
+        feedbackBox.className = 'rounded-2xl p-4 text-center font-display text-2xl bg-emerald-100 text-emerald-800 border-2 border-emerald-400 mt-4';
+        feedbackBox.innerHTML = `🎉 Correct! Moving forward <strong>${pendingDiceRoll}</strong> steps!`;
+
+        setTimeout(() => {
+          closeQuestionModal();
+          moveCurrentTeam(pendingDiceRoll);
+        }, 1600);
+
+      } else {
+        btnElement.classList.remove('bg-slate-50', 'border-slate-300');
+        btnElement.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900');
+
+        playWrongBuzzer();
+
+        feedbackBox.className = 'rounded-2xl p-4 text-center font-display text-xl sm:text-2xl bg-rose-100 text-rose-800 border-2 border-rose-400 mt-4';
+        feedbackBox.innerHTML = `❌ Incorrect! Time for the Mime Forfeit Task!`;
+
+        setTimeout(() => {
+          closeQuestionModal();
+          triggerForfeit();
+        }, 1800);
+      }
+    }
+
+    function closeQuestionModal() {
+      const modal = document.getElementById('questionModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('qFeedbackBox').classList.add('hidden');
+    }
+
+    /* ================= Move Team Forward ================= */
+    function moveCurrentTeam(steps) {
+      const team = teams[currentTeamIndex];
+      let stepsRemaining = steps;
+
+      const stepInterval = setInterval(() => {
+        if (stepsRemaining > 0 && team.pos < TOTAL_TILES) {
+          team.pos++;
+          playTone(400 + team.pos * 20, 'sine', 0.08);
+          renderPlayerTokens();
+
+          const curTile = document.getElementById(`tile-${team.pos}`);
+          if (curTile) curTile.classList.add('active-step');
+          setTimeout(() => {
+            if (curTile) curTile.classList.remove('active-step');
+          }, 250);
+
+          stepsRemaining--;
+        } else {
+          clearInterval(stepInterval);
+
+          if (team.pos >= TOTAL_TILES) {
+            triggerWin(team);
+          } else {
+            handleTileEvent(team);
+          }
+        }
+      }, 350);
+    }
+
+    function handleTileEvent(team) {
+      const currentTile = tileThemes.find(t => t.id === team.pos);
+
+      if (currentTile && currentTile.type === 'boost') {
+        playTone(600, 'triangle', 0.2);
+        fireConfetti(0.5, 0.5);
+        document.getElementById('diceStatusText').innerHTML = `🌟 <strong>${team.name}</strong> landed on ${currentTile.label}! Bonus step!`;
+        setTimeout(() => {
+          if (team.pos < TOTAL_TILES) {
+            team.pos++;
+            renderPlayerTokens();
+          }
+          finishTurn();
+        }, 1000);
+      } else {
+        finishTurn();
+      }
+    }
+
+    /* ================= Trigger Mime Forfeit Penalty ================= */
+    function triggerForfeit() {
+      const taskIndex = Math.floor(Math.random() * forfeitTasks.length);
+      const chosenTask = forfeitTasks[taskIndex];
+
+      document.getElementById('forfeitActionText').textContent = chosenTask;
+
+      const modal = document.getElementById('forfeitModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function completeForfeit() {
+      const modal = document.getElementById('forfeitModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+
+      playTone(500, 'sine', 0.15);
+      finishTurn();
+    }
+
+    /* ================= Finish Turn & Advance to Next Team ================= */
+    function finishTurn() {
+      isAnswering = false;
+      pendingDiceRoll = 0;
+      rolledSpecial = null;
+
+      currentTeamIndex = (currentTeamIndex + 1) % teams.length;
+      updateTurnUI();
+
+      const diceBtn = document.getElementById('rollDiceBtn');
+      diceBtn.disabled = false;
+      diceBtn.classList.remove('opacity-50', 'pointer-events-none');
+      document.getElementById('diceStatusText').innerHTML = 'Faces: <strong>1, 2, 3, 4, 😊 Happy, ⭐ Super Star</strong>';
+      document.getElementById('diceFace').textContent = '🎲';
+    }
+
+    function updateTurnUI() {
+      const team = teams[currentTeamIndex];
+
+      const turnBadge = document.getElementById('currentTurnBadge');
+      turnBadge.className = `flex items-center gap-2 px-4 py-2 rounded-xl text-white font-display text-lg sm:text-xl shadow-md transition-all duration-300 ${team.bgClass}`;
+      document.getElementById('currentTurnIcon').textContent = team.icon;
+      document.getElementById('currentTurnName').textContent = `${team.name}'s Turn`;
+
+      const box = document.getElementById('activePlayerBox');
+      box.className = `mt-2 p-4 rounded-2xl text-white shadow-lg flex items-center justify-center gap-3 ${team.bgClass}`;
+      document.getElementById('activePlayerIconBig').textContent = team.icon;
+      document.getElementById('activePlayerTitle').textContent = team.name;
+
+      teams.forEach(t => {
+        const card = document.getElementById(`teamCard${t.id}`);
+        if (card) {
+          if (t.id === team.id) {
+            card.classList.add('ring-4', 'ring-amber-400', 'scale-105');
+          } else {
+            card.classList.remove('ring-4', 'ring-amber-400', 'scale-105');
+          }
+        }
+      });
+    }
+
+    /* ================= Victory Routine ================= */
+    function triggerWin(winningTeam) {
+      playFanfare();
+      fireConfetti(0.3, 0.5);
+      fireConfetti(0.7, 0.5);
+
+      document.getElementById('winnerTitle').textContent = `${winningTeam.name} Wins!`;
+      document.getElementById('winnerBanner').className = `p-5 rounded-2xl text-white font-display text-3xl shadow-lg mb-6 ${winningTeam.bgClass}`;
+
+      const modal = document.getElementById('winnerModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    /* ================= Reset Game ================= */
+    function resetGame() {
+      teams.forEach(t => t.pos = 0);
+      currentTeamIndex = 0;
+      isRolling = false;
+      isAnswering = false;
+      rolledSpecial = null;
+
+      document.getElementById('winnerModal').classList.add('hidden');
+      document.getElementById('winnerModal').classList.remove('flex');
+      document.getElementById('forfeitModal').classList.add('hidden');
+      document.getElementById('forfeitModal').classList.remove('flex');
+      document.getElementById('questionModal').classList.add('hidden');
+      document.getElementById('questionModal').classList.remove('flex');
+      document.getElementById('happyFaceModal').classList.add('hidden');
+      document.getElementById('happyFaceModal').classList.remove('flex');
+      document.getElementById('superStarModal').classList.add('hidden');
+      document.getElementById('superStarModal').classList.remove('flex');
+      document.getElementById('starterModal').classList.add('hidden');
+      document.getElementById('starterModal').classList.remove('flex');
+
+      renderBoard();
+      updateTurnSequenceUI();
+      updateTurnUI();
+      document.getElementById('diceFace').textContent = '🎲';
+      document.getElementById('diceStatusText').innerHTML = `Game reset! ${teams[0].name} rolls first!`;
+
+      const diceBtn = document.getElementById('rollDiceBtn');
+      diceBtn.disabled = false;
+      diceBtn.classList.remove('opacity-50', 'pointer-events-none');
+    }
+
+    /* ================= Fullscreen Toggle ================= */
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    /* ================= Confetti Particle Animation ================= */
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const confettiCtx = confettiCanvas.getContext('2d');
+    let confettiParticles = [];
+    let isConfettiRunning = false;
+
+    function resizeConfettiCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeConfettiCanvas);
+    resizeConfettiCanvas();
+
+    function fireConfetti(originX = 0.5, originY = 0.5) {
+      const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+      const startX = originX * confettiCanvas.width;
+      const startY = originY * confettiCanvas.height;
+
+      for (let i = 0; i < 65; i++) {
+        confettiParticles.push({
+          x: startX,
+          y: startY,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.8) * 18,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 12,
+          alpha: 1,
+          decay: Math.random() * 0.015 + 0.012
+        });
+      }
+
+      if (!isConfettiRunning) {
+        isConfettiRunning = true;
+        animateConfetti();
+      }
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // gravity
+        p.rotation += p.vRot;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0 || p.y > confettiCanvas.height) {
+          confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        confettiCtx.save();
+        confettiCtx.globalAlpha = p.alpha;
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate((p.rotation * Math.PI) / 180);
+        confettiCtx.fillStyle = p.color;
+        confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        confettiCtx.restore();
+      }
+
+      if (confettiParticles.length > 0) {
+        requestAnimationFrame(animateConfetti);
+      } else {
+        isConfettiRunning = false;
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      }
+    }
+
+    /* ================= Game Boot ================= */
+    window.onload = function() {
+      renderBoard();
+      updateTurnSequenceUI();
+      updateTurnUI();
+    };
+  </script>
+</body>
+</html>
