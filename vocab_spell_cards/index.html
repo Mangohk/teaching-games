@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生字填空卡 · Vocab Spell Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0f2a24;
+      --muted: #4d6b62;
+      --panel: #fffdf7;
+      --leaf: #1f9d6c;
+      --leaf-dark: #147a52;
+      --sky: #2f9fbf;
+      --sun: #f0b429;
+      --coral: #e85d4c;
+      --mist: #d8f3e7;
+      --shadow: 0 10px 28px rgba(15, 42, 36, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Nunito', system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(240, 180, 41, 0.28), transparent 32%),
+        radial-gradient(circle at 88% 10%, rgba(47, 159, 191, 0.22), transparent 30%),
+        linear-gradient(160deg, #e8faf2 0%, #f7fbff 45%, #fff6e8 100%);
+      padding: clamp(0.9rem, 3vw, 1.6rem);
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .logo {
+      width: 3.1rem;
+      height: 3.1rem;
+      border-radius: 1rem;
+      display: grid;
+      place-items: center;
+      font-size: 1.55rem;
+      background: linear-gradient(145deg, #39c989, #1f9d6c);
+      color: #fff;
+      box-shadow: 0 6px 0 #147a52;
+      animation: bob 2.4s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    h1 {
+      margin: 0;
+      font-family: 'Fredoka', cursive, sans-serif;
+      font-size: clamp(1.35rem, 4vw, 1.85rem);
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      margin: 0.15rem 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .screen {
+      display: none;
+      background: var(--panel);
+      border: 3px solid rgba(31, 157, 108, 0.18);
+      border-radius: 1.5rem;
+      box-shadow: var(--shadow);
+      padding: clamp(1.1rem, 3vw, 1.6rem);
+      animation: rise 0.35s ease;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      margin: 0 0 0.4rem;
+      font-family: 'Fredoka', cursive, sans-serif;
+      font-size: 1.25rem;
+    }
+
+    .hint {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border: 3px solid #cfe8dc;
+      border-radius: 1rem;
+      padding: 0.9rem 1rem;
+      font: 700 1rem/1.5 'Nunito', system-ui, sans-serif;
+      color: var(--ink);
+      background: #f7fffb;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--leaf);
+      box-shadow: 0 0 0 4px rgba(31, 157, 108, 0.15);
+    }
+
+    .sample-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 0.85rem 0 1.1rem;
+    }
+
+    .chip, .btn {
+      font-family: 'Fredoka', cursive, sans-serif;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .chip {
+      background: #e8f7ef;
+      color: var(--leaf-dark);
+      border: 2px solid #b7e4cb;
+      border-radius: 999px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .chip:hover { background: #d7f1e3; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 0.4rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 1rem;
+      font-size: 1.05rem;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #3dcb8f, var(--leaf));
+      color: #fff;
+      box-shadow: 0 6px 0 var(--leaf-dark);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--ink);
+      border: 3px solid #d7e5de;
+      box-shadow: 0 5px 0 #c3d5cc;
+    }
+
+    .btn-sun {
+      background: linear-gradient(180deg, #ffd666, var(--sun));
+      color: #5b3b00;
+      box-shadow: 0 6px 0 #c98a12;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 transparent;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat {
+      background: linear-gradient(180deg, #f4fffa, #eaf8f1);
+      border: 2px solid #cfe8dc;
+      border-radius: 1rem;
+      padding: 0.65rem 0.5rem;
+      text-align: center;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 0.15rem;
+      font-family: 'Fredoka', cursive, sans-serif;
+      font-size: 1.25rem;
+      color: var(--leaf-dark);
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(47, 159, 191, 0.08), transparent 40%),
+        linear-gradient(180deg, #ffffff, #f3fff9);
+      border: 3px solid #b9e2cf;
+      border-radius: 1.35rem;
+      padding: 1.35rem 1rem 1.2rem;
+      text-align: center;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .card.correct {
+      border-color: var(--leaf);
+      animation: pop 0.45s ease;
+    }
+
+    .card.wrong {
+      border-color: var(--coral);
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.98); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.85rem;
+      background: #dff6ea;
+      color: var(--leaf-dark);
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .prompt {
+      margin: 0.4rem 0 0;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .letters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.45rem;
+      max-width: 100%;
+    }
+
+    .slot {
+      width: 2.55rem;
+      height: 3.1rem;
+      border-radius: 0.75rem;
+      display: grid;
+      place-items: center;
+      font-family: 'Fredoka', cursive, sans-serif;
+      font-size: 1.45rem;
+      text-transform: lowercase;
+    }
+
+    .slot.shown {
+      background: #e8f7ef;
+      color: var(--leaf-dark);
+      border: 2px solid #b7e4cb;
+    }
+
+    .slot.blank input {
+      width: 100%;
+      height: 100%;
+      border: 2.5px dashed #7ec8eb;
+      border-radius: 0.75rem;
+      background: #f3fbff;
+      text-align: center;
+      font-family: 'Fredoka', cursive, sans-serif;
+      font-size: 1.45rem;
+      color: var(--sky);
+      text-transform: lowercase;
+      outline: none;
+      padding: 0;
+    }
+
+    .slot.blank input:focus {
+      border-style: solid;
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(47, 159, 191, 0.2);
+      background: #fff;
+    }
+
+    .slot.space {
+      width: 1.1rem;
+      background: transparent;
+      border: none;
+    }
+
+    .feedback {
+      min-height: 1.4rem;
+      margin: 0.85rem 0 0;
+      text-align: center;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .feedback.ok { color: var(--leaf-dark); }
+    .feedback.bad { color: #c2410c; }
+
+    .progress-track {
+      height: 10px;
+      background: #e5efe9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--sky), var(--leaf));
+      transition: width 0.3s ease;
+    }
+
+    .results {
+      text-align: center;
+    }
+
+    .big-score {
+      font-family: 'Fredoka', cursive, sans-serif;
+      font-size: clamp(2.4rem, 8vw, 3.4rem);
+      color: var(--leaf-dark);
+      margin: 0.4rem 0;
+      animation: pop 0.5s ease;
+    }
+
+    .stars {
+      font-size: 1.8rem;
+      letter-spacing: 0.15em;
+      margin: 0.3rem 0 1rem;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+      margin: 1rem 0 1.2rem;
+    }
+
+    .result-grid .stat { text-align: center; }
+
+    @media (max-width: 520px) {
+      .hud { grid-template-columns: 1fr 1fr 1fr; }
+      .slot { width: 2.15rem; height: 2.7rem; font-size: 1.2rem; }
+      .slot.blank input { font-size: 1.2rem; }
+      header { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🔤</div>
+        <div>
+          <h1>生字填空卡</h1>
+          <p class="sub">Vocab Spell Cards · 填返啲漏咗嘅字母</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Setup -->
+    <section id="setupScreen" class="screen active" aria-label="輸入生字">
+      <h2 class="section-title">① 輸入生字</h2>
+      <p class="hint">每行一個英文生字（最少 3 個）。開始之後會隨機出遊戲卡，有啲字母會隱藏，你要填返晒。</p>
+      <textarea id="wordInput" spellcheck="false" placeholder="apple&#10;banana&#10;happy&#10;school&#10;friend"></textarea>
+      <div class="sample-row">
+        <button type="button" class="chip" data-sample="animals">動物 Animals</button>
+        <button type="button" class="chip" data-sample="school">學校 School</button>
+        <button type="button" class="chip" data-sample="feelings">心情 Feelings</button>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="startBtn">開始遊戲 ▶</button>
+        <button type="button" class="btn btn-secondary" id="clearBtn">清空</button>
+      </div>
+    </section>
+
+    <!-- Play -->
+    <section id="playScreen" class="screen" aria-label="遊戲中">
+      <div class="hud">
+        <div class="stat">
+          <span class="stat-label">分數</span>
+          <span class="stat-value" id="scoreVal">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">難度</span>
+          <span class="stat-value" id="levelVal">1</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">卡片</span>
+          <span class="stat-value" id="cardVal">1/10</span>
+        </div>
+      </div>
+
+      <div class="card" id="gameCard">
+        <span class="card-badge" id="diffBadge">提示較多</span>
+        <p class="prompt">填入藍色虛線格嘅字母</p>
+        <div class="letters" id="letterRow" role="group" aria-label="生字字母格"></div>
+      </div>
+
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+
+      <div class="actions" style="justify-content:center">
+        <button type="button" class="btn btn-primary" id="checkBtn">檢查 ✓</button>
+        <button type="button" class="btn btn-sun" id="hintBtn">多睇一個字母</button>
+        <button type="button" class="btn btn-secondary" id="quitBtn">結束</button>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="resultsScreen" class="screen results" aria-label="結果">
+      <h2 class="section-title">做得好！</h2>
+      <p class="hint">今次串生字練習完啦</p>
+      <p class="big-score" id="finalScore">0</p>
+      <div class="stars" id="starRow">★★★</div>
+      <div class="result-grid">
+        <div class="stat">
+          <span class="stat-label">答啱</span>
+          <span class="stat-value" id="finalCorrect">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">最高難度</span>
+          <span class="stat-value" id="finalLevel">1</span>
+        </div>
+      </div>
+      <div class="actions" style="justify-content:center">
+        <button type="button" class="btn btn-primary" id="replayBtn">再玩一次</button>
+        <button type="button" class="btn btn-secondary" id="editWordsBtn">改生字</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const SAMPLES = {
+        animals: ['cat', 'dog', 'bird', 'fish', 'tiger', 'rabbit', 'monkey', 'elephant'],
+        school: ['book', 'pencil', 'teacher', 'friend', 'school', 'classroom', 'homework', 'recess'],
+        feelings: ['happy', 'sad', 'angry', 'brave', 'kind', 'excited', 'worried', 'proud']
+      };
+
+      const TOTAL_CARDS = 12;
+      const LEVEL_EVERY = 3; // raise difficulty every N correct answers
+
+      const els = {
+        setup: document.getElementById('setupScreen'),
+        play: document.getElementById('playScreen'),
+        results: document.getElementById('resultsScreen'),
+        wordInput: document.getElementById('wordInput'),
+        startBtn: document.getElementById('startBtn'),
+        clearBtn: document.getElementById('clearBtn'),
+        letterRow: document.getElementById('letterRow'),
+        gameCard: document.getElementById('gameCard'),
+        feedback: document.getElementById('feedback'),
+        scoreVal: document.getElementById('scoreVal'),
+        levelVal: document.getElementById('levelVal'),
+        cardVal: document.getElementById('cardVal'),
+        diffBadge: document.getElementById('diffBadge'),
+        checkBtn: document.getElementById('checkBtn'),
+        hintBtn: document.getElementById('hintBtn'),
+        quitBtn: document.getElementById('quitBtn'),
+        progressFill: document.getElementById('progressFill'),
+        finalScore: document.getElementById('finalScore'),
+        starRow: document.getElementById('starRow'),
+        finalCorrect: document.getElementById('finalCorrect'),
+        finalLevel: document.getElementById('finalLevel'),
+        replayBtn: document.getElementById('replayBtn'),
+        editWordsBtn: document.getElementById('editWordsBtn')
+      };
+
+      const state = {
+        words: [],
+        deck: [],
+        index: 0,
+        score: 0,
+        correct: 0,
+        level: 1,
+        maxLevel: 1,
+        current: null,
+        hintsUsed: 0
+      };
+
+      function showScreen(name) {
+        els.setup.classList.toggle('active', name === 'setup');
+        els.play.classList.toggle('active', name === 'play');
+        els.results.classList.toggle('active', name === 'results');
+      }
+
+      function parseWords(raw) {
+        const seen = new Set();
+        return raw
+          .split(/[\n,;]+/)
+          .map((w) => w.trim().toLowerCase())
+          .filter((w) => /^[a-z]+(?: [a-z]+)*$/.test(w) && w.replace(/\s/g, '').length >= 3)
+          .filter((w) => {
+            if (seen.has(w)) return false;
+            seen.add(w);
+            return true;
+          });
+      }
+
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function hideRatioForLevel(level) {
+        // Level 1 keeps most letters; higher levels hide more.
+        const ratios = [0.3, 0.45, 0.6, 0.75, 0.9];
+        return ratios[Math.min(level, ratios.length) - 1];
+      }
+
+      function badgeForLevel(level) {
+        if (level <= 1) return '提示較多';
+        if (level === 2) return '普通難度';
+        if (level === 3) return '提示漸少';
+        if (level === 4) return '好少提示';
+        return '終極挑戰';
+      }
+
+      function buildMask(word, level) {
+        const chars = word.split('');
+        const letterIndexes = [];
+        chars.forEach((ch, i) => {
+          if (/[a-z]/i.test(ch)) letterIndexes.push(i);
+        });
+
+        const ratio = hideRatioForLevel(level);
+        let hideCount = Math.max(1, Math.round(letterIndexes.length * ratio));
+        // Always leave at least one letter visible when possible
+        if (letterIndexes.length > 1) {
+          hideCount = Math.min(hideCount, letterIndexes.length - 1);
+        }
+
+        const hideSet = new Set(shuffle(letterIndexes).slice(0, hideCount));
+        return chars.map((ch, i) => {
+          if (ch === ' ') return { type: 'space', ch };
+          if (hideSet.has(i)) return { type: 'blank', ch: ch.toLowerCase() };
+          return { type: 'shown', ch: ch.toLowerCase() };
+        });
+      }
+
+      function buildDeck() {
+        const base = shuffle(state.words);
+        const deck = [];
+        while (deck.length < TOTAL_CARDS) {
+          deck.push(...shuffle(base));
+        }
+        state.deck = deck.slice(0, TOTAL_CARDS);
+      }
+
+      function updateHud() {
+        els.scoreVal.textContent = String(state.score);
+        els.levelVal.textContent = String(state.level);
+        els.cardVal.textContent = `${Math.min(state.index + 1, TOTAL_CARDS)}/${TOTAL_CARDS}`;
+        els.diffBadge.textContent = badgeForLevel(state.level);
+        const pct = (state.index / TOTAL_CARDS) * 100;
+        els.progressFill.style.width = `${pct}%`;
+      }
+
+      function renderCard() {
+        const word = state.deck[state.index];
+        const mask = buildMask(word, state.level);
+        state.current = { word, mask };
+        state.hintsUsed = 0;
+        els.gameCard.classList.remove('correct', 'wrong');
+        els.feedback.textContent = '';
+        els.feedback.className = 'feedback';
+        els.hintBtn.disabled = mask.filter((m) => m.type === 'blank').length <= 1;
+
+        els.letterRow.innerHTML = '';
+        mask.forEach((cell, idx) => {
+          const slot = document.createElement('div');
+          if (cell.type === 'space') {
+            slot.className = 'slot space';
+            slot.setAttribute('aria-hidden', 'true');
+          } else if (cell.type === 'shown') {
+            slot.className = 'slot shown';
+            slot.textContent = cell.ch;
+          } else {
+            slot.className = 'slot blank';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.autocomplete = 'off';
+            input.autocapitalize = 'none';
+            input.spellcheck = false;
+            input.dataset.index = String(idx);
+            input.setAttribute('aria-label', `字母空位 ${idx + 1}`);
+            input.addEventListener('input', onSlotInput);
+            input.addEventListener('keydown', onSlotKeydown);
+            slot.appendChild(input);
+          }
+          els.letterRow.appendChild(slot);
+        });
+
+        const firstBlank = els.letterRow.querySelector('input');
+        if (firstBlank) firstBlank.focus();
+        updateHud();
+      }
+
+      function blankInputs() {
+        return Array.from(els.letterRow.querySelectorAll('input'));
+      }
+
+      function onSlotInput(e) {
+        const input = e.target;
+        const cleaned = (input.value || '').replace(/[^a-zA-Z]/g, '').slice(-1).toLowerCase();
+        input.value = cleaned;
+        if (cleaned) {
+          const inputs = blankInputs();
+          const i = inputs.indexOf(input);
+          if (i >= 0 && i < inputs.length - 1) inputs[i + 1].focus();
+        }
+      }
+
+      function onSlotKeydown(e) {
+        const inputs = blankInputs();
+        const i = inputs.indexOf(e.target);
+        if (e.key === 'Backspace' && !e.target.value && i > 0) {
+          inputs[i - 1].focus();
+          inputs[i - 1].value = '';
+          e.preventDefault();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          checkAnswer();
+        } else if (e.key === 'ArrowLeft' && i > 0) {
+          inputs[i - 1].focus();
+        } else if (e.key === 'ArrowRight' && i < inputs.length - 1) {
+          inputs[i + 1].focus();
+        }
+      }
+
+      function readGuess() {
+        const slots = els.letterRow.children;
+        let guess = '';
+        Array.from(slots).forEach((slot) => {
+          if (slot.classList.contains('space')) {
+            guess += ' ';
+          } else if (slot.classList.contains('shown')) {
+            guess += slot.textContent;
+          } else {
+            const input = slot.querySelector('input');
+            guess += (input && input.value) ? input.value.toLowerCase() : '';
+          }
+        });
+        return guess;
+      }
+
+      function checkAnswer() {
+        if (!state.current) return;
+        const guess = readGuess();
+        const target = state.current.word;
+        const blanks = blankInputs();
+        const filled = blanks.every((inp) => inp.value);
+
+        if (!filled) {
+          els.feedback.textContent = '仲有空格未填呀！';
+          els.feedback.className = 'feedback bad';
+          const empty = blanks.find((inp) => !inp.value);
+          if (empty) empty.focus();
+          return;
+        }
+
+        if (guess === target) {
+          els.gameCard.classList.remove('wrong');
+          els.gameCard.classList.add('correct');
+          els.feedback.textContent = '啱晒！' + target;
+          els.feedback.className = 'feedback ok';
+
+          const hintPenalty = state.hintsUsed * 2;
+          const gained = Math.max(5, 10 + state.level * 5 - hintPenalty);
+          state.score += gained;
+          state.correct += 1;
+
+          if (state.correct % LEVEL_EVERY === 0) {
+            state.level = Math.min(5, state.level + 1);
+            state.maxLevel = Math.max(state.maxLevel, state.level);
+          }
+
+          els.checkBtn.disabled = true;
+          els.hintBtn.disabled = true;
+          updateHud();
+
+          setTimeout(() => {
+            els.checkBtn.disabled = false;
+            nextCard();
+          }, 850);
+        } else {
+          els.gameCard.classList.remove('correct');
+          els.gameCard.classList.add('wrong');
+          els.feedback.textContent = '再試吓～留意每格字母';
+          els.feedback.className = 'feedback bad';
+          setTimeout(() => els.gameCard.classList.remove('wrong'), 450);
+          blanks[0] && blanks[0].focus();
+        }
+      }
+
+      function useHint() {
+        const blanks = state.current.mask
+          .map((cell, idx) => ({ cell, idx }))
+          .filter(({ cell }) => cell.type === 'blank');
+
+        const stillBlank = blanks.filter(({ idx }) => {
+          const input = els.letterRow.querySelector(`input[data-index="${idx}"]`);
+          return input && !input.disabled;
+        });
+
+        if (stillBlank.length <= 1) {
+          els.feedback.textContent = '已經冇得再提示啦';
+          els.feedback.className = 'feedback bad';
+          els.hintBtn.disabled = true;
+          return;
+        }
+
+        const pick = stillBlank[Math.floor(Math.random() * stillBlank.length)];
+        const input = els.letterRow.querySelector(`input[data-index="${pick.idx}"]`);
+        const slot = input.parentElement;
+        slot.className = 'slot shown';
+        slot.textContent = pick.cell.ch;
+        state.current.mask[pick.idx] = { type: 'shown', ch: pick.cell.ch };
+        state.hintsUsed += 1;
+        els.feedback.textContent = '多睇咗一個字母';
+        els.feedback.className = 'feedback ok';
+
+        if (stillBlank.length - 1 <= 1) els.hintBtn.disabled = true;
+        const next = blankInputs()[0];
+        if (next) next.focus();
+      }
+
+      function nextCard() {
+        state.index += 1;
+        if (state.index >= TOTAL_CARDS) {
+          finishGame();
+          return;
+        }
+        renderCard();
+      }
+
+      function finishGame() {
+        els.progressFill.style.width = '100%';
+        els.finalScore.textContent = String(state.score);
+        els.finalCorrect.textContent = `${state.correct}/${TOTAL_CARDS}`;
+        els.finalLevel.textContent = String(state.maxLevel);
+
+        const ratio = state.correct / TOTAL_CARDS;
+        let stars = '★☆☆';
+        if (ratio >= 0.9) stars = '★★★';
+        else if (ratio >= 0.6) stars = '★★☆';
+        els.starRow.textContent = stars;
+
+        showScreen('results');
+      }
+
+      function startGame() {
+        const words = parseWords(els.wordInput.value);
+        if (words.length < 3) {
+          alert('請至少輸入 3 個英文生字（每行一個，至少 3 個字母）。');
+          els.wordInput.focus();
+          return;
+        }
+        state.words = words;
+        state.index = 0;
+        state.score = 0;
+        state.correct = 0;
+        state.level = 1;
+        state.maxLevel = 1;
+        buildDeck();
+        showScreen('play');
+        renderCard();
+      }
+
+      // Events
+      els.startBtn.addEventListener('click', startGame);
+      els.clearBtn.addEventListener('click', () => {
+        els.wordInput.value = '';
+        els.wordInput.focus();
+      });
+      els.checkBtn.addEventListener('click', checkAnswer);
+      els.hintBtn.addEventListener('click', useHint);
+      els.quitBtn.addEventListener('click', finishGame);
+      els.replayBtn.addEventListener('click', startGame);
+      els.editWordsBtn.addEventListener('click', () => showScreen('setup'));
+
+      document.querySelectorAll('[data-sample]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-sample');
+          els.wordInput.value = SAMPLES[key].join('\n');
+          els.wordInput.focus();
+        });
+      });
+
+      // Prefill a gentle starter list
+      els.wordInput.value = SAMPLES.school.join('\n');
+    })();
+  </script>
+</body>
+</html>
