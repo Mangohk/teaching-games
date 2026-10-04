@@ -51,10 +51,25 @@
       will-change: transform;
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), font-size 0.2s ease;
     }
+  
+    /* Mobile: allow page/stage scrolling so clipped content can be reached */
+    @media (max-width: 639px) {
+      html, body {
+        overflow: auto !important;
+        height: auto;
+        min-height: 100%;
+      }
+      .game-viewport,
+      .slide-viewport {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
   </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-hidden select-none">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 sm:overflow-hidden select-none">
 
   <!-- Top Clinic Navigation & Status Bar -->
   <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-3.5 sm:px-5 py-2.5 rounded-2xl border border-slate-800 shadow-xl z-30 mb-2">
