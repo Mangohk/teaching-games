@@ -673,6 +673,10 @@
       const q = hearingQuestions[qIdx];
       const stage = volumeStages[currentStageIdx];
 
+      // Clear previous answer feedback so it does not carry into the next question
+      document.getElementById('arena-ticker').innerHTML =
+        '👂 Put your hand behind your ear! Listen carefully and tap the secret word!';
+
       // Update Top Status Pill
       document.getElementById('question-progress').textContent = `${qIdx + 1} / ${hearingQuestions.length}`;
       document.getElementById('hearing-score-display').textContent = stage.name;
