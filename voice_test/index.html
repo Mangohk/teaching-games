@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Brother 9's Thunder Voice Arena - The Super Loudness Decibel Challenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .heading-font {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .mono-font {
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .game-viewport {
+      aspect-ratio: 16 / 9;
+      max-height: 85vh;
+    }
+    @keyframes pulseThunder {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.6)); }
+      50% { transform: scale(1.06); filter: drop-shadow(0 0 35px rgba(244, 63, 94, 1)); }
+    }
+    .pulse-thunder {
+      animation: pulseThunder 1.8s infinite ease-in-out;
+    }
+    @keyframes lightningFlash {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 0.25; }
+    }
+    .lightning-bg {
+      animation: lightningFlash 0.35s infinite;
+    }
+    @keyframes shockwaveRing {
+      0% { transform: scale(0.8); opacity: 0.8; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .shockwave-anim {
+      animation: shockwaveRing 1.2s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .meter-liquid {
+      transition: height 0.08s ease-out, background-color 0.15s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-hidden select-none">
+
+  <!-- Top Arena Navigation Bar -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-3.5 sm:px-5 py-2.5 rounded-2xl border border-slate-800 shadow-xl z-30 mb-2">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 via-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg pulse-thunder no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        📢
+      </a>
+      <div>
+        <h1 class="heading-font text-sm sm:text-lg font-black text-white tracking-wide flex items-center gap-2">
+          Thunder Voice Arena <span class="hidden md:inline text-xs px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-700/60 font-sans">Brother 9 Championship</span>
+        </h1>
+        <p class="text-[11px] sm:text-xs text-rose-300 font-bold hidden sm:block">Primary 5 English • Live Decibel (dB) Sound Meter & Tournament</p>
+      </div>
+    </div>
+
+    <!-- Tournament Tools & Controls -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- High Score Champion -->
+      <div class="bg-slate-950 border border-slate-800 px-3.5 py-1 rounded-xl text-center shadow-inner">
+        <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Arena Record</span>
+        <span id="arena-record-display" class="mono-font text-xs sm:text-sm font-black text-amber-300">00.0 dB</span>
+      </div>
+
+      <!-- Script Line Shouting Selector -->
+      <button onclick="cycleShoutPhrase()" id="phrase-btn" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black border border-slate-700 transition active:scale-95 cursor-pointer">
+        <span>💬 Phrase:</span>
+        <span id="phrase-btn-text" class="text-amber-300 font-mono">"TURN RIGHT!"</span>
+      </button>
+
+      <!-- Audio SFX Toggle -->
+      <button onclick="toggleSfxSound()" id="sfx-btn" title="Toggle Sound Effects" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition active:scale-95 cursor-pointer">
+        🔊
+      </button>
+
+      <!-- Leaderboard Modal Open -->
+      <button onclick="openLeaderboardModal()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-black transition active:scale-95 cursor-pointer shadow-md flex items-center gap-1">
+        🏆 <span>Rankings</span>
+      </button>
+
+      <!-- Mic Calibration Modal -->
+      <button onclick="openCalibrationModal()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs sm:text-sm font-black transition active:scale-95 cursor-pointer shadow-md">
+        ⚙️ <span>Mic Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto flex-1 flex items-center justify-center relative my-auto">
+    <div id="arena-viewport" class="game-viewport w-full bg-slate-900 rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden relative flex flex-col justify-between p-3.5 sm:p-5 transition-all">
+      
+      <!-- Top Arena Ticker Ribbon -->
+      <div class="flex items-center justify-between px-2 pt-0.5 pb-1 z-10">
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1.5">
+            <span id="live-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Audio Analyser
+          </span>
+          <span id="arena-ticker" class="text-xs sm:text-sm font-black text-amber-300 truncate">
+            🎙️ Ready! Enter contestant's name, press START, and roar into the microphone!
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
+          <span>Mode: <b id="challenge-mode-label" class="text-white font-mono text-xs">Peak Hold (3s)</b></span>
+        </div>
+      </div>
+
+      <!-- MAIN DECIBEL COMBAT STAGE (Center Arena) -->
+      <div class="my-auto grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-center w-full max-w-6xl mx-auto z-10">
+        
+        <!-- Left Side: Decibel Mercury Tower & Shockwave Visualizer (4 Columns) -->
+        <div class="lg:col-span-4 flex flex-col items-center justify-center">
+          <!-- Glass Sound Tower -->
+          <div class="w-full max-w-xs bg-slate-950/90 border-4 border-slate-800 rounded-3xl p-3.5 shadow-2xl relative overflow-hidden flex flex-col items-center">
+            
+            <div class="w-full flex items-center justify-between px-2 pb-2 text-[11px] font-mono font-black text-slate-400 border-b border-slate-800">
+              <span>SOUND PRESSURE</span>
+              <span id="tier-badge" class="text-rose-400 font-extrabold">QUIET 🤫</span>
+            </div>
+
+            <!-- Vertical Mercury dB Tube -->
+            <div class="relative w-20 sm:w-24 h-52 sm:h-64 bg-slate-900 border-3 border-slate-700 rounded-full my-2.5 p-1 flex flex-col justify-end overflow-hidden shadow-inner">
+              <!-- Tier Level Tick Marks -->
+              <div class="absolute inset-y-0 right-1 flex flex-col justify-between py-2 text-[9px] font-mono font-bold text-slate-500 pointer-events-none">
+                <span>105</span>
+                <span>90</span>
+                <span>75</span>
+                <span>60</span>
+                <span>45</span>
+                <span>30</span>
+              </div>
+
+              <!-- High Water Peak Marker Line -->
+              <div id="peak-indicator-line" class="absolute w-full h-1 bg-amber-300 shadow-[0_0_8px_#fde047] z-20 left-0 transition-all duration-75" style="bottom: 0%;"></div>
+
+              <!-- Animated Liquid Fill Level -->
+              <div id="meter-fill-bar" class="meter-liquid w-full bg-gradient-to-t from-emerald-500 via-amber-400 to-rose-600 rounded-full shadow-[0_0_20px_rgba(244,63,94,0.6)]" style="height: 5%;"></div>
+            </div>
+
+            <div class="text-center">
+              <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Instantaneous dB</span>
+              <div id="instant-db-text" class="mono-font text-xl sm:text-2xl font-black text-white">00.0 <span class="text-xs text-slate-400 font-sans">dB</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center & Right Side: Digital Dashboard, Shouting Line & Action Controls (8 Columns) -->
+        <div class="lg:col-span-8 space-y-3">
+          
+          <!-- Big Digital Scoreboard -->
+          <div class="bg-slate-950 p-5 rounded-3xl border-3 border-rose-500/40 shadow-2xl relative overflow-hidden flex flex-col items-center justify-center">
+            
+            <!-- Background Shockwave Circle FX -->
+            <div id="shockwave-circle" class="absolute w-44 h-44 rounded-full border-4 border-rose-500/40 pointer-events-none hidden"></div>
+
+            <div class="flex items-center justify-between w-full px-2 mb-1">
+              <span class="text-xs font-black uppercase tracking-wider text-rose-400">Peak Decibel Record</span>
+              <span id="countdown-pill" class="hidden px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-black text-xs border border-amber-500/40">
+                ⏱️ TIME: 3.0s
+              </span>
+            </div>
+
+            <!-- Giant Peak Readout -->
+            <div class="text-center my-1">
+              <div class="flex items-baseline justify-center gap-2">
+                <span id="peak-db-large" class="heading-font text-6xl sm:text-7xl lg:text-8xl font-black text-amber-300 tracking-tight drop-shadow-lg">
+                  00.0
+                </span>
+                <span class="text-2xl sm:text-3xl font-black text-rose-500 font-mono">dB</span>
+              </div>
+              <p id="rank-title-text" class="heading-font text-sm sm:text-lg font-black text-slate-300 mt-1">
+                Waiting for contestant to roar...
+              </p>
+            </div>
+
+            <!-- Script Dialogue Challenge Banner -->
+            <div class="w-full mt-3 p-3 bg-slate-900/90 rounded-2xl border border-slate-800 text-center">
+              <span class="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-0.5">SHOUTING SCRIPT LINE (ACT 1, LINE 32):</span>
+              <div id="shout-target-quote" class="heading-font text-base sm:text-xl font-black text-white tracking-wide">
+                "TURN RIGHT AT THE RIVER!"
+              </div>
+            </div>
+
+            <!-- Live Canvas Audio Waveform Strip -->
+            <div class="w-full h-12 bg-slate-900 rounded-xl border border-slate-800 mt-2.5 overflow-hidden">
+              <canvas id="waveform-canvas" width="600" height="48" class="w-full h-full"></canvas>
+            </div>
+          </div>
+
+          <!-- Contestant Name Input & Shouting Buttons Bar -->
+          <div class="bg-slate-900/90 p-3.5 rounded-2xl border-2 border-slate-800 shadow-lg flex flex-col sm:flex-row items-center gap-3">
+            <!-- Name Input Field -->
+            <div class="w-full sm:w-1/3">
+              <input type="text" id="player-name-input" placeholder="Enter Student Name..." maxlength="18" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold text-xs sm:text-sm focus:outline-none focus:border-rose-500">
+            </div>
+
+            <!-- Action Buttons: Start, Reset, Save, Simulate -->
+            <div class="w-full sm:w-2/3 flex items-center gap-2">
+              <button onclick="startVoiceChallenge()" id="main-start-btn" class="flex-1 py-2.5 sm:py-3 bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 active:scale-95 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-1.5">
+                <span>▶️</span> <span>START SHOUT! (3s)</span>
+              </button>
+
+              <button onclick="resetSoundMeter()" id="reset-meter-btn" title="Reset Sound Level" class="px-3.5 py-2.5 sm:py-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-black text-xs rounded-xl border border-slate-700 transition cursor-pointer">
+                🔄 Reset
+              </button>
+
+              <button onclick="saveCurrentScoreToLeaderboard()" id="save-score-btn" title="Save to Leaderboard" class="px-3.5 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
+                💾 Save
+              </button>
+
+              <button onclick="simulateShoutingDemo()" id="sim-btn" title="Simulate Shouting without Microphone" class="px-3 py-2.5 sm:py-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-black text-xs rounded-xl border border-slate-700 transition cursor-pointer">
+                📢 Sim
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom Decibel Standards Scale Ribbon -->
+      <div class="w-full bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800/80 flex items-center justify-between text-xs font-bold z-10 mt-1">
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <span class="text-slate-400 shrink-0">Scale:</span>
+          <span class="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 text-[11px] shrink-0">Whisper 40dB</span>
+          <span class="px-2 py-0.5 rounded-md bg-sky-950 text-sky-300 border border-sky-800 text-[11px] shrink-0">Talking 60dB</span>
+          <span class="px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800 text-[11px] shrink-0">Loud Shout 85dB</span>
+          <span class="px-2 py-0.5 rounded-md bg-rose-950 text-rose-300 border border-rose-800 text-[11px] font-black shrink-0">Brother 9 Roar 100+ dB 🔥</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-slate-400">
+          <span>Target Distance:</span>
+          <span class="text-amber-400 font-mono font-black">5 Miles Across Valley</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Classroom Leaderboard Ranking Modal -->
+  <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-rose-500/60 rounded-3xl max-w-lg w-full p-6 shadow-2xl flex flex-col justify-between max-h-[85vh]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="heading-font text-xl font-black text-white flex items-center gap-2">
+            🏆 Thunder Voice Hall of Fame
+          </h3>
+          <p class="text-xs text-rose-300 font-bold">Classroom Decibel Championship Rankings</p>
+        </div>
+        <button onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Leaderboard Scrollable Table -->
+      <div class="my-4 overflow-y-auto max-h-[50vh] pr-1 space-y-2" id="leaderboard-list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <button onclick="clearLeaderboard()" class="text-xs font-bold text-rose-400 hover:underline cursor-pointer">
+          🗑️ Clear All Records
+        </button>
+        <button onclick="closeLeaderboardModal()" class="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
+          Back to Arena ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Microphone Sensitivity Calibration Modal -->
+  <div id="calibration-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <h3 class="heading-font text-lg font-black text-white">⚙️ Microphone Sensitivity</h3>
+        <button onclick="closeCalibrationModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs font-bold text-slate-300">
+        <div>
+          <div class="flex justify-between mb-1">
+            <span>Mic Gain Sensitivity:</span>
+            <span id="gain-label" class="text-amber-300 font-mono">1.2x</span>
+          </div>
+          <input type="range" id="gain-slider" min="0.5" max="2.5" step="0.1" value="1.2" oninput="updateGainSensitivity(this.value)" class="w-full accent-rose-500 cursor-pointer">
+        </div>
+
+        <div>
+          <div class="flex justify-between mb-1">
+            <span>Noise Floor Threshold:</span>
+            <span id="noise-gate-label" class="text-amber-300 font-mono">35 dB</span>
+          </div>
+          <input type="range" id="noise-gate-slider" min="20" max="50" step="1" value="35" oninput="updateNoiseGate(this.value)" class="w-full accent-rose-500 cursor-pointer">
+        </div>
+
+        <p class="text-[11px] text-slate-400 italic mt-2">
+          💡 If the classroom air conditioner or background chatter is loud, increase the noise floor slider!
+        </p>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeCalibrationModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs rounded-xl transition cursor-pointer">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory Fanfare Modal (Triggered on New High Score / Super Loud Shouts) -->
+  <div id="celebration-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-rose-950 to-slate-900 border-4 border-amber-400 text-center rounded-3xl max-w-md w-full p-7 shadow-2xl relative overflow-hidden">
+      <div class="text-6xl mb-2 animate-bounce">⚡📢</div>
+      <h2 class="heading-font text-3xl font-black text-amber-300 mb-1">THUNDER SHOUT CERTIFIED!</h2>
+      <p id="celebration-subtext" class="text-xs text-rose-200 font-bold mb-4">You roared across the entire mountain valley!</p>
+
+      <div class="bg-slate-950/90 p-4 rounded-2xl border border-rose-500/40 mb-5">
+        <span class="text-[11px] font-black uppercase text-slate-400">Locked Record</span>
+        <div id="celebration-db" class="heading-font text-5xl font-black text-white my-1">98.5 dB</div>
+        <span id="celebration-title" class="text-xs font-black text-amber-400 uppercase">Brother 9 Mega Voice 🌋</span>
+      </div>
+
+      <div class="flex gap-3 justify-center">
+        <button onclick="closeCelebrationModal()" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-slate-950 font-black text-sm rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+          Accept Honor ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Decibel Tier Definitions
+    const volumeTiers = [
+      { min: 0,  max: 42, title: "Library Whisper 🤫", color: "#10b981", badge: "QUIET 🤫" },
+      { min: 42, max: 62, title: "Classroom Chat 🗣️", color: "#38bdf8", badge: "NORMAL 🗣️" },
+      { min: 62, max: 78, title: "Loud Playground Voice 📢", color: "#facc15", badge: "LOUD 📢" },
+      { min: 78, max: 88, title: "Thunder Roar! ⚡", color: "#f97316", badge: "THUNDER! ⚡" },
+      { min: 88, max: 96, title: "Brother 9 Valley Megaphone! 🔥", color: "#ef4444", badge: "MEGAPHONE! 🔥" },
+      { min: 96, max: 130, title: "TYPHOON SUPER-SONIC GOD! 🌋", color: "#e11d48", badge: "SUPER-SONIC! 🌋" }
+    ];
+
+    const shoutPhrases = [
+      '"TURN RIGHT AT THE RIVER!"',
+      '"HELP IS ON THE WAY!"',
+      '"LOOK OUT FOR THE TIGER!"',
+      '"WE ARE THE TEN BROTHERS!"',
+      '"HOLD ON TO THE TREE!"'
+    ];
+
+    // State Variables
+    let audioContext = null;
+    let micStream = null;
+    let analyserNode = null;
+    let sourceNode = null;
+    let animationFrameId = null;
+
+    let isTesting = false;
+    let currentInstantDb = 0;
+    let currentPeakDb = 0;
+    let arenaAllTimeRecord = 0;
+    let micGainMultiplier = 1.2;
+    let noiseGateThreshold = 35;
+    let testTimer = null;
+    let countdownInterval = null;
+    let isSfxMuted = false;
+    let currentPhraseIndex = 0;
+
+    // Leaderboard Memory Array
+    let leaderboard = [
+      { name: "Brother 9 (Original)", db: 104.2, title: "Typhoon Master", date: "Ancient HK" },
+      { name: "Alex (Class P5)", db: 94.6, title: "Thunder Voice", date: "Today" },
+      { name: "Chloe (Class P5)", db: 91.8, title: "Thunder Voice", date: "Today" }
+    ];
+
+    // Audio Context Initializer
+    function getAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      return audioContext;
+    }
+
+    // Play Synthesized Audio Chimes and Countdown Ticks
+    function playSfx(type) {
+      if (isSfxMuted) return;
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'tick') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.08);
+
+        } else if (type === 'go') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(1200, now);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.25);
+
+        } else if (type === 'fanfare') {
+          const freqs = [523.25, 659.25, 783.99, 1046.50];
+          freqs.forEach((f, i) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(f, now + i * 0.08);
+            gain.gain.setValueAtTime(0.18, now + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (i + 1) * 0.08 + 0.15);
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.start(now + i * 0.08);
+            osc.stop(now + (i + 1) * 0.08 + 0.15);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio SFX unavailable');
+      }
+    }
+
+    async function initMicrophone() {
+      if (micStream && analyserNode) return true;
+      try {
+        const actx = getAudioContext();
+        micStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false
+          },
+          video: false
+        });
+
+        sourceNode = actx.createMediaStreamSource(micStream);
+        analyserNode = actx.createAnalyser();
+        analyserNode.fftSize = 512;
+        analyserNode.smoothingTimeConstant = 0.3;
+        sourceNode.connect(analyserNode);
+
+        startAudioVisualizerLoop();
+        return true;
+      } catch (err) {
+        console.warn('Microphone permission blocked or unavailable:', err);
+        document.getElementById('arena-ticker').innerHTML = `⚠️ <b class="text-rose-400">Microphone blocked!</b> Tap "Sim" to run simulation tests!`;
+        return false;
+      }
+    }
+
+    function startAudioVisualizerLoop() {
+      const canvas = document.getElementById('waveform-canvas');
+      const canvasCtx = canvas.getContext('2d');
+      const bufferLength = analyserNode.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      const timeData = new Uint8Array(bufferLength);
+
+      function renderFrame() {
+        if (!analyserNode) return;
+        analyserNode.getByteFrequencyData(dataArray);
+        analyserNode.getByteTimeDomainData(timeData);
+
+        // Calculate Root Mean Square (RMS) for precise acoustic amplitude
+        let sumSquares = 0;
+        for (let i = 0; i < timeData.length; i++) {
+          const norm = (timeData[i] - 128) / 128;
+          sumSquares += norm * norm;
+        }
+        const rms = Math.sqrt(sumSquares / timeData.length);
+
+        // Acoustic sound level calibrated to normal room dB SPL
+        // 32dB baseline room quiet floor up to ~110dB maximum roar
+        let rawDb = 32 + (rms * 115 * micGainMultiplier);
+        if (rawDb < noiseGateThreshold) rawDb = 30 + Math.random() * 2;
+        rawDb = Math.min(115, Math.max(30, rawDb));
+
+        currentInstantDb = rawDb;
+
+        // Peak tracking logic during active test
+        if (isTesting) {
+          if (currentInstantDb > currentPeakDb) {
+            currentPeakDb = currentInstantDb;
+            triggerShockwaveAnimation();
+          }
+        }
+
+        updateMeterVisuals(currentInstantDb, currentPeakDb);
+
+        // Draw Live Oscilloscope Waveform on Canvas
+        canvasCtx.fillStyle = '#090d16';
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+        canvasCtx.lineWidth = 2.5;
+        canvasCtx.strokeStyle = isTesting ? '#f43f5e' : '#38bdf8';
+        canvasCtx.beginPath();
+
+        const sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const v = timeData[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+          x += sliceWidth;
+        }
+        canvasCtx.lineTo(canvas.width, canvas.height / 2);
+        canvasCtx.stroke();
+
+        animationFrameId = requestAnimationFrame(renderFrame);
+      }
+
+      renderFrame();
+    }
+
+    function updateMeterVisuals(instantDb, peakDb) {
+      // Calculate fill percentages for vertical tube (Scale 30dB - 105dB)
+      const fillPct = Math.min(100, Math.max(4, ((instantDb - 30) / 75) * 100));
+      const peakPct = Math.min(100, Math.max(4, ((peakDb - 30) / 75) * 100));
+
+      const fillBar = document.getElementById('meter-fill-bar');
+      const peakLine = document.getElementById('peak-indicator-line');
+      const instantText = document.getElementById('instant-db-text');
+      const largePeakText = document.getElementById('peak-db-large');
+      const tierBadge = document.getElementById('tier-badge');
+      const rankTitle = document.getElementById('rank-title-text');
+
+      if (fillBar) fillBar.style.height = `${fillPct}%`;
+      if (peakLine) peakLine.style.bottom = `${peakPct}%`;
+      if (instantText) instantText.innerHTML = `${instantDb.toFixed(1)} <span class="text-xs text-slate-400 font-sans">dB</span>`;
+      if (largePeakText) largePeakText.textContent = peakDb > 0 ? peakDb.toFixed(1) : '00.0';
+
+      // Match tier definition
+      const activeTier = volumeTiers.find(t => (isTesting ? peakDb : instantDb) >= t.min && (isTesting ? peakDb : instantDb) < t.max) || volumeTiers[volumeTiers.length - 1];
+      if (tierBadge) {
+        tierBadge.textContent = activeTier.badge;
+        tierBadge.style.color = activeTier.color;
+      }
+      if (rankTitle && isTesting) {
+        rankTitle.textContent = activeTier.title;
+        rankTitle.style.color = activeTier.color;
+      }
+    }
+
+    function triggerShockwaveAnimation() {
+      const ring = document.getElementById('shockwave-circle');
+      if (ring) {
+        ring.classList.remove('hidden', 'shockwave-anim');
+        void ring.offsetWidth; // Trigger reflow
+        ring.classList.add('shockwave-anim');
+      }
+    }
+
+    window.startVoiceChallenge = async function() {
+      if (isTesting) {
+        finishAndLockTest();
+        return;
+      }
+
+      const micReady = await initMicrophone();
+      if (!micReady) {
+        simulateShoutingDemo();
+        return;
+      }
+
+      resetSoundMeter();
+      isTesting = true;
+      playSfx('go');
+
+      const startBtn = document.getElementById('main-start-btn');
+      const countdownPill = document.getElementById('countdown-pill');
+      const ticker = document.getElementById('arena-ticker');
+
+      startBtn.innerHTML = `<span>⏹️</span> <span>FREEZE PEAK NOW</span>`;
+      startBtn.classList.remove('from-rose-600', 'to-amber-600');
+      startBtn.classList.add('from-amber-600', 'to-yellow-500');
+
+      countdownPill.classList.remove('hidden');
+      ticker.innerHTML = `📢 <b>SHOUT NOW AT THE TOP OF YOUR LUNGS!</b> Measuring highest peak...`;
+
+      let timeLeft = 3.0;
+      countdownInterval = setInterval(() => {
+        timeLeft -= 0.1;
+        if (timeLeft <= 0) {
+          timeLeft = 0;
+          clearInterval(countdownInterval);
+        }
+        countdownPill.textContent = `⏱️ TIME: ${timeLeft.toFixed(1)}s`;
+        if (timeLeft <= 1.0 && timeLeft > 0.1) playSfx('tick');
+      }, 100);
+
+      // Auto-freeze at 3.0 seconds
+      testTimer = setTimeout(() => {
+        finishAndLockTest();
+      }, 3100);
+    };
+
+    function finishAndLockTest() {
+      if (testTimer) clearTimeout(testTimer);
+      if (countdownInterval) clearInterval(countdownInterval);
+      isTesting = false;
+
+      const startBtn = document.getElementById('main-start-btn');
+      const countdownPill = document.getElementById('countdown-pill');
+      const ticker = document.getElementById('arena-ticker');
+      const playerName = document.getElementById('player-name-input').value.trim() || 'Hero Shouter';
+
+      startBtn.innerHTML = `<span>▶️</span> <span>START ANOTHER SHOUT</span>`;
+      startBtn.classList.remove('from-amber-600', 'to-yellow-500');
+      startBtn.classList.add('from-rose-600', 'to-amber-600');
+      countdownPill.classList.add('hidden');
+
+      playSfx('fanfare');
+
+      ticker.innerHTML = `🎉 <b>RECORD LOCKED!</b> ${playerName} hit a peak roar of <b>${currentPeakDb.toFixed(1)} dB</b>!`;
+
+      // Check if new all-time arena record
+      if (currentPeakDb > arenaAllTimeRecord) {
+        arenaAllTimeRecord = currentPeakDb;
+        document.getElementById('arena-record-display').textContent = `${arenaAllTimeRecord.toFixed(1)} dB`;
+      }
+
+      // Check for Celebration Fanfare Modal (>90dB)
+      if (currentPeakDb >= 90) {
+        showCelebrationModal(playerName, currentPeakDb);
+      }
+    }
+
+    window.resetSoundMeter = function() {
+      if (testTimer) clearTimeout(testTimer);
+      if (countdownInterval) clearInterval(countdownInterval);
+      isTesting = false;
+      currentPeakDb = 0;
+
+      const startBtn = document.getElementById('main-start-btn');
+      const countdownPill = document.getElementById('countdown-pill');
+      const rankTitle = document.getElementById('rank-title-text');
+      const peakLine = document.getElementById('peak-indicator-line');
+      const largePeakText = document.getElementById('peak-db-large');
+
+      if (startBtn) {
+        startBtn.innerHTML = `<span>▶️</span> <span>START SHOUT! (3s)</span>`;
+        startBtn.classList.remove('from-amber-600', 'to-yellow-500');
+        startBtn.classList.add('from-rose-600', 'to-amber-600');
+      }
+      if (countdownPill) countdownPill.classList.add('hidden');
+      if (rankTitle) {
+        rankTitle.textContent = 'Waiting for contestant to roar...';
+        rankTitle.style.color = '#cbd5e1';
+      }
+      if (peakLine) peakLine.style.bottom = '0%';
+      if (largePeakText) largePeakText.textContent = '00.0';
+    };
+
+    window.simulateShoutingDemo = function() {
+      resetSoundMeter();
+      isTesting = true;
+      playSfx('go');
+
+      const startBtn = document.getElementById('main-start-btn');
+      const countdownPill = document.getElementById('countdown-pill');
+      const ticker = document.getElementById('arena-ticker');
+
+      startBtn.innerHTML = `<span>📢</span> <span>SIMULATING SHOUT...</span>`;
+      countdownPill.classList.remove('hidden');
+      ticker.innerHTML = `📢 <b>SIMULATION IN PROGRESS:</b> Simulating roaring sound across Lion Rock valley...`;
+
+      let simDb = 45;
+      const targetSimPeak = 92 + Math.random() * 12; // 92 - 104 dB simulated peak
+      let steps = 0;
+
+      const simInterval = setInterval(() => {
+        steps++;
+        simDb += 5 + Math.random() * 8;
+        if (simDb > currentPeakDb) {
+          currentPeakDb = Math.min(targetSimPeak, simDb);
+          triggerShockwaveAnimation();
+        }
+        updateMeterVisuals(currentPeakDb, currentPeakDb);
+
+        if (steps >= 20 || currentPeakDb >= targetSimPeak) {
+          clearInterval(simInterval);
+          finishAndLockTest();
+        }
+      }, 120);
+    };
+
+    window.cycleShoutPhrase = function() {
+      currentPhraseIndex = (currentPhraseIndex + 1) % shoutPhrases.length;
+      const targetPhrase = shoutPhrases[currentPhraseIndex];
+      document.getElementById('shout-target-quote').textContent = targetPhrase;
+      document.getElementById('phrase-btn-text').textContent = targetPhrase.length > 14 ? targetPhrase.substring(0, 14) + '..."' : targetPhrase;
+      playSfx('tick');
+    };
+
+    window.saveCurrentScoreToLeaderboard = function() {
+      if (currentPeakDb <= 0) {
+        alertModalNotice("No Score Yet!", "Press START and roar into the microphone before saving!");
+        return;
+      }
+      const name = document.getElementById('player-name-input').value.trim() || 'Student ' + (leaderboard.length + 1);
+      const tier = volumeTiers.find(t => currentPeakDb >= t.min && currentPeakDb < t.max) || volumeTiers[volumeTiers.length - 1];
+
+      leaderboard.push({
+        name: name,
+        db: parseFloat(currentPeakDb.toFixed(1)),
+        title: tier.title,
+        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      // Sort descending by highest decibels
+      leaderboard.sort((a, b) => b.db - a.db);
+      updateLeaderboardUI();
+      openLeaderboardModal();
+      playSfx('fanfare');
+    };
+
+    function updateLeaderboardUI() {
+      const list = document.getElementById('leaderboard-list');
+      if (!list) return;
+      list.innerHTML = '';
+
+      leaderboard.slice(0, 10).forEach((entry, i) => {
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl border flex items-center justify-between text-xs sm:text-sm font-bold ${
+          i === 0 ? 'bg-amber-950/40 border-amber-500/60 text-amber-200' : 'bg-slate-950 border-slate-800 text-slate-300'
+        }`;
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="font-black text-base">${medal}</span>
+            <div>
+              <span class="font-black text-white block">${entry.name}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${entry.title}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="mono-font text-base sm:text-lg font-black text-rose-400">${entry.db} dB</span>
+            <span class="block text-[9px] text-slate-500">${entry.date}</span>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+
+      if (leaderboard.length > 0) {
+        arenaAllTimeRecord = leaderboard[0].db;
+        document.getElementById('arena-record-display').textContent = `${arenaAllTimeRecord.toFixed(1)} dB`;
+      }
+    }
+
+    window.openLeaderboardModal = function() {
+      updateLeaderboardUI();
+      document.getElementById('leaderboard-modal').classList.remove('hidden');
+    };
+
+    window.closeLeaderboardModal = function() {
+      document.getElementById('leaderboard-modal').classList.add('hidden');
+    };
+
+    window.clearLeaderboard = function() {
+      leaderboard = [];
+      updateLeaderboardUI();
+    };
+
+    window.openCalibrationModal = function() {
+      document.getElementById('calibration-modal').classList.remove('hidden');
+    };
+
+    window.closeCalibrationModal = function() {
+      document.getElementById('calibration-modal').classList.add('hidden');
+    };
+
+    window.updateGainSensitivity = function(val) {
+      micGainMultiplier = parseFloat(val);
+      document.getElementById('gain-label').textContent = `${micGainMultiplier.toFixed(1)}x`;
+    };
+
+    window.updateNoiseGate = function(val) {
+      noiseGateThreshold = parseInt(val, 10);
+      document.getElementById('noise-gate-label').textContent = `${noiseGateThreshold} dB`;
+    };
+
+    function showCelebrationModal(name, db) {
+      const modal = document.getElementById('celebration-modal');
+      const dbText = document.getElementById('celebration-db');
+      const sub = document.getElementById('celebration-subtext');
+      const rankTitle = document.getElementById('celebration-title');
+
+      const tier = volumeTiers.find(t => db >= t.min && db < t.max) || volumeTiers[volumeTiers.length - 1];
+
+      dbText.textContent = `${db.toFixed(1)} dB`;
+      sub.textContent = `${name} roared loud enough for Brother 5 to hear across 5 miles of rapids!`;
+      rankTitle.textContent = tier.title;
+
+      modal.classList.remove('hidden');
+    }
+
+    window.closeCelebrationModal = function() {
+      document.getElementById('celebration-modal').classList.add('hidden');
+    };
+
+    window.toggleSfxSound = function() {
+      isSfxMuted = !isSfxMuted;
+      document.getElementById('sfx-btn').textContent = isSfxMuted ? '🔇' : '🔊';
+    };
+
+    function alertModalNotice(title, msg) {
+      const ticker = document.getElementById('arena-ticker');
+      if (ticker) {
+        ticker.innerHTML = `⚠️ <b class="text-amber-300">${title}</b> ${msg}`;
+      }
+    }
+
+    // Keyboard Hotkeys
+    window.addEventListener('keydown', (e) => {
+      if (e.key === ' ' && !e.target.matches('input')) {
+        e.preventDefault();
+        startVoiceChallenge();
+      } else if (e.key.toLowerCase() === 'r' && !e.target.matches('input')) {
+        resetSoundMeter();
+      } else if (e.key.toLowerCase() === 'm' && !e.target.matches('input')) {
+        toggleSfxSound();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLeaderboardUI();
+    });
+  </script>
+</body>
+</html>

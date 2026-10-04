@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Brother 1's Childhood Sight Test Clinic - The Super Eye Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .heading-font {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .mono-font {
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .game-viewport {
+      aspect-ratio: 16 / 9;
+      max-height: 84vh;
+    }
+    @keyframes lightboxHum {
+      0%, 100% { box-shadow: 0 0 25px rgba(248, 250, 252, 0.85), inset 0 0 15px rgba(226, 232, 240, 0.5); }
+      50% { box-shadow: 0 0 45px rgba(255, 255, 255, 1), inset 0 0 25px rgba(203, 213, 225, 0.7); }
+    }
+    .lightbox-glow {
+      animation: lightboxHum 3.5s infinite ease-in-out;
+    }
+    @keyframes popBounce {
+      0% { transform: scale(0.85); opacity: 0; }
+      70% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-anim {
+      animation: popBounce 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6)); }
+      50% { transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.95)); }
+    }
+    .pulse-optic {
+      animation: pulseGlow 2.2s infinite ease-in-out;
+    }
+    .e-symbol {
+      will-change: transform;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), font-size 0.2s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-hidden select-none">
+
+  <!-- Top Clinic Navigation & Status Bar -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-3.5 sm:px-5 py-2.5 rounded-2xl border border-slate-800 shadow-xl z-30 mb-2">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 flex items-center justify-center text-2xl shadow-lg pulse-optic no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        👁️
+      </a>
+      <div>
+        <h1 class="heading-font text-sm sm:text-lg font-black text-white tracking-wide flex items-center gap-2">
+          School Sight Test Clinic <span class="hidden md:inline text-xs px-2.5 py-0.5 rounded-full bg-sky-950 text-sky-300 border border-sky-700/60 font-sans">Childhood Tumbling E Edition</span>
+        </h1>
+        <p class="text-[11px] sm:text-xs text-sky-300 font-bold hidden sm:block">Primary 5 English • Brother 1 Telescope Vision Academy</p>
+      </div>
+    </div>
+
+    <!-- Live Test Acuity & Clinic Tools -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Acuity Score Display -->
+      <div class="bg-slate-950 border border-slate-800 px-3.5 py-1 rounded-xl text-center shadow-inner">
+        <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Acuity Grade</span>
+        <span id="acuity-rating" class="mono-font text-xs sm:text-sm font-black text-amber-300">20 / 200</span>
+      </div>
+
+      <!-- Occluder Eye Paddle Selector -->
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+        <button id="eye-both-btn" onclick="setEyeOccluder('both')" class="px-2.5 py-1 rounded-lg bg-sky-600 text-white font-black transition active:scale-95 cursor-pointer">
+          👀 Both
+        </button>
+        <button id="eye-left-btn" onclick="setEyeOccluder('left')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition active:scale-95 cursor-pointer">
+          🙈 Left
+        </button>
+        <button id="eye-right-btn" onclick="setEyeOccluder('right')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition active:scale-95 cursor-pointer">
+          🙉 Right
+        </button>
+      </div>
+
+      <!-- Audio Mute Button -->
+      <button onclick="toggleSound()" id="sound-btn" title="Toggle Sound (M)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition active:scale-95 cursor-pointer">
+        🔊
+      </button>
+
+      <!-- Chart Mode Switcher -->
+      <button onclick="switchTestMode()" id="mode-btn" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-black transition active:scale-95 cursor-pointer flex items-center gap-1 shadow-md">
+        <span>🔄 Duochrome</span>
+      </button>
+
+      <!-- Doctor Report / Certificate -->
+      <button onclick="openReportModal()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-black transition active:scale-95 cursor-pointer shadow-md">
+        📜 <span>Card</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto flex-1 flex items-center justify-center relative my-auto">
+    <div id="clinic-frame" class="game-viewport w-full bg-slate-900 rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden relative flex flex-col justify-between p-3 sm:p-5 transition-all">
+      
+      <!-- Top Clinic Instruction Banner -->
+      <div class="flex items-center justify-between px-2 pt-0.5 pb-1 z-10">
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Clinical Eye Test
+          </span>
+          <span id="clinic-ticker" class="text-xs sm:text-sm font-black text-amber-300 truncate">
+            📏 Step 3 paces back from the screen! Which way are the legs of the "E" pointing?
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
+          <span>Level: <b id="level-counter" class="text-white font-mono text-sm">1 / 8</b></span>
+        </div>
+      </div>
+
+      <!-- MAIN SIGHT TEST STAGE (Center Arena) -->
+      <div class="my-auto grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-center w-full max-w-6xl mx-auto z-10">
+        
+        <!-- Left Side: Illuminated Snellen Lightbox Chart (7 Columns) -->
+        <div class="lg:col-span-7 flex flex-col items-center justify-center">
+          <!-- Classic Medical Lightbox with Authentic White Plastic Frame -->
+          <div class="w-full max-w-md bg-slate-200 border-8 border-slate-300 rounded-3xl p-3 shadow-2xl lightbox-glow relative overflow-hidden flex flex-col justify-between">
+            
+            <!-- Lightbox Clinic Header Strip -->
+            <div class="w-full bg-slate-300/80 rounded-xl px-3 py-1 flex items-center justify-between text-[11px] font-black text-slate-700 tracking-wider">
+              <span>SNELLEN "E" CHART (HK STANDARD)</span>
+              <span id="metric-acuity" class="mono-font text-blue-800">6 / 60 METRES</span>
+            </div>
+
+            <!-- Glowing Lightbox Screen Area -->
+            <div id="lightbox-display" class="w-full h-56 sm:h-64 bg-white rounded-2xl flex items-center justify-center relative overflow-hidden shadow-inner my-2 border-2 border-slate-300 transition-colors duration-300">
+              
+              <!-- Pediatric Duochrome Left/Right Split (Hidden by default) -->
+              <div id="duochrome-container" class="absolute inset-0 w-full h-full hidden grid-cols-2">
+                <div class="bg-rose-600 flex items-center justify-center p-3 text-white font-black text-2xl border-r-2 border-white/40">
+                  <span id="duochrome-red-e" class="e-symbol font-black text-black">E</span>
+                </div>
+                <div class="bg-emerald-600 flex items-center justify-center p-3 text-white font-black text-2xl">
+                  <span id="duochrome-green-e" class="e-symbol font-black text-black">E</span>
+                </div>
+              </div>
+
+              <!-- Primary Tumbling E (SVG Vector for Pixel-Crisp Sharpness at any scale) -->
+              <div id="snellen-e-wrapper" class="flex items-center justify-center transition-all duration-200">
+                <svg id="tumbling-e-svg" viewBox="0 0 100 100" class="e-symbol w-36 h-36 transition-all duration-150" fill="#000000">
+                  <!-- Snellen standard proportions: 5 units high, 5 units wide, stroke width = 1 unit, gap = 1 unit -->
+                  <path d="M 10 10 
+                           H 90 
+                           V 26 
+                           H 30 
+                           V 42 
+                           H 78 
+                           V 58 
+                           H 30 
+                           V 74 
+                           H 90 
+                           V 90 
+                           H 10 
+                           Z"/>
+                </svg>
+              </div>
+
+              <!-- Pediatric Occluder Overlay (If user picks left or right eye) -->
+              <div id="occluder-badge" class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-lg bg-black/60 text-white text-[11px] font-mono font-black border border-white/20">
+                👀 BOTH EYES OPEN
+              </div>
+
+              <!-- Line Marker Indicator -->
+              <div class="absolute right-2 top-2 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 text-[10px] font-mono font-black border border-slate-300">
+                LINE <span id="line-num">1</span>
+              </div>
+            </div>
+
+            <!-- Lightbox Bottom Control Switch -->
+            <div class="w-full flex items-center justify-between px-2 pt-1 text-[11px] text-slate-600 font-bold">
+              <span>💡 Fluorescent Lamp ON</span>
+              <button onclick="toggleLampBulb()" class="text-blue-700 font-black hover:underline cursor-pointer">
+                Switch Bulb
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Directional Response Station (5 Columns) -->
+        <div class="lg:col-span-5 space-y-3">
+          
+          <!-- Instructions Card -->
+          <div class="p-3.5 bg-slate-800/90 rounded-2xl border-2 border-slate-700 shadow-md">
+            <h3 class="heading-font text-base sm:text-lg font-black text-amber-300 flex items-center gap-1.5">
+              <span>🎯</span> <span>Which Direction Do The "Prongs" Face?</span>
+            </h3>
+            <p class="text-xs text-slate-300 font-bold leading-relaxed mt-0.5">
+              Point with your fingers or tap the big arrows on the Smartboard. Keyboard arrows (<b class="text-white">↑ ↓ ← →</b>) work too!
+            </p>
+          </div>
+
+          <!-- Giant Touch-Friendly Directional Keypad (Cross Layout) -->
+          <div class="bg-slate-950 p-4 rounded-3xl border-3 border-sky-500/40 shadow-xl flex flex-col items-center justify-center space-y-2">
+            
+            <!-- UP Button -->
+            <button onclick="submitDirection('UP')" id="btn-dir-up" class="w-16 h-14 sm:w-20 sm:h-16 rounded-2xl bg-gradient-to-b from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 active:scale-95 text-white shadow-lg border-2 border-sky-300 flex flex-col items-center justify-center transition cursor-pointer group">
+              <span class="text-2xl sm:text-3xl font-black group-hover:-translate-y-1 transition-transform">▲</span>
+              <span class="text-[10px] font-black uppercase font-mono tracking-wider">UP</span>
+            </button>
+
+            <!-- MIDDLE ROW: LEFT, ICON, RIGHT -->
+            <div class="flex items-center gap-3">
+              <!-- LEFT Button -->
+              <button onclick="submitDirection('LEFT')" id="btn-dir-left" class="w-16 h-14 sm:w-20 sm:h-16 rounded-2xl bg-gradient-to-b from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 active:scale-95 text-white shadow-lg border-2 border-sky-300 flex flex-col items-center justify-center transition cursor-pointer group">
+                <span class="text-2xl sm:text-3xl font-black group-hover:-translate-x-1 transition-transform">◀</span>
+                <span class="text-[10px] font-black uppercase font-mono tracking-wider">LEFT</span>
+              </button>
+
+              <!-- Center Compass Eye -->
+              <div class="w-12 h-12 rounded-2xl bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-xl shadow-inner">
+                🧭
+              </div>
+
+              <!-- RIGHT Button -->
+              <button onclick="submitDirection('RIGHT')" id="btn-dir-right" class="w-16 h-14 sm:w-20 sm:h-16 rounded-2xl bg-gradient-to-b from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 active:scale-95 text-white shadow-lg border-2 border-sky-300 flex flex-col items-center justify-center transition cursor-pointer group">
+                <span class="text-2xl sm:text-3xl font-black group-hover:translate-x-1 transition-transform">▶</span>
+                <span class="text-[10px] font-black uppercase font-mono tracking-wider">RIGHT</span>
+              </button>
+            </div>
+
+            <!-- DOWN Button -->
+            <button onclick="submitDirection('DOWN')" id="btn-dir-down" class="w-16 h-14 sm:w-20 sm:h-16 rounded-2xl bg-gradient-to-b from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 active:scale-95 text-white shadow-lg border-2 border-sky-300 flex flex-col items-center justify-center transition cursor-pointer group">
+              <span class="text-2xl sm:text-3xl font-black group-hover:translate-y-1 transition-transform">▼</span>
+              <span class="text-[10px] font-black uppercase font-mono tracking-wider">DOWN</span>
+            </button>
+          </div>
+
+          <!-- Quick Actions & Reset Bar -->
+          <div class="flex gap-2">
+            <button onclick="resetVisionTest()" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-xs border border-slate-700 transition cursor-pointer">
+              🔄 Reset Chart
+            </button>
+            <button onclick="skipToTelescopeLevel()" class="px-3 py-2 rounded-xl bg-indigo-900/70 hover:bg-indigo-800 text-indigo-300 font-bold text-xs border border-indigo-700 transition cursor-pointer">
+              🔭 Test Eagle Vision (20/10)
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom Acuity Progress Meter -->
+      <div class="w-full bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800/80 flex items-center justify-between text-xs font-bold z-10 mt-1">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400">Streak: <b id="streak-counter" class="text-emerald-400">0</b> in a row</span>
+          <span class="text-slate-600">•</span>
+          <span id="rank-badge" class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-500/30 font-black">
+            Cadet Eyes 👀
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400 hidden sm:inline">Brother 1 Super Vision Threshold:</span>
+          <span class="text-amber-400 font-black font-mono">20/10 Vision 🔥</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Ishihara Color Dot Challenge Modal -->
+  <div id="ishihara-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-sky-500/60 rounded-3xl max-w-lg w-full p-6 shadow-2xl flex flex-col justify-between pop-anim">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="heading-font text-xl font-black text-white flex items-center gap-2">
+            🎨 Ishihara Color Dot Plate Test
+          </h3>
+          <p class="text-xs text-sky-300 font-bold">Can your eyes spot the hidden symbol inside the dots?</p>
+        </div>
+        <button onclick="closeIshiharaModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Canvas for Procedural Color Dot Plate -->
+      <div class="my-4 flex flex-col items-center justify-center">
+        <canvas id="ishihara-canvas" width="260" height="260" class="rounded-full shadow-2xl border-4 border-slate-700 bg-amber-50"></canvas>
+        <p class="text-xs text-slate-400 font-bold mt-2">What number or shape do you see inside the circle?</p>
+      </div>
+
+      <!-- Multiple Choice Options -->
+      <div class="grid grid-cols-3 gap-2 pt-2">
+        <button onclick="checkIshihara(12)" class="py-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-white font-black text-lg transition cursor-pointer">
+          12
+        </button>
+        <button onclick="checkIshihara(74)" class="py-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-white font-black text-lg transition cursor-pointer">
+          74
+        </button>
+        <button onclick="checkIshihara(8)" class="py-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-white font-black text-lg transition cursor-pointer">
+          8
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Official Vision Health Report Certificate Modal -->
+  <div id="report-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-amber-50 border-4 border-amber-300 text-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 text-center shadow-2xl pop-anim relative overflow-hidden">
+      <!-- Stamp watermark -->
+      <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border-4 border-dashed border-rose-500/30 flex items-center justify-center text-rose-500/30 font-black text-3xl rotate-12 pointer-events-none uppercase">
+        PASSED
+      </div>
+
+      <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl mx-auto flex items-center justify-center text-4xl mb-3 shadow-md">
+        👓
+      </div>
+
+      <span class="text-xs uppercase tracking-widest font-black text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
+        Ancient Hong Kong Primary 5 Clinic
+      </span>
+
+      <h2 class="heading-font text-3xl font-black text-slate-900 mt-2 mb-1">
+        Superhero Vision Certificate
+      </h2>
+      <p class="text-xs text-slate-600 font-bold mb-4">Official Acuity Report for Brother 1's Academy</p>
+
+      <!-- Results Grid -->
+      <div class="bg-white p-4 rounded-2xl border-2 border-amber-200 space-y-2.5 mb-5 text-left text-xs sm:text-sm font-bold">
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Visual Acuity (Imperial):</span>
+          <span id="rep-imperial" class="font-black text-blue-700 font-mono">20 / 20</span>
+        </div>
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Visual Acuity (Metric):</span>
+          <span id="rep-metric" class="font-black text-blue-700 font-mono">6 / 6</span>
+        </div>
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Highest Chart Line Cleared:</span>
+          <span id="rep-line" class="font-black text-emerald-600 font-mono">Line 6 (100% Sharp)</span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-slate-500">Superpower Diagnosis:</span>
+          <span id="rep-title" class="font-black text-amber-600 bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300">
+            🔭 Brother 1 Telescope Eyes!
+          </span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-center">
+        <button onclick="closeReportModal()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm rounded-xl shadow-md transition active:scale-95 cursor-pointer">
+          Continue Test ➔
+        </button>
+        <button onclick="openIshiharaModal(); closeReportModal();" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-sm rounded-xl transition active:scale-95 cursor-pointer">
+          🎨 Color Dots Test
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Levels table mapping Snellen visual acuity lines to exact display sizing and labels
+    const visualAcuityLevels = [
+      { line: 1, imperial: "20 / 200", metric: "6 / 60", svgSize: 150, rank: "Legally Blurry without Glasses 👓", passStreak: 1 },
+      { line: 2, imperial: "20 / 100", metric: "6 / 30", svgSize: 115, rank: "Reading Distance OK 📖", passStreak: 2 },
+      { line: 3, imperial: "20 / 70",  metric: "6 / 21", svgSize: 88,  rank: "Classroom Blackboard Vision 🏫", passStreak: 3 },
+      { line: 4, imperial: "20 / 50",  metric: "6 / 15", svgSize: 66,  rank: "Sharp Young Eyes 👀", passStreak: 4 },
+      { line: 5, imperial: "20 / 40",  metric: "6 / 12", svgSize: 50,  rank: "Pilot Cadet Vision ✈️", passStreak: 5 },
+      { line: 6, imperial: "20 / 25",  metric: "6 / 7.5", svgSize: 36, rank: "Perfect 20/20 Standard ✨", passStreak: 6 },
+      { line: 7, imperial: "20 / 15",  metric: "6 / 4.5", svgSize: 25, rank: "Hawk Hunter Eyes 🦅", passStreak: 7 },
+      { line: 8, imperial: "20 / 10",  metric: "6 / 3",   svgSize: 16, rank: "Brother 1 Telescope Vision! 🔭🔥", passStreak: 8 }
+    ];
+
+    const directions = ["UP", "DOWN", "LEFT", "RIGHT"];
+    const rotationMap = {
+      "RIGHT": 0,    // Standard E has prongs pointing RIGHT
+      "DOWN": 90,    // Prongs pointing DOWN
+      "LEFT": 180,   // Prongs pointing LEFT
+      "UP": 270      // Prongs pointing UP
+    };
+
+    // State Variables
+    let currentLevelIdx = 0;
+    let targetDirection = "RIGHT";
+    let currentStreak = 0;
+    let isDuochromeMode = false;
+    let isLampWhite = true;
+    let isMuted = false;
+    let currentEyeMode = "both"; // 'both', 'left', 'right'
+    let audioCtx = null;
+
+    // Web Audio Synthesizer for Childhood Clinic Sounds
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (isMuted) return;
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'correct') {
+          // Playful high-pitched clinic success chime
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sine';
+          osc.connect(gain);
+          gain.connect(actx.destination);
+
+          osc.frequency.setValueAtTime(659.25, now);
+          osc.frequency.setValueAtTime(880, now + 0.08);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+          osc.start(now);
+          osc.stop(now + 0.25);
+
+        } else if (type === 'wrong') {
+          // Low diagnostic buzz
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sawtooth';
+          osc.connect(gain);
+          gain.connect(actx.destination);
+
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.setValueAtTime(130, now + 0.12);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+
+          osc.start(now);
+          osc.stop(now + 0.28);
+
+        } else if (type === 'levelup') {
+          // Arpeggio fanfare for jumping to smaller lines
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, i) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.frequency.setValueAtTime(freq, now + i * 0.07);
+            gain.gain.setValueAtTime(0.22, now + i * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (i + 1) * 0.07 + 0.1);
+            osc.start(now + i * 0.07);
+            osc.stop(now + (i + 1) * 0.07 + 0.1);
+          });
+
+        } else if (type === 'click') {
+          // Mechanical button / light switch tick
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'triangle';
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.frequency.setValueAtTime(900, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        console.warn('Audio not initialized yet');
+      }
+    }
+
+    function spawnNewTumblingTarget() {
+      // Pick random direction different from last if possible
+      const availableDirs = directions.filter(d => d !== targetDirection);
+      targetDirection = availableDirs[Math.floor(Math.random() * availableDirs.length)];
+
+      const level = visualAcuityLevels[currentLevelIdx];
+      const rotationDeg = rotationMap[targetDirection];
+
+      const svgEl = document.getElementById('tumbling-e-svg');
+      if (svgEl) {
+        svgEl.style.transform = `rotate(${rotationDeg}deg)`;
+        svgEl.style.width = `${level.svgSize}px`;
+        svgEl.style.height = `${level.svgSize}px`;
+      }
+
+      // Also sync Duochrome E's
+      const redE = document.getElementById('duochrome-red-e');
+      const greenE = document.getElementById('duochrome-green-e');
+      if (redE && greenE) {
+        redE.style.transform = `rotate(${rotationDeg}deg)`;
+        greenE.style.transform = `rotate(${rotationDeg}deg)`;
+        redE.style.fontSize = `${Math.max(18, level.svgSize * 0.7)}px`;
+        greenE.style.fontSize = `${Math.max(18, level.svgSize * 0.7)}px`;
+      }
+
+      // Update UI Counters & Labels
+      document.getElementById('acuity-rating').textContent = level.imperial;
+      document.getElementById('metric-acuity').textContent = `${level.metric} METRES`;
+      document.getElementById('level-counter').textContent = `${currentLevelIdx + 1} / ${visualAcuityLevels.length}`;
+      document.getElementById('line-num').textContent = level.line;
+      document.getElementById('rank-badge').textContent = level.rank;
+    }
+
+    window.submitDirection = function(chosenDir) {
+      const ticker = document.getElementById('clinic-ticker');
+
+      if (chosenDir === targetDirection) {
+        // Correct answer!
+        playSound('correct');
+        currentStreak++;
+        document.getElementById('streak-counter').textContent = currentStreak;
+
+        // Flash target with quick celebratory pulse
+        const svgEl = document.getElementById('tumbling-e-svg');
+        if (svgEl) {
+          svgEl.classList.add('pop-anim');
+          setTimeout(() => svgEl.classList.remove('pop-anim'), 300);
+        }
+
+        ticker.innerHTML = `<span class="text-emerald-400 font-black">✓ CORRECT!</span> Prongs pointed <b>${chosenDir}</b>!`;
+
+        // Advance level if cleared threshold
+        if (currentStreak >= 2 && currentLevelIdx < visualAcuityLevels.length - 1) {
+          currentLevelIdx++;
+          currentStreak = 0;
+          playSound('levelup');
+          ticker.innerHTML = `🌟 <b>LINE CLEARED!</b> Advancing to smaller Line ${currentLevelIdx + 1}!`;
+
+          if (currentLevelIdx === visualAcuityLevels.length - 1) {
+            setTimeout(() => {
+              openReportModal();
+            }, 1200);
+          }
+        }
+
+        setTimeout(spawnNewTumblingTarget, 350);
+
+      } else {
+        // Missed answer
+        playSound('wrong');
+        currentStreak = 0;
+        document.getElementById('streak-counter').textContent = currentStreak;
+        ticker.innerHTML = `<span class="text-rose-400 font-black">❌ MISSED!</span> It was pointing <b>${targetDirection}</b>. Try another one!`;
+
+        // If struggling at small sizes, ease back one line to simulate real optometrist step-back
+        if (currentLevelIdx > 0 && Math.random() > 0.6) {
+          currentLevelIdx--;
+        }
+
+        setTimeout(spawnNewTumblingTarget, 400);
+      }
+    };
+
+    window.setEyeOccluder = function(eye) {
+      playSound('click');
+      currentEyeMode = eye;
+      const bothBtn = document.getElementById('eye-both-btn');
+      const leftBtn = document.getElementById('eye-left-btn');
+      const rightBtn = document.getElementById('eye-right-btn');
+      const badge = document.getElementById('occluder-badge');
+
+      [bothBtn, leftBtn, rightBtn].forEach(b => {
+        b.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition active:scale-95 cursor-pointer';
+      });
+
+      if (eye === 'both') {
+        bothBtn.className = 'px-2.5 py-1 rounded-lg bg-sky-600 text-white font-black transition active:scale-95 cursor-pointer';
+        badge.textContent = '👀 BOTH EYES OPEN';
+      } else if (eye === 'left') {
+        leftBtn.className = 'px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black transition active:scale-95 cursor-pointer';
+        badge.textContent = '🙈 TESTING RIGHT EYE (LEFT COVERED)';
+      } else {
+        rightBtn.className = 'px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black transition active:scale-95 cursor-pointer';
+        badge.textContent = '🙉 TESTING LEFT EYE (RIGHT COVERED)';
+      }
+    };
+
+    window.switchTestMode = function() {
+      playSound('click');
+      isDuochromeMode = !isDuochromeMode;
+      const modeBtn = document.getElementById('mode-btn');
+      const snellenWrapper = document.getElementById('snellen-e-wrapper');
+      const duochromeBox = document.getElementById('duochrome-container');
+
+      if (isDuochromeMode) {
+        modeBtn.innerHTML = '<span>🔙 Snellen E</span>';
+        modeBtn.classList.remove('bg-indigo-600');
+        modeBtn.classList.add('bg-rose-600');
+        snellenWrapper.classList.add('hidden');
+        duochromeBox.classList.remove('hidden');
+        duochromeBox.classList.add('grid');
+        document.getElementById('clinic-ticker').innerHTML = '🔴 <b>DUOCHROME CHECK:</b> Is the E on the Red or Green side sharper?';
+      } else {
+        modeBtn.innerHTML = '<span>🔄 Duochrome</span>';
+        modeBtn.classList.remove('bg-rose-600');
+        modeBtn.classList.add('bg-indigo-600');
+        snellenWrapper.classList.remove('hidden');
+        duochromeBox.classList.add('hidden');
+        duochromeBox.classList.remove('grid');
+        document.getElementById('clinic-ticker').innerHTML = '📏 Step 3 paces back! Which way are the legs of the "E" pointing?';
+      }
+    };
+
+    window.toggleLampBulb = function() {
+      playSound('click');
+      isLampWhite = !isLampWhite;
+      const display = document.getElementById('lightbox-display');
+      if (isLampWhite) {
+        display.style.backgroundColor = '#FFFFFF';
+      } else {
+        // Classic faint yellow-tinted incandescent bulb look
+        display.style.backgroundColor = '#FEF9C3';
+      }
+    };
+
+    window.resetVisionTest = function() {
+      playSound('click');
+      currentLevelIdx = 0;
+      currentStreak = 0;
+      document.getElementById('streak-counter').textContent = 0;
+      spawnNewTumblingTarget();
+    };
+
+    window.skipToTelescopeLevel = function() {
+      playSound('levelup');
+      currentLevelIdx = visualAcuityLevels.length - 1; // 20/10 level
+      currentStreak = 0;
+      spawnNewTumblingTarget();
+      document.getElementById('clinic-ticker').innerHTML = '🔭 <b>BROTHER 1 TELESCOPE MODE!</b> Can anyone in class read this tiny line?';
+    };
+
+    window.toggleSound = function() {
+      isMuted = !isMuted;
+      document.getElementById('sound-btn').textContent = isMuted ? '🔇' : '🔊';
+    };
+
+    window.openIshiharaModal = function() {
+      playSound('click');
+      document.getElementById('ishihara-modal').classList.remove('hidden');
+      drawProceduralIshiharaPlate();
+    };
+
+    window.closeIshiharaModal = function() {
+      document.getElementById('ishihara-modal').classList.add('hidden');
+    };
+
+    function drawProceduralIshiharaPlate() {
+      const canvas = document.getElementById('ishihara-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = 118;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Background dot palette: greens, olive, lime
+      const bgColors = ['#84CC16', '#65A30D', '#4D7C0F', '#A3E635', '#BEF264', '#4ADE80'];
+      // Foreground dot palette for number "12": vivid oranges, corals, warm reds
+      const numColors = ['#F97316', '#EA580C', '#EF4444', '#DC2626', '#FB923C', '#F87171'];
+
+      // Generate random packed dots within circle
+      for (let i = 0; i < 480; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.sqrt(Math.random()) * radius;
+        const x = centerX + Math.cos(angle) * r;
+        const y = centerY + Math.sin(angle) * r;
+        const dotSize = 3.5 + Math.random() * 5.5;
+
+        // Shape formula for number "12" approximation inside the plate
+        let isNumberPixel = false;
+        // Digit '1' stroke
+        if (x >= centerX - 45 && x <= centerX - 25 && y >= centerY - 50 && y <= centerY + 50) {
+          isNumberPixel = true;
+        }
+        // Digit '2' top curve + diagonal + base
+        if (x >= centerX - 10 && x <= centerX + 45) {
+          if (y >= centerY - 50 && y <= centerY - 25) isNumberPixel = true; // top
+          if (x >= centerX + 20 && y >= centerY - 40 && y <= centerY) isNumberPixel = true; // right drop
+          if (y >= centerY + 30 && y <= centerY + 50) isNumberPixel = true; // bottom bar
+          if (Math.abs((centerX + 35 - x) - (y - centerY + 20)) < 12) isNumberPixel = true; // diagonal
+        }
+
+        ctx.fillStyle = isNumberPixel
+          ? numColors[Math.floor(Math.random() * numColors.length)]
+          : bgColors[Math.floor(Math.random() * bgColors.length)];
+
+        ctx.beginPath();
+        ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    window.checkIshihara = function(val) {
+      if (val === 12) {
+        playSound('correct');
+        alertModal("🌟 SUPERIOR COLOR VISION!", "You correctly identified '12'! You have perfect color perception just like Brother 1!");
+      } else {
+        playSound('wrong');
+        alertModal("💭 Look Closer!", "Look at the warm orange dots in the center. Try again!");
+      }
+    };
+
+    function alertModal(title, msg) {
+      closeIshiharaModal();
+      openReportModal();
+      document.getElementById('rep-title').textContent = title;
+    }
+
+    window.openReportModal = function() {
+      playSound('levelup');
+      const level = visualAcuityLevels[currentLevelIdx];
+      document.getElementById('rep-imperial').textContent = level.imperial;
+      document.getElementById('rep-metric').textContent = level.metric;
+      document.getElementById('rep-line').textContent = `Line ${level.line} (${level.passStreak} / 8)`;
+      document.getElementById('rep-title').textContent = level.rank;
+      document.getElementById('report-modal').classList.remove('hidden');
+    };
+
+    window.closeReportModal = function() {
+      document.getElementById('report-modal').classList.add('hidden');
+    };
+
+    // Keyboard controls for Arrow keys and WASD
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
+        submitDirection('UP');
+      } else if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
+        submitDirection('DOWN');
+      } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        submitDirection('LEFT');
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        submitDirection('RIGHT');
+      } else if (e.key.toLowerCase() === 'r') {
+        resetVisionTest();
+      } else if (e.key.toLowerCase() === 'm') {
+        toggleSound();
+      }
+    });
+
+    // Initialize initial target on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      spawnNewTumblingTarget();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Brother 6's Galaxy Brain IQ Lab - The Super Thinker Challenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .heading-font {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .mono-font {
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .game-viewport {
+      aspect-ratio: 16 / 9;
+      max-height: 85vh;
+    }
+    @keyframes brainPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.6)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 28px rgba(129, 140, 248, 1)); }
+    }
+    .pulse-brain {
+      animation: brainPulse 2.2s infinite ease-in-out;
+    }
+    @keyframes floatLightbulb {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(5deg); }
+    }
+    .float-bulb {
+      animation: floatLightbulb 3s infinite ease-in-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-card {
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+    }
+    .fridge-door {
+      transform-origin: left center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fridge-door.open {
+      transform: perspective(600px) rotateY(-80deg);
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-hidden select-none">
+
+  <!-- Top Smartboard Navigation Bar -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-3.5 sm:px-5 py-2.5 rounded-2xl border border-slate-800 shadow-xl z-30 mb-2">
+    <!-- Brand Title -->
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl shadow-lg pulse-brain no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        🧠
+      </a>
+      <div>
+        <h1 class="heading-font text-sm sm:text-lg font-black text-white tracking-wide flex items-center gap-2">
+          Brother 6's Galaxy Brain IQ Lab <span class="hidden md:inline text-xs px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-sans">The Man Who Is Thinking Hard</span>
+        </h1>
+        <p class="text-[11px] sm:text-xs text-indigo-300 font-bold hidden sm:block">Primary 5 English • Lateral Thinking &amp; Hilarious Trick Riddles</p>
+      </div>
+    </div>
+
+    <!-- IQ Meter & Tools -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- IQ Rank Display -->
+      <div class="bg-slate-950 border border-slate-800 px-3.5 py-1 rounded-xl text-center shadow-inner">
+        <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Brain IQ Rank</span>
+        <span id="brain-rank-display" class="heading-font text-xs sm:text-sm font-black text-amber-300">Clever Thinker 💡</span>
+      </div>
+
+      <!-- Score Pill -->
+      <div class="hidden sm:flex items-center gap-1.5 bg-indigo-950/70 border border-indigo-800 px-3 py-1 rounded-xl">
+        <span class="text-xs">⭐</span>
+        <span class="text-xs font-bold text-slate-300">Solved:</span>
+        <span id="solved-counter" class="mono-font text-xs font-black text-emerald-400">0 / 6</span>
+      </div>
+
+      <!-- Interactive Elephant-Fridge Widget Toggle -->
+      <button onclick="openFridgeModal()" title="Open Interactive Elephant In Fridge Experiment" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-black transition active:scale-95 cursor-pointer shadow-md flex items-center gap-1.5">
+        <span>🐘 ❄️</span> <span class="hidden sm:inline">Fridge Demo</span>
+      </button>
+
+      <!-- Audio SFX Toggle -->
+      <button onclick="toggleAudio()" id="sfx-btn" title="Toggle Sound" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition active:scale-95 cursor-pointer">
+        🔊
+      </button>
+
+      <!-- Certificate / Diploma Modal -->
+      <button onclick="openCertificateModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-black transition active:scale-95 cursor-pointer shadow-md flex items-center gap-1">
+        📜 <span>IQ Card</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto flex-1 flex items-center justify-center relative my-auto">
+    <div id="game-stage" class="game-viewport w-full bg-slate-900 rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden relative flex flex-col justify-between p-3.5 sm:p-5 transition-all">
+      
+      <!-- Top Arena Ticker Ribbon -->
+      <div class="flex items-center justify-between px-2 pt-0.5 pb-1 z-10">
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Puzzle Mission
+          </span>
+          <span id="arena-ticker" class="text-xs sm:text-sm font-black text-amber-300 truncate">
+            💡 Don't think too hard! The simplest answer is often the smartest!
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
+          <span>Riddle: <b id="question-progress" class="text-white font-mono text-sm">1 / 6</b></span>
+        </div>
+      </div>
+
+      <div class="my-auto grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-center w-full max-w-6xl mx-auto z-10">
+        
+        <!-- Left Side: Visual Comic Riddle Screen (5 Columns) -->
+        <div class="lg:col-span-5 flex flex-col items-center justify-center">
+          <div class="w-full max-w-sm bg-slate-950/90 border-4 border-slate-800 rounded-3xl p-4 shadow-2xl relative overflow-hidden flex flex-col items-center">
+            
+            <div class="w-full flex items-center justify-between px-1 pb-2 text-[11px] font-mono font-black text-slate-400 border-b border-slate-800">
+              <span id="comic-tag">RIDDLE SCENARIO</span>
+              <span id="category-badge" class="text-amber-400 font-extrabold uppercase">CLASSIC TRICK</span>
+            </div>
+
+            <!-- Central Cartoon Illustration Box -->
+            <div id="riddle-illustration-box" class="w-full h-44 sm:h-52 rounded-2xl bg-slate-900 border-2 border-indigo-500/40 my-3 flex items-center justify-center overflow-hidden relative shadow-inner">
+              <!-- Dynamically injected SVG Comic -->
+            </div>
+
+            <!-- Comic Caption Prompt -->
+            <div class="text-center w-full bg-slate-900/90 rounded-xl p-2 border border-slate-800">
+              <p id="riddle-caption" class="text-xs sm:text-sm font-black text-indigo-200">
+                Brother 6 is thinking hard... What is the secret?
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Side: Big Riddle Question & Multiple Choices (7 Columns) -->
+        <div class="lg:col-span-7 space-y-3">
+          
+          <!-- Big Question Card -->
+          <div class="bg-slate-950 p-4 sm:p-5 rounded-3xl border-3 border-indigo-500/40 shadow-xl flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-black uppercase tracking-wider text-indigo-400">
+                Brother 6's Mind Bender
+              </span>
+              <span id="clue-tag" class="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-xs font-mono font-black border border-amber-400/30">
+                3-STEP LOGIC
+              </span>
+            </div>
+
+            <h3 id="riddle-question-text" class="heading-font text-xl sm:text-2xl font-black text-white leading-snug">
+              "How do you put an elephant into a refrigerator?"
+            </h3>
+
+            <!-- Action Tools Bar -->
+            <div class="mt-3 flex items-center gap-2">
+              <button onclick="readQuestionAloud()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-xs rounded-xl border border-slate-700 transition cursor-pointer flex items-center gap-1.5">
+                <span>📢</span> <span>Read Aloud</span>
+              </button>
+              <button onclick="revealChoices()" id="reveal-choices-btn" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+                <span>💡</span> <span>Reveal Multiple Choices</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hidden State Placeholder (Default) -->
+          <div id="choices-locked-banner" class="p-6 bg-slate-950/80 rounded-2xl border-2 border-dashed border-indigo-900/60 text-center flex flex-col items-center justify-center space-y-2">
+            <span class="text-3xl">🤫 🧠</span>
+            <p class="text-sm font-black text-slate-200">No choices revealed yet!</p>
+            <p class="text-xs text-slate-400 font-bold max-w-md">Discuss in your class and try to guess the answer first. If you need help, tap <b class="text-amber-300 font-black">"Reveal Multiple Choices"</b>!</p>
+          </div>
+
+          <!-- 4 Multiple Choice Option Cards (Hidden initially) -->
+          <div id="choices-grid" class="hidden grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+            <!-- Dynamically populated choices -->
+          </div>
+
+          <!-- Explanation / Answer Reveal Banner (Hidden until an option is pressed) -->
+          <div id="answer-feedback-banner" class="hidden p-3.5 sm:p-4 rounded-2xl border-2 text-xs sm:text-sm font-black transition-all">
+            <!-- Dynamically injected feedback -->
+          </div>
+
+          <!-- Quick Navigation Bar -->
+          <div class="flex items-center gap-2 pt-1">
+            <button onclick="prevRiddle()" id="prev-riddle-btn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700 transition cursor-pointer">
+              ◀ Previous
+            </button>
+            <button onclick="nextRiddle()" id="next-riddle-btn" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
+              Next Brain Bender ▶
+            </button>
+            <button onclick="resetLab()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700 transition cursor-pointer">
+              🔄 Reset
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom IQ Scale Ribbon -->
+      <div class="w-full bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800/80 flex items-center justify-between text-xs font-bold z-10 mt-1">
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <span class="text-slate-400 shrink-0">Rank Scale:</span>
+          <span class="px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800 text-[11px] shrink-0">Peanut Brain 🥜</span>
+          <span class="px-2 py-0.5 rounded-md bg-sky-950 text-sky-300 border border-sky-800 text-[11px] shrink-0">Human Brain 🧠</span>
+          <span class="px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800 text-[11px] shrink-0">Clever Thinker 💡</span>
+          <span class="px-2 py-0.5 rounded-md bg-purple-950 text-purple-300 border border-purple-800 text-[11px] font-black shrink-0">Brother 6 Galaxy Brain 🌌🔥</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-slate-400">
+          <span>Brother 6 Motto:</span>
+          <span class="text-amber-300 font-mono font-black">"Think Hard, Laugh Harder!"</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Interactive Elephant In The Fridge Simulator Modal -->
+  <div id="fridge-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-4 border-indigo-500 text-slate-100 rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between pop-card">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-3xl">🐘 ❄️</span>
+          <div>
+            <h3 class="heading-font text-lg sm:text-xl font-black text-white">Interactive Fridge Experiment</h3>
+            <p class="text-xs text-indigo-300 font-bold">Follow the 3 sacred rules of lateral thinking!</p>
+          </div>
+        </div>
+        <button onclick="closeFridgeModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Animated Interactive Refrigerator Stage -->
+      <div class="relative w-full h-56 bg-slate-950 rounded-2xl border-2 border-slate-800 flex items-center justify-center overflow-hidden my-2">
+        
+        <!-- Refrigerator Body (Back Cavity) -->
+        <div class="relative w-48 h-48 bg-slate-100 rounded-2xl border-4 border-sky-400 shadow-2xl flex flex-col justify-between p-3 overflow-hidden">
+          
+          <!-- Freezer Top Shelf -->
+          <div class="w-full h-12 bg-sky-200/80 rounded-lg border border-sky-300 flex items-center justify-between px-2 text-xs font-black text-sky-900">
+            <span>❄️ FREEZER</span>
+            <span>🧊 ICE</span>
+          </div>
+
+          <!-- Main Fridge Shelf (Elephant / Giraffe Spot) -->
+          <div class="w-full h-24 bg-white rounded-lg border border-slate-200 flex items-center justify-center relative overflow-hidden">
+            <span id="fridge-contents" class="text-5xl transition-all duration-300">
+              <!-- Empty initially -->
+            </span>
+            <span id="fridge-status-label" class="absolute bottom-1 text-[10px] font-mono font-black text-slate-400">
+              EMPTY
+            </span>
+          </div>
+
+          <!-- Refrigerator Door Flap Overlay -->
+          <div id="fridge-door-layer" class="fridge-door absolute inset-0 bg-gradient-to-r from-slate-200 to-sky-100 border-4 border-sky-400 rounded-2xl flex flex-col justify-between p-3 shadow-2xl z-20">
+            <div class="w-2 h-14 bg-slate-400 rounded-r-md self-end mt-12 shadow"></div>
+            <div class="text-center text-xs font-black text-sky-900 uppercase tracking-widest pb-3">
+              ❄️ SMART FRIDGE
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 3 Step Controller Buttons -->
+      <div class="grid grid-cols-3 gap-2 my-3">
+        <button onclick="fridgeStep(1)" id="f-step-1" class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs shadow transition active:scale-95 cursor-pointer">
+          1. Open Door 🚪
+        </button>
+        <button onclick="fridgeStep(2)" id="f-step-2" disabled class="p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs transition cursor-not-allowed">
+          2. Put Elephant In 🐘
+        </button>
+        <button onclick="fridgeStep(3)" id="f-step-3" disabled class="p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs transition cursor-not-allowed">
+          3. Close Door 🔒
+        </button>
+      </div>
+
+      <!-- Explanatory Ticker -->
+      <div id="fridge-explain" class="p-3 bg-indigo-950/80 rounded-xl border border-indigo-800 text-center text-xs font-extrabold text-amber-300">
+        Step 1: Tap "1. Open Door" to open the refrigerator!
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-slate-800">
+        <button onclick="closeFridgeModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs rounded-xl transition cursor-pointer">
+          Back to Quiz ➔
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Official Brother 6 Galaxy Brain Diploma Modal -->
+  <div id="certificate-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-indigo-50 border-4 border-indigo-400 text-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 text-center shadow-2xl pop-card relative overflow-hidden">
+      
+      <!-- Stamp watermark -->
+      <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border-4 border-dashed border-indigo-600/30 flex items-center justify-center text-indigo-600/30 font-black text-3xl rotate-12 pointer-events-none uppercase">
+        IQ CERTIFIED
+      </div>
+
+      <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl mx-auto flex items-center justify-center text-4xl mb-3 shadow-md float-bulb">
+        💡
+      </div>
+
+      <span class="text-xs uppercase tracking-widest font-black text-indigo-800 bg-indigo-200 px-3 py-1 rounded-full border border-indigo-300">
+        The Ten Brothers Superhero Academy
+      </span>
+
+      <h2 class="heading-font text-2xl sm:text-3xl font-black text-slate-900 mt-2 mb-1">
+        Galaxy Brain IQ Diploma
+      </h2>
+      <p class="text-xs text-slate-600 font-bold mb-4">Official Lateral Thinking Evaluation for Brother 6</p>
+
+      <!-- Results Grid -->
+      <div class="bg-white p-4 rounded-2xl border-2 border-indigo-200 space-y-2.5 mb-5 text-left text-xs sm:text-sm font-bold">
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Total Trick Riddles Solved:</span>
+          <span id="rep-solved" class="font-black text-indigo-700 font-mono">6 / 6 Mastered</span>
+        </div>
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Elephant In Fridge Protocol:</span>
+          <span class="font-black text-emerald-600 font-mono">3 Steps Perfected (100%)</span>
+        </div>
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Creative Thinking Level:</span>
+          <span class="font-black text-purple-700 font-mono">Beyond Textbook Limits</span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-slate-500">Superpower Diagnosis:</span>
+          <span id="rep-title" class="font-black text-amber-800 bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300">
+            🌌 Brother 6 Galaxy Brain Master!
+          </span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-center">
+        <button onclick="closeCertificateModal()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm rounded-xl shadow-md transition active:scale-95 cursor-pointer">
+          Continue Solving ➔
+        </button>
+        <button onclick="resetLab(); closeCertificateModal();" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-sm rounded-xl transition active:scale-95 cursor-pointer">
+          🔄 Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 6 Classic, High-Energy Lateral Thinking Riddles for Primary 5 EFL (Q2-4 and Q7 skipped)
+    const riddlesData = [
+      // 1. The Famous Elephant in the Fridge
+      {
+        id: 1,
+        question: "How do you put an elephant into a refrigerator?",
+        caption: "Elephant standing outside a normal refrigerator.",
+        category: "ANIMAL LOGIC",
+        clueTag: "3 SIMPLE STEPS",
+        choices: [
+          { text: "Cut the elephant into tiny slices first", isCorrect: false },
+          { text: "Open the door, put the elephant inside, close the door!", isCorrect: true },
+          { text: "Buy an enormous refrigerator the size of a shopping mall", isCorrect: false },
+          { text: "Cast a magic shrinking spell on the elephant", isCorrect: false }
+        ],
+        explanation: "Rule 1 of Lateral Thinking: 1. Open the door. 2. Put the elephant in. 3. Close the door! Done!",
+        svg: `<svg viewBox="0 0 240 160" class="w-full h-full" fill="none">
+          <rect width="240" height="160" fill="#0B132B" rx="12"/>
+          <!-- Fridge -->
+          <rect x="35" y="25" width="60" height="110" rx="8" fill="#E2E8F0" stroke="#38BDF8" stroke-width="3"/>
+          <line x1="35" y1="65" x2="95" y2="65" stroke="#94A3B8" stroke-width="2"/>
+          <rect x="85" y="75" width="4" height="20" rx="2" fill="#64748B"/>
+          <!-- Elephant -->
+          <circle cx="160" cy="85" r="32" fill="#94A3B8"/>
+          <circle cx="130" cy="75" r="22" fill="#94A3B8"/>
+          <path d="M118 78 Q105 85 110 115 Q118 120 120 100" stroke="#94A3B8" stroke-width="9" stroke-linecap="round"/>
+          <ellipse cx="140" cy="65" rx="12" ry="16" fill="#CBD5E1"/>
+          <rect x="145" y="105" width="8" height="26" rx="3" fill="#64748B"/>
+          <rect x="168" y="105" width="8" height="26" rx="3" fill="#64748B"/>
+          <circle cx="125" cy="72" r="2.5" fill="#0F172A"/>
+          <text x="100" y="45" font-size="20">🐘❓</text>
+        </svg>`
+      },
+
+      // 2. The Race Position Trick
+      {
+        id: 2,
+        question: "You are running in a sports day race. You run fast and overtake the person in 2nd place. What place are you in?",
+        caption: "Track race with runners sprinting towards finish line.",
+        category: "SPORTS DAY TRICK",
+        clueTag: "POSITION TRAP",
+        choices: [
+          { text: "1st Place (Champion!)", isCorrect: false },
+          { text: "2nd Place!", isCorrect: true },
+          { text: "3rd Place", isCorrect: false },
+          { text: "Last Place", isCorrect: false }
+        ],
+        explanation: "You took 2nd place from them! 1st place is still in front of you!",
+        svg: `<svg viewBox="0 0 240 160" class="w-full h-full" fill="none">
+          <rect width="240" height="160" fill="#0B132B" rx="12"/>
+          <rect x="0" y="120" width="240" height="40" fill="#991B1B"/>
+          <line x1="0" y1="140" x2="240" y2="140" stroke="#FFFFFF" stroke-dasharray="10 10" stroke-width="2"/>
+          <!-- Runner 1 in front -->
+          <text x="170" y="110" font-size="34">🏃‍♂️</text>
+          <text x="180" y="70" font-size="14" fill="#FACC15" font-weight="bold">1st</text>
+          <!-- You overtaking 2nd -->
+          <text x="95" y="110" font-size="34">🏃💨</text>
+          <text x="100" y="70" font-size="14" fill="#38BDF8" font-weight="bold">YOU!</text>
+          <!-- Old 2nd now 3rd -->
+          <text x="30" y="110" font-size="30">🏃</text>
+          <text x="35" y="70" font-size="12" fill="#E2E8F0">Behind</text>
+        </svg>`
+      },
+
+      // 3. The Rooster on the Roof
+      {
+        id: 3,
+        question: "A rooster sits right on the peak of a pointed triangular roof. If it lays an egg, which side will the egg roll down?",
+        caption: "Rooster sitting on a farmhouse roof peak.",
+        category: "FARM ANIMAL TRICK",
+        clueTag: "EGG PHYSICS",
+        choices: [
+          { text: "Rolls down the Left side into the garden", isCorrect: false },
+          { text: "Rolls down the Right side into the barn", isCorrect: false },
+          { text: "Balances perfectly on the sharp peak", isCorrect: false },
+          { text: "Roosters don't lay eggs! Only hens lay eggs!", isCorrect: true }
+        ],
+        explanation: "A rooster is male! Roosters don't lay eggs at all! 🥚❌",
+        svg: `<svg viewBox="0 0 240 160" class="w-full h-full" fill="none">
+          <rect width="240" height="160" fill="#0B132B" rx="12"/>
+          <!-- Pointed Roof -->
+          <polygon points="120,40 30,120 210,120" fill="#EA580C" stroke="#C2410C" stroke-width="3"/>
+          <rect x="50" y="120" width="140" height="35" fill="#D97706"/>
+          <!-- Rooster on Peak -->
+          <text x="103" y="42" font-size="32">🐓</text>
+          <text x="50" y="70" font-size="14" fill="#FFFFFF" font-weight="bold">Left ↙</text>
+          <text x="155" y="70" font-size="14" fill="#FFFFFF" font-weight="bold">↘️ Right</text>
+        </svg>`
+      },
+
+      // 4. What Gets Wetter
+      {
+        id: 4,
+        question: "What gets wetter and wetter the more it dries?",
+        caption: "Bathroom scene with shower and laundry.",
+        category: "EVERYDAY OBJECT",
+        clueTag: "WORD PLAY",
+        choices: [
+          { text: "A raincoat on a rainy day", isCorrect: false },
+          { text: "A freshly washed hairdryer", isCorrect: false },
+          { text: "A soft bath towel!", isCorrect: true },
+          { text: "An ice cream cone in hot sun", isCorrect: false }
+        ],
+        explanation: "A towel dries your body, so it absorbs moisture and gets wetter!",
+        svg: `<svg viewBox="0 0 240 160" class="w-full h-full" fill="none">
+          <rect width="240" height="160" fill="#0B132B" rx="12"/>
+          <rect x="70" y="30" width="100" height="10" rx="3" fill="#94A3B8"/>
+          <!-- Hanging Towel -->
+          <rect x="85" y="40" width="70" height="85" rx="6" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
+          <line x1="85" y1="105" x2="155" y2="105" stroke="#FFFFFF" stroke-dasharray="4 4" stroke-width="2"/>
+          <line x1="85" y1="115" x2="155" y2="115" stroke="#FFFFFF" stroke-dasharray="4 4" stroke-width="2"/>
+          <!-- Water Droplets -->
+          <text x="75" y="80" font-size="20">💧</text>
+          <text x="145" y="90" font-size="24">💧</text>
+          <text x="110" y="145" font-size="18">🚿</text>
+        </svg>`
+      },
+
+      // 5. How Many Months Have 28 Days?
+      {
+        id: 5,
+        question: "Some months have 31 days. Some have 30 days. How many months have 28 days?",
+        caption: "Calendar showing dates and months.",
+        category: "CALENDAR TRICK",
+        clueTag: "CAREFUL READING",
+        choices: [
+          { text: "Only 1 month (February)", isCorrect: false },
+          { text: "All 12 months have at least 28 days!", isCorrect: true },
+          { text: "7 months", isCorrect: false },
+          { text: "None of them", isCorrect: false }
+        ],
+        explanation: "Every month has at least 28 days! January has 28 days (plus 3 more), etc. All 12 months!",
+        svg: `<svg viewBox="0 0 240 160" class="w-full h-full" fill="none">
+          <rect width="240" height="160" fill="#0B132B" rx="12"/>
+          <!-- Calendar -->
+          <rect x="60" y="25" width="120" height="110" rx="10" fill="#FFFFFF" stroke="#EF4444" stroke-width="3"/>
+          <rect x="60" y="25" width="120" height="30" rx="8" fill="#EF4444"/>
+          <text x="95" y="46" font-size="14" fill="#FFFFFF" font-weight="black">FEBRUARY</text>
+          <text x="90" y="98" font-size="44" fill="#1E293B" font-weight="black">28</text>
+          <text x="145" y="115" font-size="24">📅</text>
+        </svg>`
+      },
+
+      // 6. The Impossible "Yes" Question
+      {
+        id: 6,
+        question: "What question can you NEVER answer 'Yes' to if you are telling the truth?",
+        caption: "Bed at night with moon in window.",
+        category: "TRUTH PUZZLE",
+        clueTag: "HONESTY TEST",
+        choices: [
+          { text: "'Are you hungry right now?'", isCorrect: false },
+          { text: "'Are you asleep?'", isCorrect: true },
+          { text: "'Do you go to primary school?'", isCorrect: false },
+          { text: "'Is today Sunday?'", isCorrect: false }
+        ],
+        explanation: "If you are truly asleep, you cannot answer! If you answer 'Yes', you are awake!",
+        svg: `<svg viewBox="0 0 240 160" class="w-full h-full" fill="none">
+          <rect width="240" height="160" fill="#0B132B" rx="12"/>
+          <!-- Bed -->
+          <rect x="40" y="75" width="160" height="55" rx="6" fill="#6366F1"/>
+          <!-- Pillow -->
+          <rect x="50" y="70" width="35" height="22" rx="4" fill="#FFFFFF"/>
+          <!-- Sleeping Face -->
+          <circle cx="70" cy="78" r="10" fill="#FED7AA"/>
+          <text x="85" y="60" font-size="20">💤</text>
+          <text x="100" y="45" font-size="16">😴</text>
+          <text x="145" y="55" font-size="24">🌙</text>
+        </svg>`
+      }
+    ];
+
+    // State variables
+    let currentRiddleIdx = 0;
+    let solvedCount = 0;
+    let isAnswered = false;
+    let choicesRevealed = false;
+    let isAudioMuted = false;
+    let audioCtx = null;
+    let synthUtterance = null;
+
+    // Web Audio Synthesizer
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(type) {
+      if (isAudioMuted) return;
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'correct') {
+          // Playful harp ascension
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((f, i) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, now + i * 0.08);
+            gain.gain.setValueAtTime(0.2, now + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (i + 1) * 0.08 + 0.1);
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.start(now + i * 0.08);
+            osc.stop(now + (i + 1) * 0.08 + 0.1);
+          });
+        } else if (type === 'wrong') {
+          // Funny "Boing / Wah Wah" sound
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(130, now + 0.25);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'click') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(700, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        console.warn('Audio not initialized yet');
+      }
+    }
+
+    function loadRiddle(idx) {
+      isAnswered = false;
+      choicesRevealed = false;
+      const data = riddlesData[idx];
+
+      // Update Tickers & Counters
+      document.getElementById('question-progress').textContent = `${idx + 1} / ${riddlesData.length}`;
+      document.getElementById('comic-tag').textContent = data.category;
+      document.getElementById('category-badge').textContent = data.clueTag;
+      document.getElementById('riddle-caption').textContent = data.caption;
+      document.getElementById('riddle-question-text').textContent = `"${data.question}"`;
+
+      // Update Visual Comic Stage
+      document.getElementById('riddle-illustration-box').innerHTML = data.svg;
+
+      // Reset Navigation Buttons State
+      document.getElementById('prev-riddle-btn').disabled = idx === 0;
+
+      // Hide choices grid by default, show locked placeholder
+      const choicesGrid = document.getElementById('choices-grid');
+      const lockedBanner = document.getElementById('choices-locked-banner');
+      const revealBtn = document.getElementById('reveal-choices-btn');
+
+      choicesGrid.classList.add('hidden');
+      choicesGrid.classList.remove('grid');
+      lockedBanner.classList.remove('hidden');
+
+      revealBtn.innerHTML = `<span>💡</span> <span>Reveal Multiple Choices</span>`;
+      revealBtn.disabled = false;
+      revealBtn.className = `px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5`;
+
+      // Hide feedback banner from previous question
+      const feedbackBanner = document.getElementById('answer-feedback-banner');
+      feedbackBanner.classList.add('hidden');
+      feedbackBanner.className = 'hidden p-3.5 sm:p-4 rounded-2xl border-2 text-xs sm:text-sm font-black transition-all';
+
+      // Populate Choices Grid in the background
+      choicesGrid.innerHTML = '';
+      const shuffled = [...data.choices].sort(() => 0.5 - Math.random());
+
+      shuffled.forEach((choice, i) => {
+        const btn = document.createElement('button');
+        btn.className = `choice-card p-3.5 sm:p-4 rounded-2xl bg-slate-950 hover:bg-indigo-950/70 border-3 border-slate-800 hover:border-indigo-500 text-white shadow-xl transition active:scale-95 cursor-pointer flex items-center justify-between text-left group pop-card`;
+        btn.onclick = () => selectRiddleChoice(btn, choice.isCorrect, data.explanation);
+
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-black text-sm flex items-center justify-center font-mono">
+              ${String.fromCharCode(65 + i)}
+            </span>
+            <span class="heading-font text-sm sm:text-base font-black text-slate-100 group-hover:text-amber-300 transition-colors leading-snug">
+              ${choice.text}
+            </span>
+          </div>
+          <span class="choice-icon text-lg text-slate-600 group-hover:text-indigo-400">❓</span>
+        `;
+        choicesGrid.appendChild(btn);
+      });
+
+      document.getElementById('arena-ticker').innerHTML = `💡 <b>Riddle ${idx + 1}:</b> Guess freely first without looking at the choices!`;
+    }
+
+    window.revealChoices = function() {
+      if (choicesRevealed) return;
+      playTone('click');
+      choicesRevealed = true;
+
+      const choicesGrid = document.getElementById('choices-grid');
+      const lockedBanner = document.getElementById('choices-locked-banner');
+      const revealBtn = document.getElementById('reveal-choices-btn');
+
+      lockedBanner.classList.add('hidden');
+      choicesGrid.classList.remove('hidden');
+      choicesGrid.classList.add('grid');
+
+      revealBtn.innerHTML = `<span>✓</span> <span>Choices Unlocked</span>`;
+      revealBtn.disabled = true;
+      revealBtn.className = `px-4 py-2 bg-slate-800 text-slate-400 font-bold text-xs rounded-xl border border-slate-700 cursor-default flex items-center gap-1.5`;
+
+      document.getElementById('arena-ticker').innerHTML = `👀 <b>Choices Revealed:</b> Tap your answer on the Smartboard!`;
+    };
+
+    window.selectRiddleChoice = function(btnEl, isCorrect, explanationText) {
+      if (isAnswered) return;
+      isAnswered = true;
+
+      const allBtns = document.querySelectorAll('#choices-grid .choice-card');
+      const feedbackBanner = document.getElementById('answer-feedback-banner');
+      const ticker = document.getElementById('arena-ticker');
+
+      // Disable other choices after selection
+      allBtns.forEach(b => {
+        b.classList.remove('hover:bg-indigo-950/70', 'hover:border-indigo-500', 'cursor-pointer');
+        b.classList.add('cursor-default');
+      });
+
+      if (isCorrect) {
+        playTone('correct');
+        solvedCount++;
+        document.getElementById('solved-counter').textContent = `${solvedCount} / ${riddlesData.length}`;
+        updateBrainRank();
+
+        btnEl.classList.remove('bg-slate-950', 'border-slate-800');
+        btnEl.classList.add('bg-emerald-950/80', 'border-emerald-400', 'ring-4', 'ring-emerald-400/40');
+        const icon = btnEl.querySelector('.choice-icon');
+        if (icon) icon.textContent = '✅';
+
+        feedbackBanner.className = 'p-3.5 sm:p-4 rounded-2xl border-2 bg-emerald-950/90 border-emerald-500 text-emerald-200 text-xs sm:text-sm font-black pop-card';
+        feedbackBanner.innerHTML = `🎉 <b>BRAVO! CORRECT ANSWER!</b><br><span class="font-normal text-slate-200">${explanationText}</span>`;
+        feedbackBanner.classList.remove('hidden');
+
+        ticker.innerHTML = `🌟 <b>Brilliant Thinking!</b> You cracked this lateral trick riddle!`;
+      } else {
+        playTone('wrong');
+
+        btnEl.classList.remove('bg-slate-950', 'border-slate-800');
+        btnEl.classList.add('bg-rose-950/80', 'border-rose-500', 'ring-4', 'ring-rose-500/40');
+        const icon = btnEl.querySelector('.choice-icon');
+        if (icon) icon.textContent = '❌';
+
+        // Highlight the actual correct option in subtle green
+        allBtns.forEach(b => {
+          const btnText = b.querySelector('.heading-font').textContent.trim();
+          const correctOption = riddlesData[currentRiddleIdx].choices.find(c => c.isCorrect);
+          if (correctOption && btnText === correctOption.text) {
+            b.classList.add('border-emerald-500/80', 'bg-emerald-950/40');
+            const cIcon = b.querySelector('.choice-icon');
+            if (cIcon) cIcon.textContent = '💡';
+          }
+        });
+
+        feedbackBanner.className = 'p-3.5 sm:p-4 rounded-2xl border-2 bg-rose-950/90 border-rose-500 text-rose-200 text-xs sm:text-sm font-black pop-card';
+        feedbackBanner.innerHTML = `😅 <b>TRICKED BY THE RIDDLE!</b><br><span class="font-normal text-slate-200">${explanationText}</span>`;
+        feedbackBanner.classList.remove('hidden');
+
+        ticker.innerHTML = `💭 <b>Tricked!</b> Look closely at the secret explanation below.`;
+      }
+    };
+
+    function updateBrainRank() {
+      const rankDisplay = document.getElementById('brain-rank-display');
+      if (solvedCount <= 1) {
+        rankDisplay.textContent = 'Peanut Brain 🥜';
+      } else if (solvedCount <= 3) {
+        rankDisplay.textContent = 'Human Brain 🧠';
+      } else if (solvedCount <= 4) {
+        rankDisplay.textContent = 'Clever Thinker 💡';
+      } else {
+        rankDisplay.textContent = 'Brother 6 Galaxy Brain 🌌🔥';
+      }
+    }
+
+    window.nextRiddle = function() {
+      playTone('click');
+      if (currentRiddleIdx < riddlesData.length - 1) {
+        currentRiddleIdx++;
+        loadRiddle(currentRiddleIdx);
+      } else {
+        openCertificateModal();
+      }
+    };
+
+    window.prevRiddle = function() {
+      playTone('click');
+      if (currentRiddleIdx > 0) {
+        currentRiddleIdx--;
+        loadRiddle(currentRiddleIdx);
+      }
+    };
+
+    window.readQuestionAloud = function() {
+      if (!('speechSynthesis' in window)) return;
+      playTone('click');
+      window.speechSynthesis.cancel();
+      const text = riddlesData[currentRiddleIdx].question;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-GB';
+      utter.rate = 0.88;
+      utter.pitch = 0.9;
+      window.speechSynthesis.speak(utter);
+    };
+
+    // Interactive 3-Step Elephant in Fridge Simulator Logic
+    let currentFridgeStep = 0;
+
+    window.openFridgeModal = function() {
+      playTone('click');
+      currentFridgeStep = 0;
+      resetFridgeVisual();
+      document.getElementById('fridge-modal').classList.remove('hidden');
+    };
+
+    window.closeFridgeModal = function() {
+      document.getElementById('fridge-modal').classList.add('hidden');
+    };
+
+    function resetFridgeVisual() {
+      const door = document.getElementById('fridge-door-layer');
+      const contents = document.getElementById('fridge-contents');
+      const status = document.getElementById('fridge-status-label');
+      const explain = document.getElementById('fridge-explain');
+
+      door.classList.remove('open');
+      contents.textContent = '';
+      status.textContent = 'EMPTY & CLOSED';
+      explain.innerHTML = 'Step 1: Tap <b>"1. Open Door"</b> to open the refrigerator!';
+
+      document.getElementById('f-step-1').disabled = false;
+      document.getElementById('f-step-1').className = 'p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs shadow transition active:scale-95 cursor-pointer';
+
+      document.getElementById('f-step-2').disabled = true;
+      document.getElementById('f-step-2').className = 'p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs transition cursor-not-allowed';
+
+      document.getElementById('f-step-3').disabled = true;
+      document.getElementById('f-step-3').className = 'p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs transition cursor-not-allowed';
+    }
+
+    window.fridgeStep = function(stepNum) {
+      playTone('click');
+      const door = document.getElementById('fridge-door-layer');
+      const contents = document.getElementById('fridge-contents');
+      const status = document.getElementById('fridge-status-label');
+      const explain = document.getElementById('fridge-explain');
+
+      if (stepNum === 1) {
+        // Step 1: Open door
+        door.classList.add('open');
+        status.textContent = 'DOOR OPEN (EMPTY)';
+        explain.innerHTML = '✅ <b>Step 1 Complete!</b> Now tap <b>"2. Put Elephant In"</b>!';
+
+        document.getElementById('f-step-1').disabled = true;
+        document.getElementById('f-step-1').className = 'p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs cursor-not-allowed';
+
+        document.getElementById('f-step-2').disabled = false;
+        document.getElementById('f-step-2').className = 'p-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow transition active:scale-95 cursor-pointer';
+
+      } else if (stepNum === 2) {
+        // Step 2: Put Elephant in
+        contents.textContent = '🐘';
+        contents.classList.add('pop-card');
+        status.textContent = 'ELEPHANT INSIDE!';
+        explain.innerHTML = '✅ <b>Step 2 Complete!</b> The elephant is in! Now tap <b>"3. Close Door"</b>!';
+
+        document.getElementById('f-step-2').disabled = true;
+        document.getElementById('f-step-2').className = 'p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs cursor-not-allowed';
+
+        document.getElementById('f-step-3').disabled = false;
+        document.getElementById('f-step-3').className = 'p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow transition active:scale-95 cursor-pointer';
+
+      } else if (stepNum === 3) {
+        // Step 3: Close door
+        playTone('correct');
+        door.classList.remove('open');
+        status.textContent = 'ELEPHANT SAFELY CHILLING 🐘❄️';
+        explain.innerHTML = '🎉 <b>CONGRATULATIONS!</b> You solved Riddle 1 in 3 simple steps!';
+
+        document.getElementById('f-step-3').disabled = true;
+        document.getElementById('f-step-3').className = 'p-2.5 rounded-xl bg-slate-800 text-slate-500 font-black text-xs cursor-not-allowed';
+
+        // Auto reward score
+        solvedCount = Math.max(1, solvedCount);
+        document.getElementById('solved-counter').textContent = `${solvedCount} / ${riddlesData.length}`;
+        updateBrainRank();
+      }
+    };
+
+    window.resetLab = function() {
+      playTone('click');
+      currentRiddleIdx = 0;
+      solvedCount = 0;
+      document.getElementById('solved-counter').textContent = `0 / ${riddlesData.length}`;
+      updateBrainRank();
+      loadRiddle(0);
+    };
+
+    window.openCertificateModal = function() {
+      playTone('correct');
+      document.getElementById('rep-solved').textContent = `${solvedCount} / ${riddlesData.length} Mastered`;
+      document.getElementById('rep-title').textContent = document.getElementById('brain-rank-display').textContent;
+      document.getElementById('certificate-modal').classList.remove('hidden');
+    };
+
+    window.closeCertificateModal = function() {
+      document.getElementById('certificate-modal').classList.add('hidden');
+    };
+
+    window.toggleAudio = function() {
+      isAudioMuted = !isAudioMuted;
+      document.getElementById('sfx-btn').textContent = isAudioMuted ? '🔇' : '🔊';
+    };
+
+    // Keyboard Hotkeys
+    window.addEventListener('keydown', (e) => {
+      if (['1', '2', '3', '4'].includes(e.key) && choicesRevealed) {
+        const choiceBtns = document.querySelectorAll('#choices-grid button');
+        const idx = parseInt(e.key, 10) - 1;
+        if (choiceBtns[idx]) choiceBtns[idx].click();
+      } else if (e.key.toLowerCase() === 'c') {
+        revealChoices();
+      } else if (e.key === 'ArrowRight') {
+        nextRiddle();
+      } else if (e.key === 'ArrowLeft') {
+        prevRiddle();
+      }
+    });
+
+    // Initialize initial riddle on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadRiddle(0);
+    });
+  </script>
+</body>
+</html>

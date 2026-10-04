@@ -251,6 +251,11 @@
       color: #3f6212;
       border-color: #bef264;
     }
+    .skill-tag[data-skill="story"] {
+      background: #ffedd5;
+      color: #9a3412;
+      border-color: #fdba74;
+    }
     .hint {
       margin-top: 2rem;
       text-align: center;
@@ -260,7 +265,7 @@
   </style>
 </head>
 <body>
-  <p class="hub-updated">Updated 28 Sep 2026, 12:50</p>
+  <p class="hub-updated">Updated 4 Oct 2026, 16:11</p>
   <div class="wrap">
     <header>
       <h1>Teaching Games</h1>
@@ -272,6 +277,7 @@
       <button type="button" class="filter-btn" data-filter="p1" aria-pressed="false">Primary 1</button>
       <button type="button" class="filter-btn" data-filter="p4" aria-pressed="false">Primary 4</button>
       <button type="button" class="filter-btn" data-filter="p5" aria-pressed="false">Primary 5</button>
+      <button type="button" class="filter-btn" data-filter="p5ch34" aria-pressed="false">P5 CH3&amp;4</button>
     </div>
     <nav aria-label="Games by year level">
       <section class="category" data-category="p1" aria-labelledby="cat-p1">
@@ -451,13 +457,59 @@
           </a>
         </div>
       </section>
+
+      <section class="category" data-category="p5ch34" aria-labelledby="cat-p5ch34">
+        <h2 class="category-title" id="cat-p5ch34">P5 CH3&amp;4</h2>
+        <div class="grid">
+          <a class="game-link" href="./story_ending_workshop/index.html" data-skill="story">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./story_ending_workshop/index.jpg" alt="" width="1400" height="900" decoding="async" loading="lazy">
+            </span>
+            <h3>Story Ending Workshop</h3>
+            <p>Shared writing studio for crafting a strong story ending.</p>
+            <span class="skill-tag" data-skill="story">story</span>
+          </a>
+          <a class="game-link" href="./iq_lab/index.html" data-skill="story">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./iq_lab/index.jpg" alt="" width="1400" height="900" decoding="async" loading="lazy">
+            </span>
+            <h3>Galaxy Brain IQ Lab</h3>
+            <p>Brother 6’s lateral-thinking riddles and trick questions.</p>
+            <span class="skill-tag" data-skill="story">story</span>
+          </a>
+          <a class="game-link" href="./sight_test/index.html" data-skill="story">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./sight_test/index.jpg" alt="" width="1400" height="900" decoding="async" loading="lazy">
+            </span>
+            <h3>School Sight Test Clinic</h3>
+            <p>Brother 1’s tumbling-E eye clinic for story vocabulary fun.</p>
+            <span class="skill-tag" data-skill="story">story</span>
+          </a>
+          <a class="game-link" href="./hearing_test/index.html" data-skill="story">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./hearing_test/index.jpg" alt="" width="1400" height="900" decoding="async" loading="lazy">
+            </span>
+            <h3>Radar Hearing Lab</h3>
+            <p>Brother 2’s loud-to-soft listening challenge.</p>
+            <span class="skill-tag" data-skill="story">story</span>
+          </a>
+          <a class="game-link" href="./voice_test/index.html" data-skill="story">
+            <span class="thumb-wrap">
+              <img class="game-thumb" src="./voice_test/index.jpg" alt="" width="1400" height="900" decoding="async" loading="lazy">
+            </span>
+            <h3>Thunder Voice Arena</h3>
+            <p>Brother 9’s decibel loudness tournament for class voices.</p>
+            <span class="skill-tag" data-skill="story">story</span>
+          </a>
+        </div>
+      </section>
     </nav>
     <p class="hint">Links go to each folder; the browser loads that folder’s <code>index.html</code> automatically.</p>
   </div>
   <script>
     (function () {
       var STORAGE_KEY = 'teaching-games-filter';
-      var VALID = { all: true, p1: true, p4: true, p5: true };
+      var VALID = { all: true, p1: true, p4: true, p5: true, p5ch34: true };
       var buttons = document.querySelectorAll('.filter-btn');
       var sections = document.querySelectorAll('.category');
 

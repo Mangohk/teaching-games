@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Brother 2's Radar Hearing Lab - Volume Sensitivity Challenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .heading-font {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .mono-font {
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .game-viewport {
+      aspect-ratio: 16 / 9;
+      max-height: 85vh;
+    }
+    @keyframes radarSweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .radar-sweep {
+      animation: radarSweep 3.5s linear infinite;
+    }
+    @keyframes earPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.5)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(168, 85, 247, 0.95)); }
+    }
+    .pulse-ear {
+      animation: earPulse 2.2s infinite ease-in-out;
+    }
+    @keyframes rippleSound {
+      0% { transform: scale(0.7); opacity: 0.9; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+    .sound-ripple {
+      animation: rippleSound 1.4s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
+    }
+    .pop-card {
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-hidden select-none">
+
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-3.5 sm:px-5 py-2.5 rounded-2xl border border-slate-800 shadow-xl z-30 mb-2">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-indigo-500 to-sky-500 flex items-center justify-center text-2xl shadow-lg pulse-ear no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        👂
+      </a>
+      <div>
+        <h1 class="heading-font text-sm sm:text-lg font-black text-white tracking-wide flex items-center gap-2">
+          Brother 2's Radar Hearing Lab <span class="hidden md:inline text-xs px-2.5 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-700/60 font-sans">Decibel Decrescendo Challenge</span>
+        </h1>
+        <p class="text-[11px] sm:text-xs text-purple-300 font-bold hidden sm:block">Primary 5 English • Story Listening: Loud ➔ Medium ➔ Soft ➔ Extra-Soft</p>
+      </div>
+    </div>
+
+    <!-- Hearing Status & Tools -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Sensitivity Score -->
+      <div class="bg-slate-950 border border-slate-800 px-3.5 py-1 rounded-xl text-center shadow-inner">
+        <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Radar Rating</span>
+        <span id="hearing-score-display" class="mono-font text-xs sm:text-sm font-black text-amber-300">Level 1: Loud</span>
+      </div>
+
+      <!-- Streak Pill -->
+      <div class="hidden sm:flex items-center gap-1.5 bg-purple-950/70 border border-purple-800 px-3 py-1 rounded-xl">
+        <span class="text-xs">🎯</span>
+        <span class="text-xs font-bold text-slate-300">Streak:</span>
+        <span id="streak-counter" class="mono-font text-xs font-black text-emerald-400">0</span>
+      </div>
+
+      <!-- Gentleman Voice Mode Toggle -->
+      <button onclick="toggleGentlemanVoice()" id="gentleman-mode-btn" title="Toggle Gentleman Narrator Voice" class="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-black transition active:scale-95 cursor-pointer flex items-center gap-1.5 shadow-md">
+        <span>🎩</span> <span id="gentleman-btn-label">Gentleman Voice: ON</span>
+      </button>
+
+      <!-- Sound Volume / Repeat Button -->
+      <button onclick="repeatCurrentWord()" id="replay-btn" title="Replay Word Audio (R)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black border border-slate-700 transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+        <span>🔁</span> <span class="hidden sm:inline">Repeat</span>
+      </button>
+
+      <!-- Ear Sensitivity Calibration Modal -->
+      <button onclick="openCalibrationModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-bold border border-slate-700 transition active:scale-95 cursor-pointer">
+        ⚙️ <span class="hidden sm:inline">Volume</span>
+      </button>
+
+      <!-- Ear Doctor Certificate Report -->
+      <button onclick="openCertificateModal()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-black transition active:scale-95 cursor-pointer shadow-md flex items-center gap-1">
+        📜 <span>Card</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto flex-1 flex items-center justify-center relative my-auto">
+    <div id="game-stage" class="game-viewport w-full bg-slate-900 rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden relative flex flex-col justify-between p-3.5 sm:p-5 transition-all">
+      
+      <!-- Top Arena Ticker Ribbon -->
+      <div class="flex items-center justify-between px-2 pt-0.5 pb-1 z-10">
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Acoustic Decrescendo
+          </span>
+          <span id="arena-ticker" class="text-xs sm:text-sm font-black text-amber-300 truncate">
+            👂 Put your hand behind your ear! Listen carefully and tap the secret word!
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
+          <span>Question: <b id="question-progress" class="text-white font-mono text-xs">1 / 10</b></span>
+        </div>
+      </div>
+
+      <div class="my-auto grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-center w-full max-w-6xl mx-auto z-10">
+        
+        <!-- Left Side: Interactive Radar Dish & Decibel Decrescendo Meter (5 Columns) -->
+        <div class="lg:col-span-5 flex flex-col items-center justify-center">
+          <div class="w-full max-w-sm bg-slate-950/90 border-4 border-slate-800 rounded-3xl p-4 shadow-2xl relative overflow-hidden flex flex-col items-center">
+            
+            <div class="w-full flex items-center justify-between px-1 pb-2 text-[11px] font-mono font-black text-slate-400 border-b border-slate-800">
+              <span>ACOUSTIC RADAR DISH</span>
+              <span id="volume-tier-badge" class="text-emerald-400 font-extrabold uppercase">ZONE 1: LOUD (100%)</span>
+            </div>
+
+            <!-- Rotating Radar Screen with Sound Waves -->
+            <div class="relative w-44 h-44 sm:w-52 sm:h-52 bg-slate-900 border-4 border-purple-500/50 rounded-full my-3 flex items-center justify-center overflow-hidden shadow-[inset_0_0_25px_rgba(0,0,0,0.8)]">
+              
+              <!-- Concentric Range Circles -->
+              <div class="absolute inset-4 rounded-full border border-purple-500/20 pointer-events-none"></div>
+              <div class="absolute inset-10 rounded-full border border-purple-500/20 pointer-events-none"></div>
+              <div class="absolute inset-16 rounded-full border border-purple-500/20 pointer-events-none"></div>
+              
+              <!-- Crosshair Lines -->
+              <div class="absolute w-full h-[1px] bg-purple-500/20 pointer-events-none"></div>
+              <div class="absolute h-full w-[1px] bg-purple-500/20 pointer-events-none"></div>
+
+              <!-- Animated Rotating Radar Beam -->
+              <div class="absolute inset-0 radar-sweep pointer-events-none opacity-50 bg-[conic-gradient(from_0deg,transparent_0deg,transparent_300deg,rgba(168,85,247,0.45)_360deg)]"></div>
+
+              <!-- Animated Sound Wave Ripple Rings -->
+              <div id="sound-ring" class="absolute w-24 h-24 rounded-full border-2 border-purple-400/80 pointer-events-none hidden"></div>
+
+              <!-- Center Radar Ear Icon (Clickable to replay audio) -->
+              <button onclick="repeatCurrentWord()" class="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 hover:from-purple-500 hover:to-indigo-600 text-white flex items-center justify-center text-3xl sm:text-4xl shadow-xl transition transform active:scale-95 cursor-pointer group" title="Click to hear word again!">
+                <span class="group-hover:scale-110 transition-transform">👂</span>
+              </button>
+
+              <!-- Live Canvas Frequency Waveform Strip overlay in radar base -->
+              <canvas id="radar-canvas" width="200" height="40" class="absolute bottom-2 w-32 h-6 opacity-60"></canvas>
+            </div>
+
+            <!-- Volume Attenuation Decrescendo Gauge -->
+            <div class="w-full space-y-1">
+              <div class="flex justify-between text-[10px] font-mono font-bold text-slate-400">
+                <span>SOUND VOLUME:</span>
+                <span id="volume-pct-label" class="text-amber-300 font-black">100% VOLUME (LOUD)</span>
+              </div>
+              <!-- 4-Stage Volume Progress Blocks -->
+              <div class="grid grid-cols-4 gap-1.5 h-3">
+                <div id="vol-bar-1" class="rounded bg-emerald-500 transition-all duration-300"></div>
+                <div id="vol-bar-2" class="rounded bg-sky-500 transition-all duration-300"></div>
+                <div id="vol-bar-3" class="rounded bg-amber-500 transition-all duration-300"></div>
+                <div id="vol-bar-4" class="rounded bg-rose-500 transition-all duration-300"></div>
+              </div>
+              <div class="flex justify-between text-[9px] font-mono text-slate-500 pt-0.5">
+                <span>1. Loud</span>
+                <span>2. Medium</span>
+                <span>3. Soft</span>
+                <span>4. Ultra-Soft</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-3">
+          
+          <!-- Clue Prompt Banner -->
+          <div class="bg-slate-950 p-4 sm:p-5 rounded-3xl border-3 border-purple-500/40 shadow-xl flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-black uppercase tracking-wider text-purple-400">
+                Brother 2's Hearing Prompt
+              </span>
+              <span id="stage-status-pill" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-black border border-emerald-500/40">
+                🔊 STAGE 1: FULL VOLUME
+              </span>
+            </div>
+
+            <h3 class="heading-font text-xl sm:text-2xl font-black text-white leading-snug">
+              "Which secret story word did Brother 2 hear in the valley?"
+            </h3>
+            <p class="text-xs text-slate-300 font-bold mt-1">
+              Listen carefully! The sound gets softer each round to test your ears. Tap the matching word below:
+            </p>
+
+            <!-- Big Audio Play Controller -->
+            <div class="mt-3.5 flex items-center gap-3">
+              <button onclick="playTargetWordSound()" id="play-word-btn" class="flex-1 py-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 hover:from-purple-500 hover:to-sky-500 active:scale-95 text-white font-black text-sm sm:text-base rounded-2xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2">
+                <span>🔊</span> <span>PLAY WORD NOW</span>
+              </button>
+
+              <button onclick="toggleGentlemanVoice()" id="gentleman-quick-btn" class="px-3.5 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-2xl shadow transition cursor-pointer flex items-center gap-1" title="Toggle Gentleman Voice">
+                <span>🎩</span> <span id="gentleman-quick-text">Gentleman Mode</span>
+              </button>
+
+              <button onclick="toggleSlowPace()" id="slow-speed-btn" class="px-3.5 py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs rounded-2xl border border-slate-700 transition cursor-pointer" title="Switch speech speed">
+                🐢 Slow Pace
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Multiple Choice Word Buttons (Large Touch Targets for Smartboard) -->
+          <div id="choices-grid" class="grid grid-cols-2 gap-2.5 sm:gap-3.5">
+            <!-- Dynamically populated choices -->
+          </div>
+
+          <!-- Quick Action Bar -->
+          <div class="flex gap-2 pt-1">
+            <button onclick="resetHearingTest()" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-xs border border-slate-700 transition cursor-pointer">
+              🔄 Reset Test
+            </button>
+            <button onclick="skipToUltraSoft()" class="px-4 py-2 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-bold text-xs border border-rose-800 transition cursor-pointer">
+              🦇 Test Ultra-Soft Radar (8%)
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="w-full bg-slate-950/80 p-2.5 rounded-2xl border border-slate-800/80 flex items-center justify-between text-xs font-bold z-10 mt-1">
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <span class="text-slate-400 shrink-0">Decrescendo Stages:</span>
+          <span class="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 text-[11px] shrink-0">Stage 1: Loud (100%)</span>
+          <span class="px-2 py-0.5 rounded-md bg-sky-950 text-sky-300 border border-sky-800 text-[11px] shrink-0">Stage 2: Medium (60%)</span>
+          <span class="px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800 text-[11px] shrink-0">Stage 3: Soft / Whisper (25%)</span>
+          <span class="px-2 py-0.5 rounded-md bg-rose-950 text-rose-300 border border-rose-800 text-[11px] font-black shrink-0">Stage 4: Ultra-Soft Radar (8%) 🦇</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-slate-400">
+          <span>Target Distance:</span>
+          <span class="text-amber-400 font-mono font-black">5 Miles Over Mountains</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="calibration-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <h3 class="heading-font text-lg font-black text-white">⚙️ Classroom Volume Settings</h3>
+        <button onclick="closeCalibrationModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs font-bold text-slate-300">
+        <div>
+          <div class="flex justify-between mb-1">
+            <span>Master Speaker Gain:</span>
+            <span id="master-gain-label" class="text-amber-300 font-mono">1.0x</span>
+          </div>
+          <input type="range" id="master-gain-slider" min="0.4" max="2.0" step="0.1" value="1.0" oninput="updateMasterGain(this.value)" class="w-full accent-purple-500 cursor-pointer">
+        </div>
+
+        <div>
+          <div class="flex justify-between mb-1">
+            <span>Gentleman Pitch (Warm & Deep):</span>
+            <span id="pitch-label" class="text-amber-300 font-mono">Gentle Man (0.88)</span>
+          </div>
+          <input type="range" id="pitch-slider" min="0.6" max="1.4" step="0.02" value="0.88" oninput="updateSpeechPitch(this.value)" class="w-full accent-sky-400 cursor-pointer">
+        </div>
+
+        <p class="text-[11px] text-slate-400 italic mt-2">
+          💡 Gentleman mode tunes pitch to ~0.85–0.90 with a polite, clear British/neutral male cadence.
+        </p>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeCalibrationModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs rounded-xl transition cursor-pointer">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="certificate-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-purple-50 border-4 border-purple-400 text-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 text-center shadow-2xl pop-card relative overflow-hidden">
+      <!-- Stamp watermark -->
+      <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border-4 border-dashed border-purple-600/30 flex items-center justify-center text-purple-600/30 font-black text-3xl rotate-12 pointer-events-none uppercase">
+        PASSED
+      </div>
+
+      <div class="w-16 h-16 bg-purple-600 text-white rounded-2xl mx-auto flex items-center justify-center text-4xl mb-3 shadow-md">
+        📡
+      </div>
+
+      <span class="text-xs uppercase tracking-widest font-black text-purple-800 bg-purple-200 px-3 py-1 rounded-full border border-purple-300">
+        Ancient Hong Kong Primary 5 Hearing Clinic
+      </span>
+
+      <h2 class="heading-font text-3xl font-black text-slate-900 mt-2 mb-1">
+        Superhero Radar Ear Certificate
+      </h2>
+      <p class="text-xs text-slate-600 font-bold mb-4">Official Acoustic Sensitivity Report for Brother 2</p>
+
+      <!-- Results Grid -->
+      <div class="bg-white p-4 rounded-2xl border-2 border-purple-200 space-y-2.5 mb-5 text-left text-xs sm:text-sm font-bold">
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Highest Hearing Stage Cleared:</span>
+          <span id="rep-stage" class="font-black text-purple-700 font-mono">Stage 4: Ultra-Soft (8%)</span>
+        </div>
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Correct Listening Streak:</span>
+          <span id="rep-streak" class="font-black text-emerald-600 font-mono">10 Words in a row</span>
+        </div>
+        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+          <span class="text-slate-500">Smallest Audio Volume Heard:</span>
+          <span id="rep-volume" class="font-black text-indigo-700 font-mono">0.08 Gain (-22 dB SPL)</span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-slate-500">Superpower Diagnosis:</span>
+          <span id="rep-title" class="font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300">
+            👂 Brother 2 Radar Dish Ears!
+          </span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-center">
+        <button onclick="closeCertificateModal()" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-black text-sm rounded-xl shadow-md transition active:scale-95 cursor-pointer">
+          Continue Test ➔
+        </button>
+        <button onclick="resetHearingTest(); closeCertificateModal();" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-sm rounded-xl transition active:scale-95 cursor-pointer">
+          🔄 Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 10 Curated Word Sets from the Primary 5 'Ten Brothers' Play & Unit 2
+    const hearingQuestions = [
+      {
+        word: "tiger",
+        category: "Wild Animal in Forest",
+        choices: ["tiger", "table", "towel", "target"],
+        phonicsClue: "The wild creature waiting under the tree!"
+      },
+      {
+        word: "river",
+        category: "Mountain Geography",
+        choices: ["river", "ruler", "rabbit", "runner"],
+        phonicsClue: "Where Brother 9 roared: 'Turn right at the...'!"
+      },
+      {
+        word: "glasses",
+        category: "Brother 1 Feature",
+        choices: ["glasses", "gloves", "grass", "glider"],
+        phonicsClue: "Worn by Brother 1 for powerful telescope eyes."
+      },
+      {
+        word: "whisper",
+        category: "Quiet Voice",
+        choices: ["whisper", "whistle", "winter", "winner"],
+        phonicsClue: "What the robbers did in the tree!"
+      },
+      {
+        word: "vest",
+        category: "Brother 3 Clothing",
+        choices: ["vest", "nest", "west", "chest"],
+        phonicsClue: "The clothing worn by strong Brother 3."
+      },
+      {
+        word: "brother",
+        category: "Family Character",
+        choices: ["brother", "butter", "border", "boulder"],
+        phonicsClue: "One of the legendary family members."
+      },
+      {
+        word: "forest",
+        category: "Scene Setting",
+        choices: ["forest", "farmer", "feather", "first"],
+        phonicsClue: "The woods where Ng Ho met the robbers."
+      },
+      {
+        word: "handkerchief",
+        category: "Brother 10 Accessory",
+        choices: ["handkerchief", "helicopter", "hamburger", "hairbrush"],
+        phonicsClue: "Used to catch magic healing tears."
+      },
+      {
+        word: "mountain",
+        category: "Ancient HK Landscape",
+        choices: ["mountain", "morning", "monkey", "motor"],
+        phonicsClue: "The high rocky hills of ancient Hong Kong."
+      },
+      {
+        word: "amazing",
+        category: "Character Reaction",
+        choices: ["amazing", "amusing", "alarm", "across"],
+        phonicsClue: "What Ng Ho shouted when his legs were healed!"
+      }
+    ];
+
+    // Volume decrescendo stages mapping: Loud -> Medium -> Soft -> Ultra-Soft
+    const volumeStages = [
+      {
+        stage: 1,
+        name: "Stage 1: Loud (100%)",
+        volume: 1.0,
+        gainLevel: 1.0,
+        badgeClass: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+        radarText: "ZONE 1: LOUD (100%)",
+        volBarCount: 4,
+        rank: "Normal Ear Sight 👂",
+        description: "Clear and loud voice across the village."
+      },
+      {
+        stage: 2,
+        name: "Stage 2: Medium (60%)",
+        volume: 0.6,
+        gainLevel: 0.6,
+        badgeClass: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        radarText: "ZONE 2: MEDIUM (60%)",
+        volBarCount: 3,
+        rank: "Attentive Listener 🎧",
+        description: "Normal classroom conversational volume."
+      },
+      {
+        stage: 3,
+        name: "Stage 3: Soft / Whisper (25%)",
+        volume: 0.25,
+        gainLevel: 0.25,
+        badgeClass: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+        radarText: "ZONE 3: SOFT (25%)",
+        volBarCount: 2,
+        rank: "Sharpshooter Hearing 🦗",
+        description: "Quiet whisper across the mountain breeze."
+      },
+      {
+        stage: 4,
+        name: "Stage 4: Ultra-Soft Radar (8%)",
+        volume: 0.08,
+        gainLevel: 0.08,
+        badgeClass: "bg-rose-500/20 text-rose-300 border-rose-500/40",
+        radarText: "ZONE 4: ULTRA-SOFT (8%)",
+        volBarCount: 1,
+        rank: "Brother 2 Radar Dish Ears! 🦇🔥",
+        description: "Faint signal heard 5 miles across the valley!"
+      }
+    ];
+
+    // State Variables
+    let currentQuestionIdx = 0;
+    let currentStageIdx = 0;
+    let currentStreak = 0;
+    let highestStageCleared = 1;
+    let isSlowSpeech = false;
+    let masterGainMultiplier = 1.0;
+    let speechPitch = 0.88; // Polite, warm gentleman pitch
+    let isGentlemanVoice = true; // Enabled by default!
+    let isSpeaking = false;
+    let audioCtx = null;
+    let synthUtterance = null;
+    let availableVoices = [];
+
+    // Pre-cache available voices from speech synthesis
+    function populateVoiceList() {
+      if ('speechSynthesis' in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+      }
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = populateVoiceList;
+      populateVoiceList();
+    }
+
+    // Select the best gentleman voice candidate (polite male tone)
+    function getBestGentlemanVoice() {
+      if (!availableVoices || availableVoices.length === 0) {
+        populateVoiceList();
+      }
+      // Prioritize refined British or smooth male English voices
+      const preferred = availableVoices.find(v => 
+        (v.lang === 'en-GB' || v.lang === 'en_GB' || v.lang.startsWith('en')) &&
+        (v.name.includes('Daniel') || v.name.includes('Oliver') || v.name.includes('George') || 
+         v.name.includes('Arthur') || v.name.includes('Guy') || v.name.includes('David') || 
+         v.name.includes('Google UK English Male') || v.name.includes('Male'))
+      );
+      return preferred || availableVoices.find(v => v.lang.startsWith('en')) || null;
+    }
+
+    // Web Audio Synthesizer
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playToneFeedback(type) {
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'correct') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((f, i) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, now + i * 0.07);
+            gain.gain.setValueAtTime(0.18, now + i * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (i + 1) * 0.07 + 0.1);
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.start(now + i * 0.07);
+            osc.stop(now + (i + 1) * 0.07 + 0.1);
+          });
+        } else if (type === 'wrong') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.setValueAtTime(160, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'click') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(800, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        }
+      } catch (e) {
+        console.warn('Audio not initialized yet');
+      }
+    }
+
+    function playWordSpeech(word, volumeLevel) {
+      if (!('speechSynthesis' in window)) {
+        alertFallbackNotice("Speech Synthesis Not Supported", "Your browser does not support native text-to-speech.");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      // Trigger Radar animation ring
+      triggerRadarWaveVisual();
+
+      const effectiveVolume = Math.min(1.0, Math.max(0.02, volumeLevel * masterGainMultiplier));
+      const utter = new SpeechSynthesisUtterance(word);
+      
+      utter.lang = 'en-GB';
+
+      // Gentle man Voice adjustments: warm, polite, calm pace
+      if (isGentlemanVoice) {
+        utter.pitch = Math.min(1.1, Math.max(0.7, speechPitch));
+        utter.rate = isSlowSpeech ? 0.72 : 0.88; // Gentle, steady cadence
+        const gentlemanVoice = getBestGentlemanVoice();
+        if (gentlemanVoice) utter.voice = gentlemanVoice;
+      } else {
+        utter.pitch = 1.0;
+        utter.rate = isSlowSpeech ? 0.75 : 0.95;
+      }
+
+      utter.volume = effectiveVolume;
+
+      utter.onstart = () => {
+        isSpeaking = true;
+        document.getElementById('play-word-btn').classList.add('ring-4', 'ring-purple-400');
+      };
+
+      utter.onend = () => {
+        isSpeaking = false;
+        document.getElementById('play-word-btn').classList.remove('ring-4', 'ring-purple-400');
+      };
+
+      utter.onerror = () => {
+        isSpeaking = false;
+        document.getElementById('play-word-btn').classList.remove('ring-4', 'ring-purple-400');
+      };
+
+      synthUtterance = utter;
+      window.speechSynthesis.speak(utter);
+    }
+
+    window.toggleGentlemanVoice = function() {
+      playToneFeedback('click');
+      isGentlemanVoice = !isGentlemanVoice;
+      const topBtn = document.getElementById('gentleman-mode-btn');
+      const topLabel = document.getElementById('gentleman-btn-label');
+      const quickBtn = document.getElementById('gentleman-quick-btn');
+      const quickLabel = document.getElementById('gentleman-quick-text');
+
+      if (isGentlemanVoice) {
+        speechPitch = 0.88;
+        if (topBtn) {
+          topBtn.className = 'px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-black transition active:scale-95 cursor-pointer flex items-center gap-1.5 shadow-md';
+          topLabel.textContent = 'Gentleman Voice: ON';
+        }
+        if (quickBtn) {
+          quickBtn.className = 'px-3.5 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-2xl shadow transition cursor-pointer flex items-center gap-1';
+          quickLabel.textContent = 'Gentleman Mode';
+        }
+        document.getElementById('arena-ticker').innerHTML = `🎩 <b>GENTLEMAN VOICE ACTIVATED!</b> Warm, polite pronunciation mode on!`;
+      } else {
+        speechPitch = 1.0;
+        if (topBtn) {
+          topBtn.className = 'px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition active:scale-95 cursor-pointer flex items-center gap-1.5';
+          topLabel.textContent = 'Gentleman Voice: OFF';
+        }
+        if (quickBtn) {
+          quickBtn.className = 'px-3.5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-2xl border border-slate-700 transition cursor-pointer flex items-center gap-1';
+          quickLabel.textContent = 'Standard Mode';
+        }
+        document.getElementById('arena-ticker').innerHTML = `🗣️ <b>STANDARD VOICE ACTIVATED.</b> Normal voice mode on.`;
+      }
+
+      playTargetWordSound();
+    };
+
+    function triggerRadarWaveVisual() {
+      const ring = document.getElementById('sound-ring');
+      if (ring) {
+        ring.classList.remove('hidden', 'sound-ripple');
+        void ring.offsetWidth; // Trigger reflow
+        ring.classList.add('sound-ripple');
+      }
+    }
+
+    function loadHearingQuestion(qIdx) {
+      const q = hearingQuestions[qIdx];
+      const stage = volumeStages[currentStageIdx];
+
+      // Update Top Status Pill
+      document.getElementById('question-progress').textContent = `${qIdx + 1} / ${hearingQuestions.length}`;
+      document.getElementById('hearing-score-display').textContent = stage.name;
+      document.getElementById('stage-status-pill').textContent = stage.name.toUpperCase();
+      document.getElementById('stage-status-pill').className = `px-2.5 py-0.5 rounded-full text-xs font-mono font-black border ${stage.badgeClass}`;
+
+      // Update Radar Panel Status
+      document.getElementById('volume-tier-badge').textContent = stage.radarText;
+      document.getElementById('volume-pct-label').textContent = `${Math.round(stage.volume * 100)}% VOLUME (${stage.name.split(':')[1].trim()})`;
+
+      // Update 4-stage volume bars
+      updateVolumeBarsVisual(stage.volBarCount);
+
+      // Render 4 Multiple-Choice Buttons
+      const container = document.getElementById('choices-grid');
+      container.innerHTML = '';
+
+      // Shuffle choices so correct answer position varies
+      const shuffledChoices = [...q.choices].sort(() => 0.5 - Math.random());
+
+      shuffledChoices.forEach((choiceText, i) => {
+        const btn = document.createElement('button');
+        btn.className = `p-4 sm:p-5 rounded-2xl bg-slate-950 hover:bg-purple-950/70 border-3 border-slate-800 hover:border-purple-500 text-white shadow-xl transition active:scale-95 cursor-pointer flex items-center justify-between text-left group pop-card`;
+        btn.onclick = () => submitAnswer(choiceText, q.word, btn);
+
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-purple-950 text-purple-300 border border-purple-700/60 font-black text-sm flex items-center justify-center font-mono">
+              ${String.fromCharCode(65 + i)}
+            </span>
+            <span class="heading-font text-lg sm:text-2xl font-black text-slate-100 group-hover:text-amber-300 transition-colors">
+              ${choiceText}
+            </span>
+          </div>
+          <span class="choice-icon text-xl text-slate-600 group-hover:text-purple-400">❓</span>
+        `;
+        container.appendChild(btn);
+      });
+
+      // Automatically play the target word on new question load
+      setTimeout(() => {
+        playWordSpeech(q.word, stage.volume);
+      }, 350);
+    }
+
+    function updateVolumeBarsVisual(activeCount) {
+      for (let i = 1; i <= 4; i++) {
+        const bar = document.getElementById(`vol-bar-${i}`);
+        if (!bar) continue;
+        if (i <= activeCount) {
+          bar.classList.remove('opacity-20');
+          bar.classList.add('opacity-100');
+        } else {
+          bar.classList.remove('opacity-100');
+          bar.classList.add('opacity-20');
+        }
+      }
+    }
+
+    window.submitAnswer = function(chosenWord, correctWord, btnEl) {
+      const ticker = document.getElementById('arena-ticker');
+      const allChoiceBtns = document.querySelectorAll('#choices-grid button');
+
+      if (chosenWord.toLowerCase() === correctWord.toLowerCase()) {
+        // Correct Answer!
+        playToneFeedback('correct');
+        currentStreak++;
+        document.getElementById('streak-counter').textContent = currentStreak;
+
+        btnEl.classList.remove('border-slate-800', 'bg-slate-950');
+        btnEl.classList.add('border-emerald-500', 'bg-emerald-950/70', 'ring-4', 'ring-emerald-400');
+        const icon = btnEl.querySelector('.choice-icon');
+        if (icon) icon.textContent = '✅';
+
+        ticker.innerHTML = `<span class="text-emerald-400 font-black">✓ RADAR HIT!</span> Correct word was <b>"${correctWord}"</b>!`;
+
+        // Advance to next quieter volume stage every 2 correct answers (Decrescendo!)
+        if (currentStreak % 2 === 0 && currentStageIdx < volumeStages.length - 1) {
+          currentStageIdx++;
+          highestStageCleared = Math.max(highestStageCleared, currentStageIdx + 1);
+          ticker.innerHTML = `🌟 <b>HEARING LEVEL UP!</b> Volume decreasing to <b>${volumeStages[currentStageIdx].name}</b>!`;
+        }
+
+        // Disable all buttons to prevent double-clicks
+        allChoiceBtns.forEach(b => b.disabled = true);
+
+        // Advance question after brief pause
+        setTimeout(() => {
+          if (currentQuestionIdx < hearingQuestions.length - 1) {
+            currentQuestionIdx++;
+            loadHearingQuestion(currentQuestionIdx);
+          } else {
+            // Completed all questions
+            openCertificateModal();
+          }
+        }, 1300);
+
+      } else {
+        // Wrong Answer
+        playToneFeedback('wrong');
+        currentStreak = 0;
+        document.getElementById('streak-counter').textContent = 0;
+
+        btnEl.classList.remove('border-slate-800');
+        btnEl.classList.add('border-rose-500', 'bg-rose-950/70');
+        const icon = btnEl.querySelector('.choice-icon');
+        if (icon) icon.textContent = '❌';
+
+        ticker.innerHTML = `<span class="text-rose-400 font-black">❌ MISSED SIGNAL!</span> Brother 2 said <b>"${correctWord}"</b>. Listen closer!`;
+
+        // If struggling at ultra-soft, step back one stage
+        if (currentStageIdx > 0 && Math.random() > 0.5) {
+          currentStageIdx--;
+        }
+
+        // Replay the word to assist learning
+        setTimeout(() => {
+          const currentWord = hearingQuestions[currentQuestionIdx].word;
+          const stage = volumeStages[currentStageIdx];
+          playWordSpeech(currentWord, stage.volume);
+        }, 600);
+      }
+    };
+
+    window.playTargetWordSound = function() {
+      playToneFeedback('click');
+      const currentWord = hearingQuestions[currentQuestionIdx].word;
+      const stage = volumeStages[currentStageIdx];
+      playWordSpeech(currentWord, stage.volume);
+    };
+
+    window.repeatCurrentWord = window.playTargetWordSound;
+
+    window.toggleSlowPace = function() {
+      playToneFeedback('click');
+      isSlowSpeech = !isSlowSpeech;
+      const btn = document.getElementById('slow-speed-btn');
+      if (isSlowSpeech) {
+        btn.innerHTML = '⚡ Normal Pace';
+        btn.className = 'px-3.5 py-3 bg-amber-500 text-slate-950 font-black text-xs rounded-2xl transition cursor-pointer shadow-md';
+      } else {
+        btn.innerHTML = '🐢 Slow Pace';
+        btn.className = 'px-3.5 py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs rounded-2xl border border-slate-700 transition cursor-pointer';
+      }
+      playTargetWordSound();
+    };
+
+    window.skipToUltraSoft = function() {
+      playToneFeedback('click');
+      currentStageIdx = 3; // Ultra-Soft (8%)
+      highestStageCleared = 4;
+      loadHearingQuestion(currentQuestionIdx);
+      document.getElementById('arena-ticker').innerHTML = '🦇 <b>ULTRA-SOFT RADAR ACTIVATED!</b> Only 8% volume! Can your ears detect this?';
+    };
+
+    window.resetHearingTest = function() {
+      playToneFeedback('click');
+      currentQuestionIdx = 0;
+      currentStageIdx = 0;
+      currentStreak = 0;
+      highestStageCleared = 1;
+      document.getElementById('streak-counter').textContent = 0;
+      loadHearingQuestion(0);
+    };
+
+    window.openCalibrationModal = function() {
+      playToneFeedback('click');
+      document.getElementById('calibration-modal').classList.remove('hidden');
+    };
+
+    window.closeCalibrationModal = function() {
+      document.getElementById('calibration-modal').classList.add('hidden');
+    };
+
+    window.updateMasterGain = function(val) {
+      masterGainMultiplier = parseFloat(val);
+      document.getElementById('master-gain-label').textContent = `${masterGainMultiplier.toFixed(1)}x`;
+    };
+
+    window.updateSpeechPitch = function(val) {
+      speechPitch = parseFloat(val);
+      const isDeep = speechPitch <= 0.95;
+      document.getElementById('pitch-label').textContent = `${speechPitch.toFixed(2)} (${isDeep ? 'Gentle Man' : 'Standard'})`;
+    };
+
+    window.openCertificateModal = function() {
+      playToneFeedback('correct');
+      const stage = volumeStages[highestStageCleared - 1] || volumeStages[0];
+      
+      document.getElementById('rep-stage').textContent = stage.name;
+      document.getElementById('rep-streak').textContent = `${currentStreak} Words in a row`;
+      document.getElementById('rep-volume').textContent = `${Math.round(stage.volume * 100)}% Volume (${stage.gainLevel} Gain)`;
+      document.getElementById('rep-title').textContent = stage.rank;
+
+      document.getElementById('certificate-modal').classList.remove('hidden');
+    };
+
+    window.closeCertificateModal = function() {
+      document.getElementById('certificate-modal').classList.add('hidden');
+    };
+
+    function alertFallbackNotice(title, msg) {
+      const ticker = document.getElementById('arena-ticker');
+      if (ticker) {
+        ticker.innerHTML = `⚠️ <b class="text-rose-400">${title}</b> ${msg}`;
+      }
+    }
+
+    // Keyboard Shortcuts (R to replay, 1-4 for choices)
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'r' && !e.target.matches('input')) {
+        playTargetWordSound();
+      } else if (e.key === ' ' && !e.target.matches('input')) {
+        e.preventDefault();
+        playTargetWordSound();
+      } else if (['1', '2', '3', '4'].includes(e.key)) {
+        const choiceBtns = document.querySelectorAll('#choices-grid button');
+        const idx = parseInt(e.key, 10) - 1;
+        if (choiceBtns[idx]) choiceBtns[idx].click();
+      }
+    });
+
+    function initRadarCanvasLoop() {
+      const canvas = document.getElementById('radar-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let offset = 0;
+
+      function drawRadarWave() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isSpeaking ? '#a855f7' : '#475569';
+        ctx.beginPath();
+
+        const amplitude = isSpeaking ? 8 : 2;
+        const frequency = 0.08;
+
+        for (let x = 0; x < canvas.width; x++) {
+          const y = canvas.height / 2 + Math.sin(x * frequency + offset) * amplitude;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        offset += isSpeaking ? 0.2 : 0.04;
+        requestAnimationFrame(drawRadarWave);
+      }
+      drawRadarWave();
+    }
+
+    // Initialize Game on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadHearingQuestion(0);
+      initRadarCanvasLoop();
+    });
+  </script>
+</body>
+</html>

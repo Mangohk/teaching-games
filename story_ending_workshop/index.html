@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>P5 Story Ending Workshop: Interactive Shared Writing Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .heading-font {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .mono-font {
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .slide-viewport {
+      aspect-ratio: 16 / 9;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.97); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-anim {
+      animation: popIn 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+    }
+    #drawing-canvas {
+      touch-action: none;
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-hidden select-none">
+
+  <!-- Top Smartboard Navigation Toolbar -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-800 shadow-xl z-30 mb-2">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-xl shadow-lg no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        ✍️
+      </a>
+      <div>
+        <h1 class="heading-font text-base sm:text-xl font-extrabold text-white tracking-wide">
+          Story Ending Workshop • Interactive Shared Writing
+        </h1>
+        <p class="text-xs text-indigo-300 font-bold hidden sm:block">Primary 5 Narrative Writing • 4-Step Recipe &amp; 50-Word Target</p>
+      </div>
+    </div>
+
+    <!-- Smartboard Tools -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Word Counter Quick Badge -->
+      <div class="hidden md:flex items-center gap-1.5 bg-slate-950 border border-slate-800 px-3 py-1 rounded-xl">
+        <span class="text-xs">🎯 Target:</span>
+        <span class="mono-font text-xs font-black text-amber-300">≥ 50 Words</span>
+      </div>
+
+      <!-- Smartboard Pen Toggle -->
+      <button id="pen-toggle-btn" onclick="togglePen()" title="Toggle Smartboard Drawing Pen (P)" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-black border border-slate-700 flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
+        <span id="pen-icon">✏️</span>
+        <span id="pen-status-text" class="hidden md:inline">Pen Off</span>
+      </button>
+
+      <!-- Clear Ink -->
+      <button onclick="clearCanvas()" title="Clear Pen Ink (C)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-200 text-xs sm:text-sm font-bold border border-slate-700 transition active:scale-95 cursor-pointer hidden sm:flex items-center gap-1">
+        🗑️ <span>Clear</span>
+      </button>
+
+      <!-- All Slides Drawer -->
+      <button onclick="toggleDrawer()" title="View All Workshop Stages" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-black shadow-md transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+        📑 <span class="hidden sm:inline">All Stages</span>
+      </button>
+
+      <!-- Fullscreen Toggle -->
+      <button onclick="toggleFullscreen()" title="Fullscreen Mode (F)" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-bold border border-slate-700 transition active:scale-95 cursor-pointer">
+        ⛶
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Slide Presentation Stage (16:9 Aspect Ratio) -->
+  <main class="w-full max-w-7xl mx-auto flex-1 flex items-center justify-center relative my-auto">
+    <div id="presentation-frame" class="slide-viewport w-full max-h-[82vh] bg-white rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden relative flex flex-col justify-between p-4 sm:p-6 md:p-8 text-slate-900 transition-all">
+      
+      <!-- Slide Content Area (Injected via JavaScript) -->
+      <div id="active-slide-container" class="w-full h-full relative z-10 flex flex-col justify-between">
+      </div>
+
+      <!-- Smartboard Canvas Drawing Overlay -->
+      <canvas id="drawing-canvas" class="absolute inset-0 w-full h-full z-20 pointer-events-none"></canvas>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <footer class="w-full max-w-7xl mx-auto flex items-center justify-between bg-slate-900/95 text-white px-4 sm:px-6 py-2.5 rounded-2xl shadow-lg border border-slate-800 z-30 mt-2">
+    <div class="flex items-center gap-2">
+      <span class="text-xs sm:text-sm font-black uppercase text-indigo-300">Stage</span>
+      <span id="slide-counter" class="heading-font text-base sm:text-xl font-bold bg-slate-950 px-3 py-0.5 rounded-lg border border-slate-800 text-amber-300">
+        1 / 13
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button id="prev-btn" onclick="prevSlide()" class="px-4 py-2 sm:px-6 sm:py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 rounded-xl font-black text-sm sm:text-base border border-slate-700 transition flex items-center gap-2 cursor-pointer">
+        <span>◀</span> <span class="hidden sm:inline">Previous</span>
+      </button>
+
+      <button id="next-btn" onclick="nextSlide()" class="px-5 py-2 sm:px-7 sm:py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 rounded-xl font-black text-sm sm:text-base text-white transition flex items-center gap-2 cursor-pointer shadow-md">
+        <span class="hidden sm:inline">Next Stage</span> <span>▶</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Slide Drawer Aside Panel -->
+  <aside id="slide-drawer" class="fixed inset-y-0 right-0 w-80 sm:w-96 bg-slate-900/98 text-white p-6 shadow-2xl border-l border-slate-800 transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col justify-between">
+    <div>
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+        <h3 class="heading-font text-xl font-bold text-white flex items-center gap-2">
+          📑 Workshop Flow
+        </h3>
+        <button onclick="toggleDrawer()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+      <div id="drawer-slide-list" class="space-y-2 overflow-y-auto max-h-[75vh] pr-1">
+      </div>
+    </div>
+    <div class="pt-4 border-t border-slate-800 text-center text-xs text-slate-500 font-bold">
+      Use Left / Right arrow keys to navigate
+    </div>
+  </aside>
+
+  <script>
+    // Shared Writing State Store
+    const sharedWritingState = {
+      step1: "",
+      step2: "",
+      step3: "",
+      step4: "",
+      combinedText: ""
+    };
+
+    const slides = [
+      // 1. Title Slide
+      {
+        id: 1,
+        title: "Writing a Story Ending",
+        category: "Mission Launch",
+        render: () => `
+          <div class="h-full flex flex-col justify-center items-center text-center p-6 bg-purple-100 border-4 border-purple-300 rounded-3xl text-purple-950 pop-anim relative overflow-hidden">
+            <div class="w-20 h-20 bg-purple-200 border-3 border-purple-400 rounded-3xl flex items-center justify-center text-5xl mb-4 shadow-md animate-bounce">
+              ✍️
+            </div>
+            <p class="text-purple-800 font-black text-base sm:text-xl uppercase tracking-wider mb-2">Primary 5 Narrative Writing Workshop</p>
+            <h1 class="heading-font text-4xl sm:text-6xl md:text-7xl font-black text-purple-950 mb-3 tracking-tight leading-tight">
+              Writing a Story Ending
+            </h1>
+            <p class="text-purple-900 text-xl sm:text-2xl max-w-3xl font-extrabold mb-6 leading-relaxed">
+              Picture (4): Conflict Resolution • Past Tense • Meeting the <span class="text-indigo-700 underline decoration-wavy">50-Word Target</span>!
+            </p>
+            <button onclick="nextSlide()" class="px-8 py-3.5 bg-purple-700 hover:bg-purple-800 active:scale-95 text-white font-black text-xl rounded-2xl shadow-xl transition cursor-pointer">
+              Start Shared Writing! 🚀
+            </button>
+          </div>
+        `
+      },
+
+      // 2. Picture (1): The Accident (Large E-Board Text)
+      {
+        id: 2,
+        title: "Picture (1): The Accident",
+        category: "Worksheet Panel 1",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <!-- Header bar with e-board tag -->
+            <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="px-4 py-1.5 bg-rose-600 text-white font-black rounded-xl text-sm sm:text-base uppercase tracking-wider shadow-sm">
+                  📄 Picture (1)
+                </span>
+                <span class="text-sm sm:text-lg font-black text-slate-700">
+                  The Accident at Home
+                </span>
+              </div>
+              <div class="hidden sm:flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-500">
+                <span>Prompt:</span>
+                <span class="italic text-slate-800 font-extrabold">"Yesterday, Mum fell at home..."</span>
+              </div>
+            </div>
+
+            <!-- Main Content Area: Split 5-cols SVG Illustration & 7-cols Extra Large Text -->
+            <div class="my-auto grid grid-cols-1 md:grid-cols-12 gap-5 max-w-6xl mx-auto w-full items-center">
+              
+              <!-- Large Panel 1 Illustration -->
+              <div class="md:col-span-5 bg-rose-50/80 border-4 border-rose-300 rounded-3xl p-4 shadow-md flex flex-col items-center justify-center relative overflow-hidden">
+                <span class="self-start text-xs font-mono font-black text-rose-800 uppercase mb-2">Original Handout Drawing:</span>
+                <div class="w-full h-56 sm:h-64 flex items-center justify-center">
+                  <svg viewBox="0 0 200 160" class="w-full h-full" fill="none">
+                    <rect width="200" height="160" fill="#FFF1F2" rx="16"/>
+                    <!-- TV on Stand in Background -->
+                    <rect x="20" y="25" width="50" height="30" rx="3" fill="#334155"/>
+                    <rect x="25" y="30" width="40" height="20" fill="#64748B"/>
+                    <rect x="38" y="55" width="14" height="8" fill="#475569"/>
+                    <!-- Window with curtain -->
+                    <rect x="135" y="18" width="45" height="32" rx="2" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>
+                    <line x1="157" y1="18" x2="157" y2="50" stroke="#94A3B8" stroke-width="2"/>
+                    
+                    <!-- Dog & Kids running wildly in background -->
+                    <circle cx="150" cy="58" r="9" fill="#FED7AA"/>
+                    <path d="M144 68 L156 68 L160 92 L140 92 Z" fill="#F59E0B"/>
+                    <circle cx="178" cy="56" r="8" fill="#FED7AA"/>
+                    <path d="M172 64 L184 64 L188 88 L170 88 Z" fill="#10B981"/>
+                    <text x="100" y="66" font-size="22">🐕💨</text>
+
+                    <!-- Toys scattered on floor -->
+                    <rect x="80" y="125" width="22" height="11" rx="3" fill="#3B82F6"/>
+                    <circle cx="85" cy="138" r="3.5" fill="#0F172A"/>
+                    <circle cx="97" cy="138" r="3.5" fill="#0F172A"/>
+                    <circle cx="50" cy="135" r="7" fill="#EF4444"/>
+                    <rect x="145" y="125" width="14" height="14" rx="2" fill="#F59E0B"/>
+
+                    <!-- Fallen Mum on floor -->
+                    <circle cx="48" cy="98" r="14" fill="#FED7AA"/>
+                    <path d="M38 94 C38 80 58 80 58 94 Z" fill="#991B1B"/>
+                    <path d="M42 112 L78 102 L92 128 L50 134 Z" fill="#FDA4AF"/>
+                    <text x="75" y="100" font-size="22">💥</text>
+                    <text x="32" y="94" font-size="14">😣</text>
+                  </svg>
+                </div>
+                <div class="mt-2 text-center text-xs sm:text-sm font-black text-rose-900 bg-white px-3 py-1 rounded-xl border border-rose-200">
+                  Mum trips over a toy car &amp; falls!
+                </div>
+              </div>
+
+              <!-- Extra Large Text for Electronic Whiteboard -->
+              <div class="md:col-span-7 space-y-4">
+                <div class="bg-white p-5 sm:p-7 rounded-3xl border-3 border-slate-300 shadow-md space-y-4">
+                  <span class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest block">
+                    Text from Worksheet:
+                  </span>
+                  
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-relaxed">
+                    "Yesterday, Mum <span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-lg underline decoration-rose-400">fell at home</span> and <span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-lg underline decoration-rose-400">got angry</span> with Dave and Daisy. They <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg">played and ran</span> at home crazily and <span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-lg underline decoration-rose-400">threw the toys</span> all over the floor."
+                  </p>
+
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-relaxed border-t-2 border-slate-100 pt-3">
+                    "Unluckily, Mum <span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-lg underline decoration-rose-400">tripped over</span> the toy car. She shouted, <span class="text-rose-700 font-black italic">‘Who left the toy car on the floor?’</span>"
+                  </p>
+                </div>
+
+                <!-- Past Tense Verb Anchor Box -->
+                <div class="p-3 bg-rose-50 border-2 border-rose-200 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-bold text-rose-950">
+                  <span>⏰ <b>Key Past Tense Verbs:</b> <i>fell, got angry, played, ran, threw, tripped, shouted</i></span>
+                  <span class="text-xl">🚗 💥</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-8 py-3 bg-purple-700 hover:bg-purple-800 text-white font-black text-base sm:text-lg rounded-2xl transition cursor-pointer shadow-md">
+                Next: Picture (2) The Order ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 3. Picture (2): The Order (Large E-Board Text)
+      {
+        id: 3,
+        title: "Picture (2): The Order",
+        category: "Worksheet Panel 2",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="px-4 py-1.5 bg-amber-600 text-white font-black rounded-xl text-sm sm:text-base uppercase tracking-wider shadow-sm">
+                  📄 Picture (2)
+                </span>
+                <span class="text-sm sm:text-lg font-black text-slate-700">
+                  Mum Orders Them to Tidy Up
+                </span>
+              </div>
+              <span class="text-2xl sm:text-3xl">📦 👉</span>
+            </div>
+
+            <!-- Main Content Area: Split 5-cols SVG Illustration & 7-cols Extra Large Text -->
+            <div class="my-auto grid grid-cols-1 md:grid-cols-12 gap-5 max-w-6xl mx-auto w-full items-center">
+              
+              <!-- Large Panel 2 Illustration -->
+              <div class="md:col-span-5 bg-amber-50/80 border-4 border-amber-300 rounded-3xl p-4 shadow-md flex flex-col items-center justify-center relative overflow-hidden">
+                <span class="self-start text-xs font-mono font-black text-amber-800 uppercase mb-2">Original Handout Drawing:</span>
+                <div class="w-full h-56 sm:h-64 flex items-center justify-center">
+                  <svg viewBox="0 0 200 160" class="w-full h-full" fill="none">
+                    <rect width="200" height="160" fill="#FFFBEB" rx="16"/>
+                    <!-- Big Toy Box -->
+                    <rect x="95" y="70" width="75" height="55" rx="4" fill="#FDE68A" stroke="#D97706" stroke-width="3"/>
+                    <rect x="90" y="66" width="85" height="10" rx="3" fill="#F59E0B"/>
+                    <text x="110" y="104" font-size="14" fill="#92400E" font-weight="900">TOYS</text>
+
+                    <!-- Mum sitting on floor pointing finger angrily -->
+                    <circle cx="48" cy="65" r="14" fill="#FED7AA"/>
+                    <path d="M38 60 C38 46 58 46 58 60 Z" fill="#991B1B"/>
+                    <path d="M40 79 L68 79 L72 120 L36 120 Z" fill="#FDA4AF"/>
+                    <path d="M68 90 L105 90" stroke="#FED7AA" stroke-width="7" stroke-linecap="round"/>
+                    <text x="40" y="60" font-size="14">😠</text>
+
+                    <!-- Dave and Daisy standing still looking sorry -->
+                    <circle cx="120" cy="38" r="10" fill="#FED7AA"/>
+                    <path d="M112 48 L128 48 L130 70 L110 70 Z" fill="#F59E0B"/>
+                    <circle cx="155" cy="40" r="10" fill="#FED7AA"/>
+                    <path d="M147 50 L163 50 L165 72 L145 72 Z" fill="#10B981"/>
+                    <!-- Dog looking on -->
+                    <text x="80" y="55" font-size="20">🐕</text>
+
+                    <!-- Toys around the floor -->
+                    <circle cx="50" cy="135" r="6" fill="#3B82F6"/>
+                    <rect x="135" y="130" width="18" height="8" rx="2" fill="#EF4444"/>
+                  </svg>
+                </div>
+                <div class="mt-2 text-center text-xs sm:text-sm font-black text-amber-900 bg-white px-3 py-1 rounded-xl border border-amber-200">
+                  Mum points: "Tidy up all the toys into the box!"
+                </div>
+              </div>
+
+              <!-- Extra Large Text for Electronic Whiteboard -->
+              <div class="md:col-span-7 space-y-4">
+                <div class="bg-white p-5 sm:p-7 rounded-3xl border-3 border-slate-300 shadow-md space-y-4">
+                  <span class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest block">
+                    Text from Worksheet:
+                  </span>
+                  
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-relaxed">
+                    "Dave and Daisy <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg underline decoration-amber-400">stopped playing</span> because they <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg underline decoration-amber-400">felt sorry</span> to Mum."
+                  </p>
+
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-relaxed border-t-2 border-slate-100 pt-3">
+                    "Mum <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg underline decoration-amber-400">said angrily</span>, <span class="text-amber-800 font-black italic">‘You should tidy up the room and put all the toys in the toy box together now!’</span>"
+                  </p>
+                </div>
+
+                <!-- Speech Marks & Modal Verb Anchor Box -->
+                <div class="p-3 bg-amber-50 border-2 border-amber-200 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-bold text-amber-950">
+                  <span>💡 <b>Modal Verb:</b> <i>You should tidy up... put all the toys together now!</i></span>
+                  <span class="text-xl">“ ”</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-8 py-3 bg-purple-700 hover:bg-purple-800 text-white font-black text-base sm:text-lg rounded-2xl transition cursor-pointer shadow-md">
+                Next: Picture (3) The Rebellion ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 4. Picture (3): The Rebellion (Large E-Board Text)
+      {
+        id: 4,
+        title: "Picture (3): The Rebellion",
+        category: "Worksheet Panel 3",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="px-4 py-1.5 bg-indigo-600 text-white font-black rounded-xl text-sm sm:text-base uppercase tracking-wider shadow-sm">
+                  📄 Picture (3)
+                </span>
+                <span class="text-sm sm:text-lg font-black text-slate-700">
+                  Selfish as Foxes!
+                </span>
+              </div>
+              <span class="text-2xl sm:text-3xl">💻 📱 🦊</span>
+            </div>
+
+            <!-- Main Content Area: Split 5-cols SVG Illustration & 7-cols Extra Large Text -->
+            <div class="my-auto grid grid-cols-1 md:grid-cols-12 gap-5 max-w-6xl mx-auto w-full items-center">
+              
+              <!-- Large Panel 3 Illustration -->
+              <div class="md:col-span-5 bg-indigo-50/80 border-4 border-indigo-300 rounded-3xl p-4 shadow-md flex flex-col items-center justify-center relative overflow-hidden">
+                <span class="self-start text-xs font-mono font-black text-indigo-800 uppercase mb-2">Original Handout Drawing:</span>
+                <div class="w-full h-56 sm:h-64 flex items-center justify-center">
+                  <svg viewBox="0 0 200 160" class="w-full h-full" fill="none">
+                    <rect width="200" height="160" fill="#EEF2FF" rx="16"/>
+                    
+                    <!-- Dave's Thought Bubble (Computer Game) -->
+                    <circle cx="65" cy="50" r="26" fill="#FFFFFF" stroke="#6366F1" stroke-width="2.5"/>
+                    <circle cx="65" cy="85" r="4" fill="#6366F1"/>
+                    <circle cx="65" cy="94" r="2.5" fill="#6366F1"/>
+                    <rect x="52" y="38" width="26" height="18" rx="2" fill="#E2E8F0" stroke="#475569" stroke-width="1.5"/>
+                    <text x="59" y="52" font-size="12">💻</text>
+
+                    <!-- Dave standing arms crossed -->
+                    <circle cx="65" cy="115" r="13" fill="#FED7AA"/>
+                    <path d="M52 110 C52 98 78 98 78 110 Z" fill="#D97706"/>
+                    <path d="M54 128 L76 128 L80 155 L50 155 Z" fill="#F59E0B"/>
+                    <rect x="55" y="132" width="20" height="8" rx="3" fill="#B45309"/>
+                    
+                    <!-- Daisy's Thought Bubble (Phone call) -->
+                    <circle cx="145" cy="50" r="26" fill="#FFFFFF" stroke="#EC4899" stroke-width="2.5"/>
+                    <circle cx="145" cy="85" r="4" fill="#EC4899"/>
+                    <circle cx="145" cy="94" r="2.5" fill="#EC4899"/>
+                    <rect x="135" y="38" width="20" height="22" rx="3" fill="#E2E8F0" stroke="#475569" stroke-width="1.5"/>
+                    <text x="139" y="54" font-size="14">📱</text>
+
+                    <!-- Daisy standing arms crossed refusing -->
+                    <circle cx="145" cy="115" r="13" fill="#FED7AA"/>
+                    <path d="M132 110 C132 98 158 98 158 110 Z" fill="#9D174D"/>
+                    <path d="M134 128 L156 128 L160 155 L130 155 Z" fill="#EC4899"/>
+                    <rect x="135" y="132" width="20" height="8" rx="3" fill="#BE185D"/>
+                  </svg>
+                </div>
+                <div class="mt-2 text-center text-xs sm:text-sm font-black text-indigo-900 bg-white px-3 py-1 rounded-xl border border-indigo-200">
+                  Arms crossed! They refused to clean the house.
+                </div>
+              </div>
+
+              <!-- Extra Large Text for Electronic Whiteboard -->
+              <div class="md:col-span-7 space-y-4">
+                <div class="bg-white p-5 sm:p-7 rounded-3xl border-3 border-slate-300 shadow-md space-y-4">
+                  <span class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest block">
+                    Text from Worksheet:
+                  </span>
+                  
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-relaxed">
+                    "However, Dave <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-lg underline decoration-indigo-400">wanted to play</span> computer games and Daisy <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-lg underline decoration-indigo-400">wanted to call</span> and chat with her friend."
+                  </p>
+
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-relaxed border-t-2 border-slate-100 pt-3">
+                    "They <span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-lg underline decoration-rose-400">didn't want to clean up</span> the house. <span class="text-purple-800 font-black italic bg-purple-100 px-2 py-0.5 rounded-lg">They were as selfish as foxes.</span>"
+                  </p>
+                </div>
+
+                <!-- Simile Spotlight Anchor Box -->
+                <div class="p-3 bg-purple-50 border-2 border-purple-200 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-bold text-purple-950">
+                  <span>🦊 <b>Target Simile:</b> <i>"They were as selfish as foxes."</i> (Conflict Climax!)</span>
+                  <span class="text-xl">⚡</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-8 py-3 bg-purple-700 hover:bg-purple-800 text-white font-black text-base sm:text-lg rounded-2xl transition cursor-pointer shadow-md">
+                Next: Picture (4) Now, It's Your Turn! ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 5. Picture (4): Now, It's Your Turn! (Large E-Board Challenge)
+      {
+        id: 5,
+        title: "Picture (4): Now, It's Your Turn",
+        category: "Worksheet Panel 4",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="px-4 py-1.5 bg-emerald-600 text-white font-black rounded-xl text-sm sm:text-base uppercase tracking-wider shadow-sm">
+                  📄 Picture (4) ?
+                </span>
+                <span class="text-sm sm:text-lg font-black text-slate-700">
+                  The Mission: Write the Story Ending
+                </span>
+              </div>
+              <span class="text-2xl sm:text-3xl font-mono font-black text-amber-600">🎯 ≥ 50 Words</span>
+            </div>
+
+            <!-- Main Content Area: Split 5-cols Mystery Box & 7-cols Extra Large Requirements -->
+            <div class="my-auto grid grid-cols-1 md:grid-cols-12 gap-5 max-w-6xl mx-auto w-full items-center">
+              
+              <!-- Large Panel 4 Illustration (The Mystery Box) -->
+              <div class="md:col-span-5 bg-indigo-50/90 border-4 border-dashed border-indigo-400 rounded-3xl p-6 shadow-md flex flex-col items-center justify-center relative overflow-hidden h-72 sm:h-80">
+                <span class="text-xs font-mono font-black text-indigo-700 uppercase mb-2">Picture (4) Mystery Box:</span>
+                <div class="text-center my-auto">
+                  <span class="text-8xl sm:text-9xl font-black text-indigo-600 animate-pulse block mb-2 leading-none">?</span>
+                  <div class="border-b-4 border-indigo-500 pb-1 inline-block">
+                    <span class="heading-font text-3xl sm:text-4xl font-black text-indigo-950 uppercase">
+                      Now, It's
+                    </span>
+                  </div>
+                  <span class="heading-font text-3xl sm:text-4xl font-black text-indigo-900 block mt-1">
+                    Your Turn!
+                  </span>
+                </div>
+              </div>
+
+              <!-- Extra Large Requirements Card -->
+              <div class="md:col-span-7 space-y-4">
+                <div class="bg-white p-5 sm:p-7 rounded-3xl border-3 border-indigo-300 shadow-md space-y-4">
+                  <span class="text-xs font-mono font-black text-indigo-600 uppercase tracking-widest block">
+                    The Writing Challenge:
+                  </span>
+                  
+                  <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-snug">
+                    "Based on the pictures, write a story ending in <span class="text-rose-600 underline font-black decoration-wavy">at least 50 words</span>."
+                  </p>
+
+                  <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 space-y-2 text-base sm:text-xl font-extrabold text-slate-800">
+                    <div class="flex items-center gap-2">
+                      <span>⚡</span> <span><b>1.</b> What wakes Dave and Daisy up from being selfish?</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span>💬</span> <span><b>2.</b> How do they feel and what do they say to Mum?</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span>🧹</span> <span><b>3.</b> What teamwork action solves the messy floor?</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span>❤️</span> <span><b>4.</b> How does Mum react and what is the moral lesson?</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 bg-emerald-50 border-2 border-emerald-300 rounded-2xl text-center text-xs sm:text-sm font-bold text-emerald-950">
+                  👉 Let's use our <b>4-Step Ending Recipe</b> to co-construct sentence by sentence!
+                </div>
+              </div>
+
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base sm:text-lg rounded-2xl transition cursor-pointer shadow-md">
+                Learn The 4-Step Ending Recipe ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 6. The 4-Step Recipe Overview
+      {
+        id: 6,
+        title: "The 4-Step Ending Recipe",
+        category: "Strategy",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-indigo-100 text-indigo-800 font-black rounded-xl text-xs uppercase tracking-wide">Story Architecture</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  The 4-Step Story Ending Recipe
+                </h2>
+              </div>
+              <span class="text-3xl">🍲 📋</span>
+            </div>
+
+            <div class="my-auto grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto w-full">
+              <!-- Step 1 -->
+              <div class="p-4 rounded-3xl bg-blue-50 border-3 border-blue-400 flex flex-col justify-between shadow-sm">
+                <div>
+                  <span class="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center mb-2">1</span>
+                  <h3 class="heading-font text-xl sm:text-2xl font-black text-blue-950 mb-1">Turning Point</h3>
+                  <p class="text-xs sm:text-sm font-bold text-slate-600 leading-snug">
+                    What incident suddenly wakes the children up from being selfish?
+                  </p>
+                </div>
+                <div class="mt-3 p-2 bg-white rounded-xl text-xs font-black text-blue-700 text-center border border-blue-200">
+                  <i>Suddenly... / At that moment...</i>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="p-4 rounded-3xl bg-purple-50 border-3 border-purple-400 flex flex-col justify-between shadow-sm">
+                <div>
+                  <span class="w-8 h-8 rounded-xl bg-purple-600 text-white font-black text-sm flex items-center justify-center mb-2">2</span>
+                  <h3 class="heading-font text-xl sm:text-2xl font-black text-purple-950 mb-1">Feelings &amp; Speech</h3>
+                  <p class="text-xs sm:text-sm font-bold text-slate-600 leading-snug">
+                    How did they feel? What words did they say to apologize to Mum?
+                  </p>
+                </div>
+                <div class="mt-3 p-2 bg-white rounded-xl text-xs font-black text-purple-700 text-center border border-purple-200">
+                  <i>felt guilty / "We are sorry!"</i>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="p-4 rounded-3xl bg-emerald-50 border-3 border-emerald-400 flex flex-col justify-between shadow-sm">
+                <div>
+                  <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-black text-sm flex items-center justify-center mb-2">3</span>
+                  <h3 class="heading-font text-xl sm:text-2xl font-black text-emerald-950 mb-1">Active Action</h3>
+                  <p class="text-xs sm:text-sm font-bold text-slate-600 leading-snug">
+                    What did they do together to fix the messy floor and help Mum?
+                  </p>
+                </div>
+                <div class="mt-3 p-2 bg-white rounded-xl text-xs font-black text-emerald-700 text-center border border-emerald-200">
+                  <i>tidied the toys / worked together</i>
+                </div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="p-4 rounded-3xl bg-amber-50 border-3 border-amber-400 flex flex-col justify-between shadow-sm">
+                <div>
+                  <span class="w-8 h-8 rounded-xl bg-amber-600 text-white font-black text-sm flex items-center justify-center mb-2">4</span>
+                  <h3 class="heading-font text-xl sm:text-2xl font-black text-amber-950 mb-1">Moral Lesson</h3>
+                  <p class="text-xs sm:text-sm font-bold text-slate-600 leading-snug">
+                    Did Mum forgive them? What promise did they make for the future?
+                  </p>
+                </div>
+                <div class="mt-3 p-2 bg-white rounded-xl text-xs font-black text-amber-700 text-center border border-amber-200">
+                  <i>Mum smiled / From that day on...</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-7 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                Co-Construct Step 1 (Turning Point) ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 4. Co-Construct Step 1: Turning Point
+      {
+        id: 4,
+        title: "Step 1: The Turning Point",
+        category: "Co-Construction",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-blue-100 text-blue-800 font-black rounded-xl text-xs uppercase tracking-wide">Shared Writing Step 1</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  Step 1: The Sudden Turning Point
+                </h2>
+              </div>
+              <span class="text-3xl">⚡ 🚪</span>
+            </div>
+
+            <div class="my-auto max-w-5xl mx-auto w-full space-y-4">
+              <!-- Live Sentence Construction Box -->
+              <div class="p-4 rounded-2xl bg-blue-50 border-3 border-blue-300">
+                <span class="text-xs font-black uppercase text-blue-700 block mb-1">Class Sentence 1 Preview:</span>
+                <p id="preview-step1" class="text-xl sm:text-2xl font-black text-blue-950 min-h-[3rem] leading-snug flex items-center">
+                  ${sharedWritingState.step1 || '<span class="text-slate-400 font-bold italic">Tap an idea chip below to build Sentence 1 with the class!</span>'}
+                </p>
+              </div>
+
+              <!-- Two Pathway Options -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Pathway A: Heartwarming -->
+                <div class="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <span class="px-2.5 py-0.5 bg-rose-100 text-rose-800 rounded-lg text-xs font-black uppercase">Pathway A: Heartwarming Awakening</span>
+                    <h4 class="font-black text-slate-800 text-base mt-2 mb-1">Mum's Pain Wake-Up:</h4>
+                    <p class="text-xs text-slate-500 font-bold mb-3">Children see Mum crying softly holding her swollen leg.</p>
+                  </div>
+                  <div class="space-y-2">
+                    <button onclick="setStepChip(1, 'Suddenly, Dave and Daisy saw tears in Mum\\'s eyes because her leg hurt badly.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-100 border border-slate-300 font-bold text-xs sm:text-sm text-slate-800 transition cursor-pointer">
+                      💡 "Suddenly, Dave and Daisy saw tears in Mum's eyes because her leg hurt badly."
+                    </button>
+                    <button onclick="setStepChip(1, 'At that moment, they heard Mum groaning painfully on the cold floor.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-100 border border-slate-300 font-bold text-xs sm:text-sm text-slate-800 transition cursor-pointer">
+                      💡 "At that moment, they heard Mum groaning painfully on the cold floor."
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Pathway B: Humorous Karma -->
+                <div class="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-lg text-xs font-black uppercase">Pathway B: Instant Karma</span>
+                    <h4 class="font-black text-slate-800 text-base mt-2 mb-1">Kids Trip Over Toys Too:</h4>
+                    <p class="text-xs text-slate-500 font-bold mb-3">Dave trips over a bat and Daisy slips on a toy block.</p>
+                  </div>
+                  <div class="space-y-2">
+                    <button onclick="setStepChip(1, 'Suddenly, Dave tripped over a baseball bat and crashed onto the floor in pain.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 border border-slate-300 font-bold text-xs sm:text-sm text-slate-800 transition cursor-pointer">
+                      💡 "Suddenly, Dave tripped over a baseball bat and crashed onto the floor in pain."
+                    </button>
+                    <button onclick="setStepChip(1, 'All of a sudden, Daisy stepped on a sharp toy car and yelled in pain!')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 border border-slate-300 font-bold text-xs sm:text-sm text-slate-800 transition cursor-pointer">
+                      💡 "All of a sudden, Daisy stepped on a sharp toy car and yelled in pain!"
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-7 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                Co-Construct Step 2 (Feelings &amp; Dialogue) ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 5. Co-Construct Step 2: Feelings & Direct Speech
+      {
+        id: 5,
+        title: "Step 2: Feelings & Dialogue",
+        category: "Co-Construction",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-purple-100 text-purple-800 font-black rounded-xl text-xs uppercase tracking-wide">Shared Writing Step 2</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  Step 2: Guilt, Speech Marks &amp; Apology
+                </h2>
+              </div>
+              <span class="text-3xl">💬 💔</span>
+            </div>
+
+            <div class="my-auto max-w-5xl mx-auto w-full space-y-4">
+              <!-- Live Sentence Construction Box -->
+              <div class="p-4 rounded-2xl bg-purple-50 border-3 border-purple-300">
+                <span class="text-xs font-black uppercase text-purple-700 block mb-1">Class Sentence 2 Preview:</span>
+                <p id="preview-step2" class="text-xl sm:text-2xl font-black text-purple-950 min-h-[3rem] leading-snug flex items-center">
+                  ${sharedWritingState.step2 || '<span class="text-slate-400 font-bold italic">Tap an emotion & speech chip below to build Sentence 2!</span>'}
+                </p>
+              </div>
+
+              <!-- Punctuation Alert Box -->
+              <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-bold text-amber-950">
+                <span>⚠️ <b>Punctuation Check:</b> Speech marks (<b class="text-lg text-purple-700 font-black">" ... "</b>) must hug what the children actually said!</span>
+                <span class="text-lg">⭐</span>
+              </div>
+
+              <!-- Emotion & Dialogue Chips -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button onclick="setStepChip(2, 'Feeling deeply guilty, they dropped the phone and cried, “We are so sorry, Mum!”')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-purple-600 block mb-1">Option 1: Deep Guilt</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "Feeling deeply guilty, they dropped the phone and cried, “We are so sorry, Mum!”"
+                  </p>
+                </button>
+
+                <button onclick="setStepChip(2, 'They felt deeply ashamed of their selfish behavior, so they rushed to Mum and apologized sincerely.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-purple-600 block mb-1">Option 2: Ashamed</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "They felt deeply ashamed of their selfish behavior, so they rushed to Mum and apologized sincerely."
+                  </p>
+                </button>
+
+                <button onclick="setStepChip(2, 'Immediately, Dave turned off the computer. “Please forgive us, Mum!” they both shouted remorsefully.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-purple-600 block mb-1">Option 3: Quick Action</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "Immediately, Dave turned off the computer. “Please forgive us, Mum!” they both shouted remorsefully."
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-7 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                Co-Construct Step 3 (Action &amp; Tidying) ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 6. Co-Construct Step 3: Taking Action & Teamwork
+      {
+        id: 6,
+        title: "Step 3: Remedial Action",
+        category: "Co-Construction",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-emerald-100 text-emerald-800 font-black rounded-xl text-xs uppercase tracking-wide">Shared Writing Step 3</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  Step 3: Teamwork &amp; Tidying Up
+                </h2>
+              </div>
+              <span class="text-3xl">🧹 📦</span>
+            </div>
+
+            <div class="my-auto max-w-5xl mx-auto w-full space-y-4">
+              <!-- Live Sentence Construction Box -->
+              <div class="p-4 rounded-2xl bg-emerald-50 border-3 border-emerald-300">
+                <span class="text-xs font-black uppercase text-emerald-700 block mb-1">Class Sentence 3 Preview:</span>
+                <p id="preview-step3" class="text-xl sm:text-2xl font-black text-emerald-950 min-h-[3rem] leading-snug flex items-center">
+                  ${sharedWritingState.step3 || '<span class="text-slate-400 font-bold italic">Tap an action chip below to describe how they fixed the mess!</span>'}
+                </p>
+              </div>
+
+              <!-- Action Vocabulary Bank -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button onclick="setStepChip(3, 'Together, the brother and sister picked up every toy car and put them neatly into the big toy box.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-emerald-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-emerald-600 block mb-1">Action 1: Sorting Toys</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "Together, the brother and sister picked up every toy car and put them neatly into the big toy box."
+                  </p>
+                </button>
+
+                <button onclick="setStepChip(3, 'They worked cooperatively as a team, cleared the messy floor, and gently helped Mum to the sofa.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-emerald-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-emerald-600 block mb-1">Action 2: Helping Mum</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "They worked cooperatively as a team, cleared the messy floor, and gently helped Mum to the sofa."
+                  </p>
+                </button>
+
+                <button onclick="setStepChip(3, 'Dave collected the blocks while Daisy swept the floor until the whole living room was spotless.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-emerald-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-emerald-600 block mb-1">Action 3: Spotless Room</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "Dave collected the blocks while Daisy swept the floor until the whole living room was spotless."
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-7 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                Co-Construct Step 4 (Moral &amp; Promise) ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 7. Co-Construct Step 4: Moral Lesson & Future Promise
+      {
+        id: 7,
+        title: "Step 4: The Moral Lesson",
+        category: "Co-Construction",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-amber-100 text-amber-800 font-black rounded-xl text-xs uppercase tracking-wide">Shared Writing Step 4</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  Step 4: Forgiveness &amp; Moral Promise
+                </h2>
+              </div>
+              <span class="text-3xl">❤️ 🌟</span>
+            </div>
+
+            <div class="my-auto max-w-5xl mx-auto w-full space-y-4">
+              <!-- Live Sentence Construction Box -->
+              <div class="p-4 rounded-2xl bg-amber-50 border-3 border-amber-300">
+                <span class="text-xs font-black uppercase text-amber-700 block mb-1">Class Sentence 4 Preview:</span>
+                <p id="preview-step4" class="text-xl sm:text-2xl font-black text-amber-950 min-h-[3rem] leading-snug flex items-center">
+                  ${sharedWritingState.step4 || '<span class="text-slate-400 font-bold italic">Tap an ending chip below to close the story with a lesson!</span>'}
+                </p>
+              </div>
+
+              <!-- Moral Ending Chips -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button onclick="setStepChip(4, 'Seeing the tidy room, Mum smiled warmly and hugged them. From that day on, they always kept their house clean.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-amber-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-amber-600 block mb-1">Ending 1: Warm Hug</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "Seeing the tidy room, Mum smiled warmly and hugged them. From that day on, they always kept their house clean."
+                  </p>
+                </button>
+
+                <button onclick="setStepChip(4, 'Mum forgave them with a gentle smile. From that day on, Dave and Daisy learned to be helpful children.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-amber-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-amber-600 block mb-1">Ending 2: Helpful Children</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "Mum forgave them with a gentle smile. From that day on, Dave and Daisy learned to be helpful children."
+                  </p>
+                </button>
+
+                <button onclick="setStepChip(4, 'In the end, Mum felt touched and thanked them. The children promised never to leave toys on the floor again.')" class="p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-amber-400 shadow-sm text-left transition cursor-pointer">
+                  <span class="text-xs font-black uppercase text-amber-600 block mb-1">Ending 3: Never Again</span>
+                  <p class="text-xs sm:text-sm font-extrabold text-slate-800">
+                    "In the end, Mum felt touched and thanked them. The children promised never to leave toys on the floor again."
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-7 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                Open Master Shared Writing Studio ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 8. Master Shared Writing Studio (Live Paragraph & Word Counter)
+      {
+        id: 8,
+        title: "Master Co-Writing Studio",
+        category: "Live Studio",
+        render: () => {
+          // Pre-populate if steps selected
+          const compiled = [
+            sharedWritingState.step1 || "Suddenly, Dave and Daisy saw tears in Mum's eyes because her leg hurt badly.",
+            sharedWritingState.step2 || "Feeling deeply guilty, they dropped the phone and cried, “We are so sorry, Mum!”",
+            sharedWritingState.step3 || "Together, they picked up every toy car and put them neatly into the big toy box.",
+            sharedWritingState.step4 || "Seeing the clean living room, Mum smiled warmly and hugged them. From that day on, Dave and Daisy always kept their house tidy."
+          ].filter(Boolean).join(" ");
+
+          const wordCount = countWords(compiled);
+
+          return `
+            <div class="h-full flex flex-col justify-between pop-anim">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                <div>
+                  <span class="px-3.5 py-1 bg-indigo-100 text-indigo-800 font-black rounded-xl text-xs uppercase tracking-wide">Live Co-Construction Board</span>
+                  <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                    Master Shared Writing Studio
+                  </h2>
+                </div>
+                
+                <!-- Live Word Count Badge -->
+                <div class="flex items-center gap-2">
+                  <div class="bg-slate-950 px-4 py-1.5 rounded-2xl border border-slate-800 flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-bold uppercase">Word Count:</span>
+                    <span id="live-word-count" class="mono-font text-xl font-black ${wordCount >= 50 ? 'text-emerald-400' : 'text-amber-300'}">
+                      ${wordCount} Words
+                    </span>
+                    <span id="word-goal-pill" class="text-xs px-2 py-0.5 rounded-full font-black ${wordCount >= 50 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                      ${wordCount >= 50 ? '✓ Goal Met (≥50)' : 'Keep Writing (<50)'}
+                    </span>
+                  </div>
+
+                  <button onclick="highlightPastVerbs()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-black text-xs transition cursor-pointer shadow-sm">
+                    🔍 Highlight Verbs
+                  </button>
+                </div>
+              </div>
+
+              <!-- Shared Writing Editable Blackboard Container -->
+              <div class="my-auto max-w-5xl mx-auto w-full space-y-3">
+                <div class="p-5 rounded-3xl bg-slate-900 border-4 border-indigo-500 shadow-2xl relative">
+                  <span class="text-xs font-mono font-black text-indigo-300 uppercase tracking-wider block mb-2">
+                    Picture (4) Class Story Ending:
+                  </span>
+                  
+                  <textarea id="master-writing-area" oninput="updateMasterWordCount(this.value)" rows="5" class="w-full bg-slate-950 text-white font-extrabold text-lg sm:text-xl p-4 rounded-2xl border border-slate-700 focus:outline-none focus:border-indigo-400 leading-relaxed resize-none">${compiled}</textarea>
+                </div>
+
+                <!-- One-Touch Preset Templates for Fast Demonstration -->
+                <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <span class="text-xs font-bold text-slate-600">Quick Model Templates:</span>
+                  <div class="flex gap-2">
+                    <button onclick="loadPresetModel(1)" class="px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-300 text-indigo-700 font-black text-xs rounded-xl shadow-sm cursor-pointer transition">
+                      🌟 Pathway A: Heartwarming (65 Words)
+                    </button>
+                    <button onclick="loadPresetModel(2)" class="px-3 py-1 bg-white hover:bg-amber-50 border border-slate-300 text-amber-700 font-black text-xs rounded-xl shadow-sm cursor-pointer transition">
+                      ⚡ Pathway B: Double Slip (64 Words)
+                    </button>
+                    <button onclick="clearMasterArea()" class="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black text-xs rounded-xl cursor-pointer transition">
+                      🔄 Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-center">
+                <button onclick="nextSlide()" class="px-7 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                  Check Common Grammar Traps ➔
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      },
+
+      // 9. Grammar Clinic (Tense Trap Alarm)
+      {
+        id: 9,
+        title: "Grammar Doctor: Past Tense",
+        category: "Grammar Trap",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-rose-100 text-rose-800 font-black rounded-xl text-xs uppercase tracking-wide">Grammar Doctor • Tense Trap Alarm</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  Common P5 Past Tense Traps!
+                </h2>
+              </div>
+              <span class="text-3xl">🩺 ⏰</span>
+            </div>
+
+            <div class="my-auto max-w-4xl mx-auto w-full space-y-3">
+              <p class="text-center font-extrabold text-slate-600 text-sm">
+                👉 The story happened "Yesterday". Tap each broken verb to heal it with correct past tense:
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Trap 1: feel -->
+                <div onclick="healVerb(this, 'felt')" class="verb-trap-card p-4 rounded-2xl bg-white border-3 border-slate-200 hover:border-rose-400 shadow-sm cursor-pointer flex items-center justify-between transition">
+                  <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase block">Base: feel</span>
+                    <span class="text-xl sm:text-2xl font-black text-slate-800">Dave <span class="trap-word text-rose-600 underline">feeled</span> sorry.</span>
+                  </div>
+                  <span class="heal-badge text-xs font-black px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800">Tap to Fix</span>
+                </div>
+
+                <!-- Trap 2: tidy -->
+                <div onclick="healVerb(this, 'tidied')" class="verb-trap-card p-4 rounded-2xl bg-white border-3 border-slate-200 hover:border-rose-400 shadow-sm cursor-pointer flex items-center justify-between transition">
+                  <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase block">Base: tidy</span>
+                    <span class="text-xl sm:text-2xl font-black text-slate-800">They <span class="trap-word text-rose-600 underline">tidyed</span> the room.</span>
+                  </div>
+                  <span class="heal-badge text-xs font-black px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800">Tap to Fix</span>
+                </div>
+
+                <!-- Trap 3: say -->
+                <div onclick="healVerb(this, 'said')" class="verb-trap-card p-4 rounded-2xl bg-white border-3 border-slate-200 hover:border-rose-400 shadow-sm cursor-pointer flex items-center justify-between transition">
+                  <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase block">Base: say</span>
+                    <span class="text-xl sm:text-2xl font-black text-slate-800">Daisy <span class="trap-word text-rose-600 underline">sayed</span> "sorry".</span>
+                  </div>
+                  <span class="heal-badge text-xs font-black px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800">Tap to Fix</span>
+                </div>
+
+                <!-- Trap 4: forgive -->
+                <div onclick="healVerb(this, 'forgave')" class="verb-trap-card p-4 rounded-2xl bg-white border-3 border-slate-200 hover:border-rose-400 shadow-sm cursor-pointer flex items-center justify-between transition">
+                  <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase block">Base: forgive</span>
+                    <span class="text-xl sm:text-2xl font-black text-slate-800">Mum <span class="trap-word text-rose-600 underline">forgived</span> them.</span>
+                  </div>
+                  <span class="heal-badge text-xs font-black px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800">Tap to Fix</span>
+                </div>
+              </div>
+
+              <!-- Rule Reminder Box -->
+              <div class="p-3 bg-indigo-50 border-2 border-indigo-200 rounded-2xl text-center text-xs sm:text-sm font-bold text-indigo-950">
+                💡 <b>Irregular Verbs:</b> <i>feel ➔ felt</i> | <i>say ➔ said</i> | <i>forgive ➔ forgave</i> | <i>put ➔ put</i> (no 'putted'!)
+              </div>
+            </div>
+
+            <div class="flex justify-center">
+              <button onclick="nextSlide()" class="px-7 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base rounded-xl transition cursor-pointer shadow-md">
+                View Differentiated Worksheets ➔
+              </button>
+            </div>
+          </div>
+        `
+      },
+
+      // 10. Student Writing Time & 3-Point Checklist
+      {
+        id: 13,
+        title: "Independent Writing Time",
+        category: "Writing Launch",
+        render: () => `
+          <div class="h-full flex flex-col justify-between pop-anim">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div>
+                <span class="px-3.5 py-1 bg-emerald-100 text-emerald-800 font-black rounded-xl text-xs uppercase tracking-wide">Ready to Write</span>
+                <h2 class="heading-font text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  Now, It's Your Turn! 📝
+                </h2>
+              </div>
+              <span class="text-3xl">🌟</span>
+            </div>
+
+            <div class="my-auto max-w-5xl mx-auto w-full space-y-4">
+              <!-- Tier Announcement -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-300">
+                  <span class="px-2 py-0.5 bg-emerald-600 text-white rounded-lg text-xs font-black uppercase">🟢 Tier 1 Handout</span>
+                  <h4 class="font-black text-emerald-950 text-sm mt-1">Fill-in-the-Blank Spine</h4>
+                  <p class="text-xs text-slate-600 mt-0.5">Use word bank to complete the 56-word story frame.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-amber-50 border-2 border-amber-300">
+                  <span class="px-2 py-0.5 bg-amber-600 text-white rounded-lg text-xs font-black uppercase">🟡 Tier 2 Handout</span>
+                  <h4 class="font-black text-amber-950 text-sm mt-1">Sentence Builder</h4>
+                  <p class="text-xs text-slate-600 mt-0.5">Answer the 4 guiding questions using past tense verbs.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-purple-50 border-2 border-purple-300">
+                  <span class="px-2 py-0.5 bg-purple-600 text-white rounded-lg text-xs font-black uppercase">🔴 Tier 3 Handout</span>
+                  <h4 class="font-black text-purple-950 text-sm mt-1">Independent Challenge</h4>
+                  <p class="text-xs text-slate-600 mt-0.5">Write ≥60 words with direct speech &amp; descriptive adverbs.</p>
+                </div>
+              </div>
+
+              <!-- 3-Point Peer-Check Stamp -->
+              <div class="p-4 bg-slate-900 text-white rounded-2xl border-3 border-indigo-400 space-y-2">
+                <span class="text-xs font-mono font-black text-indigo-300 uppercase">3-Point Self-Check Stamp:</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm font-bold">
+                  <div class="p-2 bg-slate-800 rounded-xl flex items-center gap-2">
+                    <span class="text-xl">☝️</span>
+                    <span><b>1. Word Count:</b> Count with finger (≥ 50 words!)</span>
+                  </div>
+                  <div class="p-2 bg-slate-800 rounded-xl flex items-center gap-2">
+                    <span class="text-xl">⭕</span>
+                    <span><b>2. Past Tense:</b> Circle 4 verbs (felt, tidied, apologized)</span>
+                  </div>
+                  <div class="p-2 bg-slate-800 rounded-xl flex items-center gap-2">
+                    <span class="text-xl">“ ”</span>
+                    <span><b>3. Speech Marks:</b> Quotation marks around spoken words</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3">
+              <button onclick="goToSlide(10)" class="px-6 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-sm transition cursor-pointer">
+                📝 Re-Open Shared Writing Studio
+              </button>
+              <button onclick="goToSlide(0)" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm transition cursor-pointer shadow-md">
+                🏠 Back to Title
+              </button>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let currentSlide = 0;
+    let isPenActive = false;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'success') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          osc.frequency.setValueAtTime(783.99, now + 0.16);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'tap') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.frequency.setValueAtTime(440, now);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        }
+      } catch (e) {
+        console.warn('Audio not initialized');
+      }
+    }
+
+    function countWords(str) {
+      if (!str || typeof str !== 'string') return 0;
+      return str.trim().split(/\s+/).filter(w => w.length > 0).length;
+    }
+
+    // Step Chip Assignment Handler
+    window.setStepChip = function(stepNum, text) {
+      playSound('tap');
+      sharedWritingState[`step${stepNum}`] = text;
+      const previewEl = document.getElementById(`preview-step${stepNum}`);
+      if (previewEl) {
+        previewEl.innerHTML = text;
+        previewEl.classList.add('pop-anim');
+      }
+    };
+
+    // Master Writing Area Word Counter
+    window.updateMasterWordCount = function(val) {
+      const count = countWords(val);
+      const counterEl = document.getElementById('live-word-count');
+      const pillEl = document.getElementById('word-goal-pill');
+
+      if (counterEl) {
+        counterEl.textContent = `${count} Words`;
+        counterEl.className = `mono-font text-xl font-black ${count >= 50 ? 'text-emerald-400' : 'text-amber-300'}`;
+      }
+      if (pillEl) {
+        pillEl.textContent = count >= 50 ? '✓ Goal Met (≥50)' : 'Keep Writing (<50)';
+        pillEl.className = `text-xs px-2 py-0.5 rounded-full font-black ${count >= 50 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}`;
+      }
+    };
+
+    // Quick Preset Model Loader
+    const presetModels = {
+      1: "Suddenly, Dave and Daisy saw tears in Mum's eyes because her leg hurt badly. They felt deeply guilty about their selfish behavior. Immediately, Dave turned off his computer and Daisy put down her telephone. “We are truly sorry, Mum!” they cried. Together, they picked up all the scattered toys and put them neatly into the toy box. Mum smiled warmly and hugged them. From that day on, the children always tidied up their room without complaining.",
+      2: "Suddenly, Dave ran towards his bedroom but tripped over a baseball bat. Daisy rushed to the telephone and stepped on a sharp toy car! Both of them crashed onto the floor and yelled in pain. Now, they finally understood how Mum felt! Feeling deeply ashamed, they apologized sincerely to Mum. They quickly tidied up the messy room together. From that day on, they never left toys on the floor again."
+    };
+
+    window.loadPresetModel = function(modelNum) {
+      playSound('success');
+      const text = presetModels[modelNum];
+      const area = document.getElementById('master-writing-area');
+      if (area && text) {
+        area.value = text;
+        updateMasterWordCount(text);
+      }
+    };
+
+    window.clearMasterArea = function() {
+      playSound('tap');
+      const area = document.getElementById('master-writing-area');
+      if (area) {
+        area.value = "";
+        updateMasterWordCount("");
+      }
+    };
+
+    // Spotlight Highlighter for Original Worksheet Panel
+    window.highlightWorksheetPanel = function(panelNum) {
+      playSound('tap');
+      const allPanels = document.querySelectorAll('.ws-panel');
+      allPanels.forEach(p => {
+        p.classList.remove('ring-4', 'ring-indigo-500', 'bg-indigo-50/90', 'scale-[1.02]');
+      });
+      const target = document.getElementById(`ws-panel-${panelNum}`);
+      if (target) {
+        target.classList.add('ring-4', 'ring-indigo-500', 'bg-indigo-50/90', 'scale-[1.02]');
+      }
+    };
+
+    // Highlight Past Tense Verbs
+    window.highlightPastVerbs = function() {
+      playSound('tap');
+      alert("Past verbs in story: saw, hurt, felt, turned, put, cried, picked, smiled, hugged, kept, promised!");
+    };
+
+    // Grammar Doctor Healer
+    window.healVerb = function(card, correctVerb) {
+      playSound('success');
+      const trap = card.querySelector('.trap-word');
+      const badge = card.querySelector('.heal-badge');
+      if (trap) {
+        trap.textContent = correctVerb;
+        trap.className = 'trap-word text-emerald-600 font-black';
+      }
+      if (badge) {
+        badge.textContent = '✓ Healed!';
+        badge.className = 'heal-badge text-xs font-black px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 pop-anim';
+      }
+      card.className = 'verb-trap-card p-4 rounded-2xl bg-emerald-50 border-3 border-emerald-400 shadow-sm flex items-center justify-between transition pop-anim';
+    };
+
+    // DOM Elements
+    const activeSlideContainer = document.getElementById('active-slide-container');
+    const slideCounter = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const slideDrawer = document.getElementById('slide-drawer');
+    const drawerSlideList = document.getElementById('drawer-slide-list');
+    const canvas = document.getElementById('drawing-canvas');
+    const ctx = canvas.getContext('2d');
+    const penToggleBtn = document.getElementById('pen-toggle-btn');
+    const penStatusText = document.getElementById('pen-status-text');
+    const penIcon = document.getElementById('pen-icon');
+
+    function renderCurrentSlide() {
+      const slide = slides[currentSlide];
+      activeSlideContainer.innerHTML = slide.render();
+      slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+
+      clearCanvas();
+      updateDrawerSelection();
+    }
+
+    window.nextSlide = function() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        renderCurrentSlide();
+      }
+    };
+
+    window.prevSlide = function() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderCurrentSlide();
+      }
+    };
+
+    window.goToSlide = function(idx) {
+      if (idx >= 0 && idx < slides.length) {
+        currentSlide = idx;
+        renderCurrentSlide();
+        if (!slideDrawer.classList.contains('translate-x-full')) {
+          toggleDrawer();
+        }
+      }
+    };
+
+    window.toggleDrawer = function() {
+      slideDrawer.classList.toggle('translate-x-full');
+    };
+
+    function populateDrawer() {
+      drawerSlideList.innerHTML = '';
+      slides.forEach((s, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-xs sm:text-sm font-bold transition cursor-pointer ${
+          idx === currentSlide
+            ? 'bg-indigo-600 border-indigo-400 text-white font-black shadow-md'
+            : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700'
+        }`;
+        btn.onclick = () => goToSlide(idx);
+        btn.innerHTML = `
+          <span class="truncate"><b>${idx + 1}.</b> ${s.title}</span>
+          <span class="text-[10px] uppercase font-mono ml-2 opacity-75">${s.category}</span>
+        `;
+        drawerSlideList.appendChild(btn);
+      });
+    }
+
+    function updateDrawerSelection() {
+      const buttons = drawerSlideList.querySelectorAll('button');
+      buttons.forEach((btn, idx) => {
+        if (idx === currentSlide) {
+          btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-xs sm:text-sm font-bold transition cursor-pointer bg-indigo-600 border-indigo-400 text-white font-black shadow-md';
+        } else {
+          btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-xs sm:text-sm font-bold transition cursor-pointer bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700';
+        }
+      });
+    }
+
+    // Canvas Pen Tools
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#dc2626';
+    }
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    function startDrawing(e) {
+      if (!isPenActive) return;
+      isDrawing = true;
+      const coords = getCoords(e);
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function draw(e) {
+      if (!isDrawing || !isPenActive) return;
+      const coords = getCoords(e);
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(coords.x, coords.y);
+      ctx.stroke();
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+    }
+
+    window.togglePen = function() {
+      isPenActive = !isPenActive;
+      if (isPenActive) {
+        canvas.classList.remove('pointer-events-none');
+        canvas.classList.add('cursor-crosshair');
+        penToggleBtn.classList.add('bg-rose-600', 'text-white', 'border-rose-400');
+        penToggleBtn.classList.remove('bg-slate-800', 'text-slate-200');
+        penStatusText.textContent = 'Pen Active';
+        penIcon.textContent = '🖊️';
+      } else {
+        canvas.classList.add('pointer-events-none');
+        canvas.classList.remove('cursor-crosshair');
+        penToggleBtn.classList.remove('bg-rose-600', 'text-white', 'border-rose-400');
+        penToggleBtn.classList.add('bg-slate-800', 'text-slate-200');
+        penStatusText.textContent = 'Pen Off';
+        penIcon.textContent = '✏️';
+      }
+    };
+
+    window.clearCanvas = function() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+    };
+
+    canvas.addEventListener('pointerdown', startDrawing);
+    canvas.addEventListener('pointermove', draw);
+    canvas.addEventListener('pointerup', stopDrawing);
+    canvas.addEventListener('pointercancel', stopDrawing);
+
+    window.toggleFullscreen = function() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn('Fullscreen denied:', err);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    };
+
+    // Keyboard Hotkeys
+    window.addEventListener('keydown', (e) => {
+      if (e.target.matches('textarea, input')) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'p') {
+        togglePen();
+      } else if (e.key.toLowerCase() === 'c') {
+        clearCanvas();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      populateDrawer();
+      renderCurrentSlide();
+      resizeCanvas();
+    });
+  </script>
+</body>
+</html>
