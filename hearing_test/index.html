@@ -44,7 +44,7 @@
       100% { transform: scale(2.4); opacity: 0; }
     }
     .sound-ripple {
-      animation: rippleSound 1.4s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
+      animation: rippleSound 1.4s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
     }
     .pop-card {
       animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.25);
@@ -577,6 +577,19 @@
       }
     }
 
+    function clearPlayHighlights() {
+      const playBtn = document.getElementById('play-word-btn');
+      if (playBtn) {
+        playBtn.classList.remove('ring-4', 'ring-purple-400');
+      }
+      const ring = document.getElementById('sound-ring');
+      if (ring) {
+        ring.classList.add('hidden');
+        ring.classList.remove('sound-ripple');
+      }
+      isSpeaking = false;
+    }
+
     function playWordSpeech(word, volumeLevel) {
       if (!('speechSynthesis' in window)) {
         alertFallbackNotice("Speech Synthesis Not Supported", "Your browser does not support native text-to-speech.");
@@ -584,6 +597,7 @@
       }
 
       window.speechSynthesis.cancel();
+      clearPlayHighlights();
 
       // Trigger Radar animation ring
       triggerRadarWaveVisual();
@@ -666,6 +680,12 @@
         ring.classList.remove('hidden', 'sound-ripple');
         void ring.offsetWidth; // Trigger reflow
         ring.classList.add('sound-ripple');
+        const hideRing = () => {
+          ring.classList.add('hidden');
+          ring.classList.remove('sound-ripple');
+          ring.removeEventListener('animationend', hideRing);
+        };
+        ring.addEventListener('animationend', hideRing);
       }
     }
 
@@ -676,6 +696,8 @@
       // Clear previous answer feedback so it does not carry into the next question
       document.getElementById('arena-ticker').innerHTML =
         '👂 Put your hand behind your ear! Listen carefully and tap the secret word!';
+      clearPlayHighlights();
+      window.speechSynthesis?.cancel();
 
       // Update Top Status Pill
       document.getElementById('question-progress').textContent = `${qIdx + 1} / ${hearingQuestions.length}`;
@@ -740,14 +762,22 @@
       const ticker = document.getElementById('arena-ticker');
       const allChoiceBtns = document.querySelectorAll('#choices-grid button');
 
+      // Drop sticky :hover / focus from touch taps so purple hover styles do not linger
+      allChoiceBtns.forEach(b => {
+        if (typeof b.blur === 'function') b.blur();
+      });
+      clearPlayHighlights();
+      window.speechSynthesis?.cancel();
+
       if (chosenWord.toLowerCase() === correctWord.toLowerCase()) {
         // Correct Answer!
         playToneFeedback('correct');
         currentStreak++;
         document.getElementById('streak-counter').textContent = currentStreak;
 
-        btnEl.classList.remove('border-slate-800', 'bg-slate-950');
+        btnEl.classList.remove('border-slate-800', 'bg-slate-950', 'hover:bg-purple-950/70', 'hover:border-purple-500');
         btnEl.classList.add('border-emerald-500', 'bg-emerald-950/70', 'ring-4', 'ring-emerald-400');
+        if (typeof btnEl.blur === 'function') btnEl.blur();
         const icon = btnEl.querySelector('.choice-icon');
         if (icon) icon.textContent = '✅';
 
