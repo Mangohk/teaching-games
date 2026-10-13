@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Grammar Quest: The Blade of IN & WITH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Nunito:wght@700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+    .pixel-font {
+      font-family: 'Press Start 2P', monospace;
+    }
+    .rpg-heading {
+      font-family: 'MedievalSharp', cursive, serif;
+    }
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      15% { transform: translate(-8px, 6px); }
+      30% { transform: translate(8px, -6px); }
+      45% { transform: translate(-6px, -4px); }
+      60% { transform: translate(6px, 4px); }
+      75% { transform: translate(-3px, 2px); }
+    }
+    .shake-effect {
+      animation: screenShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    @keyframes heroSlashAnim {
+      0% { transform: translateX(0) scale(1); }
+      40% { transform: translateX(70px) scale(1.15) rotate(6deg); }
+      100% { transform: translateX(0) scale(1) rotate(0deg); }
+    }
+    .hero-attack {
+      animation: heroSlashAnim 0.35s ease-out;
+    }
+    @keyframes enemyHurtAnim {
+      0% { filter: brightness(1); transform: scale(1); }
+      25% { filter: brightness(3) saturate(0) drop-shadow(0 0 20px #ef4444); transform: translateX(35px) scale(0.92); }
+      50% { filter: brightness(1.5) drop-shadow(0 0 10px #f59e0b); transform: translateX(-15px) scale(0.96); }
+      100% { filter: brightness(1); transform: scale(1); }
+    }
+    .enemy-hurt {
+      animation: enemyHurtAnim 0.45s ease-out;
+    }
+    @keyframes floatFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .idle-float {
+      animation: floatFloat 2.4s ease-in-out infinite;
+    }
+    @keyframes heroFallenAnim {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(35px) rotate(-90deg); opacity: 0.5; filter: grayscale(1); }
+    }
+    .hero-fallen {
+      animation: heroFallenAnim 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes popCritText {
+      0% { opacity: 0; transform: translateY(10px) scale(0.5); }
+      40% { opacity: 1; transform: translateY(-25px) scale(1.3); }
+      100% { opacity: 0; transform: translateY(-55px) scale(1); }
+    }
+    .crit-popup {
+      animation: popCritText 0.85s ease-out forwards;
+    }
+    .giant-phrase {
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-x-hidden">
+
+  <!-- Top RPG HUD Header -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between bg-slate-900/90 border-2 border-amber-500/60 rounded-2xl px-3 sm:px-5 py-2.5 shadow-2xl backdrop-blur-md mb-2">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 flex items-center justify-center text-xl shadow-lg border border-amber-300 no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        ⚔️
+      </a>
+      <div>
+        <h1 class="rpg-heading text-base sm:text-xl font-black text-amber-300 tracking-wide flex items-center gap-2">
+          Grammar Quest <span class="pixel-font text-[9px] text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-600 hidden md:inline">10 REALMS RPG</span>
+        </h1>
+        <p class="text-[11px] text-slate-400 font-bold hidden sm:block">Strike with the correct preposition power to slay the monsters & save the realm!</p>
+      </div>
+    </div>
+
+    <!-- HUD Stats & Quick Toggles -->
+    <div class="flex items-center gap-2 sm:gap-4 text-xs font-black">
+      <!-- Realm Stage Indicator -->
+      <div class="bg-slate-950 px-3 py-1 rounded-xl border border-slate-800 text-center">
+        <span class="block text-[9px] text-slate-400 font-mono">REALM</span>
+        <span id="realm-display" class="pixel-font text-[10px] text-amber-300">1 / 10</span>
+      </div>
+
+      <!-- Score Display -->
+      <div class="bg-slate-950 px-3 py-1 rounded-xl border border-slate-800 text-center">
+        <span class="block text-[9px] text-slate-400 font-mono">EXP POINTS</span>
+        <span id="exp-display" class="pixel-font text-[10px] text-emerald-400">0</span>
+      </div>
+
+      <!-- Combo Streak -->
+      <div class="hidden sm:flex bg-slate-950 px-3 py-1 rounded-xl border border-slate-800 items-center gap-1.5">
+        <span class="text-amber-400">🔥</span>
+        <span id="combo-display" class="pixel-font text-[10px] text-amber-400">x0</span>
+      </div>
+
+      <!-- SFX Toggle -->
+      <button onclick="toggleAudio()" id="audio-btn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer" title="Toggle Sound">
+        🔊
+      </button>
+
+      <!-- Rules Guide Modal Trigger -->
+      <button onclick="openRulesModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 transition active:scale-95 cursor-pointer shadow flex items-center gap-1">
+        📖 <span class="hidden md:inline">Spell Rules</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main RPG Battle Arena -->
+  <main id="battle-viewport" class="w-full max-w-6xl mx-auto flex-1 flex flex-col justify-between bg-slate-900 border-4 border-slate-800 rounded-3xl p-3 sm:p-6 shadow-2xl relative overflow-hidden transition-all my-auto min-h-[580px]">
+    
+    <!-- Dynamic Realm Backdrop Artwork Container -->
+    <div id="realm-bg-layer" class="absolute inset-0 bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 opacity-90 pointer-events-none transition-all duration-700"></div>
+
+    <!-- Battle Stage Top: Arena Ticker & HP Bars -->
+    <div class="relative z-10 w-full flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-950/80 backdrop-blur border border-slate-800 p-3 rounded-2xl mb-2">
+      
+      <!-- Hero Status -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <div class="w-9 h-9 rounded-xl bg-sky-600 flex items-center justify-center text-xl shrink-0 border border-sky-400">
+          🛡️
+        </div>
+        <div class="w-full sm:w-48">
+          <div class="flex justify-between text-[11px] font-black font-mono">
+            <span class="text-sky-300">HERO PALADIN</span>
+            <span id="hero-hp-text" class="text-emerald-400">100 / 100</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700 mt-1">
+            <div id="hero-hp-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-full transition-all duration-300"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Realm Title -->
+      <div class="text-center px-2">
+        <span id="realm-name-title" class="rpg-heading text-base sm:text-xl font-black text-amber-300 tracking-wider">
+          Realm 1: Whispering Woods
+        </span>
+        <span id="boss-warning-badge" class="hidden pixel-font text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded border border-rose-600 ml-2 animate-pulse">
+          BOSS BATTLE!
+        </span>
+      </div>
+
+      <!-- Enemy Status -->
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <div class="w-full sm:w-48 text-right">
+          <div class="flex justify-between text-[11px] font-black font-mono">
+            <span id="enemy-name-label" class="text-rose-300">Thorn Goblin</span>
+            <span id="enemy-hp-text" class="text-rose-400">100 / 100</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700 mt-1">
+            <div id="enemy-hp-bar" class="h-full bg-gradient-to-r from-rose-500 to-red-600 w-full transition-all duration-300"></div>
+          </div>
+        </div>
+        <div class="w-9 h-9 rounded-xl bg-rose-600 flex items-center justify-center text-xl shrink-0 border border-rose-400">
+          👾
+        </div>
+      </div>
+    </div>
+
+    <!-- Battle Stage Middle: Character Clash Arena with Buttons BEHIND Hero -->
+    <div class="relative z-10 w-full flex-1 flex flex-col md:flex-row items-center justify-between my-2 sm:my-3 px-2 sm:px-6 gap-4">
+      
+      <!-- HERO ZONE (Left Side): Hero flanked and backed by the "IN" and "WITH" Weapon Sigil Buttons -->
+      <div class="flex flex-col sm:flex-row items-center gap-3 relative order-2 md:order-1">
+        
+        <!-- Action Buttons Behind & Flanking the Hero -->
+        <div class="flex flex-row sm:flex-col gap-2.5 z-0">
+          <!-- WEAPON 1: "IN" STRIKE (Placed behind hero) -->
+          <button onclick="handleHeroAttack('in')" class="group relative p-2.5 sm:p-3.5 w-36 sm:w-44 rounded-2xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-900 border-3 border-emerald-500 hover:border-emerald-300 active:scale-95 transition cursor-pointer shadow-xl flex flex-col items-center justify-center text-center">
+            <div class="flex items-center gap-1.5 mb-0.5">
+              <span class="text-xl sm:text-2xl group-hover:scale-125 transition-transform">🛡️</span>
+              <span class="rpg-heading text-xl sm:text-2xl font-black text-emerald-400">
+                IN
+              </span>
+            </div>
+            <span class="text-[11px] sm:text-xs font-black text-slate-100">
+              Armor &amp; Footwear
+            </span>
+            <span class="text-[9px] text-emerald-300 font-mono opacity-80">
+              [ suit, vest, jeans ]
+            </span>
+            <span class="pixel-font text-[7px] text-emerald-400 mt-0.5 opacity-70">
+              KEY: [ ← ] or [ I ]
+            </span>
+          </button>
+
+          <!-- WEAPON 2: "WITH" SLASH (Placed behind hero) -->
+          <button onclick="handleHeroAttack('with')" class="group relative p-2.5 sm:p-3.5 w-36 sm:w-44 rounded-2xl bg-gradient-to-br from-sky-950 via-sky-900 to-slate-900 border-3 border-sky-500 hover:border-sky-300 active:scale-95 transition cursor-pointer shadow-xl flex flex-col items-center justify-center text-center">
+            <div class="flex items-center gap-1.5 mb-0.5">
+              <span class="text-xl sm:text-2xl group-hover:scale-125 transition-transform">⚔️</span>
+              <span class="rpg-heading text-xl sm:text-2xl font-black text-sky-400">
+                WITH
+              </span>
+            </div>
+            <span class="text-[11px] sm:text-xs font-black text-slate-100">
+              Body, Skin &amp; Items
+            </span>
+            <span class="text-[9px] text-sky-300 font-mono opacity-80">
+              [ plait, skin, watch ]
+            </span>
+            <span class="pixel-font text-[7px] text-sky-400 mt-0.5 opacity-70">
+              KEY: [ → ] or [ W ]
+            </span>
+          </button>
+        </div>
+
+        <!-- HERO SPRITE (Foreground, in front of the buttons) -->
+        <div id="hero-avatar-box" class="flex flex-col items-center relative z-10 transition-transform -ml-2 sm:-ml-4">
+          <!-- Floating Combat Damage Text Anchor -->
+          <div id="hero-damage-anchor" class="absolute -top-10 text-2xl font-black text-rose-400 pointer-events-none"></div>
+
+          <div class="w-32 h-32 sm:w-44 sm:h-44 flex items-center justify-center idle-float">
+            <!-- Hero SVG Character -->
+            <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_20px_rgba(56,189,248,0.45)]">
+              <!-- Cape -->
+              <path d="M35 38 L15 88 L45 80 Z" fill="#2563EB"/>
+              <!-- Body Armor -->
+              <rect x="36" y="38" width="28" height="34" rx="6" fill="#0284C7" stroke="#38BDF8" stroke-width="2.5"/>
+              <!-- Golden Chest Crest -->
+              <polygon points="50,44 44,52 50,60 56,52" fill="#FACC15"/>
+              <!-- Shield (IN Power) -->
+              <path d="M22 45 Q22 75 35 85 Q40 75 40 45 Z" fill="#059669" stroke="#34D399" stroke-width="2"/>
+              <text x="31" y="65" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">IN</text>
+              <!-- Glowing Sword (WITH Power) -->
+              <path d="M68 55 L88 28 L94 34 L74 61 Z" fill="#F8FAFC" stroke="#38BDF8" stroke-width="2"/>
+              <circle cx="71" cy="58" r="4" fill="#F59E0B"/>
+              <!-- Head & Helmet -->
+              <circle cx="50" cy="26" r="14" fill="#FED7AA"/>
+              <path d="M36 24 C36 10 64 10 64 24 L64 28 L36 28 Z" fill="#475569" stroke="#94A3B8" stroke-width="2"/>
+              <rect x="42" y="22" width="16" height="4" rx="2" fill="#0F172A"/>
+              <!-- Legs & Boots -->
+              <rect x="39" y="72" width="9" height="18" rx="3" fill="#1E293B"/>
+              <rect x="52" y="72" width="9" height="18" rx="3" fill="#1E293B"/>
+            </svg>
+          </div>
+          <span class="pixel-font text-[9px] text-sky-400 bg-sky-950 px-2 py-0.5 rounded border border-sky-800 mt-1 shadow">
+            PALADIN
+          </span>
+        </div>
+
+      </div>
+
+      <!-- VS Clash Indicator -->
+      <div class="flex flex-col items-center justify-center pointer-events-none order-1 md:order-2 my-1">
+        <span class="pixel-font text-sm text-amber-400/90 animate-pulse bg-slate-950 px-2 py-1 rounded-lg border border-amber-500/40">⚔️ VS ⚔️</span>
+      </div>
+
+      <!-- ENEMY MONSTER SPRITE (Right Side) -->
+      <div id="enemy-avatar-box" class="flex flex-col items-center relative transition-transform order-3">
+        <!-- Floating Monster Damage Text Anchor -->
+        <div id="enemy-damage-anchor" class="absolute -top-10 text-2xl font-black text-amber-300 pointer-events-none"></div>
+
+        <div id="enemy-svg-container" class="w-32 h-32 sm:w-44 sm:h-44 flex items-center justify-center idle-float">
+          <!-- Dynamically Injected Monster SVG based on Realm -->
+        </div>
+        <span id="enemy-level-tag" class="pixel-font text-[9px] text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800 mt-1 shadow">
+          THORN GOBLIN
+        </span>
+      </div>
+
+    </div>
+
+    <!-- Battle Stage Bottom: 2 TIMES BIGGER TARGET PROMPT CARD -->
+    <div class="relative z-10 w-full flex flex-col items-center gap-2 mt-2">
+      
+      <!-- Monster Attack Incoming Card with 2X BIGGER WORDS -->
+      <div id="challenge-prompt-card" class="w-full max-w-4xl bg-slate-950/95 border-4 border-amber-500/80 rounded-3xl p-5 sm:p-7 shadow-2xl text-center relative overflow-hidden transition-all duration-200">
+        <span id="card-type-pill" class="text-xs sm:text-sm font-mono font-black uppercase text-amber-300 bg-amber-950 px-4 py-1 rounded-full border border-amber-500 mb-1 inline-block">
+          CLOTHING OR TRAIT?
+        </span>
+
+        <p class="text-xs sm:text-sm font-extrabold text-slate-400 mt-1">
+          The monster attacks with this description:
+        </p>
+
+        <!-- Huge Question Target Word (2 TIMES BIGGER: 4xl to 8xl!) -->
+        <div class="my-2 sm:my-3 flex items-center justify-center gap-3">
+          <span class="text-3xl sm:text-5xl lg:text-6xl text-amber-400 font-mono font-black animate-pulse">[ ? ]</span>
+          <h2 id="target-phrase-text" class="rpg-heading text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-wide giant-phrase leading-tight">
+            a suit
+          </h2>
+        </div>
+
+        <p id="target-hint-text" class="text-sm sm:text-base font-extrabold text-slate-300 italic">
+          Does your hero step INSIDE this, or is it on the BODY / CARRIED?
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: Grammar Spell Rules Book -->
+  <div id="rules-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-slate-900 border-3 border-amber-400 text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl flex flex-col justify-between max-h-[90vh]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-3xl">📜</span>
+          <div>
+            <h3 class="rpg-heading text-xl sm:text-2xl font-black text-white">The Arch-Mage's Spellbook</h3>
+            <p class="text-xs text-amber-300 font-bold">The Golden Rules of 'IN' and 'WITH'</p>
+          </div>
+        </div>
+        <button onclick="closeRulesModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="my-4 overflow-y-auto space-y-4 pr-1 text-xs sm:text-sm">
+        <!-- Rule 1: IN -->
+        <div class="p-3.5 rounded-2xl bg-emerald-950/80 border-2 border-emerald-500/80 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="rpg-heading text-lg font-black text-emerald-300">
+              1. The Shield of 'IN' (Clothing &amp; Footwear)
+            </span>
+            <span class="pixel-font text-[9px] bg-emerald-800 text-white px-2 py-0.5 rounded">ARMOR</span>
+          </div>
+          <p class="font-bold text-slate-200">
+            Cast <b class="text-emerald-400">IN</b> when the person's body steps <b>inside</b> the clothing:
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 font-extrabold text-slate-300 text-xs pt-1">
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in a suit</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in a vest</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in a jacket</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in a jumper</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in jeans</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in high-heels</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in sandals</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-emerald-800">• in a dress</span>
+          </div>
+        </div>
+
+        <!-- Rule 2: WITH -->
+        <div class="p-3.5 rounded-2xl bg-sky-950/80 border-2 border-sky-500/80 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="rpg-heading text-lg font-black text-sky-300">
+              2. The Blade of 'WITH' (Body Parts, Skin &amp; Carried Items)
+            </span>
+            <span class="pixel-font text-[9px] bg-sky-800 text-white px-2 py-0.5 rounded">RELICS</span>
+          </div>
+          <p class="font-bold text-slate-200">
+            Cast <b class="text-sky-400">WITH</b> for physical body traits, hairstyles, skin complexion, and gear worn on the wrist/face or carried by hand:
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 font-extrabold text-slate-300 text-xs pt-1">
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with a plait</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with curly hair</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with a beard</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with fair skin</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with tanned skin</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with glasses</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with a backpack</span>
+            <span class="bg-slate-900 p-1.5 rounded-lg border border-sky-800">• with bracelets</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-800 flex justify-end">
+        <button onclick="closeRulesModal()" class="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition cursor-pointer shadow-md">
+          Back to Battle ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GAME OVER (Hero HP reached 0!) -->
+  <div id="gameover-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-rose-950 via-slate-900 to-black border-4 border-rose-600 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+      <!-- Skull Icon -->
+      <div class="text-6xl sm:text-7xl mb-2 animate-bounce">💀⚔️💔</div>
+
+      <span class="pixel-font text-[10px] text-rose-400 bg-rose-950 px-3 py-1 rounded-full border border-rose-600 inline-block mb-2">
+        HP DEPLETED TO ZERO!
+      </span>
+
+      <h2 class="rpg-heading text-3xl sm:text-5xl font-black text-rose-500 mb-2 leading-tight">
+        THE HERO HAS FALLEN!
+      </h2>
+
+      <p class="text-xs sm:text-sm font-bold text-slate-300 leading-relaxed mb-4">
+        The monsters of the realm overwhelmed your defenses! But a true Paladin never gives up. Revive your hero and strike with correct grammar!
+      </p>
+
+      <!-- Combat Statistics Record on Defeat -->
+      <div class="bg-slate-950/90 p-4 rounded-2xl border-2 border-rose-500/40 space-y-2 text-left text-xs sm:text-sm font-bold mb-5 shadow-inner">
+        <div class="flex justify-between border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">Realm Reached:</span>
+          <span id="gameover-realm-text" class="text-amber-400 font-mono font-black">Realm 1 / 10</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">Total EXP Earned:</span>
+          <span id="gameover-exp-text" class="text-emerald-400 font-mono font-black">0 EXP</span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-slate-400">Revival Spell:</span>
+          <span class="rpg-heading text-sky-300 font-black text-base">
+            Phoenix Resurrection ✨
+          </span>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="reviveHero()" class="px-7 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm rounded-2xl shadow-xl transition active:scale-95 cursor-pointer">
+          Revive Hero (Restore 100 HP) 💖
+        </button>
+        <button onclick="restartFullQuest()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm rounded-2xl transition cursor-pointer">
+          Restart from Realm 1 🔄
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VICTORY CEREMONY (World Saved!) -->
+  <div id="victory-modal" class="fixed inset-0 bg-slate-950/92 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-indigo-950 via-slate-900 to-amber-950 border-4 border-amber-400 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+      <!-- Watermark Badge -->
+      <div class="text-6xl sm:text-7xl mb-2 animate-bounce">🏆🌍✨</div>
+
+      <span class="pixel-font text-[10px] text-amber-400 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-600 inline-block mb-2">
+        ALL 10 REALMS CONQUERED!
+      </span>
+
+      <h2 class="rpg-heading text-3xl sm:text-5xl font-black text-amber-300 mb-2 leading-tight">
+        THE WORLD IS SAVED!
+      </h2>
+
+      <p class="text-xs sm:text-sm font-bold text-slate-300 leading-relaxed mb-4">
+        You defeated all 10 monsters including the Chaos Overlord! The people of all realms will forever celebrate your mastery of <b class="text-emerald-400">IN</b> and <b class="text-sky-400">WITH</b>!
+      </p>
+
+      <!-- Combat Statistics Record -->
+      <div class="bg-slate-950/90 p-4 rounded-2xl border-2 border-amber-500/50 space-y-2.5 text-left text-xs sm:text-sm font-bold mb-5 shadow-inner">
+        <div class="flex justify-between border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">Monsters Vanquished:</span>
+          <span class="text-white font-mono font-black">10 / 10 Bosses Slain</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">Total EXP Earned:</span>
+          <span id="final-exp-text" class="text-amber-400 font-mono font-black">5,800 EXP</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">Hero Status:</span>
+          <span class="text-emerald-400 font-mono font-black">Living Legend of 10 Realms</span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-slate-400">Awarded Title:</span>
+          <span class="rpg-heading text-amber-300 font-black text-base sm:text-lg">
+            Sovereign Grammar God 👑✨
+          </span>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="restartFullQuest()" class="px-7 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-sm rounded-2xl shadow-xl transition active:scale-95 cursor-pointer">
+          Play Again 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME LOGIC SCRIPT -->
+  <script>
+    // Web Audio Synthesizer for Retro Combat Sounds
+    let audioCtx = null;
+    let isMuted = false;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playRpgSound(type) {
+      if (isMuted) return;
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'hit_correct') {
+          // Sharp critical blade strike + magic chime
+          const osc1 = actx.createOscillator();
+          const gain1 = actx.createGain();
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(600, now);
+          osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.12);
+          gain1.gain.setValueAtTime(0.25, now);
+          gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc1.connect(gain1);
+          gain1.connect(actx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.25);
+
+          const osc2 = actx.createOscillator();
+          const gain2 = actx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(1046.50, now + 0.08);
+          gain2.gain.setValueAtTime(0.2, now + 0.08);
+          gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+          osc2.connect(gain2);
+          gain2.connect(actx.destination);
+          osc2.start(now + 0.08);
+          osc2.stop(now + 0.4);
+
+        } else if (type === 'hit_wrong') {
+          // Hero hurt heavy blunt thud
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(75, now + 0.3);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+
+        } else if (type === 'game_over') {
+          // Mournful defeat descending drone
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(50, now + 0.8);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.8);
+
+        } else if (type === 'monster_death') {
+          // Explosion rumble
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(40, now + 0.45);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.45);
+
+        } else if (type === 'victory_fanfare') {
+          // Royal triumphant fanfare notes
+          const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+          notes.forEach((freq, idx) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+            gain.gain.setValueAtTime(0.22, now + idx * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (idx + 1) * 0.12 + 0.25);
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.start(now + idx * 0.12);
+            osc.stop(now + (idx + 1) * 0.12 + 0.25);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio not initialized yet');
+      }
+    }
+
+    // 10 Progressive Realm Stages & Monsters
+    const realmsData = [
+      {
+        realmNum: 1,
+        realmName: "Realm 1: Whispering Woods",
+        bgClass: "from-emerald-950 via-slate-900 to-slate-950",
+        enemyName: "Thorn Goblin",
+        enemyMaxHp: 80,
+        damagePerHit: 40,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(34,197,94,0.4)]">
+          <ellipse cx="50" cy="55" rx="22" ry="25" fill="#15803D" stroke="#166534" stroke-width="2.5"/>
+          <polygon points="28,42 12,30 26,50" fill="#22C55E"/>
+          <polygon points="72,42 88,30 74,50" fill="#22C55E"/>
+          <circle cx="42" cy="48" r="6" fill="#FACC15"/>
+          <circle cx="58" cy="48" r="6" fill="#FACC15"/>
+          <circle cx="43" cy="48" r="2.5" fill="#0F172A"/>
+          <circle cx="57" cy="48" r="2.5" fill="#0F172A"/>
+          <path d="M40 64 Q50 72 60 64" stroke="#0F172A" stroke-width="2.5" fill="none"/>
+          <polygon points="45,64 47,69 49,64" fill="#FFFFFF"/>
+          <polygon points="51,64 53,69 55,64" fill="#FFFFFF"/>
+          <rect x="70" y="45" width="8" height="28" rx="3" fill="#78350F" transform="rotate(25 70 45)"/>
+        </svg>`
+      },
+      {
+        realmNum: 2,
+        realmName: "Realm 2: Haunted Ruins",
+        bgClass: "from-purple-950 via-slate-900 to-slate-950",
+        enemyName: "Skeleton Knight",
+        enemyMaxHp: 80,
+        damagePerHit: 40,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(168,85,247,0.4)]">
+          <circle cx="50" cy="42" r="18" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2"/>
+          <ellipse cx="44" cy="40" rx="4" ry="5" fill="#0F172A"/>
+          <ellipse cx="56" cy="40" rx="4" ry="5" fill="#0F172A"/>
+          <circle cx="44" cy="40" r="1.5" fill="#A855F7"/>
+          <circle cx="56" cy="40" r="1.5" fill="#A855F7"/>
+          <rect x="44" y="52" width="12" height="6" fill="#0F172A"/>
+          <line x1="47" y1="52" x2="47" y2="58" stroke="#FFFFFF" stroke-width="1.5"/>
+          <line x1="50" y1="52" x2="50" y2="58" stroke="#FFFFFF" stroke-width="1.5"/>
+          <line x1="53" y1="52" x2="53" y2="58" stroke="#FFFFFF" stroke-width="1.5"/>
+          <rect x="42" y="62" width="16" height="22" rx="4" fill="#64748B"/>
+          <line x1="36" y1="66" x2="64" y2="66" stroke="#F8FAFC" stroke-width="2.5"/>
+          <line x1="38" y1="72" x2="62" y2="72" stroke="#F8FAFC" stroke-width="2.5"/>
+          <line x1="40" y1="78" x2="60" y2="78" stroke="#F8FAFC" stroke-width="2.5"/>
+          <line x1="72" y1="30" x2="72" y2="85" stroke="#E2E8F0" stroke-width="3"/>
+          <polygon points="72,20 68,32 76,32" fill="#CBD5E1"/>
+        </svg>`
+      },
+      {
+        realmNum: 3,
+        realmName: "Realm 3: Crystal Caverns",
+        bgClass: "from-cyan-950 via-slate-900 to-slate-950",
+        enemyName: "Armored Golem",
+        enemyMaxHp: 90,
+        damagePerHit: 45,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(6,182,212,0.45)]">
+          <polygon points="50,22 75,38 70,78 30,78 25,38" fill="#475569" stroke="#06B6D4" stroke-width="3"/>
+          <polygon points="50,42 42,54 50,66 58,54" fill="#22D3EE"/>
+          <circle cx="50" cy="54" r="3" fill="#FFFFFF"/>
+          <rect x="40" y="34" width="7" height="4" rx="1" fill="#67E8F9"/>
+          <rect x="53" y="34" width="7" height="4" rx="1" fill="#67E8F9"/>
+          <circle cx="20" cy="62" r="10" fill="#334155" stroke="#0891B2" stroke-width="2"/>
+          <circle cx="80" cy="62" r="10" fill="#334155" stroke="#0891B2" stroke-width="2"/>
+        </svg>`
+      },
+      {
+        realmNum: 4,
+        realmName: "Realm 4: Magma Peak",
+        bgClass: "from-orange-950 via-slate-900 to-slate-950",
+        enemyName: "Crimson Drake",
+        enemyMaxHp: 90,
+        damagePerHit: 45,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(249,115,22,0.5)]">
+          <path d="M50 45 Q20 20 5 35 Q20 60 50 55" fill="#B91C1C"/>
+          <path d="M50 45 Q80 20 95 35 Q80 60 50 55" fill="#B91C1C"/>
+          <path d="M38 48 Q50 32 62 48 Q50 72 38 48 Z" fill="#DC2626" stroke="#F97316" stroke-width="2.5"/>
+          <path d="M42 36 L34 22 L45 28 Z" fill="#78350F"/>
+          <path d="M58 36 L66 22 L55 28 Z" fill="#78350F"/>
+          <circle cx="46" cy="46" r="3" fill="#FACC15"/>
+          <circle cx="54" cy="46" r="3" fill="#FACC15"/>
+          <circle cx="50" cy="62" r="4" fill="#F97316"/>
+          <circle cx="50" cy="62" r="2" fill="#FEF08A"/>
+        </svg>`
+      },
+      {
+        realmNum: 5,
+        realmName: "Realm 5: Frozen Abyss",
+        bgClass: "from-blue-950 via-slate-900 to-slate-950",
+        enemyName: "Frost Wyrm",
+        enemyMaxHp: 100,
+        damagePerHit: 50,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(56,189,248,0.5)]">
+          <path d="M25 40 Q50 15 75 40 Q85 70 50 85 Q15 70 25 40 Z" fill="#0284C7" stroke="#38BDF8" stroke-width="2.5"/>
+          <polygon points="50,15 45,28 55,28" fill="#E0F2FE"/>
+          <polygon points="30,28 35,38 25,38" fill="#BAE6FD"/>
+          <polygon points="70,28 65,38 75,38" fill="#BAE6FD"/>
+          <ellipse cx="40" cy="48" rx="4" ry="6" fill="#F0F9FF"/>
+          <ellipse cx="60" cy="48" rx="4" ry="6" fill="#F0F9FF"/>
+          <circle cx="40" cy="48" r="2" fill="#0369A1"/>
+          <circle cx="60" cy="48" r="2" fill="#0369A1"/>
+          <polygon points="45,65 50,75 55,65" fill="#FFFFFF"/>
+        </svg>`
+      },
+      {
+        realmNum: 6,
+        realmName: "Realm 6: Poison Swamp",
+        bgClass: "from-lime-950 via-slate-900 to-slate-950",
+        enemyName: "Venom Hydra",
+        enemyMaxHp: 100,
+        damagePerHit: 50,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(132,204,22,0.5)]">
+          <path d="M30 75 Q35 45 40 30 Q45 20 50 30 Q55 45 60 75 Z" fill="#4D7C0F"/>
+          <circle cx="35" cy="35" r="10" fill="#65A30D" stroke="#84CC16" stroke-width="2"/>
+          <circle cx="50" cy="25" r="11" fill="#4D7C0F" stroke="#84CC16" stroke-width="2"/>
+          <circle cx="65" cy="35" r="10" fill="#65A30D" stroke="#84CC16" stroke-width="2"/>
+          <circle cx="33" cy="33" r="2" fill="#FACC15"/>
+          <circle cx="50" cy="23" r="2.5" fill="#FACC15"/>
+          <circle cx="67" cy="33" r="2" fill="#FACC15"/>
+          <path d="M48 30 L52 30 L50 36 Z" fill="#DC2626"/>
+        </svg>`
+      },
+      {
+        realmNum: 7,
+        realmName: "Realm 7: Thunder Spire",
+        bgClass: "from-yellow-950 via-slate-900 to-slate-950",
+        enemyName: "Storm Griffin",
+        enemyMaxHp: 110,
+        damagePerHit: 55,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(234,179,8,0.5)]">
+          <path d="M50 40 Q25 15 10 35 Q30 55 50 50" fill="#CA8A04"/>
+          <path d="M50 40 Q75 15 90 35 Q70 55 50 50" fill="#CA8A04"/>
+          <circle cx="50" cy="40" r="15" fill="#EAB308" stroke="#FDE047" stroke-width="2"/>
+          <polygon points="50,42 42,52 50,48" fill="#F97316"/>
+          <circle cx="45" cy="36" r="3" fill="#0F172A"/>
+          <circle cx="46" cy="36" r="1" fill="#FFFFFF"/>
+          <polygon points="50,15 46,25 54,25" fill="#FACC15"/>
+        </svg>`
+      },
+      {
+        realmNum: 8,
+        realmName: "Realm 8: Cursed Graveyard",
+        bgClass: "from-violet-950 via-slate-900 to-slate-950",
+        enemyName: "Shadow Lich",
+        enemyMaxHp: 110,
+        damagePerHit: 55,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(139,92,246,0.6)]">
+          <path d="M35 30 Q50 15 65 30 L75 80 L25 80 Z" fill="#3B0764" stroke="#8B5CF6" stroke-width="2.5"/>
+          <circle cx="50" cy="38" r="10" fill="#1E1B4B"/>
+          <circle cx="46" cy="36" r="2.5" fill="#C084FC"/>
+          <circle cx="54" cy="36" r="2.5" fill="#C084FC"/>
+          <polygon points="46,24 50,15 54,24" fill="#FACC15"/>
+          <circle cx="70" cy="55" r="5" fill="#C084FC"/>
+        </svg>`
+      },
+      {
+        realmNum: 9,
+        realmName: "Realm 9: Void Nether",
+        bgClass: "from-fuchsia-950 via-slate-900 to-black",
+        enemyName: "Chaos Behemoth",
+        enemyMaxHp: 120,
+        damagePerHit: 60,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_15px_rgba(217,70,239,0.7)]">
+          <polygon points="50,20 80,45 70,82 30,82 20,45" fill="#701A75" stroke="#D946EF" stroke-width="3"/>
+          <polygon points="32,28 20,15 35,22" fill="#F43F5E"/>
+          <polygon points="68,28 80,15 65,22" fill="#F43F5E"/>
+          <circle cx="42" cy="45" r="4" fill="#FDE047"/>
+          <circle cx="58" cy="45" r="4" fill="#FDE047"/>
+          <rect x="44" y="60" width="12" height="4" fill="#0F172A"/>
+        </svg>`
+      },
+      {
+        realmNum: 10,
+        realmName: "Final Realm: Sovereign Citadel",
+        bgClass: "from-rose-950 via-slate-900 to-black",
+        enemyName: "The Chaos Overlord",
+        enemyMaxHp: 150,
+        damagePerHit: 50, // 3 boss questions to save the world!
+        isBoss: true,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_25px_rgba(244,63,94,0.85)]">
+          <polygon points="50,15 36,28 64,28" fill="#881337"/>
+          <polygon points="28,26 20,12 36,22" fill="#E11D48"/>
+          <polygon points="72,26 80,12 64,22" fill="#E11D48"/>
+          <path d="M50 26 Q75 45 80 88 L20 88 Q25 45 50 26 Z" fill="#0F172A" stroke="#E11D48" stroke-width="3"/>
+          <circle cx="43" cy="42" r="5" fill="#FB7185"/>
+          <circle cx="57" cy="42" r="5" fill="#FB7185"/>
+          <circle cx="43" cy="42" r="2" fill="#FFFFFF"/>
+          <circle cx="57" cy="42" r="2" fill="#FFFFFF"/>
+          <circle cx="50" cy="64" r="12" fill="#4C0519" stroke="#FDA4AF" stroke-width="2"/>
+          <circle cx="50" cy="64" r="7" fill="#F43F5E"/>
+        </svg>`
+      }
+    ];
+
+    // Target Vocabulary Database (Simplified for P5 students: mostly base nouns with only simple adjectives)
+    const vocabDatabase = [
+      // Clothes & Footwear ('in')
+      { word: "a suit", prep: "in", type: "Clothing", hint: "Jacket and pants you wear" },
+      { word: "a vest", prep: "in", type: "Clothing", hint: "Top worn on your body" },
+      { word: "a jacket", prep: "in", type: "Clothing", hint: "Coat you put on" },
+      { word: "a blue jacket", prep: "in", type: "Clothing", hint: "Warm coat you wear" },
+      { word: "a jumper", prep: "in", type: "Clothing", hint: "Warm sweater you wear" },
+      { word: "jeans", prep: "in", type: "Clothing", hint: "Pants worn on your legs" },
+      { word: "high-heels", prep: "in", type: "Footwear", hint: "Shoes you step inside" },
+      { word: "sandals", prep: "in", type: "Footwear", hint: "Open summer shoes on feet" },
+      { word: "gloves", prep: "in", type: "Handwear", hint: "Clothing for your hands" },
+      { word: "mittens", prep: "in", type: "Handwear", hint: "Warm coverings for hands" },
+      { word: "a dress", prep: "in", type: "Clothing", hint: "Outfit you wear on your body" },
+      { word: "a pink dress", prep: "in", type: "Clothing", hint: "Outfit you wear" },
+      { word: "a hat", prep: "in", type: "Clothing", hint: "Item worn on your head" },
+      { word: "a tie", prep: "in", type: "Clothing", hint: "Neckwear worn with a shirt" },
+      { word: "a bow tie", prep: "in", type: "Clothing", hint: "Small bow worn at the neck" },
+
+      // Body parts, hair & skin ('with')
+      { word: "a plait", prep: "with", type: "Hair / Body", hint: "Braided hair on the head" },
+      { word: "curly hair", prep: "with", type: "Hair / Body", hint: "Hair with curls on the head" },
+      { word: "straight hair", prep: "with", type: "Hair / Body", hint: "Hair growing on the head" },
+      { word: "a beard", prep: "with", type: "Face / Body", hint: "Hair on the chin" },
+      { word: "a moustache", prep: "with", type: "Face / Body", hint: "Hair above the lip" },
+      { word: "fair skin", prep: "with", type: "Skin / Body", hint: "Light skin tone" },
+      { word: "tanned skin", prep: "with", type: "Skin / Body", hint: "Sun-kissed skin tone" },
+      { word: "dark skin", prep: "with", type: "Skin / Body", hint: "Rich brown skin tone" },
+      { word: "big ears", prep: "with", type: "Body Part", hint: "Ears on the head" },
+      { word: "a round face", prep: "with", type: "Body Part", hint: "Shape of the face" },
+
+      // Accessories & objects ('with')
+      { word: "bracelets", prep: "with", type: "Accessory", hint: "Bands on the wrist" },
+      { word: "earrings", prep: "with", type: "Accessory", hint: "Jewelry on the ears" },
+      { word: "a backpack", prep: "with", type: "Carried Object", hint: "Bag carried on the back" },
+      { word: "glasses", prep: "with", type: "Accessory", hint: "Worn on the face for seeing" },
+      { word: "sunglasses", prep: "with", type: "Accessory", hint: "Worn over eyes for the sun" },
+      { word: "a watch", prep: "with", type: "Accessory", hint: "Strapped on the wrist" },
+      { word: "an umbrella", prep: "with", type: "Carried Object", hint: "Held in hand for rain" },
+      { word: "a handkerchief", prep: "with", type: "Carried Object", hint: "Small cloth held in hand" }
+    ];
+
+    // Game Active State
+    let currentRealmIdx = 0;
+    let heroHp = 100;
+    let enemyHp = 80;
+    let totalExp = 0;
+    let comboStreak = 0;
+    let currentQuestionItem = null;
+    let isAttackingLocked = false;
+    let questionsDeck = [];
+
+    // Initialize full quest
+    function initGameQuest() {
+      currentRealmIdx = 0;
+      heroHp = 100;
+      totalExp = 0;
+      comboStreak = 0;
+      
+      const heroAvatar = document.getElementById('hero-avatar-box');
+      if (heroAvatar) heroAvatar.classList.remove('hero-fallen');
+
+      updateHudDisplays();
+      setupCurrentRealm();
+    }
+
+    function setupCurrentRealm() {
+      const realm = realmsData[currentRealmIdx];
+      enemyHp = realm.enemyMaxHp;
+
+      // Update Realm HUD & visual backdrops
+      document.getElementById('realm-display').textContent = `${currentRealmIdx + 1} / ${realmsData.length}`;
+      document.getElementById('realm-name-title').textContent = realm.realmName;
+      document.getElementById('enemy-name-label').textContent = realm.enemyName;
+      document.getElementById('enemy-level-tag').textContent = realm.enemyName.toUpperCase();
+      document.getElementById('enemy-svg-container').innerHTML = realm.enemySvg;
+      
+      const bgLayer = document.getElementById('realm-bg-layer');
+      if (bgLayer) {
+        bgLayer.className = `absolute inset-0 bg-gradient-to-b ${realm.bgClass} opacity-90 pointer-events-none transition-all duration-700`;
+      }
+
+      const bossBadge = document.getElementById('boss-warning-badge');
+      if (realm.isBoss) {
+        bossBadge.classList.remove('hidden');
+      } else {
+        bossBadge.classList.add('hidden');
+      }
+
+      updateHpDisplays();
+
+      // Refresh shuffled question deck
+      questionsDeck = [...vocabDatabase].sort(() => 0.5 - Math.random());
+      loadNextChallenge();
+    }
+
+    function loadNextChallenge() {
+      if (questionsDeck.length === 0) {
+        questionsDeck = [...vocabDatabase].sort(() => 0.5 - Math.random());
+      }
+      currentQuestionItem = questionsDeck.pop();
+
+      document.getElementById('target-phrase-text').textContent = currentQuestionItem.word;
+      document.getElementById('target-hint-text').textContent = `Clue: ${currentQuestionItem.hint}`;
+      document.getElementById('card-type-pill').textContent = currentQuestionItem.type.toUpperCase();
+
+      // Card reset pop anim
+      const card = document.getElementById('challenge-prompt-card');
+      card.classList.remove('border-emerald-500', 'border-rose-500');
+      card.classList.add('border-amber-500/80');
+      isAttackingLocked = false;
+    }
+
+    window.handleHeroAttack = function(chosenPrep) {
+      if (isAttackingLocked || heroHp <= 0) return;
+      isAttackingLocked = true;
+
+      const heroBox = document.getElementById('hero-avatar-box');
+      const enemyBox = document.getElementById('enemy-avatar-box');
+      const card = document.getElementById('challenge-prompt-card');
+      const realm = realmsData[currentRealmIdx];
+
+      if (chosenPrep === currentQuestionItem.prep) {
+        // SUCCESSFUL ATTACK!
+        playRpgSound('hit_correct');
+        comboStreak++;
+        totalExp += 100 + (comboStreak * 25);
+        updateHudDisplays();
+
+        // Hero attacks forward
+        heroBox.classList.add('hero-attack');
+        setTimeout(() => heroBox.classList.remove('hero-attack'), 360);
+
+        // Monster takes critical hit
+        setTimeout(() => {
+          enemyBox.classList.add('enemy-hurt');
+          spawnDamagePopup('enemy-damage-anchor', `-${realm.damagePerHit} CRIT!`, '#facc15');
+          enemyHp = Math.max(0, enemyHp - realm.damagePerHit);
+          updateHpDisplays();
+
+          // Green flash on prompt card
+          card.classList.add('border-emerald-500');
+
+          setTimeout(() => {
+            enemyBox.classList.remove('enemy-hurt');
+
+            // Check if enemy slain
+            if (enemyHp <= 0) {
+              handleMonsterDefeated();
+            } else {
+              loadNextChallenge();
+            }
+          }, 450);
+        }, 180);
+
+      } else {
+        // MISSED ATTACK / MONSTER COUNTER-ATTACKS!
+        playRpgSound('hit_wrong');
+        comboStreak = 0;
+        updateHudDisplays();
+
+        // Red flash & screen shake
+        card.classList.add('border-rose-500');
+        const viewport = document.getElementById('battle-viewport');
+        viewport.classList.add('shake-effect');
+        setTimeout(() => viewport.classList.remove('shake-effect'), 400);
+
+        // Hero takes damage - CAN DIE WHEN HP REACHES ZERO!
+        const monsterAttackDamage = 25;
+        heroHp = Math.max(0, heroHp - monsterAttackDamage);
+        spawnDamagePopup('hero-damage-anchor', `-${monsterAttackDamage} HP!`, '#ef4444');
+        updateHpDisplays();
+
+        // Show friendly guidance reminder
+        const correctPrep = currentQuestionItem.prep.toUpperCase();
+        document.getElementById('target-hint-text').innerHTML = `
+          <b class="text-rose-400">Not quite!</b> "${currentQuestionItem.word}" takes <b class="text-amber-300">${correctPrep}</b>! (${currentQuestionItem.hint})
+        `;
+
+        if (heroHp <= 0) {
+          // HERO DIED! TRIGGER GAME OVER
+          setTimeout(() => {
+            handleHeroDeath();
+          }, 600);
+        } else {
+          setTimeout(() => {
+            isAttackingLocked = false;
+          }, 800);
+        }
+      }
+    };
+
+    function handleHeroDeath() {
+      playRpgSound('game_over');
+      const heroBox = document.getElementById('hero-avatar-box');
+      if (heroBox) heroBox.classList.add('hero-fallen');
+
+      document.getElementById('gameover-realm-text').textContent = `Realm ${currentRealmIdx + 1} / ${realmsData.length} (${realmsData[currentRealmIdx].realmName})`;
+      document.getElementById('gameover-exp-text').textContent = `${totalExp} EXP`;
+
+      setTimeout(() => {
+        document.getElementById('gameover-modal').classList.remove('hidden');
+      }, 700);
+    }
+
+    window.reviveHero = function() {
+      document.getElementById('gameover-modal').classList.add('hidden');
+      heroHp = 100;
+      const heroBox = document.getElementById('hero-avatar-box');
+      if (heroBox) heroBox.classList.remove('hero-fallen');
+      updateHpDisplays();
+      setupCurrentRealm();
+    };
+
+    function handleMonsterDefeated() {
+      playRpgSound('monster_death');
+      const enemyBox = document.getElementById('enemy-avatar-box');
+      enemyBox.classList.add('opacity-0', 'scale-75');
+
+      setTimeout(() => {
+        enemyBox.classList.remove('opacity-0', 'scale-75');
+
+        if (currentRealmIdx < realmsData.length - 1) {
+          // Next realm! Give bonus HP heal (+20 HP)
+          heroHp = Math.min(100, heroHp + 20);
+          currentRealmIdx++;
+          setupCurrentRealm();
+        } else {
+          // ALL 10 REALMS SAVED -> VICTORY!
+          triggerWorldSavedVictory();
+        }
+      }, 700);
+    }
+
+    function triggerWorldSavedVictory() {
+      playRpgSound('victory_fanfare');
+      document.getElementById('final-exp-text').textContent = `${totalExp} EXP`;
+      document.getElementById('victory-modal').classList.remove('hidden');
+    }
+
+    function spawnDamagePopup(anchorId, text, color) {
+      const anchor = document.getElementById(anchorId);
+      if (!anchor) return;
+      anchor.innerHTML = `<span class="crit-popup block font-black" style="color: ${color}">${text}</span>`;
+      setTimeout(() => {
+        anchor.innerHTML = '';
+      }, 850);
+    }
+
+    function updateHpDisplays() {
+      const realm = realmsData[currentRealmIdx];
+      // Hero HP
+      const heroPct = Math.max(0, Math.min(100, (heroHp / 100) * 100));
+      document.getElementById('hero-hp-bar').style.width = `${heroPct}%`;
+      document.getElementById('hero-hp-text').textContent = `${heroHp} / 100`;
+
+      // Change bar color if low HP
+      const heroBar = document.getElementById('hero-hp-bar');
+      if (heroHp <= 25) {
+        heroBar.className = 'h-full bg-gradient-to-r from-red-600 to-rose-500 w-full transition-all duration-300 animate-pulse';
+      } else if (heroHp <= 50) {
+        heroBar.className = 'h-full bg-gradient-to-r from-amber-500 to-orange-400 w-full transition-all duration-300';
+      } else {
+        heroBar.className = 'h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-full transition-all duration-300';
+      }
+
+      // Enemy HP
+      const enemyPct = Math.max(0, Math.min(100, (enemyHp / realm.enemyMaxHp) * 100));
+      document.getElementById('enemy-hp-bar').style.width = `${enemyPct}%`;
+      document.getElementById('enemy-hp-text').textContent = `${enemyHp} / ${realm.enemyMaxHp}`;
+    }
+
+    function updateHudDisplays() {
+      document.getElementById('exp-display').textContent = totalExp;
+      document.getElementById('combo-display').textContent = `x${comboStreak}`;
+    }
+
+    window.restartFullQuest = function() {
+      document.getElementById('victory-modal').classList.add('hidden');
+      document.getElementById('gameover-modal').classList.add('hidden');
+      initGameQuest();
+    };
+
+    window.openRulesModal = function() {
+      document.getElementById('rules-modal').classList.remove('hidden');
+    };
+
+    window.closeRulesModal = function() {
+      document.getElementById('rules-modal').classList.add('hidden');
+    };
+
+    window.toggleAudio = function() {
+      isMuted = !isMuted;
+      document.getElementById('audio-btn').textContent = isMuted ? '🔇' : '🔊';
+    };
+
+    // Keyboard Shortcuts for Classroom Smartboard & Desktop
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'i') {
+        handleHeroAttack('in');
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'w') {
+        handleHeroAttack('with');
+      }
+    });
+
+    // Start Quest on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initGameQuest();
+    });
+  </script>
+</body>
+</html>

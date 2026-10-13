@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Grammar Quest II: The Wizard's Sentence Spellcraft</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Nunito:wght@700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+    .pixel-font {
+      font-family: 'Press Start 2P', monospace;
+    }
+    .rpg-heading {
+      font-family: 'MedievalSharp', cursive, serif;
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      15% { transform: translate(-8px, 6px); }
+      30% { transform: translate(8px, -6px); }
+      45% { transform: translate(-6px, -4px); }
+      60% { transform: translate(6px, 4px); }
+      75% { transform: translate(-3px, 2px); }
+    }
+    .shake-effect {
+      animation: screenShake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes wizardCastAnim {
+      0% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-14px) scale(1.12) rotate(-4deg); }
+      60% { transform: translateY(-4px) scale(1.15) rotate(5deg); }
+      100% { transform: translateY(0) scale(1) rotate(0deg); }
+    }
+    .wizard-cast {
+      animation: wizardCastAnim 0.5s ease-out;
+    }
+
+    @keyframes enemyHitAnim {
+      0% { filter: brightness(1); transform: scale(1); }
+      25% { filter: brightness(3.5) saturate(0) drop-shadow(0 0 25px #ec4899); transform: translateX(30px) scale(0.9); }
+      50% { filter: brightness(1.8) drop-shadow(0 0 15px #f59e0b); transform: translateX(-15px) scale(0.95); }
+      100% { filter: brightness(1); transform: scale(1); }
+    }
+    .enemy-hit {
+      animation: enemyHitAnim 0.5s ease-out;
+    }
+
+    @keyframes floatIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .idle-float {
+      animation: floatIdle 2.6s ease-in-out infinite;
+    }
+
+    @keyframes magicSpellBeam {
+      0% { width: 0%; opacity: 0; }
+      40% { width: 85%; opacity: 1; filter: drop-shadow(0 0 20px #a855f7); }
+      100% { width: 100%; opacity: 0; filter: drop-shadow(0 0 35px #38bdf8); }
+    }
+    .spell-beam-active {
+      animation: magicSpellBeam 0.6s ease-out forwards;
+    }
+
+    @keyframes popCritText {
+      0% { opacity: 0; transform: translateY(15px) scale(0.5); }
+      40% { opacity: 1; transform: translateY(-20px) scale(1.3); }
+      100% { opacity: 0; transform: translateY(-50px) scale(1); }
+    }
+    .crit-popup {
+      animation: popCritText 0.9s ease-out forwards;
+    }
+
+    .rune-chip {
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .rune-chip:active {
+      transform: scale(0.94);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-2 sm:p-4 overflow-x-hidden">
+
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between bg-slate-900/90 border-2 border-purple-500/60 rounded-2xl px-3 sm:px-5 py-2.5 shadow-2xl backdrop-blur-md mb-2">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-indigo-600 to-pink-500 flex items-center justify-center text-xl shadow-lg border border-purple-300 animate-pulse no-underline hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">
+        🧙‍♂️
+      </a>
+      <div>
+        <h1 class="rpg-heading text-lg sm:text-2xl font-black text-purple-300 tracking-wide flex items-center gap-2">
+          Grammar Quest II <span class="pixel-font text-[10px] text-purple-300 bg-purple-950 px-2 py-0.5 rounded border border-purple-600 hidden md:inline">SENTENCE SPELLCRAFT</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 font-bold hidden sm:block">Weave complete grammatical sentences to blast monsters, goblins, and cosmic aliens!</p>
+      </div>
+    </div>
+
+    <!-- HUD Stats & Controls -->
+    <div class="flex items-center gap-2 sm:gap-4 text-sm font-black">
+      <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-center">
+        <span class="block text-[10px] text-slate-400 font-mono">REALM</span>
+        <span id="realm-display" class="pixel-font text-xs sm:text-sm text-purple-300">1 / 16</span>
+      </div>
+
+      <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-center">
+        <span class="block text-[10px] text-slate-400 font-mono">MANA EXP</span>
+        <span id="exp-display" class="pixel-font text-xs sm:text-sm text-emerald-400">0</span>
+      </div>
+
+      <div class="hidden sm:flex bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 items-center gap-1.5">
+        <span class="text-amber-400 text-base">⚡</span>
+        <span id="combo-display" class="pixel-font text-xs sm:text-sm text-amber-400">x0</span>
+      </div>
+
+      <button onclick="toggleAudio()" id="audio-btn" class="p-2 sm:p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer text-base" title="Toggle Sound">
+        🔊
+      </button>
+
+      <button onclick="openSpellbookModal()" class="px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white transition active:scale-95 cursor-pointer shadow flex items-center gap-1.5 text-xs sm:text-sm">
+        📖 <span class="hidden md:inline">Spell Formula</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="battle-viewport" class="w-full max-w-6xl mx-auto flex-1 flex flex-col justify-between bg-slate-900 border-4 border-slate-800 rounded-3xl p-3 sm:p-5 shadow-2xl relative overflow-hidden transition-all my-auto min-h-[580px]">
+    
+    <!-- Dynamic Realm Backdrop Artwork Container -->
+    <div id="realm-bg-layer" class="absolute inset-0 bg-gradient-to-b from-purple-950 via-slate-900 to-slate-950 opacity-90 pointer-events-none transition-all duration-700"></div>
+
+    <!-- Arena Stage Top: HP Meters & Realm Ticker -->
+    <div class="relative z-10 w-full flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-950/80 backdrop-blur border border-slate-800 p-3 rounded-2xl mb-2">
+      
+      <!-- Wizard Status -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-2xl shrink-0 border border-purple-400">
+          🧙‍♂️
+        </div>
+        <div class="w-full sm:w-52">
+          <div class="flex justify-between text-xs sm:text-sm font-black font-mono">
+            <span class="text-purple-300">ARCH-MAGE</span>
+            <span id="wizard-hp-text" class="text-emerald-400">100 / 100</span>
+          </div>
+          <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden border border-slate-700 mt-1">
+            <div id="wizard-hp-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-full transition-all duration-300"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Realm Title Header -->
+      <div class="text-center px-2">
+        <span id="realm-name-title" class="rpg-heading text-lg sm:text-2xl font-black text-amber-300 tracking-wider">
+          Realm 1: Dream Land Glade
+        </span>
+        <span id="boss-warning-badge" class="hidden pixel-font text-[10px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded border border-rose-600 ml-2 animate-pulse">
+          BOSS BATTLE!
+        </span>
+      </div>
+
+      <!-- Enemy Status -->
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <div class="w-full sm:w-52 text-right">
+          <div class="flex justify-between text-xs sm:text-sm font-black font-mono">
+            <span id="enemy-name-label" class="text-rose-300">Whispering Thorn Goblin</span>
+            <span id="enemy-hp-text" class="text-rose-400">80 / 80</span>
+          </div>
+          <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden border border-slate-700 mt-1">
+            <div id="enemy-hp-bar" class="h-full bg-gradient-to-r from-rose-500 to-red-600 w-full transition-all duration-300"></div>
+          </div>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-rose-600 flex items-center justify-center text-2xl shrink-0 border border-rose-400">
+          👾
+        </div>
+      </div>
+    </div>
+
+    <div class="relative z-10 w-full flex-1 flex flex-col md:flex-row items-center justify-between my-2 px-2 sm:px-6 gap-4">
+      
+      <!-- WIZARD SPRITE (Left Side) -->
+      <div id="wizard-avatar-box" class="flex flex-col items-center relative transition-transform order-1">
+        <div id="wizard-damage-anchor" class="absolute -top-10 text-2xl font-black text-rose-400 pointer-events-none"></div>
+
+        <div class="w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center idle-float">
+          <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_10px_20px_rgba(168,85,247,0.5)]">
+            <!-- Robe -->
+            <path d="M28 42 L16 88 L84 88 L72 42 Z" fill="#6B21A8" stroke="#A855F7" stroke-width="2.5"/>
+            <path d="M44 42 L42 88 L58 88 L56 42 Z" fill="#C084FC"/>
+            <!-- Golden Belt & Talisman -->
+            <rect x="36" y="58" width="28" height="6" fill="#FACC15"/>
+            <circle cx="50" cy="61" r="5" fill="#EF4444"/>
+            <!-- Wizard Head & Long Beard -->
+            <circle cx="50" cy="34" r="14" fill="#FED7AA"/>
+            <path d="M38 38 C38 68 62 68 62 38 Z" fill="#F8FAFC"/>
+            <circle cx="44" cy="32" r="2.5" fill="#1E1B4B"/>
+            <circle cx="56" cy="32" r="2.5" fill="#1E1B4B"/>
+            <!-- Wizard Hat -->
+            <ellipse cx="50" cy="24" rx="28" ry="8" fill="#4C1D95"/>
+            <path d="M30 24 L50 2 L70 24 Z" fill="#6B21A8" stroke="#C084FC" stroke-width="2"/>
+            <circle cx="50" cy="2" r="3" fill="#FACC15"/>
+            <!-- Magic Staff with Glowing Star -->
+            <rect x="76" y="24" width="5" height="65" rx="2" fill="#78350F"/>
+            <polygon points="78.5,12 83,22 93,22 85,28 88,38 78.5,32 69,38 72,28 64,22 74,22" fill="#38BDF8" stroke="#FACC15" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <span class="pixel-font text-[9px] text-purple-300 bg-purple-950 px-2 py-0.5 rounded border border-purple-800 mt-1 shadow">
+          ARCH-MAGE
+        </span>
+      </div>
+
+      <!-- Center Spell Beam Clash Area -->
+      <div class="flex-1 w-full flex flex-col items-center justify-center relative my-2 order-2">
+        <div id="spell-beam-fx" class="h-4 bg-gradient-to-r from-purple-500 via-pink-400 to-sky-300 rounded-full shadow-[0_0_30px_#a855f7] opacity-0 transition-opacity"></div>
+        <span class="pixel-font text-xs sm:text-sm text-purple-300/80 my-1 bg-slate-950/90 px-3 py-1 rounded-xl border border-purple-700/50">
+          ✨ SPELL DUEL ✨
+        </span>
+      </div>
+
+      <!-- ENEMY MONSTER SPRITE (Right Side) -->
+      <div id="enemy-avatar-box" class="flex flex-col items-center relative transition-transform order-3">
+        <div id="enemy-damage-anchor" class="absolute -top-10 text-2xl font-black text-amber-300 pointer-events-none"></div>
+
+        <div id="enemy-svg-container" class="w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center idle-float">
+          <!-- Dynamically Injected SVG -->
+        </div>
+        <span id="enemy-name-tag" class="pixel-font text-[9px] text-rose-300 bg-rose-950 px-2 py-0.5 rounded border border-rose-800 mt-1 shadow">
+          FOE
+        </span>
+      </div>
+
+    </div>
+
+    <div class="relative z-10 w-full flex flex-col items-center gap-2 mt-1">
+      
+      <!-- Challenge Prompt Card: Target Suspect Clue -->
+      <div id="spell-challenge-card" class="w-full max-w-5xl bg-slate-950/95 border-3 border-purple-500/80 rounded-3xl p-3 sm:p-5 shadow-2xl relative overflow-hidden transition-all duration-300">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="text-xs sm:text-base font-mono font-black uppercase text-purple-400 bg-purple-950 px-3 py-1 rounded-full border border-purple-700">
+              TARGET SUSPECT
+            </span>
+            <span id="target-clue-category" class="text-xs sm:text-base font-extrabold text-amber-300">
+              CLOTHING / ACCESSORY [IN THE]
+            </span>
+          </div>
+          <div class="text-xs sm:text-base font-mono font-bold text-slate-400 hidden sm:block">
+            Formula: <span class="text-purple-300 font-black">[Person] is the [noun] in/with the [item] .</span>
+          </div>
+        </div>
+
+        <!-- Target Character Showcase & Prompt Text (Enlarged 2x) -->
+        <div class="my-2 sm:my-3 flex flex-col sm:flex-row items-center gap-3 sm:gap-5 justify-center bg-slate-900/80 p-3 sm:p-4 rounded-2xl border border-slate-800">
+          <div id="target-character-avatar" class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-slate-950 border-2 border-purple-400 flex items-center justify-center p-1 shrink-0 shadow-lg">
+            <!-- Character SVG -->
+          </div>
+          <div class="text-center sm:text-left">
+            <h2 id="target-prompt-title" class="rpg-heading text-2xl sm:text-4xl md:text-5xl font-black text-amber-300 leading-tight">
+              Describe Kirby!
+            </h2>
+            <p id="target-prompt-clue" class="text-base sm:text-xl md:text-2xl font-black text-slate-100 mt-1">
+              Describe Kirby in his shining royal crown!
+            </p>
+          </div>
+        </div>
+
+        <!-- Incantation Construction Slot Bar (Enlarged 2x for Smartboard Visibility) -->
+        <div class="space-y-1.5 my-2">
+          <div class="flex items-center justify-between text-xs sm:text-base font-bold text-slate-400 px-1">
+            <span>🧙‍♂️ SLOTTED SPELL INCANTATION (Tap slotted runes to remove):</span>
+            <span id="rune-count-indicator" class="text-purple-300 font-mono font-black text-sm sm:text-lg">0 / 6 Runes</span>
+          </div>
+          <div id="incantation-slot-bar" class="w-full min-h-[70px] sm:min-h-[85px] bg-slate-900/90 border-3 border-dashed border-purple-400/80 rounded-2xl p-2.5 sm:p-3 flex flex-wrap items-center justify-center gap-2 sm:gap-3 transition-all">
+            <span id="incantation-placeholder" class="text-slate-400 text-base sm:text-2xl font-bold italic">
+              Tap runes below in order to weave your sentence spell...
+            </span>
+          </div>
+        </div>
+
+        <!-- Available Word Runes Pool (Enlarged 2x buttons) -->
+        <div class="my-2">
+          <span class="text-xs sm:text-base font-mono font-bold text-slate-400 block mb-1 text-center">
+            AVAILABLE WORD RUNES:
+          </span>
+          <div id="available-runes-pool" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-2 bg-slate-900/50 rounded-2xl border border-slate-800/80">
+            <!-- Dynamically populated runes -->
+          </div>
+        </div>
+
+        <!-- Casting Action Controls -->
+        <div class="flex items-center justify-center gap-3 sm:gap-4 pt-2 border-t border-slate-800">
+          <button onclick="clearSlottedIncantation()" class="px-5 sm:px-7 py-2.5 sm:py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-sm sm:text-xl rounded-2xl border border-slate-700 transition active:scale-95 cursor-pointer shadow">
+            🔄 Clear Runes
+          </button>
+
+          <button onclick="castIncantationSpell()" id="cast-spell-btn" class="px-8 sm:px-12 py-2.5 sm:py-3.5 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-95 text-white font-black text-base sm:text-2xl rounded-2xl shadow-xl transition cursor-pointer flex items-center gap-2">
+            <span>✨</span> <span>CAST SPELL!</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: Grammar Spellbook Formula -->
+  <div id="spellbook-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-slate-900 border-3 border-purple-400 text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl flex flex-col justify-between max-h-[90vh]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-3xl">📖</span>
+          <div>
+            <h3 class="rpg-heading text-xl sm:text-2xl font-black text-white">The Arch-Mage's Spellbook</h3>
+            <p class="text-xs text-purple-300 font-bold">The Golden Sentence Spell Formula</p>
+          </div>
+        </div>
+        <button onclick="closeSpellbookModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="my-4 overflow-y-auto space-y-4 text-xs sm:text-sm">
+        <div class="p-3.5 rounded-2xl bg-purple-950/80 border-2 border-purple-500/80 space-y-2">
+          <span class="rpg-heading text-lg font-black text-purple-300 block">Universal Spell Structure:</span>
+          <div class="p-2.5 bg-slate-900 rounded-xl border border-purple-700 text-center font-mono font-black text-sm sm:text-base text-amber-300">
+            [Person] + is the + [Noun] + in / with the + [Item / Feature] + .
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-emerald-950/70 border border-emerald-500 space-y-1">
+          <span class="font-black text-emerald-300 block text-sm">When to weave "in the":</span>
+          <p class="text-slate-200 font-bold">For clothing, outfits, and footwear: <i>in the crown, in the red cap, in the pink dress, in the blue shirt, in the green jacket, in the black hood, in the red skirt, in the vest, in the suit</i>.</p>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-sky-950/70 border border-sky-500 space-y-1">
+          <span class="font-black text-sky-300 block text-sm">When to weave "with the":</span>
+          <p class="text-slate-200 font-bold">For body features, hair, and accessories: <i>with the round ears, with the red bow, with the thick eyebrows, with the small ears, with the red ribbon, with the glasses, with the big ears</i>.</p>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-800 flex justify-end">
+        <button onclick="closeSpellbookModal()" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs sm:text-sm rounded-xl transition cursor-pointer shadow">
+          Return to Battle ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GAME OVER (Wizard HP depleted) -->
+  <div id="gameover-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-rose-950 via-slate-900 to-black border-4 border-rose-600 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+      <div class="text-6xl mb-2 animate-bounce">💀🪄💔</div>
+      <span class="pixel-font text-[10px] text-rose-400 bg-rose-950 px-3 py-1 rounded-full border border-rose-600 inline-block mb-2">
+        MANA COLLAPSE!
+      </span>
+      <h2 class="rpg-heading text-3xl sm:text-5xl font-black text-rose-500 mb-2 leading-tight">
+        THE WIZARD HAS FALLEN!
+      </h2>
+      <p class="text-xs sm:text-sm font-bold text-slate-300 leading-relaxed mb-4">
+        The enemy's dark aura disrupted your incantation! Channel your inner grammatical power and revive your wizard!
+      </p>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="reviveWizard()" class="px-7 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 text-slate-950 font-black text-sm sm:text-base rounded-2xl shadow-xl transition active:scale-95 cursor-pointer">
+          Revive Arch-Mage (Restore 100 HP) 💖
+        </button>
+        <button onclick="restartFullQuest()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm rounded-2xl transition cursor-pointer">
+          Restart from Realm 1 🔄
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VICTORY CEREMONY (All 16 Realms Conquered) -->
+  <div id="victory-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-indigo-950 via-slate-900 to-purple-950 border-4 border-amber-400 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+      <div class="text-6xl mb-2 animate-bounce">🏆🌌✨</div>
+      <span class="pixel-font text-[10px] text-amber-400 bg-amber-950 px-3 py-1 rounded-full border border-amber-600 inline-block mb-2">
+        ALL 16 REALMS SAVED!
+      </span>
+      <h2 class="rpg-heading text-3xl sm:text-5xl font-black text-amber-300 mb-2 leading-tight">
+        THE COSMOS IS SAVED!
+      </h2>
+      <p class="text-xs sm:text-sm font-bold text-slate-300 leading-relaxed mb-4">
+        You cast flawless sentences for all 16 heroes and defeated the Chaos Overlord! Your grammar spellcraft is legendary!
+      </p>
+
+      <div class="bg-slate-950/90 p-4 rounded-2xl border border-amber-500/40 text-left text-xs sm:text-sm font-bold mb-5 space-y-2">
+        <div class="flex justify-between border-b border-slate-800 pb-1">
+          <span class="text-slate-400">Total Mana Exp:</span>
+          <span id="final-exp-text" class="text-emerald-400 font-mono font-black">0</span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-slate-400">Title Bestowed:</span>
+          <span class="rpg-heading text-amber-300 font-black text-base">Supreme Grammar Arch-Mage 👑</span>
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <button onclick="restartFullQuest()" class="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-sm sm:text-base rounded-2xl shadow-xl transition active:scale-95 cursor-pointer">
+          Play Again 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Web Audio Synthesizer */
+    let audioCtx = null;
+    let isMuted = false;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSpellAudio(type) {
+      if (isMuted) return;
+      try {
+        const actx = getAudioContext();
+        const now = actx.currentTime;
+
+        if (type === 'rune_click') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(580, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'spell_cast_success') {
+          const osc1 = actx.createOscillator();
+          const gain1 = actx.createGain();
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(440, now);
+          osc1.frequency.exponentialRampToValueAtTime(1320, now + 0.22);
+          gain1.gain.setValueAtTime(0.24, now);
+          gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc1.connect(gain1);
+          gain1.connect(actx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.35);
+
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.15, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (idx + 1) * 0.08 + 0.15);
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + (idx + 1) * 0.08 + 0.15);
+          });
+        } else if (type === 'spell_cast_fail') {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(65, now + 0.3);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'victory') {
+          const fanfare = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+          fanfare.forEach((f, i) => {
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, now + i * 0.12);
+            gain.gain.setValueAtTime(0.2, now + i * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (i + 1) * 0.12 + 0.25);
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.start(now + i * 0.12);
+            osc.stop(now + (i + 1) * 0.12 + 0.25);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio not initialized');
+      }
+    }
+
+    const realmsData = [
+      {
+        realmNum: 1,
+        realmName: "Realm 1: Dream Land Glade",
+        bgClass: "from-pink-950 via-slate-900 to-slate-950",
+        enemyName: "Whispering Thorn Goblin",
+        enemyMaxHp: 80,
+        characterName: "Kirby",
+        targetSentence: ["Kirby", "is the", "pink monster", "in the", "crown", "."],
+        distractorWords: ["with the", "shoes"],
+        promptText: "Describe Kirby wearing his shining golden crown!",
+        categoryType: "CLOTHING / ACCESSORY [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="54" r="30" fill="#F472B6" stroke="#EC4899" stroke-width="2.5"/>
+          <ellipse cx="40" cy="48" rx="4" ry="7" fill="#1E1B4B"/><circle cx="41" cy="46" r="2" fill="#FFFFFF"/><circle cx="41" cy="51" r="1.5" fill="#38BDF8"/>
+          <ellipse cx="60" cy="48" rx="4" ry="7" fill="#1E1B4B"/><circle cx="61" cy="46" r="2" fill="#FFFFFF"/><circle cx="61" cy="51" r="1.5" fill="#38BDF8"/>
+          <ellipse cx="32" cy="56" rx="5" ry="3" fill="#FB7185"/><ellipse cx="68" cy="56" rx="5" ry="3" fill="#FB7185"/>
+          <ellipse cx="50" cy="62" rx="4" ry="3" fill="#BE185D"/>
+          <ellipse cx="28" cy="80" rx="10" ry="7" fill="#E11D48"/><ellipse cx="72" cy="80" rx="10" ry="7" fill="#E11D48"/>
+          <polygon points="36,28 42,16 50,24 58,16 64,28" fill="#FACC15" stroke="#CA8A04" stroke-width="2"/>
+          <circle cx="50" cy="20" r="2.5" fill="#EF4444"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <ellipse cx="50" cy="55" rx="22" ry="25" fill="#15803D"/>
+          <polygon points="28,42 12,30 26,50" fill="#22C55E"/><polygon points="72,42 88,30 74,50" fill="#22C55E"/>
+          <circle cx="42" cy="48" r="6" fill="#FACC15"/><circle cx="58" cy="48" r="6" fill="#FACC15"/>
+          <circle cx="43" cy="48" r="2.5" fill="#0F172A"/><circle cx="57" cy="48" r="2.5" fill="#0F172A"/>
+          <path d="M40 64 Q50 72 60 64" stroke="#0F172A" stroke-width="2.5" fill="none"/>
+        </svg>`
+      },
+      {
+        realmNum: 2,
+        realmName: "Realm 2: Mushroom Caverns",
+        bgClass: "from-red-950 via-slate-900 to-slate-950",
+        enemyName: "Spiny Goomba",
+        enemyMaxHp: 80,
+        characterName: "Mario",
+        targetSentence: ["Mario", "is the", "hero", "in the", "red cap", "."],
+        distractorWords: ["with the", "dress"],
+        promptText: "Describe Mario in his iconic red cap!",
+        categoryType: "HEADWEAR [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="50" r="24" fill="#FED7AA"/>
+          <ellipse cx="50" cy="58" rx="8" ry="6" fill="#FED7AA"/>
+          <path d="M32 60 Q50 68 68 60 Q50 56 32 60 Z" fill="#451A03"/>
+          <circle cx="43" cy="46" r="3" fill="#0284C7"/><circle cx="57" cy="46" r="3" fill="#0284C7"/>
+          <path d="M22 36 C24 16 76 16 78 36 Z" fill="#DC2626"/>
+          <ellipse cx="50" cy="36" rx="30" ry="8" fill="#B91C1C"/>
+          <circle cx="50" cy="28" r="8" fill="#FFFFFF"/>
+          <text x="46" y="33" font-size="12" font-weight="900" fill="#DC2626">M</text>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <ellipse cx="50" cy="58" rx="26" ry="24" fill="#92400E"/>
+          <circle cx="40" cy="52" r="5" fill="#FFFFFF"/><circle cx="60" cy="52" r="5" fill="#FFFFFF"/>
+          <circle cx="41" cy="52" r="2.5" fill="#000000"/><circle cx="59" cy="52" r="2.5" fill="#000000"/>
+          <polygon points="36,44 48,48 40,48" fill="#000000"/><polygon points="64,44 52,48 60,48" fill="#000000"/>
+        </svg>`
+      },
+      {
+        realmNum: 3,
+        realmName: "Realm 3: Royal Peach Gardens",
+        bgClass: "from-pink-950 via-purple-900 to-slate-950",
+        enemyName: "Koopa Magikoopa",
+        enemyMaxHp: 80,
+        characterName: "Princess Peach",
+        targetSentence: ["Princess Peach", "is the", "princess", "in the", "pink dress", "."],
+        distractorWords: ["with the", "vest"],
+        promptText: "Describe Princess Peach wearing her royal ball gown!",
+        categoryType: "CLOTHING [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M26 40 C26 15 74 15 74 40 L76 75 L24 75 Z" fill="#FACC15"/>
+          <circle cx="50" cy="46" r="18" fill="#FED7AA"/>
+          <circle cx="44" cy="44" r="3" fill="#0284C7"/><circle cx="56" cy="44" r="3" fill="#0284C7"/>
+          <polygon points="38,20 44,10 50,16 56,10 62,20" fill="#FACC15" stroke="#EAB308" stroke-width="1.5"/>
+          <circle cx="50" cy="14" r="2" fill="#06B6D4"/>
+          <path d="M30 68 L70 68 L85 96 L15 96 Z" fill="#F472B6"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <polygon points="50,15 25,75 75,75" fill="#2563EB"/>
+          <circle cx="50" cy="50" r="16" fill="#FACC15"/>
+          <circle cx="44" cy="48" r="3" fill="#000"/><circle cx="56" cy="48" r="3" fill="#000"/>
+        </svg>`
+      },
+      {
+        realmNum: 4,
+        realmName: "Realm 4: Clubhouse Meadows",
+        bgClass: "from-yellow-950 via-slate-900 to-slate-950",
+        enemyName: "Shadow Weasel",
+        enemyMaxHp: 80,
+        characterName: "Mickey Mouse",
+        targetSentence: ["Mickey Mouse", "is the", "mouse", "with the", "round ears", "."],
+        distractorWords: ["in the", "jacket"],
+        promptText: "Describe Mickey Mouse with his iconic circular ears!",
+        categoryType: "BODY FEATURE [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="28" cy="28" r="16" fill="#0F172A"/><circle cx="72" cy="28" r="16" fill="#0F172A"/>
+          <circle cx="50" cy="54" r="24" fill="#0F172A"/>
+          <ellipse cx="50" cy="58" rx="18" ry="16" fill="#FED7AA"/>
+          <ellipse cx="44" cy="54" rx="3" ry="6" fill="#0F172A"/><ellipse cx="56" cy="54" rx="3" ry="6" fill="#0F172A"/>
+          <ellipse cx="50" cy="65" rx="5" ry="3.5" fill="#0F172A"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <ellipse cx="50" cy="50" rx="22" ry="26" fill="#475569"/>
+          <polygon points="40,30 50,15 60,30" fill="#64748B"/>
+          <circle cx="42" cy="46" r="3" fill="#F43F5E"/><circle cx="58" cy="46" r="3" fill="#F43F5E"/>
+        </svg>`
+      },
+      {
+        realmNum: 5,
+        realmName: "Realm 5: Polka Dot Valley",
+        bgClass: "from-rose-950 via-slate-900 to-slate-950",
+        enemyName: "Viper Bat",
+        enemyMaxHp: 80,
+        characterName: "Minnie Mouse",
+        targetSentence: ["Minnie Mouse", "is the", "mouse", "with the", "red bow", "."],
+        distractorWords: ["in the", "boots"],
+        promptText: "Describe Minnie Mouse wearing her spotted ribbon bow!",
+        categoryType: "ACCESSORY [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="26" cy="34" r="15" fill="#0F172A"/><circle cx="74" cy="34" r="15" fill="#0F172A"/>
+          <polygon points="34,22 50,30 34,38" fill="#EF4444"/><polygon points="66,22 50,30 66,38" fill="#EF4444"/>
+          <circle cx="50" cy="30" r="5" fill="#DC2626"/>
+          <circle cx="50" cy="58" r="22" fill="#0F172A"/><ellipse cx="50" cy="62" rx="17" ry="15" fill="#FED7AA"/>
+          <ellipse cx="44" cy="58" rx="3" ry="5" fill="#0F172A"/><ellipse cx="56" cy="58" rx="3" ry="5" fill="#0F172A"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M10 40 Q35 15 50 45 Q65 15 90 40 Q70 70 50 60 Q30 70 10 40 Z" fill="#7C3AED"/>
+          <circle cx="44" cy="46" r="3" fill="#FACC15"/><circle cx="56" cy="46" r="3" fill="#FACC15"/>
+        </svg>`
+      },
+      {
+        realmNum: 6,
+        realmName: "Realm 6: Duckburg Harbor",
+        bgClass: "from-blue-950 via-slate-900 to-slate-950",
+        enemyName: "Abyssal Pirate",
+        enemyMaxHp: 85,
+        characterName: "Donald",
+        targetSentence: ["Donald", "is the", "duck", "in the", "blue shirt", "."],
+        distractorWords: ["with the", "watch"],
+        promptText: "Describe Donald in his blue sailor top!",
+        categoryType: "CLOTHING [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="44" r="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+          <ellipse cx="43" cy="38" rx="3" ry="7" fill="#0284C7"/><ellipse cx="57" cy="38" rx="3" ry="7" fill="#0284C7"/>
+          <ellipse cx="50" cy="52" rx="16" ry="8" fill="#F59E0B"/>
+          <rect x="36" y="16" width="28" height="10" rx="3" fill="#1D4ED8"/>
+          <path d="M30 68 L70 68 L75 95 L25 95 Z" fill="#1D4ED8"/>
+          <polygon points="50,72 44,82 50,88 56,82" fill="#DC2626"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="46" r="18" fill="#334155"/>
+          <polygon points="44,40 56,40 50,52" fill="#EF4444"/>
+          <line x1="30" y1="40" x2="70" y2="40" stroke="#000" stroke-width="4"/>
+        </svg>`
+      },
+      {
+        realmNum: 7,
+        realmName: "Realm 7: Demon Slayer Forest",
+        bgClass: "from-emerald-950 via-slate-900 to-slate-950",
+        enemyName: "Forest Fiend Demon",
+        enemyMaxHp: 85,
+        characterName: "Tanjiro",
+        targetSentence: ["Tanjiro", "is the", "swordsman", "in the", "green jacket", "."],
+        distractorWords: ["with the", "ribbon"],
+        promptText: "Describe Tanjiro in his green chequered haori jacket!",
+        categoryType: "CLOTHING [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="42" r="18" fill="#FED7AA"/>
+          <path d="M32 40 C32 18 68 18 68 40 Z" fill="#7F1D1D"/>
+          <circle cx="44" cy="40" r="3" fill="#78350F"/><circle cx="56" cy="40" r="3" fill="#78350F"/>
+          <rect x="38" y="32" width="5" height="7" fill="#991B1B"/>
+          <rect x="28" y="60" width="44" height="34" rx="4" fill="#047857"/>
+          <rect x="36" y="60" width="8" height="8" fill="#1E293B"/><rect x="52" y="60" width="8" height="8" fill="#1E293B"/>
+          <rect x="28" y="68" width="8" height="8" fill="#1E293B"/><rect x="44" y="68" width="8" height="8" fill="#1E293B"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="46" r="22" fill="#450A0A"/>
+          <polygon points="40,24 44,38 36,36" fill="#FACC15"/><polygon points="60,24 56,38 64,36" fill="#FACC15"/>
+          <circle cx="43" cy="44" r="3" fill="#EF4444"/><circle cx="57" cy="44" r="3" fill="#EF4444"/>
+        </svg>`
+      },
+      {
+        realmNum: 8,
+        realmName: "Realm 8: Kasukabe Town",
+        bgClass: "from-amber-950 via-slate-900 to-slate-950",
+        enemyName: "Action Alien",
+        enemyMaxHp: 85,
+        characterName: "Shin Chan",
+        targetSentence: ["Shin Chan", "is the", "funny boy", "with the", "thick eyebrows", "."],
+        distractorWords: ["in the", "suit"],
+        promptText: "Describe Shin Chan with his prominent black eyebrows!",
+        categoryType: "BODY FEATURE [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <ellipse cx="48" cy="46" rx="24" ry="20" fill="#FED7AA"/>
+          <ellipse cx="66" cy="52" rx="12" ry="10" fill="#FED7AA"/>
+          <path d="M30 34 C30 18 66 18 66 34 Z" fill="#0F172A"/>
+          <ellipse cx="40" cy="38" rx="8" ry="4" fill="#000000" transform="rotate(-8 40 38)"/>
+          <ellipse cx="58" cy="38" rx="8" ry="4" fill="#000000" transform="rotate(8 58 38)"/>
+          <circle cx="40" cy="44" r="2.5" fill="#000000"/><circle cx="58" cy="44" r="2.5" fill="#000000"/>
+          <ellipse cx="50" cy="54" rx="4" ry="3" fill="#BE123C"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <polygon points="50,15 80,45 70,82 30,82 20,45" fill="#701A75"/>
+          <circle cx="42" cy="45" r="4" fill="#FDE047"/><circle cx="58" cy="45" r="4" fill="#FDE047"/>
+        </svg>`
+      },
+      {
+        realmNum: 9,
+        realmName: "Realm 9: Sweet Meadow",
+        bgClass: "from-sky-950 via-slate-900 to-slate-950",
+        enemyName: "Chimera Bug",
+        enemyMaxHp: 85,
+        characterName: "Chiikawa",
+        targetSentence: ["Chiikawa", "is the", "cute creature", "with the", "small ears", "."],
+        distractorWords: ["in the", "coat"],
+        promptText: "Describe Chiikawa with its rounded bear-like ears!",
+        categoryType: "BODY FEATURE [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="34" cy="30" r="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+          <circle cx="66" cy="30" r="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+          <circle cx="50" cy="54" r="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+          <circle cx="42" cy="50" r="3.5" fill="#1E293B"/><circle cx="58" cy="50" r="3.5" fill="#1E293B"/>
+          <circle cx="43" cy="48" r="1.5" fill="#FFFFFF"/><circle cx="59" cy="48" r="1.5" fill="#FFFFFF"/>
+          <ellipse cx="36" cy="58" rx="4" ry="2.5" fill="#FB7185"/><ellipse cx="64" cy="58" rx="4" ry="2.5" fill="#FB7185"/>
+          <path d="M48 54 Q50 56 52 54" stroke="#1E293B" stroke-width="2" fill="none"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <ellipse cx="50" cy="50" rx="20" ry="25" fill="#047857"/>
+          <circle cx="42" cy="42" r="3" fill="#FACC15"/><circle cx="58" cy="42" r="3" fill="#FACC15"/>
+        </svg>`
+      },
+      {
+        realmNum: 10,
+        realmName: "Realm 10: Midnight Gothic Castle",
+        bgClass: "from-purple-950 via-slate-900 to-slate-950",
+        enemyName: "Shadow Skeleton Knight",
+        enemyMaxHp: 90,
+        characterName: "Kuromi",
+        targetSentence: ["Kuromi", "is the", "bunny", "in the", "black hood", "."],
+        distractorWords: ["with the", "sandals"],
+        promptText: "Describe Kuromi wearing her black jester hood!",
+        categoryType: "HEADWEAR [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M25 50 Q10 20 28 14 Q38 32 36 50 Z" fill="#0F172A"/>
+          <path d="M75 50 Q90 20 72 14 Q62 32 64 50 Z" fill="#0F172A"/>
+          <circle cx="28" cy="14" r="3" fill="#EC4899"/><circle cx="72" cy="14" r="3" fill="#EC4899"/>
+          <circle cx="50" cy="54" r="24" fill="#0F172A"/>
+          <ellipse cx="50" cy="58" rx="18" ry="16" fill="#FFFFFF"/>
+          <ellipse cx="43" cy="56" rx="2.5" ry="4" fill="#0F172A"/><ellipse cx="57" cy="56" rx="2.5" ry="4" fill="#0F172A"/>
+          <polygon points="50,44 46,38 54,38" fill="#EC4899"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="42" r="18" fill="#F8FAFC"/>
+          <ellipse cx="44" cy="40" rx="4" ry="5" fill="#0F172A"/><ellipse cx="56" cy="40" rx="4" ry="5" fill="#0F172A"/>
+        </svg>`
+      },
+      {
+        realmNum: 11,
+        realmName: "Realm 11: Apple Blossom Orchard",
+        bgClass: "from-rose-950 via-slate-900 to-slate-950",
+        enemyName: "Crystal Golem",
+        enemyMaxHp: 90,
+        characterName: "Hello Kitty",
+        targetSentence: ["Hello Kitty", "is the", "white cat", "with the", "red ribbon", "."],
+        distractorWords: ["in the", "jeans"],
+        promptText: "Describe Hello Kitty with her red ribbon on her ear!",
+        categoryType: "ACCESSORY [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <polygon points="26,42 22,26 36,32" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+          <polygon points="74,42 78,26 64,32" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+          <circle cx="68" cy="34" r="5" fill="#DC2626"/>
+          <polygon points="68,34 58,26 60,38" fill="#EF4444"/><polygon points="68,34 78,26 76,38" fill="#EF4444"/>
+          <ellipse cx="50" cy="54" rx="28" ry="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+          <ellipse cx="42" cy="52" rx="2.5" ry="4" fill="#0F172A"/><ellipse cx="58" cy="52" rx="2.5" ry="4" fill="#0F172A"/>
+          <ellipse cx="50" cy="58" rx="3.5" ry="2.5" fill="#FACC15"/>
+          <line x1="22" y1="52" x2="34" y2="52" stroke="#0F172A" stroke-width="1.5"/>
+          <line x1="22" y1="58" x2="34" y2="56" stroke="#0F172A" stroke-width="1.5"/>
+          <line x1="66" y1="52" x2="78" y2="52" stroke="#0F172A" stroke-width="1.5"/>
+          <line x1="66" y1="56" x2="78" y2="58" stroke="#0F172A" stroke-width="1.5"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <polygon points="50,22 75,38 70,78 30,78 25,38" fill="#475569" stroke="#06B6D4" stroke-width="3"/>
+          <polygon points="50,42 42,54 50,66 58,54" fill="#22D3EE"/>
+        </svg>`
+      },
+      {
+        realmNum: 12,
+        realmName: "Realm 12: Shimizu Elementary Playground",
+        bgClass: "from-red-950 via-slate-900 to-slate-950",
+        enemyName: "Cyber Drake",
+        enemyMaxHp: 90,
+        characterName: "Maruko",
+        targetSentence: ["Maruko", "is the", "schoolgirl", "in the", "red skirt", "."],
+        distractorWords: ["with the", "watch"],
+        promptText: "Describe Maruko in her red school suspender skirt!",
+        categoryType: "CLOTHING [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <!-- Maruko mushroom bob hair covering sides and back -->
+          <path d="M22 55 C20 22 80 22 78 55 L78 62 C78 68 70 70 68 62 L68 55 L32 55 L32 62 C30 70 22 68 22 62 Z" fill="#1E293B"/>
+          <!-- Round face -->
+          <circle cx="50" cy="50" r="22" fill="#FED7AA"/>
+          <!-- Signature sawtooth fringe bangs -->
+          <path d="M28 42 L33 48 L37 42 L42 49 L46 42 L50 49 L54 42 L58 49 L63 42 L67 48 L72 42 C72 26 28 26 28 42 Z" fill="#1E293B"/>
+          <!-- Cute eyes -->
+          <circle cx="43" cy="50" r="2.5" fill="#0F172A"/><circle cx="57" cy="50" r="2.5" fill="#0F172A"/>
+          <!-- Blushing cheeks -->
+          <ellipse cx="37" cy="54" rx="4" ry="2.5" fill="#FDA4AF"/><ellipse cx="63" cy="54" rx="4" ry="2.5" fill="#FDA4AF"/>
+          <path d="M47 56 Q50 60 53 56" stroke="#991B1B" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M38 72 L50 78 L62 72 L58 68 L42 68 Z" fill="#FFFFFF"/>
+          <rect x="42" y="70" width="3.5" height="12" fill="#DC2626"/>
+          <rect x="54.5" y="70" width="3.5" height="12" fill="#DC2626"/>
+          <path d="M34 82 L66 82 L72 96 L28 96 Z" fill="#DC2626"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M50 45 Q20 20 5 35 Q20 60 50 55" fill="#B91C1C"/>
+          <path d="M50 45 Q80 20 95 35 Q80 60 50 55" fill="#B91C1C"/>
+          <circle cx="46" cy="46" r="3" fill="#FACC15"/><circle cx="54" cy="46" r="3" fill="#FACC15"/>
+        </svg>`
+      },
+      {
+        realmNum: 13,
+        realmName: "Realm 13: Hong Kong Walled Village - North Watch",
+        bgClass: "from-indigo-950 via-slate-900 to-slate-950",
+        enemyName: "Frost Wyrm",
+        enemyMaxHp: 95,
+        characterName: "Brother 1",
+        targetSentence: ["Brother 1", "is the", "boy", "with the", "glasses", "."],
+        distractorWords: ["in the", "high-heels"],
+        promptText: "Describe Brother 1 with his round magnifying glasses!",
+        categoryType: "ACCESSORY [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="42" r="18" fill="#FED7AA"/>
+          <path d="M32 40 C32 18 68 18 68 40 Z" fill="#1E293B"/>
+          <circle cx="42" cy="42" r="7" fill="#E0F2FE" stroke="#0F172A" stroke-width="2"/>
+          <circle cx="58" cy="42" r="7" fill="#E0F2FE" stroke="#0F172A" stroke-width="2"/>
+          <line x1="49" y1="42" x2="51" y2="42" stroke="#0F172A" stroke-width="2"/>
+          <circle cx="42" cy="42" r="2.5" fill="#0284C7"/><circle cx="58" cy="42" r="2.5" fill="#0284C7"/>
+          <rect x="36" y="62" width="28" height="24" rx="4" fill="#3B82F6"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M25 40 Q50 15 75 40 Q85 70 50 85 Q15 70 25 40 Z" fill="#0284C7" stroke="#38BDF8" stroke-width="2.5"/>
+        </svg>`
+      },
+      {
+        realmNum: 14,
+        realmName: "Realm 14: Ancient Granite Quarry",
+        bgClass: "from-amber-950 via-slate-900 to-slate-950",
+        enemyName: "Venom Hydra",
+        enemyMaxHp: 95,
+        characterName: "Brother 3",
+        targetSentence: ["Brother 3", "is the", "strong man", "in the", "vest", "."],
+        distractorWords: ["with the", "umbrella"],
+        promptText: "Describe Brother 3 in his bright yellow workout vest!",
+        categoryType: "CLOTHING [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="38" r="18" fill="#FED7AA"/>
+          <path d="M34 40 C34 68 66 68 66 40 Z" fill="#451A03"/>
+          <circle cx="44" cy="36" r="2.5" fill="#000"/><circle cx="56" cy="36" r="2.5" fill="#000"/>
+          <path d="M34 56 L42 52 L58 52 L66 56 L70 88 L30 88 Z" fill="#FACC15" stroke="#EAB308" stroke-width="2"/>
+          <circle cx="22" cy="62" r="9" fill="#FED7AA"/><circle cx="78" cy="62" r="9" fill="#FED7AA"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M30 75 Q35 45 40 30 Q45 20 50 30 Q55 45 60 75 Z" fill="#4D7C0F"/>
+          <circle cx="35" cy="35" r="10" fill="#65A30D"/><circle cx="50" cy="25" r="11" fill="#4D7C0F"/>
+        </svg>`
+      },
+      {
+        realmNum: 15,
+        realmName: "Realm 15: Lion Rock Echo Pass",
+        bgClass: "from-blue-950 via-indigo-900 to-slate-950",
+        enemyName: "Storm Griffin",
+        enemyMaxHp: 100,
+        characterName: "Brother 2",
+        targetSentence: ["Brother 2", "is the", "boy", "with the", "big ears", "."],
+        distractorWords: ["in the", "dress"],
+        promptText: "Describe Brother 2 with his giant listening radar ears!",
+        categoryType: "BODY FEATURE [WITH THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="45" r="18" fill="#FED7AA"/>
+          <path d="M36 40 C36 22 64 22 64 40 Z" fill="#78350F"/>
+          <ellipse cx="24" cy="45" rx="14" ry="20" fill="#FED7AA" stroke="#D97706" stroke-width="2"/>
+          <ellipse cx="76" cy="45" rx="14" ry="20" fill="#FED7AA" stroke="#D97706" stroke-width="2"/>
+          <circle cx="44" cy="44" r="2.5" fill="#000"/><circle cx="56" cy="44" r="2.5" fill="#000"/>
+          <path d="M36 64 L64 64 L68 90 L32 90 Z" fill="#0284C7"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <path d="M50 40 Q25 15 10 35 Q30 55 50 50" fill="#CA8A04"/>
+          <circle cx="50" cy="40" r="15" fill="#EAB308"/>
+        </svg>`
+      },
+      {
+        realmNum: 16,
+        realmName: "Final Realm 16: The Sacred Banyan Citadel",
+        bgClass: "from-rose-950 via-slate-900 to-black",
+        enemyName: "The Chaos Overlord",
+        enemyMaxHp: 120,
+        characterName: "Ng Ho",
+        targetSentence: ["Ng Ho", "is the", "gentleman", "in the", "suit", "."],
+        distractorWords: ["with the", "sandals"],
+        isBoss: true,
+        promptText: "Describe gentleman Ng Ho rescued in his formal two-piece suit!",
+        categoryType: "CLOTHING [IN THE]",
+        characterSvg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="38" r="18" fill="#FED7AA"/>
+          <path d="M42 46 Q50 40 58 46 Q50 50 42 46 Z" fill="#0F172A"/>
+          <circle cx="44" cy="36" r="2.5" fill="#000"/><circle cx="56" cy="36" r="2.5" fill="#000"/>
+          <path d="M26 56 L74 56 L78 92 L22 92 Z" fill="#334155"/>
+          <polygon points="50,56 42,66 58,66" fill="#FFFFFF"/>
+          <polygon points="46,64 50,67 54,64 50,61" fill="#DC2626"/>
+        </svg>`,
+        enemySvg: `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_25px_rgba(244,63,94,0.85)]">
+          <polygon points="50,15 36,28 64,28" fill="#881337"/>
+          <polygon points="28,26 20,12 36,22" fill="#E11D48"/><polygon points="72,26 80,12 64,22" fill="#E11D48"/>
+          <path d="M50 26 Q75 45 80 88 L20 88 Q25 45 50 26 Z" fill="#0F172A" stroke="#E11D48" stroke-width="3"/>
+          <circle cx="43" cy="42" r="5" fill="#FB7185"/><circle cx="57" cy="42" r="5" fill="#FB7185"/>
+          <circle cx="50" cy="64" r="12" fill="#4C0519"/><circle cx="50" cy="64" r="7" fill="#F43F5E"/>
+        </svg>`
+      }
+    ];
+
+    let currentRealmIdx = 0;
+    let wizardHp = 100;
+    let enemyHp = 80;
+    let totalExp = 0;
+    let comboStreak = 0;
+    let slottedRunes = [];
+    let availableRunes = [];
+    let isCastingLocked = false;
+
+    function setupCurrentRealm() {
+      const realm = realmsData[currentRealmIdx];
+      enemyHp = realm.enemyMaxHp;
+      slottedRunes = [];
+
+      document.getElementById('realm-display').textContent = `${currentRealmIdx + 1} / ${realmsData.length}`;
+      document.getElementById('realm-name-title').textContent = realm.realmName;
+      document.getElementById('enemy-name-label').textContent = realm.enemyName;
+      document.getElementById('enemy-name-tag').textContent = realm.enemyName.toUpperCase();
+      document.getElementById('enemy-svg-container').innerHTML = realm.enemySvg;
+      document.getElementById('target-character-avatar').innerHTML = realm.characterSvg;
+      document.getElementById('target-prompt-title').textContent = `Describe ${realm.characterName}!`;
+      document.getElementById('target-prompt-clue').textContent = realm.promptText;
+      document.getElementById('target-clue-category').textContent = realm.categoryType;
+
+      const bgLayer = document.getElementById('realm-bg-layer');
+      if (bgLayer) {
+        bgLayer.className = `absolute inset-0 bg-gradient-to-b ${realm.bgClass} opacity-90 pointer-events-none transition-all duration-700`;
+      }
+
+      const bossBadge = document.getElementById('boss-warning-badge');
+      if (realm.isBoss) {
+        bossBadge.classList.remove('hidden');
+      } else {
+        bossBadge.classList.add('hidden');
+      }
+
+      updateHpDisplays();
+
+      // Combine target sentence words and distractor words, then shuffle
+      const allWords = [...realm.targetSentence, ...(realm.distractorWords || [])];
+      availableRunes = allWords.sort(() => 0.5 - Math.random());
+
+      renderSlottedIncantation();
+      renderRuneStones();
+      isCastingLocked = false;
+    }
+
+    function renderSlottedIncantation() {
+      const slotBar = document.getElementById('incantation-slot-bar');
+      const counter = document.getElementById('rune-count-indicator');
+      const realm = realmsData[currentRealmIdx];
+
+      slotBar.innerHTML = '';
+      counter.textContent = `${slottedRunes.length} / ${realm.targetSentence.length} Runes`;
+
+      if (slottedRunes.length === 0) {
+        slotBar.innerHTML = `<span id="incantation-placeholder" class="text-slate-400 text-lg sm:text-2xl font-bold italic">
+          Tap runes below in order to weave your sentence spell...
+        </span>`;
+        return;
+      }
+
+      slottedRunes.forEach((word, idx) => {
+        const chip = document.createElement('button');
+        chip.className = 'rune-chip px-4 py-2 sm:px-6 sm:py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-indigo-700 to-pink-700 border-2 border-purple-300 text-white font-black text-xl sm:text-2xl md:text-3xl shadow-xl flex items-center gap-2 cursor-pointer transition transform hover:scale-105 active:scale-95';
+        chip.innerHTML = `<span>${word}</span> <span class="text-xs sm:text-base text-pink-300 opacity-80">✕</span>`;
+        chip.onclick = () => unslotRune(idx);
+        slotBar.appendChild(chip);
+      });
+    }
+
+    function renderRuneStones() {
+      const pool = document.getElementById('available-runes-pool');
+      pool.innerHTML = '';
+
+      availableRunes.forEach((word, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'rune-chip px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-2xl bg-slate-800 hover:bg-purple-900 border-2 border-purple-500/70 hover:border-purple-300 text-slate-100 hover:text-amber-300 font-black text-lg sm:text-2xl md:text-3xl shadow-lg transition transform hover:-translate-y-1 active:scale-95 cursor-pointer';
+        btn.textContent = word;
+        btn.onclick = () => slotRune(idx);
+        pool.appendChild(btn);
+      });
+    }
+
+    window.slotRune = function(availableIdx) {
+      if (isCastingLocked) return;
+      playSpellAudio('rune_click');
+      const word = availableRunes.splice(availableIdx, 1)[0];
+      slottedRunes.push(word);
+      renderSlottedIncantation();
+      renderRuneStones();
+    };
+
+    window.unslotRune = function(slottedIdx) {
+      if (isCastingLocked) return;
+      playSpellAudio('rune_click');
+      const word = slottedRunes.splice(slottedIdx, 1)[0];
+      availableRunes.push(word);
+      renderSlottedIncantation();
+      renderRuneStones();
+    };
+
+    window.clearSlottedIncantation = function() {
+      if (isCastingLocked) return;
+      playSpellAudio('rune_click');
+      availableRunes = [...availableRunes, ...slottedRunes];
+      slottedRunes = [];
+      renderSlottedIncantation();
+      renderRuneStones();
+    };
+
+    window.castIncantationSpell = function() {
+      if (isCastingLocked || wizardHp <= 0) return;
+      const realm = realmsData[currentRealmIdx];
+
+      if (slottedRunes.length === 0) {
+        return;
+      }
+
+      isCastingLocked = true;
+      const isCorrect = JSON.stringify(slottedRunes) === JSON.stringify(realm.targetSentence);
+
+      const wizardBox = document.getElementById('wizard-avatar-box');
+      const enemyBox = document.getElementById('enemy-avatar-box');
+      const spellCard = document.getElementById('spell-challenge-card');
+      const spellBeam = document.getElementById('spell-beam-fx');
+
+      if (isCorrect) {
+        // Spell Success!
+        playSpellAudio('spell_cast_success');
+        comboStreak++;
+        totalExp += 150 + (comboStreak * 30);
+        updateHudStats();
+
+        wizardBox.classList.add('wizard-cast');
+        spellBeam.classList.add('spell-beam-active');
+        spellBeam.style.opacity = '1';
+
+        setTimeout(() => {
+          enemyBox.classList.add('enemy-hit');
+          const damage = realm.enemyMaxHp;
+          spawnDamagePopup('enemy-damage-anchor', `-${damage} FATAL CRIT!`, '#FACC15');
+          enemyHp = 0;
+          updateHpDisplays();
+
+          spellCard.classList.add('border-emerald-400', 'bg-emerald-950/40');
+
+          setTimeout(() => {
+            wizardBox.classList.remove('wizard-cast');
+            enemyBox.classList.remove('enemy-hit');
+            spellBeam.classList.remove('spell-beam-active');
+            spellBeam.style.opacity = '0';
+            spellCard.classList.remove('border-emerald-400', 'bg-emerald-950/40');
+
+            handleRealmVictory();
+          }, 600);
+        }, 300);
+
+      } else {
+        // Spell Failure -> Enemy Counterattacks
+        playSpellAudio('spell_cast_fail');
+        comboStreak = 0;
+        updateHudStats();
+
+        spellCard.classList.add('border-rose-500', 'bg-rose-950/40');
+        const viewport = document.getElementById('battle-viewport');
+        viewport.classList.add('shake-effect');
+
+        const enemyCounterDmg = 25;
+        wizardHp = Math.max(0, wizardHp - enemyCounterDmg);
+        spawnDamagePopup('wizard-damage-anchor', `-${enemyCounterDmg} HP!`, '#EF4444');
+        updateHpDisplays();
+
+        setTimeout(() => {
+          viewport.classList.remove('shake-effect');
+          spellCard.classList.remove('border-rose-500', 'bg-rose-950/40');
+
+          if (wizardHp <= 0) {
+            handleWizardDefeat();
+          } else {
+            isCastingLocked = false;
+          }
+        }, 650);
+      }
+    };
+
+    function handleRealmVictory() {
+      const enemyBox = document.getElementById('enemy-avatar-box');
+      enemyBox.classList.add('opacity-0', 'scale-75');
+
+      setTimeout(() => {
+        enemyBox.classList.remove('opacity-0', 'scale-75');
+
+        if (currentRealmIdx < realmsData.length - 1) {
+          // Progress to next realm & restore +20 HP
+          wizardHp = Math.min(100, wizardHp + 20);
+          currentRealmIdx++;
+          setupCurrentRealm();
+        } else {
+          // Completed all 16 Realms!
+          playSpellAudio('victory');
+          document.getElementById('final-exp-text').textContent = totalExp;
+          document.getElementById('victory-modal').classList.remove('hidden');
+        }
+      }, 500);
+    }
+
+    function handleWizardDefeat() {
+      document.getElementById('gameover-modal').classList.remove('hidden');
+    }
+
+    window.reviveWizard = function() {
+      document.getElementById('gameover-modal').classList.add('hidden');
+      wizardHp = 100;
+      updateHpDisplays();
+      setupCurrentRealm();
+    };
+
+    window.restartFullQuest = function() {
+      document.getElementById('gameover-modal').classList.add('hidden');
+      document.getElementById('victory-modal').classList.add('hidden');
+      currentRealmIdx = 0;
+      wizardHp = 100;
+      totalExp = 0;
+      comboStreak = 0;
+      updateHudStats();
+      setupCurrentRealm();
+    };
+
+    function spawnDamagePopup(anchorId, text, color) {
+      const anchor = document.getElementById(anchorId);
+      if (!anchor) return;
+      anchor.innerHTML = `<span class="crit-popup block font-black" style="color: ${color}">${text}</span>`;
+      setTimeout(() => {
+        anchor.innerHTML = '';
+      }, 850);
+    }
+
+    function updateHpDisplays() {
+      const realm = realmsData[currentRealmIdx];
+      const wizPct = Math.max(0, Math.min(100, (wizardHp / 100) * 100));
+      document.getElementById('wizard-hp-bar').style.width = `${wizPct}%`;
+      document.getElementById('wizard-hp-text').textContent = `${wizardHp} / 100`;
+
+      const wizBar = document.getElementById('wizard-hp-bar');
+      if (wizardHp <= 25) {
+        wizBar.className = 'h-full bg-gradient-to-r from-red-600 to-rose-500 w-full transition-all duration-300 animate-pulse';
+      } else if (wizardHp <= 50) {
+        wizBar.className = 'h-full bg-gradient-to-r from-amber-500 to-orange-400 w-full transition-all duration-300';
+      } else {
+        wizBar.className = 'h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-full transition-all duration-300';
+      }
+
+      const enemyPct = Math.max(0, Math.min(100, (enemyHp / realm.enemyMaxHp) * 100));
+      document.getElementById('enemy-hp-bar').style.width = `${enemyPct}%`;
+      document.getElementById('enemy-hp-text').textContent = `${enemyHp} / ${realm.enemyMaxHp}`;
+    }
+
+    function updateHudStats() {
+      document.getElementById('exp-display').textContent = totalExp;
+      document.getElementById('combo-display').textContent = `x${comboStreak}`;
+    }
+
+    window.openSpellbookModal = function() {
+      document.getElementById('spellbook-modal').classList.remove('hidden');
+    };
+
+    window.closeSpellbookModal = function() {
+      document.getElementById('spellbook-modal').classList.add('hidden');
+    };
+
+    window.toggleAudio = function() {
+      isMuted = !isMuted;
+      document.getElementById('audio-btn').textContent = isMuted ? '🔇' : '🔊';
+    };
+
+    /* Keyboard navigation: Enter triggers CAST SPELL */
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        castIncantationSpell();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setupCurrentRealm();
+    });
+  </script>
+</body>
+</html>
