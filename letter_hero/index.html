@@ -358,7 +358,12 @@
       function speakLetter(ch) {
         if (!state.soundOn || !window.speechSynthesis) return;
         window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(String(ch).toUpperCase());
+        const letter = String(ch);
+        const isCapital = letter === letter.toUpperCase() && letter !== letter.toLowerCase();
+        // "capital A" / "small A": the case word is the distinction. The uppercase
+        // glyph keeps the en-US letter name ("A" → ay), so small a is not the word "a".
+        const spoken = (isCapital ? 'capital ' : 'small ') + letter.toUpperCase();
+        const u = new SpeechSynthesisUtterance(spoken);
         u.rate = 0.7;
         u.pitch = 1.05;
         u.lang = 'en-US';
