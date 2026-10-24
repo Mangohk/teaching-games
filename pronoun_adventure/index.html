@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Great Pronoun Adventure - P5 Smartboard Edition</title>
+<style>
+  :root {
+    --t1-color: #ef4444;
+    --t1-bg: #fee2e2;
+    --t2-color: #2563eb;
+    --t2-bg: #dbeafe;
+    --t3-color: #059669;
+    --t3-bg: #d1fae5;
+    --t4-color: #d97706;
+    --t4-bg: #fef3c7;
+    --t5-color: #9333ea;
+    --t5-bg: #f3e8ff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka', 'Segoe UI', cursive, sans-serif;
+    background: linear-gradient(135deg, #6ee7b7 0%, #3b82f6 50%, #9333ea 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #1e293b;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 14px 28px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    margin-bottom: 16px;
+    border: 4px solid #facc15;
+    width: 95%;
+    max-width: 1450px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 34px;
+    color: #1e3a8a;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .subtitle {
+    font-size: 19px;
+    font-weight: bold;
+    color: #475569;
+    margin-top: 4px;
+  }
+
+  /* Main Layout */
+  .game-container {
+    display: flex;
+    gap: 18px;
+    width: 95%;
+    max-width: 1450px;
+    align-items: stretch;
+  }
+
+  /* Left: 5x5 Board Grid */
+  .board-box {
+    background: rgba(255, 255, 255, 0.92);
+    padding: 18px;
+    border-radius: 24px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+    flex: 1 1 58%;
+    border: 4px solid #ffffff;
+  }
+
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .tile {
+    background: #ffffff;
+    border: 3px solid #cbd5e1;
+    border-radius: 16px;
+    min-height: 96px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 8px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease;
+  }
+
+  .tile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .tile-num {
+    font-size: 18px;
+    font-weight: 900;
+    color: #64748b;
+  }
+
+  .tile.start {
+    background: linear-gradient(135deg, #a7f3d0, #34d399);
+    border-color: #059669;
+  }
+  .tile.start .tile-num { color: #064e3b; }
+
+  .tile.finish {
+    background: linear-gradient(135deg, #fef08a, #facc15);
+    border-color: #d97706;
+  }
+  .tile.finish .tile-num { color: #78350f; }
+
+  .tokens-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    margin-top: 4px;
+  }
+
+  .token {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: white;
+    font-size: 17px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .t-1 { background: var(--t1-color); }
+  .t-2 { background: var(--t2-color); }
+  .t-3 { background: var(--t3-color); }
+  .t-4 { background: var(--t4-color); }
+  .t-5 { background: var(--t5-color); }
+
+  /* Right: Interactive Area */
+  .right-panel {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 24px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+    flex: 1 1 42%;
+    border: 4px solid #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Scoreboard */
+  .teams-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .team-chip {
+    padding: 8px 4px;
+    border-radius: 12px;
+    text-align: center;
+    border: 3px solid transparent;
+    transition: all 0.25s ease;
+  }
+
+  .team-chip .name {
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .team-chip .score {
+    font-size: 20px;
+    font-weight: 900;
+    margin-top: 2px;
+  }
+
+  .team-chip .tile-pos {
+    font-size: 13px;
+    font-weight: bold;
+    color: #475569;
+  }
+
+  .team-chip.active {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  }
+
+  .chip-1 { background: var(--t1-bg); color: var(--t1-color); }
+  .chip-1.active { border-color: var(--t1-color); }
+  .chip-2 { background: var(--t2-bg); color: var(--t2-color); }
+  .chip-2.active { border-color: var(--t2-color); }
+  .chip-3 { background: var(--t3-bg); color: var(--t3-color); }
+  .chip-3.active { border-color: var(--t3-color); }
+  .chip-4 { background: var(--t4-bg); color: var(--t4-color); }
+  .chip-4.active { border-color: var(--t4-color); }
+  .chip-5 { background: var(--t5-bg); color: var(--t5-color); }
+  .chip-5.active { border-color: var(--t5-color); }
+
+  /* Interactive Stage Box */
+  .stage-box {
+    background: #f8fafc;
+    border: 4px dashed #94a3b8;
+    border-radius: 20px;
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .turn-banner {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  /* Big 3D Rolling Dice */
+  .dice-display {
+    width: 90px;
+    height: 90px;
+    background: white;
+    border-radius: 18px;
+    border: 4px solid #1e293b;
+    box-shadow: 0 8px 0 #0f172a, 0 12px 20px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    font-weight: 900;
+    color: #1e3a8a;
+    margin: 10px auto;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease;
+  }
+
+  .dice-display.rolling {
+    animation: rollAnim 0.7s infinite linear;
+  }
+
+  @keyframes rollAnim {
+    0% { transform: rotate(0deg) scale(1.1); }
+    50% { transform: rotate(180deg) scale(0.95); }
+    100% { transform: rotate(360deg) scale(1.1); }
+  }
+
+  .big-btn {
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 16px 36px;
+    color: white;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #1e3a8a, 0 10px 20px rgba(37,99,235,0.35);
+    transition: all 0.15s ease;
+    margin-top: 14px;
+  }
+
+  .big-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 #1e3a8a, 0 14px 24px rgba(37,99,235,0.4);
+  }
+
+  .big-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #1e3a8a;
+  }
+
+  /* Question Stage */
+  .question-text {
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.45;
+    color: #0f172a;
+    margin: 12px 0 20px 0;
+  }
+
+  .question-text u {
+    display: inline-block;
+    min-width: 130px;
+    text-align: center;
+    color: #2563eb;
+    border-bottom: 4px solid #2563eb;
+    text-decoration: none;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .opt-btn {
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: 800;
+    padding: 18px;
+    background: #ffffff;
+    border: 3.5px solid #cbd5e1;
+    border-radius: 16px;
+    cursor: pointer;
+    color: #1e293b;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+    transition: all 0.15s ease;
+  }
+
+  .opt-btn:hover {
+    background: #f1f5f9;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+  }
+
+  /* Correct & Wrong Answer Visual Effects */
+  .opt-btn.correct-fx {
+    background: #86efac !important;
+    border-color: #15803d !important;
+    color: #14532d !important;
+    transform: scale(1.05);
+    animation: bouncePop 0.5s ease;
+  }
+
+  .opt-btn.wrong-fx {
+    background: #fca5a5 !important;
+    border-color: #b91c1c !important;
+    color: #7f1d1d !important;
+  }
+
+  .stage-box.shake {
+    animation: shakeAnim 0.5s ease;
+  }
+
+  .stage-box.glow-correct {
+    animation: correctPulse 0.6s ease;
+  }
+
+  @keyframes shakeAnim {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-14px); }
+    40%, 80% { transform: translateX(14px); }
+  }
+
+  @keyframes correctPulse {
+    0% { background: #f8fafc; }
+    50% { background: #bbf7d0; }
+    100% { background: #f8fafc; }
+  }
+
+  @keyframes bouncePop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1.05); }
+  }
+
+  .feedback-banner {
+    font-size: 26px;
+    font-weight: 900;
+    margin-top: 16px;
+    min-height: 38px;
+  }
+
+  /* Full-screen winner overlay (blocks clicks behind) */
+  .winner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .winner-overlay.open {
+    display: flex;
+  }
+
+  .winner-modal {
+    background: white;
+    border: 8px solid #facc15;
+    padding: 36px 48px;
+    border-radius: 32px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    z-index: 1000;
+    max-width: 92vw;
+  }
+
+  .winner-modal h2 {
+    font-size: 44px;
+    margin: 0 0 10px 0;
+  }
+
+  .winner-modal p {
+    font-size: 26px;
+    color: #475569;
+    font-weight: bold;
+    margin: 0 0 24px 0;
+  }
+
+  .hub-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-right: 10px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #3b82f6, #9333ea);
+    color: #fff;
+    text-decoration: none;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    vertical-align: middle;
+  }
+
+  .hub-back:hover { filter: brightness(1.08); }
+
+  header h1 {
+    display: inline;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">
+    <a href="../index.html" class="hub-back" title="Back to Teaching Games" aria-label="Back to Teaching Games">🏰</a>
+    <h1>The Great Pronoun Adventure</h1>
+  </div>
+  <div class="subtitle">🎯 Roll the Dice (1–3) • Correct: <b>+3 Pts &amp; Move Forward by the Dice Roll</b> • Wrong: <b>0 Pts &amp; 1 Step Back</b></div>
+</header>
+
+<div class="game-container">
+  <!-- Board (25 Big Tiles) -->
+  <div class="board-box">
+    <div class="board-grid" id="board"></div>
+  </div>
+
+  <!-- Interactive Question & Dice Panel -->
+  <div class="right-panel">
+    <!-- 5 Teams Score Display -->
+    <div class="teams-bar" id="teamsBar"></div>
+
+    <!-- Active Turn Canvas -->
+    <div class="stage-box" id="stageBox"></div>
+  </div>
+</div>
+
+<div id="winnerOverlay" class="winner-overlay" aria-hidden="true">
+  <div id="winnerModal" class="winner-modal" role="dialog" aria-modal="true" aria-labelledby="winnerText">
+    <h2 id="winnerText">👑 Champion!</h2>
+    <p id="winnerScore"></p>
+    <button class="big-btn" type="button" onclick="location.reload()">🔄 Play Again</button>
+  </div>
+</div>
+
+<script>
+// --- Web Audio Synthesizer (Instant SFX without external files) ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  const now = audioCtx.currentTime;
+
+  if (type === 'dice') {
+    // Dice tick
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(320, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.08);
+  } 
+  else if (type === 'correct') {
+    // 3-tone cheerful fanfare
+    [523.25, 659.25, 783.99].forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+      gain.gain.setValueAtTime(0.3, now + idx * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.28);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + idx * 0.12);
+      osc.stop(now + idx * 0.12 + 0.3);
+    });
+  } 
+  else if (type === 'wrong') {
+    // Low buzz buzz
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.linearRampToValueAtTime(95, now + 0.32);
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.linearRampToValueAtTime(0.01, now + 0.32);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.32);
+  }
+  else if (type === 'win') {
+    // Grand celebration arpeggio
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+      gain.gain.setValueAtTime(0.35, now + idx * 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.15 + 0.4);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + idx * 0.15);
+      osc.stop(now + idx * 0.15 + 0.45);
+    });
+  }
+}
+
+// --- 5 Teams Data ---
+const TEAMS = [
+  { id: 1, name: "Group 1", color: "var(--t1-color)", pos: 0, points: 0, chipClass: "chip-1" },
+  { id: 2, name: "Group 2", color: "var(--t2-color)", pos: 0, points: 0, chipClass: "chip-2" },
+  { id: 3, name: "Group 3", color: "var(--t3-color)", pos: 0, points: 0, chipClass: "chip-3" },
+  { id: 4, name: "Group 4", color: "var(--t4-color)", pos: 0, points: 0, chipClass: "chip-4" },
+  { id: 5, name: "Group 5", color: "var(--t5-color)", pos: 0, points: 0, chipClass: "chip-5" }
+];
+
+const BOARD_TILES = 25; // 0 = Start, 24 = Cave Finish
+let currentTeamIdx = 0;
+let rolledNumber = 0;
+let currentQuestion = null;
+let isAnswerLocked = false;
+let isGameOver = false;
+
+// --- 50 Categorized Questions ---
+const questionPool = [
+  // Subject Pronouns
+  { q: "Jo Jo walked into the forest. _____ had a compass in his hand.", opts: ["He", "His", "Him", "Hers"], a: "He" },
+  { q: "Mia looked around carefully. _____ heard a strange noise in the tree.", opts: ["She", "Her", "Hers", "Him"], a: "She" },
+  { q: "Brother 1 and Brother 2 are very tall. _____ look similar.", opts: ["They", "Them", "Their", "Theirs"], a: "They" },
+  { q: "The pocket watch is ticking. _____ is made of bright gold.", opts: ["It", "Its", "They", "He"], a: "It" },
+  { q: "Emma and I are tidying the house. _____ are working together.", opts: ["We", "Us", "Our", "They"], a: "We" },
+  { q: "Brother 3 has huge muscles. _____ punched the robber.", opts: ["He", "Him", "His", "She"], a: "He" },
+  { q: "The robbers saw Brother 7. Scared of him, _____ ran away super-fast.", opts: ["They", "Them", "Their", "Theirs"], a: "They" },
+  { q: "Dad was resting on the sofa. _____ looked very relaxed.", opts: ["He", "His", "Him", "She"], a: "He" },
+  { q: "Karen found a comb on the rock. _____ handed it to Mia.", opts: ["She", "Her", "Hers", "Him"], a: "She" },
+  { q: "The cave is deep and dark. _____ holds a lot of shiny treasures.", opts: ["It", "Its", "They", "He"], a: "It" },
+  { q: "My classmates and I love playing drama. _____ act out the play.", opts: ["We", "Us", "Our", "They"], a: "We" },
+  { q: "Brother 8 jumped into the dirt. _____ can dig underground easily.", opts: ["He", "Him", "His", "They"], a: "He" },
+
+  // Object Pronouns
+  { q: "Ng Ho was tired. Brother 4 brought a cup of water to _____.", opts: ["him", "he", "his", "them"], a: "him" },
+  { q: "Mia dropped her bottle. Karen kindly gave it back to _____.", opts: ["her", "she", "hers", "them"], a: "her" },
+  { q: "The hikers were lost. The forest ranger guided _____ to safety.", opts: ["them", "they", "their", "theirs"], a: "them" },
+  { q: "Here is your pink jacket. Please put _____ on.", opts: ["it", "its", "them", "him"], a: "it" },
+  { q: "We are standing near the cave entrance. Can you see _____?", opts: ["us", "we", "our", "ours"], a: "us" },
+  { q: "Ng Ho thanked Brother 3 and smiled at _____ happily.", opts: ["him", "he", "his", "her"], a: "him" },
+  { q: "The Governor met the ten brothers and thanked _____ all.", opts: ["them", "they", "their", "theirs"], a: "them" },
+  { q: "Mum called Emma and asked _____ to set the dining table.", opts: ["her", "she", "hers", "him"], a: "her" },
+  { q: "Eric saw two shiny diamond rings and picked _____ up.", opts: ["them", "it", "they", "their"], a: "them" },
+  { q: "Please listen to _____! I am telling the truth.", opts: ["me", "I", "my", "mine"], a: "me" },
+  { q: "Brother 2 has big ears. The boys whispered secrets to _____.", opts: ["him", "he", "his", "her"], a: "him" },
+  { q: "The robber dropped the bag and left _____ on the ground.", opts: ["it", "them", "its", "he"], a: "it" },
+
+  // Possessive Adjectives
+  { q: "Jo Jo packed _____ green backpack with snacks and juice.", opts: ["his", "him", "he", "hers"], a: "his" },
+  { q: "Mia brushed _____ long hair with the golden hairbrush.", opts: ["her", "hers", "she", "them"], a: "her" },
+  { q: "The robbers locked _____ treasure chest with a heavy key.", opts: ["their", "theirs", "them", "they"], a: "their" },
+  { q: "We decorated _____ classroom with colorful paper lanterns.", opts: ["our", "ours", "us", "we"], a: "our" },
+  { q: "The bird opened _____ wings and flew over the tall trees.", opts: ["its", "it's", "their", "it"], a: "its" },
+  { q: "Dad wiped _____ glasses before reading the morning news.", opts: ["his", "him", "he", "theirs"], a: "his" },
+  { q: "Karen and Mia shared _____ sandwiches under the shady oak tree.", opts: ["their", "theirs", "them", "her"], a: "their" },
+  { q: "I always tidy up _____ bedroom before going to sleep.", opts: ["my", "mine", "me", "I"], a: "my" },
+  { q: "Don't forget to wear _____ hat in the hot sun, Sam!", opts: ["your", "yours", "you", "mine"], a: "your" },
+  { q: "Mum hung _____ red coat on the wooden rack near the door.", opts: ["her", "hers", "she", "them"], a: "her" },
+  { q: "Brother 1 adjusted _____ round eyeglasses to read the map.", opts: ["his", "him", "he", "hers"], a: "his" },
+  { q: "The puppy wagged _____ tail when Eric gave it a bone.", opts: ["its", "it's", "their", "his"], a: "its" },
+
+  // Possessive Pronouns
+  { q: "That gold pocket watch belongs to Ng Ho. It is _____.", opts: ["his", "him", "he", "hers"], a: "his" },
+  { q: "This shiny hairbrush belongs to Mia. The brush is _____.", opts: ["hers", "her", "she", "theirs"], a: "hers" },
+  { q: "The three backpacks belong to the robbers. They are _____.", opts: ["theirs", "their", "them", "they"], a: "theirs" },
+  { q: "My team won first prize! This golden trophy is _____!", opts: ["ours", "our", "us", "mine"], a: "ours" },
+  { q: "\"I bought this necklace,\" said Brother 2. \"It is _____.\"", opts: ["mine", "my", "me", "I"], a: "mine" },
+  { q: "Is this water bottle your water bottle, Karen? Is it _____?", opts: ["yours", "your", "you", "hers"], a: "yours" },
+  { q: "Those diamond rings belong to the Governor's daughters. They are _____.", opts: ["theirs", "their", "them", "hers"], a: "theirs" },
+  { q: "Dad bought that camera, so the camera is _____.", opts: ["his", "him", "he", "theirs"], a: "his" },
+  { q: "\"I drew this comic picture all by myself. It is _____!\"", opts: ["mine", "my", "me", "I"], a: "mine" },
+  { q: "We made these paper airplanes together. They are _____.", opts: ["ours", "our", "us", "theirs"], a: "ours" },
+  { q: "Mum bought this silk scarf yesterday. It is _____.", opts: ["hers", "her", "she", "mine"], a: "hers" },
+  { q: "Are these pencils John and Sam's? Yes, they are _____.", opts: ["theirs", "their", "them", "yours"], a: "theirs" },
+  { q: "\"You left your umbrella on the bus, Eric. Is it _____?\"", opts: ["yours", "your", "you", "his"], a: "yours" },
+  { q: "Brother 4 found a gold bangle. \"The bangle is _____!\" he cheered.", opts: ["mine", "my", "me", "ours"], a: "mine" }
+];
+
+let availableQuestions = [...questionPool];
+function getUnusedQuestion() {
+  if (availableQuestions.length === 0) {
+    availableQuestions = [...questionPool]; // Reshuffle when full pool completed
+  }
+  const idx = Math.floor(Math.random() * availableQuestions.length);
+  return availableQuestions.splice(idx, 1)[0];
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// --- Render Board (5x5 Grid) ---
+function renderBoard() {
+  const boardEl = document.getElementById("board");
+  boardEl.innerHTML = "";
+
+  for (let i = 0; i < BOARD_TILES; i++) {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    if (i === 0) tile.classList.add("start");
+    if (i === BOARD_TILES - 1) tile.classList.add("finish");
+
+    let label = i === 0 ? "🚀 START" : (i === BOARD_TILES - 1 ? "🏆 FINISH" : `Tile ${i}`);
+    tile.innerHTML = `
+      <div class="tile-header">
+        <span class="tile-num">${label}</span>
+      </div>
+      <div class="tokens-wrapper" id="tile-${i}"></div>
+    `;
+    boardEl.appendChild(tile);
+  }
+
+  // Position Team Tokens
+  TEAMS.forEach(team => {
+    const container = document.getElementById(`tile-${team.pos}`);
+    if (container) {
+      const tok = document.createElement("div");
+      tok.className = `token t-${team.id}`;
+      tok.innerText = team.id;
+      tok.title = `${team.name} (Tile: ${team.pos}, Score: ${team.points})`;
+      container.appendChild(tok);
+    }
+  });
+}
+
+// --- Render Top Score Chips ---
+function renderScores() {
+  const bar = document.getElementById("teamsBar");
+  bar.innerHTML = "";
+
+  TEAMS.forEach((team, idx) => {
+    const chip = document.createElement("div");
+    chip.className = `team-chip ${team.chipClass}` + (idx === currentTeamIdx && !isGameOver ? " active" : "");
+    chip.innerHTML = `
+      <div class="name">${team.name}</div>
+      <div class="score">${team.points} pts</div>
+      <div class="tile-pos">Tile ${team.pos}/24</div>
+    `;
+    bar.appendChild(chip);
+  });
+}
+
+// --- Step 1: Prompt Dice Roll ---
+function showDiceStage() {
+  if (isGameOver) return;
+  const currentTeam = TEAMS[currentTeamIdx];
+  const stage = document.getElementById("stageBox");
+
+  stage.innerHTML = `
+    <div class="turn-banner" style="color: ${currentTeam.color}">
+      👉 ${currentTeam.name}'s Turn!
+    </div>
+    <div class="dice-display" id="diceBox" onclick="rollDice()">🎲</div>
+    <p style="font-size: 20px; font-weight: bold; margin: 8px 0; color: #475569;">
+      Tap the dice to roll (1, 2, or 3)
+    </p>
+    <button class="big-btn" onclick="rollDice()">Roll the Dice!</button>
+  `;
+}
+
+// --- Step 2: Animated Roll ---
+function rollDice() {
+  const diceBox = document.getElementById("diceBox");
+  if (!diceBox || diceBox.classList.contains("rolling")) return;
+
+  diceBox.classList.add("rolling");
+  let rolls = 0;
+  const interval = setInterval(() => {
+    const temp = Math.floor(Math.random() * 3) + 1;
+    diceBox.innerText = temp;
+    playSound('dice');
+    rolls++;
+    if (rolls >= 8) {
+      clearInterval(interval);
+      rolledNumber = Math.floor(Math.random() * 3) + 1;
+      diceBox.innerText = rolledNumber;
+      diceBox.classList.remove("rolling");
+
+      setTimeout(() => {
+        showQuestionStage();
+      }, 700);
+    }
+  }, 90);
+}
+
+// --- Step 3: Question Display ---
+function showQuestionStage() {
+  currentQuestion = getUnusedQuestion();
+  isAnswerLocked = false;
+  const currentTeam = TEAMS[currentTeamIdx];
+  const stage = document.getElementById("stageBox");
+
+  const formattedSentence = currentQuestion.q.replace(
+    "_____",
+    `<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>`
+  );
+
+  const shuffledOpts = shuffleArray(currentQuestion.opts);
+
+  stage.innerHTML = `
+    <div class="turn-banner" style="color: ${currentTeam.color}">
+      ${currentTeam.name} • Rolled: ${rolledNumber} Step${rolledNumber > 1 ? 's' : ''}
+    </div>
+    <div class="question-text">${formattedSentence}</div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="feedback-banner" id="feedbackMsg"></div>
+  `;
+
+  const grid = document.getElementById("optionsGrid");
+  shuffledOpts.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "opt-btn";
+    btn.dataset.answer = opt;
+    btn.textContent = opt;
+    btn.addEventListener("click", () => checkAnswer(btn));
+    grid.appendChild(btn);
+  });
+}
+
+// --- Step 4: Check Answer & Visual/Audio Effects ---
+function checkAnswer(btn) {
+  if (isAnswerLocked) return;
+  isAnswerLocked = true;
+
+  const chosen = btn.dataset.answer || btn.textContent.trim();
+  const currentTeam = TEAMS[currentTeamIdx];
+  const stage = document.getElementById("stageBox");
+  const feedback = document.getElementById("feedbackMsg");
+  const allBtns = document.querySelectorAll(".opt-btn");
+
+  allBtns.forEach(b => b.disabled = true);
+
+  if (chosen === currentQuestion.a) {
+    // Correct Answer
+    btn.classList.add("correct-fx");
+    stage.classList.add("glow-correct");
+    feedback.style.color = "#15803d";
+    feedback.innerHTML = `✨ <b>CORRECT!</b> +3 Points &amp; Advance ${rolledNumber} Steps!`;
+    playSound('correct');
+
+    currentTeam.points += 3;
+    currentTeam.pos = Math.min(BOARD_TILES - 1, currentTeam.pos + rolledNumber);
+
+    // Always refresh board + scores on the winning move before winner UI
+    renderBoard();
+    renderScores();
+
+    if (currentTeam.pos >= BOARD_TILES - 1) {
+      setTimeout(() => triggerWin(currentTeam), 900);
+      return;
+    }
+  } else {
+    // Incorrect Answer
+    btn.classList.add("wrong-fx");
+    stage.classList.add("shake");
+    allBtns.forEach(b => {
+      if ((b.dataset.answer || b.innerText) === currentQuestion.a) {
+        b.classList.add("correct-fx");
+      }
+    });
+
+    feedback.style.color = "#b91c1c";
+    feedback.innerHTML = `❌ <b>WRONG!</b> Answer is "${currentQuestion.a}". Move 1 step back!`;
+    playSound('wrong');
+
+    currentTeam.pos = Math.max(0, currentTeam.pos - 1);
+
+    renderBoard();
+    renderScores();
+  }
+
+  // Next Turn Transition
+  setTimeout(() => {
+    stage.classList.remove("shake", "glow-correct");
+    if (!isGameOver) {
+      currentTeamIdx = (currentTeamIdx + 1) % TEAMS.length;
+      renderScores();
+      showDiceStage();
+    }
+  }, 2600);
+}
+
+// --- Step 5: Win Screen ---
+function triggerWin(team) {
+  isGameOver = true;
+  playSound('win');
+  renderBoard();
+  renderScores();
+
+  document.getElementById("winnerText").innerHTML = `🎉 Champion: ${team.name}! 🏆`;
+  document.getElementById("winnerScore").innerText = `Reached the finish tile first with ${team.points} total points!`;
+  const overlay = document.getElementById("winnerOverlay");
+  overlay.classList.add("open");
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+// Initialize on Load
+renderBoard();
+renderScores();
+showDiceStage();
+</script>
+</body>
+</html>
