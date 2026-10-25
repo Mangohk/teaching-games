@@ -44,6 +44,7 @@
     border: 4px solid #facc15;
     width: 95%;
     max-width: 1450px;
+    position: relative;
   }
 
   h1 {
@@ -55,10 +56,45 @@
   }
 
   .subtitle {
-    font-size: 19px;
+    font-size: 17px;
     font-weight: bold;
     color: #475569;
+    margin-top: 6px;
+    line-height: 1.35;
+  }
+
+  .subtitle .win-note {
+    display: block;
     margin-top: 4px;
+    color: #b45309;
+    font-size: 16px;
+  }
+
+  .header-actions {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .header-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 900;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 3px solid #cbd5e1;
+    background: #f8fafc;
+    color: #1e293b;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #94a3b8;
+  }
+
+  .header-btn:hover { background: #e2e8f0; }
+  .header-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #94a3b8;
   }
 
   /* Main Layout */
@@ -149,6 +185,11 @@
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
+  @keyframes popIn {
+    from { transform: scale(0.4); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
   .t-1 { background: var(--t1-color); }
   .t-2 { background: var(--t2-color); }
   .t-3 { background: var(--t3-color); }
@@ -171,9 +212,13 @@
   /* Scoreboard */
   .teams-bar {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
   }
+
+  .teams-bar.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .teams-bar.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .teams-bar.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .teams-bar.cols-5 { grid-template-columns: repeat(5, 1fr); }
 
   .team-chip {
     padding: 8px 4px;
@@ -238,24 +283,35 @@
     margin-bottom: 12px;
   }
 
-  /* Big 3D Rolling Dice */
+  /* Pip dice face (matches rolled 1–6; never a misleading emoji) */
   .dice-display {
-    width: 90px;
-    height: 90px;
+    width: 96px;
+    height: 96px;
     background: white;
     border-radius: 18px;
     border: 4px solid #1e293b;
     box-shadow: 0 8px 0 #0f172a, 0 12px 20px rgba(0,0,0,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 52px;
-    font-weight: 900;
-    color: #1e3a8a;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 12px;
     margin: 10px auto;
     cursor: pointer;
     user-select: none;
     transition: transform 0.1s ease;
+  }
+
+  .dice-display .pip {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: transparent;
+    justify-self: center;
+    align-self: center;
+  }
+
+  .dice-display .pip.on {
+    background: #0f172a;
   }
 
   .dice-display.rolling {
@@ -293,22 +349,77 @@
     box-shadow: 0 2px 0 #1e3a8a;
   }
 
+  .big-btn.secondary {
+    background: linear-gradient(135deg, #64748b, #475569);
+    box-shadow: 0 6px 0 #334155, 0 10px 20px rgba(71,85,105,0.35);
+  }
+
+  /* Setup: team count */
+  .setup-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: #1e3a8a;
+    margin: 0 0 8px 0;
+  }
+
+  .setup-hint {
+    font-size: 18px;
+    font-weight: bold;
+    color: #475569;
+    margin: 0 0 18px 0;
+  }
+
+  .team-pick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .team-pick-btn {
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: 900;
+    min-width: 72px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 4px solid #cbd5e1;
+    background: #fff;
+    color: #1e293b;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #94a3b8;
+  }
+
+  .team-pick-btn:hover { border-color: #3b82f6; }
+  .team-pick-btn.selected {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #1d4ed8;
+    box-shadow: 0 4px 0 #1e40af;
+  }
+
   /* Question Stage */
   .question-text {
     font-size: 25px;
     font-weight: 800;
-    line-height: 1.45;
+    line-height: 1.5;
     color: #0f172a;
     margin: 12px 0 20px 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .question-text u {
     display: inline-block;
-    min-width: 130px;
+    min-width: 110px;
+    max-width: 100%;
     text-align: center;
     color: #2563eb;
     border-bottom: 4px solid #2563eb;
     text-decoration: none;
+    margin: 0 2px;
   }
 
   .options-grid {
@@ -338,7 +449,6 @@
     transform: translateY(-2px);
   }
 
-  /* Correct & Wrong Answer Visual Effects */
   .opt-btn.correct-fx {
     background: #86efac !important;
     border-color: #15803d !important;
@@ -419,10 +529,11 @@
   }
 
   .winner-modal p {
-    font-size: 26px;
+    font-size: 24px;
     color: #475569;
     font-weight: bold;
     margin: 0 0 24px 0;
+    line-height: 1.35;
   }
 
   .hub-back {
@@ -447,6 +558,14 @@
     display: inline;
     vertical-align: middle;
   }
+
+  @media (max-width: 900px) {
+    .header-actions {
+      position: static;
+      justify-content: center;
+      margin-top: 8px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -456,7 +575,13 @@
     <a href="../index.html" class="hub-back" title="Back to Teaching Games" aria-label="Back to Teaching Games">🏰</a>
     <h1>The Great Pronoun Adventure</h1>
   </div>
-  <div class="subtitle">🎯 Roll the Dice (1–3) • Correct: <b>+3 Pts &amp; Move Forward by the Dice Roll</b> • Wrong: <b>0 Pts &amp; 1 Step Back</b></div>
+  <div class="header-actions">
+    <button type="button" class="header-btn" id="restartBtn" title="Restart / New game">🔄 Restart</button>
+  </div>
+  <div class="subtitle">
+    🎯 Roll the Dice (1–6) • Correct: <b>+3 Pts &amp; Move Forward by the Dice Roll</b> • Wrong: <b>0 Pts &amp; 1 Step Back</b>
+    <span class="win-note">🏆 Winner = <b>first team to reach FINISH</b> (not highest points)</span>
+  </div>
 </header>
 
 <div class="game-container">
@@ -467,10 +592,7 @@
 
   <!-- Interactive Question & Dice Panel -->
   <div class="right-panel">
-    <!-- 5 Teams Score Display -->
-    <div class="teams-bar" id="teamsBar"></div>
-
-    <!-- Active Turn Canvas -->
+    <div class="teams-bar cols-5" id="teamsBar"></div>
     <div class="stage-box" id="stageBox"></div>
   </div>
 </div>
@@ -479,7 +601,7 @@
   <div id="winnerModal" class="winner-modal" role="dialog" aria-modal="true" aria-labelledby="winnerText">
     <h2 id="winnerText">👑 Champion!</h2>
     <p id="winnerScore"></p>
-    <button class="big-btn" type="button" onclick="location.reload()">🔄 Play Again</button>
+    <button class="big-btn" type="button" id="playAgainBtn">🔄 Play Again</button>
   </div>
 </div>
 
@@ -494,7 +616,6 @@ function playSound(type) {
   const now = audioCtx.currentTime;
 
   if (type === 'dice') {
-    // Dice tick
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'triangle';
@@ -506,9 +627,8 @@ function playSound(type) {
     gain.connect(audioCtx.destination);
     osc.start(now);
     osc.stop(now + 0.08);
-  } 
+  }
   else if (type === 'correct') {
-    // 3-tone cheerful fanfare
     [523.25, 659.25, 783.99].forEach((freq, idx) => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -521,9 +641,8 @@ function playSound(type) {
       osc.start(now + idx * 0.12);
       osc.stop(now + idx * 0.12 + 0.3);
     });
-  } 
+  }
   else if (type === 'wrong') {
-    // Low buzz buzz
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sawtooth';
@@ -537,7 +656,6 @@ function playSound(type) {
     osc.stop(now + 0.32);
   }
   else if (type === 'win') {
-    // Grand celebration arpeggio
     [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -553,21 +671,64 @@ function playSound(type) {
   }
 }
 
-// --- 5 Teams Data ---
-const TEAMS = [
-  { id: 1, name: "Group 1", color: "var(--t1-color)", pos: 0, points: 0, chipClass: "chip-1" },
-  { id: 2, name: "Group 2", color: "var(--t2-color)", pos: 0, points: 0, chipClass: "chip-2" },
-  { id: 3, name: "Group 3", color: "var(--t3-color)", pos: 0, points: 0, chipClass: "chip-3" },
-  { id: 4, name: "Group 4", color: "var(--t4-color)", pos: 0, points: 0, chipClass: "chip-4" },
-  { id: 5, name: "Group 5", color: "var(--t5-color)", pos: 0, points: 0, chipClass: "chip-5" }
+// --- Team templates (2–5 active groups) ---
+const ALL_TEAMS = [
+  { id: 1, name: "Group 1", color: "var(--t1-color)", chipClass: "chip-1" },
+  { id: 2, name: "Group 2", color: "var(--t2-color)", chipClass: "chip-2" },
+  { id: 3, name: "Group 3", color: "var(--t3-color)", chipClass: "chip-3" },
+  { id: 4, name: "Group 4", color: "var(--t4-color)", chipClass: "chip-4" },
+  { id: 5, name: "Group 5", color: "var(--t5-color)", chipClass: "chip-5" }
 ];
 
-const BOARD_TILES = 25; // 0 = Start, 24 = Cave Finish
+const BOARD_TILES = 25; // 0 = Start, 24 = Finish
+const DICE_SIDES = 6;
+const FEEDBACK_MS = 5200; // longer pause so smartboard class can read feedback
+
+let teams = [];
+let teamCount = 5;
 let currentTeamIdx = 0;
 let rolledNumber = 0;
 let currentQuestion = null;
 let isAnswerLocked = false;
 let isGameOver = false;
+let gameStarted = false;
+
+// Standard die pip positions in a 3×3 grid (indexes 0–8)
+const PIP_MAP = {
+  1: [4],
+  2: [0, 8],
+  3: [0, 4, 8],
+  4: [0, 2, 6, 8],
+  5: [0, 2, 4, 6, 8],
+  6: [0, 2, 3, 5, 6, 8]
+};
+
+function stepWord(n) {
+  return n === 1 ? "Step" : "Steps";
+}
+
+function paintDiceFace(el, value) {
+  const n = Math.max(1, Math.min(DICE_SIDES, Number(value) || 1));
+  const on = new Set(PIP_MAP[n]);
+  el.innerHTML = "";
+  el.dataset.value = String(n);
+  for (let i = 0; i < 9; i++) {
+    const pip = document.createElement("span");
+    pip.className = "pip" + (on.has(i) ? " on" : "");
+    el.appendChild(pip);
+  }
+}
+
+function makeDiceElement(id, value, clickable) {
+  const dice = document.createElement("div");
+  dice.className = "dice-display";
+  if (id) dice.id = id;
+  paintDiceFace(dice, value || 1);
+  if (clickable) {
+    dice.addEventListener("click", () => rollDice());
+  }
+  return dice;
+}
 
 // --- 50 Categorized Questions ---
 const questionPool = [
@@ -630,13 +791,22 @@ const questionPool = [
   { q: "Brother 4 found a gold bangle. \"The bangle is _____!\" he cheered.", opts: ["mine", "my", "me", "ours"], a: "mine" }
 ];
 
-let availableQuestions = [...questionPool];
+let availableQuestions = [];
+
+function resetQuestionPool() {
+  // Fresh unused deck for each game; no repeats until the pool is exhausted
+  availableQuestions = shuffleArray(questionPool.map((q) => ({
+    q: q.q,
+    opts: [...q.opts],
+    a: q.a
+  })));
+}
+
 function getUnusedQuestion() {
   if (availableQuestions.length === 0) {
-    availableQuestions = [...questionPool]; // Reshuffle when full pool completed
+    resetQuestionPool();
   }
-  const idx = Math.floor(Math.random() * availableQuestions.length);
-  return availableQuestions.splice(idx, 1)[0];
+  return availableQuestions.pop();
 }
 
 function shuffleArray(arr) {
@@ -646,6 +816,85 @@ function shuffleArray(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function buildTeams(count) {
+  teamCount = Math.max(2, Math.min(5, count));
+  teams = ALL_TEAMS.slice(0, teamCount).map((t) => ({
+    id: t.id,
+    name: t.name,
+    color: t.color,
+    chipClass: t.chipClass,
+    pos: 0,
+    points: 0
+  }));
+}
+
+function hideWinnerOverlay() {
+  const overlay = document.getElementById("winnerOverlay");
+  overlay.classList.remove("open");
+  overlay.setAttribute("aria-hidden", "true");
+}
+
+function showSetupStage() {
+  gameStarted = false;
+  isGameOver = false;
+  isAnswerLocked = false;
+  hideWinnerOverlay();
+
+  // Preview empty board / chips for chosen count
+  if (!teams.length) buildTeams(teamCount);
+  renderBoard();
+  renderScores();
+
+  const stage = document.getElementById("stageBox");
+  stage.classList.remove("shake", "glow-correct");
+  stage.innerHTML = `
+    <p class="setup-title">How many groups?</p>
+    <p class="setup-hint">Choose 2–5 teams (empty groups will not take turns)</p>
+    <div class="team-pick-row" id="teamPickRow"></div>
+    <button class="big-btn" type="button" id="startGameBtn">🚀 Start Adventure!</button>
+  `;
+
+  const row = document.getElementById("teamPickRow");
+  for (let n = 2; n <= 5; n++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "team-pick-btn" + (n === teamCount ? " selected" : "");
+    btn.textContent = String(n);
+    btn.addEventListener("click", () => {
+      teamCount = n;
+      buildTeams(teamCount);
+      renderBoard();
+      renderScores();
+      row.querySelectorAll(".team-pick-btn").forEach((b) => {
+        b.classList.toggle("selected", Number(b.textContent) === teamCount);
+      });
+    });
+    row.appendChild(btn);
+  }
+
+  document.getElementById("startGameBtn").addEventListener("click", startGame);
+}
+
+function startGame() {
+  buildTeams(teamCount);
+  currentTeamIdx = 0;
+  rolledNumber = 0;
+  currentQuestion = null;
+  isAnswerLocked = false;
+  isGameOver = false;
+  gameStarted = true;
+  resetQuestionPool();
+  hideWinnerOverlay();
+  renderBoard();
+  renderScores();
+  showDiceStage();
+}
+
+function restartGame() {
+  // Mid-game or post-win: return to team picker for a fresh match
+  showSetupStage();
 }
 
 // --- Render Board (5x5 Grid) ---
@@ -669,8 +918,7 @@ function renderBoard() {
     boardEl.appendChild(tile);
   }
 
-  // Position Team Tokens
-  TEAMS.forEach(team => {
+  teams.forEach(team => {
     const container = document.getElementById(`tile-${team.pos}`);
     if (container) {
       const tok = document.createElement("div");
@@ -686,10 +934,11 @@ function renderBoard() {
 function renderScores() {
   const bar = document.getElementById("teamsBar");
   bar.innerHTML = "";
+  bar.className = `teams-bar cols-${Math.max(2, teams.length || teamCount)}`;
 
-  TEAMS.forEach((team, idx) => {
+  teams.forEach((team, idx) => {
     const chip = document.createElement("div");
-    chip.className = `team-chip ${team.chipClass}` + (idx === currentTeamIdx && !isGameOver ? " active" : "");
+    chip.className = `team-chip ${team.chipClass}` + (gameStarted && idx === currentTeamIdx && !isGameOver ? " active" : "");
     chip.innerHTML = `
       <div class="name">${team.name}</div>
       <div class="score">${team.points} pts</div>
@@ -701,38 +950,44 @@ function renderScores() {
 
 // --- Step 1: Prompt Dice Roll ---
 function showDiceStage() {
-  if (isGameOver) return;
-  const currentTeam = TEAMS[currentTeamIdx];
+  if (isGameOver || !gameStarted) return;
+  const currentTeam = teams[currentTeamIdx];
   const stage = document.getElementById("stageBox");
+  stage.classList.remove("shake", "glow-correct");
 
   stage.innerHTML = `
     <div class="turn-banner" style="color: ${currentTeam.color}">
       👉 ${currentTeam.name}'s Turn!
     </div>
-    <div class="dice-display" id="diceBox" onclick="rollDice()">🎲</div>
+    <div id="diceMount"></div>
     <p style="font-size: 20px; font-weight: bold; margin: 8px 0; color: #475569;">
-      Tap the dice to roll (1, 2, or 3)
+      Tap the dice to roll (1–6)
     </p>
-    <button class="big-btn" onclick="rollDice()">Roll the Dice!</button>
+    <button class="big-btn" type="button" id="rollDiceBtn">Roll the Dice!</button>
   `;
+
+  const mount = document.getElementById("diceMount");
+  const dice = makeDiceElement("diceBox", 1, true);
+  mount.appendChild(dice);
+  document.getElementById("rollDiceBtn").addEventListener("click", () => rollDice());
 }
 
-// --- Step 2: Animated Roll ---
+// --- Step 2: Animated Roll (1–6, face matches number) ---
 function rollDice() {
   const diceBox = document.getElementById("diceBox");
-  if (!diceBox || diceBox.classList.contains("rolling")) return;
+  if (!diceBox || diceBox.classList.contains("rolling") || isGameOver || !gameStarted) return;
 
   diceBox.classList.add("rolling");
   let rolls = 0;
   const interval = setInterval(() => {
-    const temp = Math.floor(Math.random() * 3) + 1;
-    diceBox.innerText = temp;
+    const temp = Math.floor(Math.random() * DICE_SIDES) + 1;
+    paintDiceFace(diceBox, temp);
     playSound('dice');
     rolls++;
-    if (rolls >= 8) {
+    if (rolls >= 10) {
       clearInterval(interval);
-      rolledNumber = Math.floor(Math.random() * 3) + 1;
-      diceBox.innerText = rolledNumber;
+      rolledNumber = Math.floor(Math.random() * DICE_SIDES) + 1;
+      paintDiceFace(diceBox, rolledNumber);
       diceBox.classList.remove("rolling");
 
       setTimeout(() => {
@@ -746,7 +1001,7 @@ function rollDice() {
 function showQuestionStage() {
   currentQuestion = getUnusedQuestion();
   isAnswerLocked = false;
-  const currentTeam = TEAMS[currentTeamIdx];
+  const currentTeam = teams[currentTeamIdx];
   const stage = document.getElementById("stageBox");
 
   const formattedSentence = currentQuestion.q.replace(
@@ -758,7 +1013,7 @@ function showQuestionStage() {
 
   stage.innerHTML = `
     <div class="turn-banner" style="color: ${currentTeam.color}">
-      ${currentTeam.name} • Rolled: ${rolledNumber} Step${rolledNumber > 1 ? 's' : ''}
+      ${currentTeam.name} • Rolled: ${rolledNumber} ${stepWord(rolledNumber)}
     </div>
     <div class="question-text">${formattedSentence}</div>
     <div class="options-grid" id="optionsGrid"></div>
@@ -779,11 +1034,11 @@ function showQuestionStage() {
 
 // --- Step 4: Check Answer & Visual/Audio Effects ---
 function checkAnswer(btn) {
-  if (isAnswerLocked) return;
+  if (isAnswerLocked || isGameOver || !gameStarted) return;
   isAnswerLocked = true;
 
   const chosen = btn.dataset.answer || btn.textContent.trim();
-  const currentTeam = TEAMS[currentTeamIdx];
+  const currentTeam = teams[currentTeamIdx];
   const stage = document.getElementById("stageBox");
   const feedback = document.getElementById("feedbackMsg");
   const allBtns = document.querySelectorAll(".opt-btn");
@@ -791,26 +1046,23 @@ function checkAnswer(btn) {
   allBtns.forEach(b => b.disabled = true);
 
   if (chosen === currentQuestion.a) {
-    // Correct Answer
     btn.classList.add("correct-fx");
     stage.classList.add("glow-correct");
     feedback.style.color = "#15803d";
-    feedback.innerHTML = `✨ <b>CORRECT!</b> +3 Points &amp; Advance ${rolledNumber} Steps!`;
+    feedback.innerHTML = `✨ <b>CORRECT!</b> +3 Points &amp; Advance ${rolledNumber} ${stepWord(rolledNumber)}!`;
     playSound('correct');
 
     currentTeam.points += 3;
     currentTeam.pos = Math.min(BOARD_TILES - 1, currentTeam.pos + rolledNumber);
 
-    // Always refresh board + scores on the winning move before winner UI
     renderBoard();
     renderScores();
 
     if (currentTeam.pos >= BOARD_TILES - 1) {
-      setTimeout(() => triggerWin(currentTeam), 900);
+      setTimeout(() => triggerWin(currentTeam), 1100);
       return;
     }
   } else {
-    // Incorrect Answer
     btn.classList.add("wrong-fx");
     stage.classList.add("shake");
     allBtns.forEach(b => {
@@ -829,15 +1081,15 @@ function checkAnswer(btn) {
     renderScores();
   }
 
-  // Next Turn Transition
+  // Longer pause so the class can read feedback on the smartboard
   setTimeout(() => {
     stage.classList.remove("shake", "glow-correct");
     if (!isGameOver) {
-      currentTeamIdx = (currentTeamIdx + 1) % TEAMS.length;
+      currentTeamIdx = (currentTeamIdx + 1) % teams.length;
       renderScores();
       showDiceStage();
     }
-  }, 2600);
+  }, FEEDBACK_MS);
 }
 
 // --- Step 5: Win Screen ---
@@ -848,16 +1100,20 @@ function triggerWin(team) {
   renderScores();
 
   document.getElementById("winnerText").innerHTML = `🎉 Champion: ${team.name}! 🏆`;
-  document.getElementById("winnerScore").innerText = `Reached the finish tile first with ${team.points} total points!`;
+  document.getElementById("winnerScore").innerHTML =
+    `<b>First to reach FINISH</b> wins the race!<br>Points this game: ${team.points} (points are bonus — finishing first decides the winner).`;
   const overlay = document.getElementById("winnerOverlay");
   overlay.classList.add("open");
   overlay.setAttribute("aria-hidden", "false");
 }
 
-// Initialize on Load
-renderBoard();
-renderScores();
-showDiceStage();
+// Controls
+document.getElementById("restartBtn").addEventListener("click", () => restartGame());
+document.getElementById("playAgainBtn").addEventListener("click", () => restartGame());
+
+// Initialize: team picker first (default 5 groups)
+buildTeams(5);
+showSetupStage();
 </script>
 </body>
 </html>
