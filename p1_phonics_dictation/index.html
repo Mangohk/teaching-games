@@ -1063,6 +1063,18 @@
       }, 350);
     }
 
+    // Fisher–Yates shuffle (copy) so the correct answer is not always in the same slot
+    function shuffledChoices(choices) {
+      const arr = choices.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+      }
+      return arr;
+    }
+
     // Render large multiple choice cards with distinct cheerful palettes
     function renderChoices(q) {
       const container = document.getElementById('choicesGridContainer');
@@ -1076,7 +1088,8 @@
         'bg-sky-500 hover:bg-sky-600 border-sky-600 text-white'
       ];
 
-      q.choices.forEach((choice, index) => {
+      // Shuffle each load so correct answer lands randomly in a/b/c/d slots
+      shuffledChoices(q.choices).forEach((choice, index) => {
         const btn = document.createElement('button');
         const style = colorSchemes[index % colorSchemes.length];
 
