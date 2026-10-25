@@ -239,26 +239,26 @@
   </div>
 
   <script>
-    // Graded target is `word` (no a/an). `say` is Hear / auto-read only.
+    // Graded target is `word` (no a/an). TTS reads `word` only (SC-aligned; clue may keep articles).
     const WORDS = [
-      { word: 'vest', say: 'a vest', clue: 'A vest is a short jacket with no sleeves.' },
-      { word: 'mittens', say: 'mittens', clue: 'Mittens keep your hands warm, with one pocket for the thumb.' },
-      { word: 'suit', say: 'a suit', clue: 'A suit is a matching jacket and trousers.' },
-      { word: 'umbrella', say: 'an umbrella', clue: 'An umbrella keeps the rain off you.' },
-      { word: 'jeans', say: 'jeans', clue: 'Jeans are strong blue trousers.' },
-      { word: 'mirror', say: 'a mirror', clue: 'A mirror shows what you look like.' },
-      { word: 'backpack', say: 'a backpack', clue: 'A backpack is a bag you wear on your back.' },
-      { word: 'hairbrush', say: 'a hairbrush', clue: 'A hairbrush smooths your hair.' },
-      { word: 'earrings', say: 'earrings', clue: 'Earrings are jewelry you wear on your ears.' },
-      { word: 'comb', say: 'a comb', clue: 'A comb has teeth that tidy your hair.' },
-      { word: 'looks', say: 'looks', clue: 'She looks happy when she smiles.' },
-      { word: 'wears', say: 'wears', clue: 'He wears a red cap to school.' },
-      { word: 'sunglasses', say: 'sunglasses', clue: 'Sunglasses protect your eyes from bright sun.' },
-      { word: 'sisters', say: 'sisters', clue: 'Sisters are girls born in the same family.' },
-      { word: 'singing', say: 'singing', clue: 'Singing is making music with your voice.' },
-      { word: 'dancing', say: 'dancing', clue: 'Dancing is moving your body to music.' },
-      { word: 'theirs', say: 'theirs', clue: 'That blue bag is theirs, not ours.' },
-      { word: 'mine', say: 'mine', clue: 'This pencil is mine.' }
+      { word: 'vest', clue: 'A vest is a short jacket with no sleeves.' },
+      { word: 'mittens', clue: 'Mittens keep your hands warm, with one pocket for the thumb.' },
+      { word: 'suit', clue: 'A suit is a matching jacket and trousers.' },
+      { word: 'umbrella', clue: 'An umbrella keeps the rain off you.' },
+      { word: 'jeans', clue: 'Jeans are strong blue trousers.' },
+      { word: 'mirror', clue: 'A mirror shows what you look like.' },
+      { word: 'backpack', clue: 'A backpack is a bag you wear on your back.' },
+      { word: 'hairbrush', clue: 'A hairbrush smooths your hair.' },
+      { word: 'earrings', clue: 'Earrings are jewelry you wear on your ears.' },
+      { word: 'comb', clue: 'A comb has teeth that tidy your hair.' },
+      { word: 'looks', clue: 'She looks happy when she smiles.' },
+      { word: 'wears', clue: 'He wears a red cap to school.' },
+      { word: 'sunglasses', clue: 'Sunglasses protect your eyes from bright sun.' },
+      { word: 'sisters', clue: 'Sisters are girls born in the same family.' },
+      { word: 'singing', clue: 'Singing is making music with your voice.' },
+      { word: 'dancing', clue: 'Dancing is moving your body to music.' },
+      { word: 'theirs', clue: 'That blue bag is theirs, not ours.' },
+      { word: 'mine', clue: 'This pencil is mine.' }
     ];
 
     const LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -312,10 +312,10 @@
       return state.order[state.index] || null;
     }
 
+    // Hear / auto-read utterance text = graded target word only (no leading a/an).
     function spokenForm(item) {
       if (!item) return '';
-      const say = String(item.say || '').trim();
-      return say || item.word;
+      return String(item.word || '').trim();
     }
 
     function cancelSpeech() {
@@ -323,6 +323,20 @@
       try { window.speechSynthesis.cancel(); } catch (err) { /* no engine */ }
     }
 
+    // Optional stable en-US (or en) voice — missing voices must not block speak (X3).
+    function pickEnglishVoice() {
+      if (!window.speechSynthesis || typeof window.speechSynthesis.getVoices !== 'function') return null;
+      try {
+        const voices = window.speechSynthesis.getVoices() || [];
+        return voices.find((v) => /^en-US/i.test(v.lang || ''))
+          || voices.find((v) => /^en\b/i.test(v.lang || ''))
+          || null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    // Hear Word and auto-read share this helper (SC speakCurrentWord-aligned: Mute / cancel / lang / rate).
     function speakCurrent(opts) {
       const auto = !!(opts && opts.auto);
       if (state.muted || state.finished) return;
@@ -336,6 +350,8 @@
         const utterance = new SpeechSynthesisUtterance(spokenForm(item));
         utterance.lang = 'en-US';
         utterance.rate = 0.315;
+        const voice = pickEnglishVoice();
+        if (voice) utterance.voice = voice;
         window.speechSynthesis.speak(utterance);
       } catch (err) {
         if (!auto) setFeedback('This browser cannot speak the word.', 'bad');
