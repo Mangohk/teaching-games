@@ -89,11 +89,20 @@
       background: #ffe8e4;
       border-color: #f0b2a8;
     }
-    .clue {
-      margin: 0 0 0.75rem;
-      font-size: clamp(1.02rem, 2.8vw, 1.2rem);
-      font-weight: 800;
-      line-height: 1.4;
+    .word-image-wrap {
+      margin: 0 0 0.85rem;
+      display: flex;
+      justify-content: center;
+    }
+    .word-image {
+      width: min(100%, 280px);
+      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 1.25rem;
+      border: 4px solid #b9dfcd;
+      background: #fff;
+      box-shadow: 0 8px 0 #d7ebe1;
     }
     .hear-row { margin-bottom: 0.85rem; }
     .hear-btn, .btn {
@@ -176,7 +185,7 @@
       font-size: 1.1rem;
       font-weight: 700;
       box-shadow: 0 4px 0 #b9dfcd;
-      text-transform: uppercase;
+      text-transform: lowercase;
     }
     .key:active { transform: translateY(2px); box-shadow: 0 2px 0 #b9dfcd; }
     .key.wide { grid-column: span 2; font-size: 0.95rem; text-transform: none; }
@@ -217,7 +226,9 @@
         <span class="pill"><span class="pill-label">Score</span> <strong id="score-pill">0 / 18</strong></span>
         <button type="button" class="mute-btn" id="mute-btn" aria-pressed="false" aria-label="Mute word reading">Mute</button>
       </div>
-      <p class="clue" id="clue"></p>
+      <div class="word-image-wrap">
+        <img class="word-image" id="word-image" alt="" width="280" height="280" decoding="async">
+      </div>
       <div class="hear-row">
         <button type="button" class="hear-btn" id="hear-btn">Hear</button>
       </div>
@@ -239,26 +250,26 @@
   </div>
 
   <script>
-    // Graded target is `word` (no a/an). TTS reads `word` only (SC-aligned; clue may keep articles).
+    // Graded target is `word` (no a/an). TTS reads `word` only. Picture: images/<word>.jpg (no clue text).
     const WORDS = [
-      { word: 'vest', clue: 'A vest is a short jacket with no sleeves.' },
-      { word: 'mittens', clue: 'Mittens keep your hands warm, with one pocket for the thumb.' },
-      { word: 'suit', clue: 'A suit is a matching jacket and trousers.' },
-      { word: 'umbrella', clue: 'An umbrella keeps the rain off you.' },
-      { word: 'jeans', clue: 'Jeans are strong blue trousers.' },
-      { word: 'mirror', clue: 'A mirror shows what you look like.' },
-      { word: 'backpack', clue: 'A backpack is a bag you wear on your back.' },
-      { word: 'hairbrush', clue: 'A hairbrush smooths your hair.' },
-      { word: 'earrings', clue: 'Earrings are jewelry you wear on your ears.' },
-      { word: 'comb', clue: 'A comb has teeth that tidy your hair.' },
-      { word: 'looks', clue: 'She looks happy when she smiles.' },
-      { word: 'wears', clue: 'He wears a red cap to school.' },
-      { word: 'sunglasses', clue: 'Sunglasses protect your eyes from bright sun.' },
-      { word: 'sisters', clue: 'Sisters are girls born in the same family.' },
-      { word: 'singing', clue: 'Singing is making music with your voice.' },
-      { word: 'dancing', clue: 'Dancing is moving your body to music.' },
-      { word: 'theirs', clue: 'That blue bag is theirs, not ours.' },
-      { word: 'mine', clue: 'This pencil is mine.' }
+      { word: 'vest' },
+      { word: 'mittens' },
+      { word: 'suit' },
+      { word: 'umbrella' },
+      { word: 'jeans' },
+      { word: 'mirror' },
+      { word: 'backpack' },
+      { word: 'hairbrush' },
+      { word: 'earrings' },
+      { word: 'comb' },
+      { word: 'looks' },
+      { word: 'wears' },
+      { word: 'sunglasses' },
+      { word: 'sisters' },
+      { word: 'singing' },
+      { word: 'dancing' },
+      { word: 'theirs' },
+      { word: 'mine' }
     ];
 
     const LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -270,7 +281,7 @@
       progress: document.getElementById('progress-pill'),
       score: document.getElementById('score-pill'),
       finalScore: document.getElementById('final-score'),
-      clue: document.getElementById('clue'),
+      wordImage: document.getElementById('word-image'),
       slots: document.getElementById('slots'),
       feedback: document.getElementById('feedback'),
       keyboard: document.getElementById('keyboard'),
@@ -427,8 +438,13 @@
     }
 
     function setFeedback(text, kind) {
-      els.feedback.textContent = text;
+      // Display feedback in lowercase only (S3).
+      els.feedback.textContent = text ? String(text).toLowerCase() : '';
       els.feedback.className = kind ? `feedback ${kind}` : 'feedback';
+    }
+
+    function wordImageSrc(word) {
+      return `images/${String(word || '').toLowerCase()}.jpg`;
     }
 
     function renderMute() {
@@ -453,7 +469,7 @@
         slot.className = 'slot';
         slot.dataset.index = String(i);
         const blank = state.blanks.find((entry) => entry.index === i);
-        slot.textContent = blank && blank.value ? blank.value.toUpperCase() : '';
+        slot.textContent = blank && blank.value ? String(blank.value).toLowerCase() : '';
         if (blank && blank.value) slot.classList.add('filled');
         if (blank && blank.wrong) slot.classList.add('wrong');
         if (state.blanks[state.cursor] && state.blanks[state.cursor].index === i && !state.locked) {
@@ -478,7 +494,10 @@
       state.locked = false;
       els.progress.textContent = `${state.index + 1} / ${TOTAL}`;
       renderScore();
-      els.clue.textContent = item.clue || 'Listen, then fill in the word.';
+      if (els.wordImage) {
+        els.wordImage.src = wordImageSrc(item.word);
+        els.wordImage.alt = '';
+      }
       setFeedback('', '');
       els.check.disabled = false;
       renderSlots();
@@ -561,10 +580,10 @@
       const item = currentItem();
       if (!item) return;
       if (state.blanks.some((blank) => !blank.value)) {
-        setFeedback('Fill every letter.', 'bad');
+        setFeedback('fill every letter.', 'bad');
         return;
       }
-      const guess = guessWord();
+      const guess = guessWord().toLowerCase();
       const ok = guess === item.word;
       if (ok) {
         state.score += 1;
@@ -575,14 +594,14 @@
           slot.classList.remove('wrong', 'active');
           slot.classList.add('correct');
         });
-        setFeedback('Correct', 'ok');
+        setFeedback('correct', 'ok');
         queueAdvance();
         return;
       }
       state.blanks.forEach((blank) => {
         blank.wrong = blank.value !== item.word[blank.index];
       });
-      setFeedback('Try again', 'bad');
+      setFeedback('try again', 'bad');
       renderSlots();
     }
 
