@@ -483,15 +483,16 @@
       <h2 class="text-3xl md:text-4xl font-black text-blue-900 text-center">🎟️ Exit Ticket — Decision Flowchart</h2>
       <p class="text-center font-body text-stone-600 font-semibold text-lg">Tap the pictures to walk the path. YES and NO go the same depth.</p>
 
-      <div id="flowStage" class="rounded-2xl bg-gradient-to-br from-amber-50 to-sky-50 border-4 border-amber-300 p-4 md:p-6 min-h-[280px]"></div>
+      <div id="flowStage" class="rounded-2xl bg-gradient-to-br from-amber-50 to-sky-50 border-4 border-amber-300 p-4 md:p-6 min-h-[300px]"></div>
 
-      <details class="rounded-2xl border-3 border-stone-200 bg-white p-4">
-        <summary class="cursor-pointer font-black text-blue-900 text-xl">📌 Full map (all 8 answers)</summary>
+      <details open class="rounded-2xl border-3 border-stone-200 bg-white p-4">
+        <summary class="cursor-pointer font-black text-blue-900 text-xl">📌 Full map (all 8 answers) — YES &amp; NO same depth</summary>
         <div class="mt-4 space-y-3" id="flowMap"></div>
       </details>
 
-      <div class="text-center space-y-3 mt-2">
-        <p class="font-bold text-xl text-amber-900">Exit check: Fairy holds two keys to you and your partner. You both own them.</p>
+      <div class="text-center space-y-3 mt-2 rounded-2xl border-4 border-dashed border-amber-300 bg-amber-50/60 p-4">
+        <p class="font-black text-amber-950 text-lg">Teacher exit check (fixed example — not the flowchart above)</p>
+        <p class="font-bold text-xl text-amber-900">Fairy holds two keys to you and your partner. You both own them.</p>
         <div class="text-4xl" aria-hidden="true">🔑🔑 · 🙋➕🙋</div>
         <p class="text-2xl md:text-3xl font-black text-emerald-700">“Yes, they're ours!”</p>
         <button type="button" class="bg-emerald-500 text-white font-black px-8 py-4 rounded-2xl text-xl" data-goto="0">↻ Restart lesson</button>
@@ -1045,13 +1046,15 @@ function renderFlow() {
   if (node.answer) {
     stage.innerHTML = `
       <div class="flow-answer">
+        <p class="text-lg font-black text-emerald-900 mb-2">✅ Path answer</p>
         <div class="text-6xl mb-3" aria-hidden="true">${node.art}</div>
         <p class="text-base font-bold text-stone-500 mb-1">${node.path}</p>
-        <p class="text-3xl md:text-4xl font-black text-emerald-800 mb-4">“${node.answer}”</p>
+        <p class="text-3xl md:text-5xl font-black text-emerald-800 mb-4">“${node.answer}”</p>
         <button type="button" id="flowAgain" class="bg-amber-400 hover:bg-amber-300 font-black px-6 py-3 rounded-xl text-lg">↻ Try another path</button>
       </div>
     `;
     document.getElementById('flowAgain').onclick = () => { beep('click'); startFlow(); };
+    stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     return;
   }
 
