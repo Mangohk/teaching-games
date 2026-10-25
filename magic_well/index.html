@@ -21,6 +21,7 @@
       min-height: 100vh;
       color: #1e293b;
       margin: 0;
+      font-size: 18px;
     }
     .font-body { font-family: 'Quicksand', sans-serif; }
     .panel {
@@ -32,8 +33,8 @@
     .step-btn {
       font-family: inherit;
       font-weight: 700;
-      font-size: .78rem;
-      padding: .45rem .7rem;
+      font-size: .9rem;
+      padding: .55rem .85rem;
       border-radius: .85rem;
       border: 2px solid #cbd5e1;
       background: #f8fafc;
@@ -52,16 +53,19 @@
     .big-tap {
       font-family: inherit;
       font-weight: 800;
-      font-size: 1.15rem;
-      padding: 1rem 1.25rem;
-      border-radius: 1rem;
+      font-size: 1.35rem;
+      padding: 1.15rem 1.35rem;
+      border-radius: 1.1rem;
       border: 3px solid #cbd5e1;
       background: #fff;
       cursor: pointer;
       transition: .12s;
       text-align: left;
+      min-height: 4.25rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
     }
-    /* Hover only on real pointer devices — avoids sticky :hover after touch taps */
     @media (hover: hover) and (pointer: fine) {
       .big-tap:hover:not(:disabled) {
         border-color: #3b82f6;
@@ -80,29 +84,29 @@
     .big-tap.hint { background: #dcfce7 !important; border-color: #16a34a !important; color: #14532d !important; }
     .icon-card {
       border: 3px solid #e2e8f0;
-      border-radius: 1.25rem;
+      border-radius: 1.35rem;
       background: linear-gradient(180deg, #f8fafc, #fff);
-      padding: .75rem;
+      padding: 1rem;
       text-align: center;
-      min-height: 140px;
+      min-height: 180px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: .35rem;
+      gap: .45rem;
     }
-    .icon-card strong { font-size: .95rem; color: #1e3a8a; }
+    .icon-card strong { font-size: 1.15rem; color: #1e3a8a; }
     .icon-card span.tag {
-      font-size: .7rem;
+      font-size: .85rem;
       font-weight: 800;
       color: #b45309;
       background: #fef3c7;
-      padding: .15rem .5rem;
+      padding: .2rem .65rem;
       border-radius: 999px;
     }
-    .vocab-art { width: 72px; height: 72px; }
+    .vocab-art { width: 110px; height: 110px; }
     .section { display: none; }
-    .section.on { display: flex; flex-direction: column; gap: 1rem; animation: pop .3s ease; }
+    .section.on { display: flex; flex-direction: column; gap: 1.1rem; animation: pop .3s ease; }
     @keyframes pop {
       from { opacity: 0; transform: scale(.97); }
       to { opacity: 1; transform: scale(1); }
@@ -114,16 +118,16 @@
       padding: .1rem .45rem;
       border-radius: .35rem;
       font-family: ui-monospace, monospace;
-      font-size: .8rem;
+      font-size: .85rem;
     }
     .feedback {
-      min-height: 2rem;
+      min-height: 2.4rem;
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: 1.35rem;
       text-align: center;
     }
     .progress-track {
-      height: 10px;
+      height: 12px;
       background: #e2e8f0;
       border-radius: 999px;
       overflow: hidden;
@@ -134,6 +138,101 @@
       width: 0%;
       transition: width .35s ease;
     }
+    /* Visual aid blocks */
+    .vis-card {
+      border: 3px solid #cbd5e1;
+      border-radius: 1.35rem;
+      background: #fff;
+      padding: 1rem 1.1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+    }
+    .vis-emoji { font-size: 3.5rem; line-height: 1; }
+    .vis-emoji-lg { font-size: 4.5rem; line-height: 1; }
+    .person-mine {
+      background: linear-gradient(180deg, #ecfdf5, #fff);
+      border-color: #6ee7b7;
+    }
+    .person-ours {
+      background: linear-gradient(180deg, #f5f3ff, #fff);
+      border-color: #c4b5fd;
+    }
+    .flow-choice {
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.4rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 1.25rem;
+      border: 4px solid #94a3b8;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+      min-height: 8rem;
+      transition: .12s;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .flow-choice:hover { transform: translateY(-3px); }
+    }
+    .flow-choice.yes { border-color: #22c55e; background: #f0fdf4; color: #14532d; }
+    .flow-choice.no { border-color: #f43f5e; background: #fff1f2; color: #881337; }
+    .flow-choice.neutral { border-color: #38bdf8; background: #f0f9ff; color: #0c4a6e; }
+    .flow-choice.mine { border-color: #34d399; background: #ecfdf5; color: #065f46; }
+    .flow-choice.ours { border-color: #a78bfa; background: #f5f3ff; color: #5b21b6; }
+    .flow-answer {
+      border: 4px solid #22c55e;
+      background: linear-gradient(180deg, #ecfdf5, #fff);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .scene-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .combo-art {
+      font-size: 2.75rem;
+      line-height: 1.1;
+      letter-spacing: .05em;
+    }
+    .speaker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: .45rem .9rem;
+      border-radius: 999px;
+      border: 3px solid;
+    }
+    .speaker-badge.one { background: #ecfdf5; border-color: #34d399; color: #065f46; }
+    .speaker-badge.two { background: #f5f3ff; border-color: #a78bfa; color: #5b21b6; }
+    .map-node {
+      border: 3px solid #cbd5e1;
+      border-radius: 1rem;
+      padding: .65rem .5rem;
+      background: #fff;
+      text-align: center;
+      font-weight: 800;
+      min-height: 5.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .15rem;
+    }
+    .map-node .ico { font-size: 1.85rem; line-height: 1; }
+    .map-node .lbl { font-size: .95rem; line-height: 1.15; }
+    .map-arrow { text-align: center; font-size: 1.4rem; color: #64748b; font-weight: 900; padding: .15rem 0; }
   </style>
 </head>
 <body class="p-3 md:p-5 flex flex-col items-center gap-3">
@@ -141,20 +240,20 @@
   <!-- Header -->
   <header class="w-full max-w-6xl panel px-4 py-3 flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
-      <a href="../index.html" class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-xl no-underline shadow hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">🪓</a>
+      <a href="../index.html" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl no-underline shadow hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">🪓</a>
       <div class="min-w-0">
-        <h1 class="text-lg md:text-xl font-bold text-blue-950 leading-tight truncate">The Magic Well of Truth</h1>
-        <p class="text-xs md:text-sm text-blue-700 font-body font-semibold">
+        <h1 class="text-xl md:text-2xl font-bold text-blue-950 leading-tight truncate">The Magic Well of Truth</h1>
+        <p class="text-sm md:text-base text-blue-700 font-body font-semibold">
           P5 · <span class="pill-orange">Is this / Are these yours?</span> → <span class="pill-orange">mine / ours</span>
         </p>
       </div>
     </div>
     <div class="flex items-center gap-2 flex-wrap">
-      <span id="stepLabel" class="bg-blue-100 text-blue-900 px-3 py-1.5 rounded-xl text-sm font-bold border border-blue-300">1 / 10</span>
-      <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-3.5 py-2 rounded-xl shadow active:scale-95">◀ Prev</button>
-      <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-3.5 py-2 rounded-xl shadow active:scale-95">Next ▶</button>
-      <button type="button" id="fsBtn" class="bg-stone-200 hover:bg-stone-300 p-2 rounded-xl" title="Fullscreen">⛶</button>
-      <button type="button" id="muteBtn" class="bg-stone-200 hover:bg-stone-300 p-2 rounded-xl" title="Mute">🔊</button>
+      <span id="stepLabel" class="bg-blue-100 text-blue-900 px-3 py-1.5 rounded-xl text-base font-bold border border-blue-300">1 / 11</span>
+      <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow active:scale-95 text-lg">◀ Prev</button>
+      <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow active:scale-95 text-lg">Next ▶</button>
+      <button type="button" id="fsBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Fullscreen">⛶</button>
+      <button type="button" id="muteBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Mute">🔊</button>
     </div>
   </header>
 
@@ -163,208 +262,239 @@
   <div class="w-full max-w-6xl progress-track"><div class="progress-fill" id="progressFill"></div></div>
 
   <!-- Main panel -->
-  <main class="w-full max-w-6xl panel p-4 md:p-8 min-h-[560px] relative">
+  <main class="w-full max-w-6xl panel p-4 md:p-8 min-h-[620px] relative">
 
     <!-- 0 Goals -->
     <section class="section on" data-step="0" id="sec-goals">
       <div class="text-center">
-        <div class="inline-block bg-amber-100 border-2 border-amber-400 text-amber-900 px-4 py-1 rounded-full text-sm font-bold mb-3">Unit 4 · Possessive Pronouns</div>
-        <h2 class="text-3xl md:text-5xl font-black text-blue-900 mb-2">The Magic Well of Truth ✨</h2>
-        <p class="text-lg text-stone-600 font-body font-semibold max-w-3xl mx-auto">Tell the truth to the Water Fairy — claim what is <span class="pill-orange">mine</span> or <span class="pill-orange">ours</span>!</p>
+        <div class="inline-block bg-amber-100 border-2 border-amber-400 text-amber-900 px-5 py-1.5 rounded-full text-base font-bold mb-3">Unit 4 · Possessive Pronouns</div>
+        <div class="vis-emoji-lg mb-2" aria-hidden="true">🧚‍♀️✨🧱</div>
+        <h2 class="text-4xl md:text-5xl font-black text-blue-900 mb-2">The Magic Well of Truth</h2>
+        <p class="text-xl md:text-2xl text-stone-600 font-body font-semibold max-w-3xl mx-auto">Tell the truth — claim what is <span class="pill-orange">mine</span> or <span class="pill-orange">ours</span>!</p>
       </div>
-      <div class="grid md:grid-cols-3 gap-4 mt-4">
-        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 text-center">
-          <div class="text-4xl mb-2">❓</div>
-          <h3 class="font-bold text-blue-900">Ask</h3>
-          <p class="text-sm font-body"><strong>Is this yours?</strong> (1)<br><strong>Are these yours?</strong> (2+)</p>
+      <div class="grid md:grid-cols-3 gap-4 mt-2">
+        <div class="vis-card bg-blue-50 border-blue-300">
+          <div class="vis-emoji" aria-hidden="true">🪞&nbsp;&nbsp;🪞🪞</div>
+          <h3 class="font-black text-blue-900 text-2xl">Ask</h3>
+          <p class="text-lg font-body"><strong>Is this yours?</strong> (1)<br><strong>Are these yours?</strong> (2+)</p>
         </div>
-        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 text-center">
-          <div class="text-4xl mb-2">🙋</div>
-          <h3 class="font-bold text-emerald-900">One person</h3>
-          <p class="text-sm font-body">Yes, it's <strong class="pill-orange">mine</strong>.<br>No, they aren't <strong class="pill-orange">mine</strong>.</p>
+        <div class="vis-card person-mine">
+          <div class="vis-emoji" aria-hidden="true">🙋</div>
+          <h3 class="font-black text-emerald-800 text-2xl">1 person → <span class="pill-orange">mine</span></h3>
+          <p class="text-lg font-body">Yes, it's <strong>mine</strong>.<br>No, it isn't <strong>mine</strong>.</p>
         </div>
-        <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 text-center">
-          <div class="text-4xl mb-2">👫</div>
-          <h3 class="font-bold text-purple-900">A group</h3>
-          <p class="text-sm font-body">Yes, it's <strong class="pill-orange">ours</strong>.<br>No, they aren't <strong class="pill-orange">ours</strong>.</p>
+        <div class="vis-card person-ours">
+          <div class="vis-emoji" aria-hidden="true">🙋➕🙋</div>
+          <h3 class="font-black text-purple-800 text-2xl">___ and me → <span class="pill-orange">ours</span></h3>
+          <p class="text-lg font-body">Yes, it's <strong>ours</strong>.<br>No, they aren't <strong>ours</strong>.</p>
         </div>
       </div>
-      <div class="text-center mt-2">
-        <button type="button" class="bg-emerald-500 hover:bg-emerald-400 text-white text-xl font-black px-8 py-3 rounded-2xl shadow-lg" data-goto="1">Begin → Vocab</button>
+      <div class="text-center mt-1">
+        <button type="button" class="bg-emerald-500 hover:bg-emerald-400 text-white text-2xl font-black px-10 py-4 rounded-2xl shadow-lg" data-goto="1">Begin → Vocab</button>
       </div>
     </section>
 
     <!-- 1 Vocabulary -->
     <section class="section" data-step="1" id="sec-vocab">
-      <h2 class="text-2xl md:text-3xl font-black text-blue-900">📚 Vocabulary — Accessories &amp; Objects</h2>
-      <p class="text-stone-600 font-body font-semibold">Tap each card. Use these words in the Fairy Well game later.</p>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="vocabGrid"></div>
-      <p class="text-sm text-stone-500 font-body">Can you think of more accessories / objects for your word bank?</p>
+      <h2 class="text-3xl md:text-4xl font-black text-blue-900">📚 Vocabulary — Accessories &amp; Objects</h2>
+      <p class="text-stone-600 font-body font-semibold text-lg md:text-xl">Big pictures! Tap a card. Use these words in the Fairy Well game.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="vocabGrid"></div>
     </section>
 
     <!-- 2 Story -->
     <section class="section" data-step="2" id="sec-story">
-      <h2 class="text-2xl md:text-3xl font-black text-blue-900">🪓 Story Hook — The Honest Woodcutter</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="rounded-2xl bg-gradient-to-br from-sky-100 to-amber-50 border-2 border-amber-300 p-4 flex flex-col items-center justify-center min-h-[220px]">
-          <div class="text-6xl mb-2">🧚‍♀️</div>
-          <div class="text-4xl">🧱</div>
-          <p class="mt-2 font-bold text-amber-900">Magic Well + Water Fairy</p>
-          <div class="flex gap-3 text-4xl mt-2"><span title="gold axe">🪓✨</span><span title="old axe">🪓</span></div>
+      <h2 class="text-3xl md:text-4xl font-black text-blue-900">🪓 Story Hook — The Honest Woodcutter</h2>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="rounded-2xl bg-gradient-to-br from-sky-100 to-amber-50 border-3 border-amber-400 p-5 flex flex-col items-center justify-center min-h-[280px]">
+          <div class="text-7xl mb-2" aria-hidden="true">🧚‍♀️</div>
+          <div class="text-6xl" aria-hidden="true">🧱💧</div>
+          <p class="mt-3 font-black text-amber-900 text-2xl">Magic Well + Water Fairy</p>
+          <div class="flex gap-6 text-5xl mt-3" aria-hidden="true">
+            <span title="gold axe">🪓✨</span>
+            <span title="old axe">🪓</span>
+          </div>
         </div>
-        <div class="space-y-3 font-body text-base md:text-lg">
-          <p class="bg-white border-2 border-stone-200 rounded-xl p-3"><strong class="text-blue-900">Fairy</strong> <em>(gold axe)</em>: “Is this <span class="pill-orange">yours</span>?”<br><strong class="text-amber-800">Woodcutter</strong>: “No, it isn't <span class="pill-orange">mine</span>.”</p>
-          <p class="bg-white border-2 border-stone-200 rounded-xl p-3"><strong class="text-blue-900">Fairy</strong> <em>(old axe)</em>: “Is this <span class="pill-orange">yours</span>?”<br><strong class="text-amber-800">Woodcutter</strong>: “Yes, it's <span class="pill-orange">mine</span>.”</p>
-          <p class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 font-bold text-emerald-900">He told the truth → the Fairy gave him both axes! Greedy people want gold too…</p>
+        <div class="space-y-4 font-body text-xl">
+          <div class="bg-white border-3 border-rose-200 rounded-2xl p-4 flex gap-4 items-center">
+            <div class="text-5xl shrink-0" aria-hidden="true">🪓✨</div>
+            <p><strong class="text-blue-900">Fairy</strong>: “Is this <span class="pill-orange">yours</span>?”<br>
+            <strong class="text-amber-800">Woodcutter</strong>: “No, it isn't <span class="pill-orange">mine</span>.”</p>
+          </div>
+          <div class="bg-white border-3 border-emerald-300 rounded-2xl p-4 flex gap-4 items-center">
+            <div class="text-5xl shrink-0" aria-hidden="true">🪓</div>
+            <p><strong class="text-blue-900">Fairy</strong>: “Is this <span class="pill-orange">yours</span>?”<br>
+            <strong class="text-amber-800">Woodcutter</strong>: “Yes, it's <span class="pill-orange">mine</span>.”</p>
+          </div>
+          <div class="bg-emerald-50 border-3 border-emerald-400 rounded-2xl p-4 font-bold text-emerald-900 text-xl flex gap-3 items-center">
+            <span class="text-4xl" aria-hidden="true">🎁</span>
+            <span>He told the truth → Fairy gave him both axes!</span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- 3 Grammar singular/plural -->
     <section class="section" data-step="3" id="sec-grammar">
-      <h2 class="text-2xl md:text-3xl font-black text-blue-900">🔤 Language Focus — Singular &amp; Plural</h2>
+      <h2 class="text-3xl md:text-4xl font-black text-blue-900">🔤 Language Focus — Singular &amp; Plural</h2>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="rounded-2xl border-3 border-blue-300 bg-blue-50 p-4">
-          <h3 class="font-black text-blue-900 text-xl mb-2">ONE item</h3>
-          <p class="font-body text-lg">Q: <strong>Is this</strong> <span class="pill-orange">yours</span>?</p>
-          <p class="font-body">✔ Yes, <strong>it's</strong> <span class="pill-orange">mine / ours</span>.</p>
-          <p class="font-body">✖ No, <strong>it isn't</strong> <span class="pill-orange">mine / ours</span>.</p>
+        <div class="rounded-2xl border-4 border-blue-300 bg-blue-50 p-5">
+          <div class="text-center text-6xl mb-2" aria-hidden="true">🪞</div>
+          <h3 class="font-black text-blue-900 text-2xl md:text-3xl mb-2 text-center">ONE item → <em>it's</em> / <em>it isn't</em></h3>
+          <p class="font-body text-xl text-center">Q: <strong>Is this</strong> <span class="pill-orange">yours</span>?</p>
+          <p class="font-body text-xl text-center mt-2">✔ Yes, <strong>it's</strong> <span class="pill-orange">mine / ours</span>.</p>
+          <p class="font-body text-xl text-center">✖ No, <strong>it isn't</strong> <span class="pill-orange">mine / ours</span>.</p>
         </div>
-        <div class="rounded-2xl border-3 border-violet-300 bg-violet-50 p-4">
-          <h3 class="font-black text-violet-900 text-xl mb-2">TWO+ items</h3>
-          <p class="font-body text-lg">Q: <strong>Are these</strong> <span class="pill-orange">yours</span>?</p>
-          <p class="font-body">✔ Yes, <strong>they're</strong> <span class="pill-orange">mine / ours</span>.</p>
-          <p class="font-body">✖ No, <strong>they aren't</strong> <span class="pill-orange">mine / ours</span>.</p>
+        <div class="rounded-2xl border-4 border-violet-300 bg-violet-50 p-5">
+          <div class="text-center text-6xl mb-2" aria-hidden="true">🪞🪞</div>
+          <h3 class="font-black text-violet-900 text-2xl md:text-3xl mb-2 text-center">TWO+ items → <em>they're</em> / <em>they aren't</em></h3>
+          <p class="font-body text-xl text-center">Q: <strong>Are these</strong> <span class="pill-orange">yours</span>?</p>
+          <p class="font-body text-xl text-center mt-2">✔ Yes, <strong>they're</strong> <span class="pill-orange">mine / ours</span>.</p>
+          <p class="font-body text-xl text-center">✖ No, <strong>they aren't</strong> <span class="pill-orange">mine / ours</span>.</p>
         </div>
       </div>
-      <div class="grid md:grid-cols-2 gap-4 mt-2">
-        <div class="rounded-2xl bg-emerald-50 border-2 border-emerald-300 p-4 text-center">
-          <div class="text-4xl mb-1">🙋</div>
-          <span class="text-3xl font-black text-emerald-600">mine</span>
-          <p class="font-body text-sm mt-1">One speaker → never say “ours” alone!</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="vis-card person-mine p-5">
+          <div class="vis-emoji-lg" aria-hidden="true">🙋</div>
+          <span class="text-4xl md:text-5xl font-black text-emerald-600">mine</span>
+          <p class="font-body text-lg md:text-xl mt-1">1 person (me) → never say “ours” alone!</p>
         </div>
-        <div class="rounded-2xl bg-purple-50 border-2 border-purple-300 p-4 text-center">
-          <div class="text-4xl mb-1">👫</div>
-          <span class="text-3xl font-black text-purple-600">ours</span>
-          <p class="font-body text-sm mt-1">Two+ speakers → never say “mine” together!</p>
+        <div class="vis-card person-ours p-5">
+          <div class="vis-emoji-lg" aria-hidden="true">🙋➕🙋</div>
+          <span class="text-4xl md:text-5xl font-black text-purple-600">ours</span>
+          <p class="font-body text-lg md:text-xl mt-1">___ and me → never say “mine” together!</p>
         </div>
       </div>
     </section>
 
     <!-- 4 Master chart -->
     <section class="section" data-step="4" id="sec-chart">
-      <h2 class="text-2xl md:text-3xl font-black text-blue-900 text-center">✨ The 4 Combinations of Truth</h2>
-      <div class="grid sm:grid-cols-2 gap-3">
-        <div class="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4">
-          <p class="text-xs font-bold text-stone-500">1 item · 1 person</p>
-          <p class="font-bold">Is this yours?</p>
-          <p class="text-emerald-700 font-bold">✔ Yes, it's <u>mine</u>.</p>
-          <p class="text-rose-700 font-bold">✖ No, it isn't <u>mine</u>.</p>
+      <h2 class="text-3xl md:text-4xl font-black text-blue-900 text-center">✨ The 4 Combinations of Truth</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="rounded-2xl border-4 border-emerald-300 bg-emerald-50 p-4 text-center">
+          <div class="combo-art mb-1" aria-hidden="true">🪞 · 🙋</div>
+          <p class="text-base font-bold text-stone-500">1 item · 1 person</p>
+          <p class="font-black text-xl">Is this yours?</p>
+          <p class="text-emerald-700 font-black text-xl">✔ Yes, it's <u>mine</u>.</p>
+          <p class="text-rose-700 font-black text-xl">✖ No, it isn't <u>mine</u>.</p>
         </div>
-        <div class="rounded-2xl border-2 border-purple-300 bg-purple-50 p-4">
-          <p class="text-xs font-bold text-stone-500">1 item · group</p>
-          <p class="font-bold">Is this yours?</p>
-          <p class="text-emerald-700 font-bold">✔ Yes, it's <u>ours</u>.</p>
-          <p class="text-rose-700 font-bold">✖ No, it isn't <u>ours</u>.</p>
+        <div class="rounded-2xl border-4 border-purple-300 bg-purple-50 p-4 text-center">
+          <div class="combo-art mb-1" aria-hidden="true">🪞 · 🙋➕🙋</div>
+          <p class="text-base font-bold text-stone-500">1 item · ___ and me</p>
+          <p class="font-black text-xl">Is this yours?</p>
+          <p class="text-emerald-700 font-black text-xl">✔ Yes, it's <u>ours</u>.</p>
+          <p class="text-rose-700 font-black text-xl">✖ No, it isn't <u>ours</u>.</p>
         </div>
-        <div class="rounded-2xl border-2 border-sky-300 bg-sky-50 p-4">
-          <p class="text-xs font-bold text-stone-500">2+ items · 1 person</p>
-          <p class="font-bold">Are these yours?</p>
-          <p class="text-emerald-700 font-bold">✔ Yes, they're <u>mine</u>.</p>
-          <p class="text-rose-700 font-bold">✖ No, they aren't <u>mine</u>.</p>
+        <div class="rounded-2xl border-4 border-sky-300 bg-sky-50 p-4 text-center">
+          <div class="combo-art mb-1" aria-hidden="true">🪞🪞 · 🙋</div>
+          <p class="text-base font-bold text-stone-500">2+ items · 1 person</p>
+          <p class="font-black text-xl">Are these yours?</p>
+          <p class="text-emerald-700 font-black text-xl">✔ Yes, they're <u>mine</u>.</p>
+          <p class="text-rose-700 font-black text-xl">✖ No, they aren't <u>mine</u>.</p>
         </div>
-        <div class="rounded-2xl border-2 border-amber-300 bg-amber-50 p-4">
-          <p class="text-xs font-bold text-stone-500">2+ items · group</p>
-          <p class="font-bold">Are these yours?</p>
-          <p class="text-emerald-700 font-bold">✔ Yes, they're <u>ours</u>.</p>
-          <p class="text-rose-700 font-bold">✖ No, they aren't <u>ours</u>.</p>
+        <div class="rounded-2xl border-4 border-amber-300 bg-amber-50 p-4 text-center">
+          <div class="combo-art mb-1" aria-hidden="true">🪞🪞 · 🙋➕🙋</div>
+          <p class="text-base font-bold text-stone-500">2+ items · ___ and me</p>
+          <p class="font-black text-xl">Are these yours?</p>
+          <p class="text-emerald-700 font-black text-xl">✔ Yes, they're <u>ours</u>.</p>
+          <p class="text-rose-700 font-black text-xl">✖ No, they aren't <u>ours</u>.</p>
         </div>
       </div>
     </section>
 
     <!-- 5 Whose extension -->
     <section class="section" data-step="5" id="sec-whose">
-      <h2 class="text-2xl md:text-3xl font-black text-blue-900">🔎 Bonus: Whose…? / his · hers · theirs</h2>
-      <p class="font-body text-stone-600 font-semibold">Light extension from the language-focus page (not the main drill).</p>
+      <h2 class="text-3xl md:text-4xl font-black text-blue-900">🔎 Bonus: Whose…? / his · hers · theirs</h2>
+      <p class="font-body text-stone-600 font-semibold text-lg">Light extension — pictures help match people to pronouns.</p>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="rounded-2xl bg-orange-50 border-2 border-orange-300 p-4">
-          <p class="font-bold text-lg"><span class="pill-orange">Whose</span> backpack <strong>is this</strong>?</p>
-          <p class="font-body">It's <span class="pill-orange">mine / yours / his / hers / ours / theirs</span>.</p>
-          <p class="font-bold text-lg mt-3"><span class="pill-orange">Whose</span> watches <strong>are these</strong>?</p>
-          <p class="font-body">They're <span class="pill-orange">mine / yours / his / hers / ours / theirs</span>.</p>
+        <div class="rounded-2xl bg-orange-50 border-4 border-orange-300 p-5 space-y-4">
+          <div class="flex items-center gap-4">
+            <span class="text-5xl" aria-hidden="true">🎒</span>
+            <div>
+              <p class="font-black text-xl"><span class="pill-orange">Whose</span> backpack <strong>is this</strong>?</p>
+              <p class="font-body text-lg">It's <span class="pill-orange">mine / yours / his / hers / ours / theirs</span>.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-5xl" aria-hidden="true">⌚⌚</span>
+            <div>
+              <p class="font-black text-xl"><span class="pill-orange">Whose</span> watches <strong>are these</strong>?</p>
+              <p class="font-body text-lg">They're <span class="pill-orange">mine / yours / his / hers / ours / theirs</span>.</p>
+            </div>
+          </div>
         </div>
-        <div class="rounded-2xl bg-stone-50 border-2 border-stone-300 p-4 font-body">
-          <p class="font-black text-blue-900 mb-2">Adjective → Pronoun</p>
-          <ul class="space-y-1 text-lg">
-            <li>my thing(s) → <span class="pill-orange">mine</span></li>
-            <li>your thing(s) → <span class="pill-orange">yours</span></li>
-            <li>his thing(s) → <span class="pill-orange">his</span></li>
-            <li>her thing(s) → <span class="pill-orange">hers</span></li>
-            <li>our thing(s) → <span class="pill-orange">ours</span></li>
-            <li>their thing(s) → <span class="pill-orange">theirs</span></li>
-          </ul>
-          <p class="mt-3 text-sm text-stone-500">Tony's bag → “It's <strong>his</strong>.” / My bag → “It's <strong>mine</strong>.”</p>
+        <div class="rounded-2xl bg-stone-50 border-4 border-stone-300 p-5 font-body">
+          <p class="font-black text-blue-900 mb-3 text-xl">Picture → Pronoun</p>
+          <div class="grid grid-cols-2 gap-3 text-lg">
+            <div class="vis-card py-3"><span class="text-3xl">🙋</span><span>my → <span class="pill-orange">mine</span></span></div>
+            <div class="vis-card py-3"><span class="text-3xl">👉</span><span>your → <span class="pill-orange">yours</span></span></div>
+            <div class="vis-card py-3"><span class="text-3xl">👦</span><span>his → <span class="pill-orange">his</span></span></div>
+            <div class="vis-card py-3"><span class="text-3xl">👧</span><span>her → <span class="pill-orange">hers</span></span></div>
+            <div class="vis-card py-3 person-ours"><span class="text-3xl">🙋➕🙋</span><span>our → <span class="pill-orange">ours</span></span></div>
+            <div class="vis-card py-3"><span class="text-3xl">👥</span><span>their → <span class="pill-orange">theirs</span></span></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 6 Practice reveal (glasses fixed) -->
+    <!-- 6 Practice reveal -->
     <section class="section" data-step="6" id="sec-practice">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-2xl md:text-3xl font-black text-blue-900">🧚 Practice — Fairy Scene 2</h2>
-        <button type="button" id="revealAllBtn" class="bg-violet-500 hover:bg-violet-400 text-white font-black px-4 py-2 rounded-xl">Reveal all</button>
+        <h2 class="text-3xl md:text-4xl font-black text-blue-900">🧚 Practice — Fairy Scene 2</h2>
+        <button type="button" id="revealAllBtn" class="bg-violet-500 hover:bg-violet-400 text-white font-black px-5 py-3 rounded-xl text-lg">Reveal all</button>
       </div>
-      <p class="font-body text-stone-600 font-semibold">Tap each amber box to show the answer. Item ⑤ is <strong>glasses</strong> (two boys).</p>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" id="practiceGrid"></div>
+      <p class="font-body text-stone-600 font-semibold text-lg">Tap the amber box. Big item pictures + who is speaking.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="practiceGrid"></div>
     </section>
 
     <!-- 7 Fairy Well game -->
     <section class="section" data-step="7" id="sec-fairy">
       <div class="flex flex-wrap justify-between items-center gap-2">
-        <h2 class="text-2xl md:text-3xl font-black text-blue-900">🎮 Fairy Well Mini-Game</h2>
-        <div class="font-black text-amber-700">Score: <span id="fairyScore">0</span> · <span id="fairyProgress">0</span>/<span id="fairyTotal">8</span></div>
+        <h2 class="text-3xl md:text-4xl font-black text-blue-900">🎮 Fairy Well Mini-Game</h2>
+        <div class="font-black text-amber-700 text-xl">Score: <span id="fairyScore">0</span> · <span id="fairyProgress">0</span>/<span id="fairyTotal">8</span></div>
       </div>
-      <p class="font-body text-stone-600">The fairy shows item(s). Pick the full true answer. Covers all 4 combos.</p>
-      <div id="fairyStage" class="rounded-2xl bg-gradient-to-br from-sky-50 to-amber-50 border-2 border-amber-300 p-4 md:p-6 min-h-[320px]"></div>
+      <p class="font-body text-stone-600 text-lg">Look at the pictures: items + speakers. Pick the true answer.</p>
+      <div id="fairyStage" class="rounded-2xl bg-gradient-to-br from-sky-50 to-amber-50 border-4 border-amber-300 p-4 md:p-6 min-h-[360px]"></div>
       <div class="feedback" id="fairyFeedback"></div>
     </section>
 
     <!-- 8 Playground game -->
     <section class="section" data-step="8" id="sec-playground">
       <div class="flex flex-wrap justify-between items-center gap-2">
-        <h2 class="text-2xl md:text-3xl font-black text-blue-900">🏫 Playground Lost &amp; Found</h2>
-        <div class="font-black text-amber-700">Score: <span id="pgScore">0</span> · <span id="pgProgress">0</span>/<span id="pgTotal">4</span></div>
+        <h2 class="text-3xl md:text-4xl font-black text-blue-900">🏫 Playground Lost &amp; Found</h2>
+        <div class="font-black text-amber-700 text-xl">Score: <span id="pgScore">0</span> · <span id="pgProgress">0</span>/<span id="pgTotal">4</span></div>
       </div>
-      <p class="font-body text-stone-600">Match Practice p.15: Monitor asks the boy and two girls.</p>
-      <div id="pgStage" class="rounded-2xl bg-gradient-to-br from-lime-50 to-sky-50 border-2 border-lime-300 p-4 md:p-6 min-h-[320px]"></div>
+      <p class="font-body text-stone-600 text-lg">Match Practice p.15: Monitor asks the boy and two girls.</p>
+      <div id="pgStage" class="rounded-2xl bg-gradient-to-br from-lime-50 to-sky-50 border-4 border-lime-300 p-4 md:p-6 min-h-[360px]"></div>
       <div class="feedback" id="pgFeedback"></div>
     </section>
 
     <!-- 9 Quiz -->
     <section class="section" data-step="9" id="sec-quiz">
       <div class="flex flex-wrap justify-between items-center gap-2">
-        <h2 class="text-2xl md:text-3xl font-black text-blue-900">⚡ Quick-Fire Truth Detector</h2>
-        <div class="font-black text-amber-700">Score: <span id="quizScore">0</span></div>
+        <h2 class="text-3xl md:text-4xl font-black text-blue-900">⚡ Quick-Fire Truth Detector</h2>
+        <div class="font-black text-amber-700 text-xl">Score: <span id="quizScore">0</span></div>
       </div>
-      <div id="quizStage" class="rounded-2xl bg-stone-50 border-2 border-stone-300 p-4 md:p-6 min-h-[320px]"></div>
+      <div id="quizStage" class="rounded-2xl bg-stone-50 border-4 border-stone-300 p-4 md:p-6 min-h-[360px]"></div>
       <div class="feedback" id="quizFeedback"></div>
     </section>
 
-    <!-- 10 Exit -->
+    <!-- 10 Exit flowchart -->
     <section class="section" data-step="10" id="sec-exit">
-      <h2 class="text-3xl font-black text-blue-900 text-center">🎟️ Exit Ticket</h2>
-      <div class="max-w-2xl mx-auto space-y-4 text-center">
-        <div class="rounded-2xl bg-blue-50 border-2 border-blue-200 p-4 font-body text-lg">
-          ☝️ One thing → <strong>Is this yours?</strong><br>
-          🙋 Alone → “Yes, it's <span class="pill-orange">mine</span>!” / “No, it isn't <span class="pill-orange">mine</span>!”
-        </div>
-        <div class="rounded-2xl bg-purple-50 border-2 border-purple-200 p-4 font-body text-lg">
-          ✌️ Two things → <strong>Are these yours?</strong><br>
-          👫 Together → “Yes, they're <span class="pill-orange">ours</span>!” / “No, they aren't <span class="pill-orange">ours</span>!”
-        </div>
-        <p class="font-bold text-xl text-amber-900">Exit question: The fairy holds two keys to you and your partner. You both own them. What do you say?</p>
-        <p class="text-2xl font-black text-emerald-700">“Yes, they're ours!”</p>
-        <button type="button" class="bg-emerald-500 text-white font-black px-6 py-3 rounded-2xl" data-goto="0">↻ Restart lesson</button>
+      <h2 class="text-3xl md:text-4xl font-black text-blue-900 text-center">🎟️ Exit Ticket — Decision Flowchart</h2>
+      <p class="text-center font-body text-stone-600 font-semibold text-lg">Tap the pictures to walk the path. YES and NO go the same depth.</p>
+
+      <div id="flowStage" class="rounded-2xl bg-gradient-to-br from-amber-50 to-sky-50 border-4 border-amber-300 p-4 md:p-6 min-h-[280px]"></div>
+
+      <details class="rounded-2xl border-3 border-stone-200 bg-white p-4">
+        <summary class="cursor-pointer font-black text-blue-900 text-xl">📌 Full map (all 8 answers)</summary>
+        <div class="mt-4 space-y-3" id="flowMap"></div>
+      </details>
+
+      <div class="text-center space-y-3 mt-2">
+        <p class="font-bold text-xl text-amber-900">Exit check: Fairy holds two keys to you and your partner. You both own them.</p>
+        <div class="text-4xl" aria-hidden="true">🔑🔑 · 🙋➕🙋</div>
+        <p class="text-2xl md:text-3xl font-black text-emerald-700">“Yes, they're ours!”</p>
+        <button type="button" class="bg-emerald-500 text-white font-black px-8 py-4 rounded-2xl text-xl" data-goto="0">↻ Restart lesson</button>
       </div>
     </section>
   </main>
@@ -380,23 +510,25 @@ const STEPS = [
   { id: 'story', label: 'Story', phase: 'Teach' },
   { id: 'grammar', label: 'Grammar', phase: 'Teach' },
   { id: 'chart', label: 'Chart', phase: 'Teach' },
-  { id: 'whose', label: 'Whose?', phase: 'Teach' },
+  { id: 'whose', label: 'Whose', phase: 'Teach' },
   { id: 'practice', label: 'Practice', phase: 'Practice' },
-  { id: 'fairy', label: 'Fairy Game', phase: 'Play' },
-  { id: 'playground', label: 'Playground', phase: 'Play' },
-  { id: 'quiz', label: 'Quiz', phase: 'Play' },
+  { id: 'fairy', label: 'Fairy', phase: 'Game' },
+  { id: 'playground', label: 'Playground', phase: 'Game' },
+  { id: 'quiz', label: 'Quiz', phase: 'Check' },
   { id: 'exit', label: 'Exit', phase: 'Wrap' }
 ];
 
 let currentStep = 0;
-let muted = false;
-let gameActive = false; // blocks Space navigation
 const visited = new Set([0]);
+let muted = false;
+let gameActive = false;
+let audioCtx = null;
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function beep(ok) {
   if (muted) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  } catch (_) { return; }
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
   o.type = ok === 'err' ? 'sawtooth' : 'sine';
@@ -438,6 +570,7 @@ function renderVocab() {
   grid.innerHTML = VOCAB.map(v => `
     <button type="button" class="icon-card" data-name="${v.name}">
       ${vocabSvg(v.svg)}
+      <div class="text-3xl" aria-hidden="true">${v.emoji}</div>
       <strong>${v.name}</strong>
       <span class="tag">${v.cat}</span>
     </button>
@@ -451,30 +584,34 @@ function renderVocab() {
   });
 }
 
-/* ---- Practice Scene 2 (glasses fix) ---- */
+/* ---- Practice Scene 2 ---- */
 const PRACTICE = [
-  { n: '①', item: 'Earrings', art: '👂✨', q: 'Are these yours?', a: "No, they aren't mine.", who: '1 boy' },
-  { n: '②', item: 'Backpack', art: '🎒', q: 'Is this yours?', a: "No, it isn't mine.", who: '1 boy' },
-  { n: '③', item: 'Keys', art: '🔑🔑', q: 'Are these yours?', a: "Yes, they're mine.", who: '1 woman' },
-  { n: '④', item: 'Necklace', art: '📿', q: 'Is this yours?', a: "Yes, it's mine.", who: '1 girl' },
-  { n: '⑤', item: 'Glasses', art: '👓', q: 'Are these yours?', a: "No, they aren't ours.", who: '2 boys' },
-  { n: '⑥', item: 'Mirror', art: '🪞', q: 'Is this yours?', a: "Yes, it's ours.", who: '2 girls' }
+  { n: '①', item: 'Earrings', art: '👂✨', q: 'Are these yours?', a: "No, they aren't mine.", who: '1 boy', whoArt: '👦', speakers: 1 },
+  { n: '②', item: 'Backpack', art: '🎒', q: 'Is this yours?', a: "No, it isn't mine.", who: '1 boy', whoArt: '👦', speakers: 1 },
+  { n: '③', item: 'Keys', art: '🔑🔑', q: 'Are these yours?', a: "Yes, they're mine.", who: '1 woman', whoArt: '👩', speakers: 1 },
+  { n: '④', item: 'Necklace', art: '📿', q: 'Is this yours?', a: "Yes, it's mine.", who: '1 girl', whoArt: '👧', speakers: 1 },
+  { n: '⑤', item: 'Glasses', art: '👓', q: 'Are these yours?', a: "No, they aren't ours.", who: '2 boys', whoArt: '👦👦', speakers: 2 },
+  { n: '⑥', item: 'Mirror', art: '🪞', q: 'Is this yours?', a: "Yes, it's ours.", who: '2 girls', whoArt: '👧👧', speakers: 2 }
 ];
 
 function renderPractice() {
   const grid = document.getElementById('practiceGrid');
   grid.innerHTML = PRACTICE.map((p, i) => `
-    <div class="rounded-2xl border-2 border-blue-200 bg-white p-3 font-body">
-      <div class="flex justify-between font-black text-blue-900 mb-1"><span>${p.n} ${p.art} ${p.item}</span><span class="text-xs text-stone-500">${p.who}</span></div>
-      <p class="text-blue-900 font-bold text-sm">F: ${p.q}</p>
-      <button type="button" class="mt-2 w-full cursor-pointer bg-amber-100 hover:bg-amber-200 p-2 rounded-lg text-amber-950 font-bold transition text-sm" data-practice="${i}">Tap to reveal answer</button>
+    <div class="rounded-2xl border-3 border-blue-200 bg-white p-4 font-body text-center">
+      <div class="text-5xl mb-2" aria-hidden="true">${p.art}</div>
+      <div class="font-black text-blue-900 text-xl mb-1">${p.n} ${p.item}</div>
+      <div class="speaker-badge ${p.speakers === 1 ? 'one' : 'two'} mx-auto mb-2">
+        <span aria-hidden="true">${p.whoArt}</span> ${p.who}
+      </div>
+      <p class="text-blue-900 font-bold text-lg">Fairy: ${p.q}</p>
+      <button type="button" class="mt-3 w-full cursor-pointer bg-amber-100 hover:bg-amber-200 p-3 rounded-xl text-amber-950 font-bold transition text-lg" data-practice="${i}">Tap to reveal answer</button>
     </div>
   `).join('');
   grid.querySelectorAll('[data-practice]').forEach(btn => {
     btn.addEventListener('click', () => {
       const p = PRACTICE[Number(btn.dataset.practice)];
       beep('ok');
-      btn.className = 'mt-2 w-full bg-emerald-100 text-emerald-900 p-2 rounded-lg font-bold border border-emerald-300 text-sm';
+      btn.className = 'mt-3 w-full bg-emerald-100 text-emerald-900 p-3 rounded-xl font-bold border-2 border-emerald-300 text-lg';
       btn.textContent = p.a;
       btn.disabled = true;
     });
@@ -487,7 +624,7 @@ document.getElementById('revealAllBtn').addEventListener('click', () => {
   });
 });
 
-/* ---- Fairy Well mini-game ---- */
+/* ---- Fairy Well game ---- */
 const FAIRY_ROUNDS = [
   { items: ['🪞'], plural: false, speakers: 1, owns: true, answer: "Yes, it's mine." },
   { items: ['💍'], plural: false, speakers: 1, owns: false, answer: "No, it isn't mine." },
@@ -499,29 +636,35 @@ const FAIRY_ROUNDS = [
   { items: ['💍', '💍'], plural: true, speakers: 2, owns: false, answer: "No, they aren't ours." }
 ];
 
+let fairyOrder = [];
 let fairyIdx = 0;
 let fairyScore = 0;
-let fairyOrder = [];
 
-function fairyOptions(correct) {
-  const pool = [
+function fairyOptions(answer) {
+  const all = [
     "Yes, it's mine.", "No, it isn't mine.",
     "Yes, it's ours.", "No, it isn't ours.",
     "Yes, they're mine.", "No, they aren't mine.",
     "Yes, they're ours.", "No, they aren't ours."
   ];
-  const opts = shuffle([correct, ...shuffle(pool.filter(x => x !== correct)).slice(0, 3)]);
-  return opts;
+  return shuffle([answer, ...shuffle(all.filter(x => x !== answer)).slice(0, 3)]);
 }
 
 function startFairyGame() {
-  fairyOrder = shuffle([...FAIRY_ROUNDS.keys()]);
+  fairyOrder = shuffle([...Array(FAIRY_ROUNDS.length).keys()]);
   fairyIdx = 0;
   fairyScore = 0;
   document.getElementById('fairyScore').textContent = '0';
   document.getElementById('fairyTotal').textContent = String(FAIRY_ROUNDS.length);
   document.getElementById('fairyProgress').textContent = '0';
   renderFairyRound();
+}
+
+function speakerVisual(n) {
+  if (n === 1) {
+    return `<span class="speaker-badge one"><span aria-hidden="true">🙋</span> You alone → mine</span>`;
+  }
+  return `<span class="speaker-badge two"><span aria-hidden="true">🙋➕🙋</span> You + partner → ours</span>`;
 }
 
 function renderFairyRound() {
@@ -532,9 +675,10 @@ function renderFairyRound() {
   if (fairyIdx >= fairyOrder.length) {
     gameActive = false;
     stage.innerHTML = `<div class="text-center py-8">
-      <p class="text-3xl font-black text-emerald-700 mb-2">Well done! 🧚</p>
-      <p class="text-xl font-bold mb-4">Fairy Well score: ${fairyScore} / ${FAIRY_ROUNDS.length * 10}</p>
-      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl" id="fairyReplay">Play again</button>
+      <p class="text-6xl mb-2" aria-hidden="true">🧚‍♀️🎉</p>
+      <p class="text-4xl font-black text-emerald-700 mb-2">Well done!</p>
+      <p class="text-2xl font-bold mb-4">Fairy Well score: ${fairyScore} / ${FAIRY_ROUNDS.length * 10}</p>
+      <button type="button" class="bg-amber-400 font-black px-6 py-4 rounded-xl text-xl" id="fairyReplay">Play again</button>
     </div>`;
     document.getElementById('fairyReplay').onclick = () => { beep('click'); startFairyGame(); };
     return;
@@ -542,13 +686,14 @@ function renderFairyRound() {
   gameActive = true;
   const r = FAIRY_ROUNDS[fairyOrder[fairyIdx]];
   const q = r.plural ? 'Are these yours?' : 'Is this yours?';
-  const who = r.speakers === 1 ? '🙋 You alone' : '👫 You + partner';
   const opts = fairyOptions(r.answer);
+  const ownPic = r.owns ? '✅📦' : '🚫📦';
   stage.innerHTML = `
-    <div class="text-center mb-3">
-      <div class="text-5xl mb-2">🧚‍♀️ ${r.items.join(' ')}</div>
-      <p class="text-sm font-bold text-stone-500">${who} · ${r.owns ? 'You OWN this' : 'You do NOT own this'}</p>
-      <p class="text-2xl font-black text-blue-900 mt-2">Fairy: “${q}”</p>
+    <div class="text-center mb-4">
+      <div class="text-7xl mb-2" aria-hidden="true">🧚‍♀️ ${r.items.join(' ')}</div>
+      <div class="scene-strip mb-3">${speakerVisual(r.speakers)}</div>
+      <p class="text-xl font-bold text-stone-600">${ownPic} ${r.owns ? 'You OWN this' : 'You do NOT own this'}</p>
+      <p class="text-3xl font-black text-blue-900 mt-3">Fairy: “${q}”</p>
     </div>
     <div class="grid sm:grid-cols-2 gap-3" id="fairyOpts"></div>
   `;
@@ -557,11 +702,18 @@ function renderFairyRound() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'big-tap';
-    b.textContent = opt;
+    b.innerHTML = `<span aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
     b.addEventListener('click', () => answerFairy(opt, r.answer, b));
     box.appendChild(b);
   });
   document.getElementById('fairyProgress').textContent = String(fairyIdx);
+}
+
+function optVisual(opt) {
+  const mine = opt.includes('mine');
+  const yes = opt.startsWith('Yes');
+  const people = mine ? '🙋' : '🙋➕🙋';
+  return `${yes ? '✔' : '✖'} ${people}`;
 }
 
 function answerFairy(chosen, correct, btn) {
@@ -579,7 +731,7 @@ function answerFairy(chosen, correct, btn) {
   } else {
     beep('err');
     btn.classList.add('bad');
-    all.find(b => b.textContent === correct)?.classList.add('hint');
+    all.find(b => b.textContent.includes(correct))?.classList.add('hint');
     fb.innerHTML = `<span class="text-rose-700">Not quite. Truth: “${correct}”</span>`;
   }
   setTimeout(() => {
@@ -619,7 +771,7 @@ const PG = [
 
 let pgIdx = 0;
 let pgScore = 0;
-let pgPhase = 'q'; // q | boy | girls
+let pgPhase = 'q';
 
 function startPlayground() {
   pgIdx = 0; pgScore = 0; pgPhase = 'q';
@@ -637,9 +789,10 @@ function renderPlayground() {
   if (pgIdx >= PG.length) {
     gameActive = false;
     stage.innerHTML = `<div class="text-center py-8">
-      <p class="text-3xl font-black text-emerald-700">Lost &amp; Found cleared! 🏫</p>
-      <p class="text-xl font-bold my-3">Score: ${pgScore}</p>
-      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl" id="pgReplay">Play again</button>
+      <p class="text-6xl mb-2" aria-hidden="true">🏫🎉</p>
+      <p class="text-4xl font-black text-emerald-700">Lost &amp; Found cleared!</p>
+      <p class="text-2xl font-bold my-3">Score: ${pgScore}</p>
+      <button type="button" class="bg-amber-400 font-black px-6 py-4 rounded-xl text-xl" id="pgReplay">Play again</button>
     </div>`;
     document.getElementById('pgReplay').onclick = () => { beep('click'); startPlayground(); };
     return;
@@ -649,21 +802,21 @@ function renderPlayground() {
   if (pgPhase === 'q') {
     const wrongQ = r.plural ? 'Is this yours?' : 'Are these yours?';
     stage.innerHTML = `
-      <div class="text-center mb-3">
-        <div class="text-5xl mb-2">${r.art}</div>
-        <p class="font-black text-blue-900 text-xl">Monitor holds: ${r.item}</p>
-        <p class="font-body text-stone-600 mt-1">What does the Monitor ask?</p>
+      <div class="text-center mb-4">
+        <div class="text-7xl mb-2" aria-hidden="true">🧑‍🏫 ${r.art}</div>
+        <p class="font-black text-blue-900 text-2xl">Monitor holds: ${r.item}</p>
+        <p class="font-body text-stone-600 mt-2 text-xl">What does the Monitor ask?</p>
       </div>
       <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
     `;
     bindPgChoices([r.q, wrongQ], r.q, () => { pgPhase = 'boy'; renderPlayground(); });
   } else if (pgPhase === 'boy') {
     stage.innerHTML = `
-      <div class="text-center mb-3">
-        <div class="text-5xl">${r.art}</div>
-        <p class="font-bold text-blue-900">Monitor: “${r.q}”</p>
-        <p class="text-3xl mt-2">👦 Boy ${r.boy.ok ? '✓' : '✗'}</p>
-        <p class="font-body">What does the <strong>boy</strong> say?</p>
+      <div class="text-center mb-4">
+        <div class="text-7xl" aria-hidden="true">${r.art}</div>
+        <p class="font-bold text-blue-900 text-2xl">Monitor: “${r.q}”</p>
+        <div class="mt-3 speaker-badge one text-2xl"><span aria-hidden="true">👦</span> Boy ${r.boy.ok ? '✓ owns' : '✗ does not'} → mine</div>
+        <p class="font-body text-xl mt-2">What does the <strong>boy</strong> say?</p>
       </div>
       <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
     `;
@@ -673,11 +826,11 @@ function renderPlayground() {
     bindPgChoices(uniq([r.boy.line, ...distractors]).slice(0, 4), r.boy.line, () => { pgPhase = 'girls'; renderPlayground(); });
   } else {
     stage.innerHTML = `
-      <div class="text-center mb-3">
-        <div class="text-5xl">${r.art}</div>
-        <p class="font-bold text-blue-900">Monitor: “${r.q}”</p>
-        <p class="text-3xl mt-2">👧👧 Two girls ${r.girls.ok ? '✓' : '✗'}</p>
-        <p class="font-body">What do the <strong>two girls</strong> say?</p>
+      <div class="text-center mb-4">
+        <div class="text-7xl" aria-hidden="true">${r.art}</div>
+        <p class="font-bold text-blue-900 text-2xl">Monitor: “${r.q}”</p>
+        <div class="mt-3 speaker-badge two text-2xl"><span aria-hidden="true">👧👧</span> Two girls ${r.girls.ok ? '✓ own' : '✗ do not'} → ours</div>
+        <p class="font-body text-xl mt-2">What do the <strong>two girls</strong> say?</p>
       </div>
       <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
     `;
@@ -699,7 +852,7 @@ function bindPgChoices(opts, correct, onDone) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'big-tap';
-    b.textContent = opt;
+    b.innerHTML = `<span aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
     b.addEventListener('click', () => {
       if (!gameActive) return;
       gameActive = false;
@@ -711,7 +864,7 @@ function bindPgChoices(opts, correct, onDone) {
         fb.innerHTML = '<span class="text-emerald-700">✔ Great!</span>';
       } else {
         beep('err'); b.classList.add('bad');
-        [...box.querySelectorAll('.big-tap')].find(x => x.textContent === correct)?.classList.add('hint');
+        [...box.querySelectorAll('.big-tap')].find(x => x.textContent.includes(correct))?.classList.add('hint');
         fb.innerHTML = `<span class="text-rose-700">Answer: “${correct}”</span>`;
       }
       setTimeout(() => { gameActive = true; onDone(); }, 2800);
@@ -722,14 +875,14 @@ function bindPgChoices(opts, correct, onDone) {
 
 /* ---- Quick-Fire Quiz ---- */
 const QUIZ_BANK = [
-  { q: 'Fairy holds 2 diamond rings to Karen alone. She does NOT own them.', a: "No, they aren't mine." },
-  { q: 'Monitor finds ONE water bottle belonging to Jo Jo alone.', a: "Yes, it's mine." },
-  { q: 'Monitor holds a comic book to two sisters. It belongs to BOTH.', a: "Yes, it's ours." },
-  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours." },
-  { q: 'Fairy holds ONE mirror to you alone. It IS yours.', a: "Yes, it's mine." },
-  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours." },
-  { q: 'Monitor holds two pencils to two girls. Pencils are NOT theirs.', a: "No, they aren't ours." },
-  { q: 'Fairy holds ONE backpack to two friends. It is NOT theirs.', a: "No, it isn't ours." }
+  { q: 'Fairy holds 2 diamond rings to Karen alone. She does NOT own them.', a: "No, they aren't mine.", art: '💍💍 · 🙋 · 🚫' },
+  { q: 'Monitor finds ONE water bottle belonging to Jo Jo alone.', a: "Yes, it's mine.", art: '🧴 · 🙋 · ✅' },
+  { q: 'Monitor holds a comic book to two sisters. It belongs to BOTH.', a: "Yes, it's ours.", art: '📘 · 🙋➕🙋 · ✅' },
+  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours.", art: '🔑🔑 · 🙋➕🙋 · 🚫' },
+  { q: 'Fairy holds ONE mirror to you alone. It IS yours.', a: "Yes, it's mine.", art: '🪞 · 🙋 · ✅' },
+  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours.", art: '👂✨ · 🙋➕🙋 · ✅' },
+  { q: 'Monitor holds two pencils to two girls. Pencils are NOT theirs.', a: "No, they aren't ours.", art: '✏️✏️ · 🙋➕🙋 · 🚫' },
+  { q: 'Fairy holds ONE backpack to two friends. It is NOT theirs.', a: "No, it isn't ours.", art: '🎒 · 🙋➕🙋 · 🚫' }
 ];
 const QUIZ_DISTRACTORS = [
   "No, it isn't mine.", "No, they aren't mine.", "No, they aren't ours.", "No, it isn't ours.",
@@ -756,13 +909,14 @@ function renderQuiz() {
   if (quizIdx >= quizQueue.length) {
     gameActive = false;
     stage.innerHTML = `<div class="text-center py-8">
-      <p class="text-3xl font-black text-blue-900">Quiz complete! ⚡</p>
+      <p class="text-6xl mb-2" aria-hidden="true">⚡🎯</p>
+      <p class="text-4xl font-black text-blue-900">Quiz complete!</p>
       <p class="text-2xl font-bold my-3">${quizScore} / ${quizQueue.length * 10} points</p>
-      <p class="font-body mb-4">${quizScore >= 40 ? 'Truth detector: excellent!' : 'Review the 4 combinations and try again.'}</p>
-      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl mr-2" id="quizReplay">Retry quiz</button>
-      <button type="button" class="bg-emerald-500 text-white font-black px-5 py-3 rounded-xl" data-goto="10">Exit ticket →</button>
+      <p class="font-body text-xl mb-4">${quizScore >= 40 ? 'Truth detector: excellent!' : 'Review the 4 combinations and try again.'}</p>
+      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl mr-2 text-lg" id="quizReplay">Retry quiz</button>
+      <button type="button" class="bg-emerald-500 text-white font-black px-5 py-3 rounded-xl text-lg" data-goto="10">Exit ticket →</button>
     </div>`;
-    document.getElementById('quizReplay').onclick = () => { beep('click'); startQuiz(); };
+    document.getElementById('quizReplay').onclick = () => { beep('ok'); startQuiz(); };
     stage.querySelector('[data-goto]')?.addEventListener('click', (e) => goTo(Number(e.currentTarget.dataset.goto)));
     return;
   }
@@ -770,8 +924,9 @@ function renderQuiz() {
   const item = quizQueue[quizIdx];
   const opts = shuffle([item.a, ...shuffle(QUIZ_DISTRACTORS.filter(x => x !== item.a)).slice(0, 3)]);
   stage.innerHTML = `
-    <p class="text-sm font-bold text-stone-500 mb-1">Question ${quizIdx + 1} of ${quizQueue.length}</p>
-    <p class="text-xl md:text-2xl font-black text-blue-900 mb-4">${item.q}</p>
+    <p class="text-base font-bold text-stone-500 mb-1">Question ${quizIdx + 1} of ${quizQueue.length}</p>
+    <div class="text-6xl text-center mb-3" aria-hidden="true">${item.art}</div>
+    <p class="text-xl md:text-2xl font-black text-blue-900 mb-4 text-center">${item.q}</p>
     <div class="grid sm:grid-cols-2 gap-3" id="quizOpts"></div>
   `;
   const box = document.getElementById('quizOpts');
@@ -779,7 +934,7 @@ function renderQuiz() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'big-tap';
-    b.textContent = opt;
+    b.innerHTML = `<span aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
     b.addEventListener('click', () => {
       if (!gameActive) return;
       gameActive = false;
@@ -790,13 +945,186 @@ function renderQuiz() {
         fb.innerHTML = '<span class="text-emerald-700">🎉 Correct!</span>';
       } else {
         beep('err'); b.classList.add('bad');
-        [...box.querySelectorAll('.big-tap')].find(x => x.textContent === item.a)?.classList.add('hint');
+        [...box.querySelectorAll('.big-tap')].find(x => x.textContent.includes(item.a))?.classList.add('hint');
         fb.innerHTML = `<span class="text-rose-700">Right answer: “${item.a}”</span>`;
       }
       setTimeout(() => { quizIdx++; renderQuiz(); }, 3000);
     });
     box.appendChild(b);
   });
+}
+
+/* ---- Exit flowchart (YES & NO same depth) ---- */
+const FLOW_NODES = {
+  start: {
+    title: 'Problem',
+    art: '❓🪞 / 🪞🪞',
+    prompt: 'Is this / Are these yours?',
+    choices: [
+      { label: 'Yes', art: '✔😊', next: 'yes-count', tone: 'yes' },
+      { label: 'No', art: '✖🙅', next: 'no-count', tone: 'no' }
+    ]
+  },
+  'yes-count': {
+    title: 'Yes →',
+    art: '✔',
+    prompt: 'How many things?',
+    choices: [
+      { label: 'one thing', art: '🪞', next: 'yes-one', tone: 'neutral' },
+      { label: 'two or more things', art: '🪞🪞', next: 'yes-two', tone: 'neutral' }
+    ]
+  },
+  'yes-one': {
+    title: "one thing → it's",
+    art: "🪞 → it's",
+    prompt: 'Who does it belong to?',
+    choices: [
+      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-yes-mine-s', tone: 'mine' },
+      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-yes-ours-s', tone: 'ours' }
+    ]
+  },
+  'yes-two': {
+    title: "two or more → they're",
+    art: "🪞🪞 → they're",
+    prompt: 'Who do they belong to?',
+    choices: [
+      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-yes-mine-p', tone: 'mine' },
+      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-yes-ours-p', tone: 'ours' }
+    ]
+  },
+  'no-count': {
+    title: 'No →',
+    art: '✖',
+    prompt: 'How many things?',
+    choices: [
+      { label: 'one thing', art: '🪞', next: 'no-one', tone: 'neutral' },
+      { label: 'two or more things', art: '🪞🪞', next: 'no-two', tone: 'neutral' }
+    ]
+  },
+  'no-one': {
+    title: "one thing → it isn't",
+    art: "🪞 → it isn't",
+    prompt: 'Who were we thinking of?',
+    choices: [
+      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-no-mine-s', tone: 'mine' },
+      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-no-ours-s', tone: 'ours' }
+    ]
+  },
+  'no-two': {
+    title: "two or more → they aren't",
+    art: "🪞🪞 → they aren't",
+    prompt: 'Who were we thinking of?',
+    choices: [
+      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-no-mine-p', tone: 'mine' },
+      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-no-ours-p', tone: 'ours' }
+    ]
+  },
+  'ans-yes-mine-s': { answer: "Yes, it's mine.", art: '✔ 🪞 · 🙋', path: 'Yes → one → it\'s → me' },
+  'ans-yes-ours-s': { answer: "Yes, it's ours.", art: '✔ 🪞 · 🙋➕🙋', path: 'Yes → one → it\'s → ___ and me' },
+  'ans-yes-mine-p': { answer: "Yes, they're mine.", art: '✔ 🪞🪞 · 🙋', path: 'Yes → two+ → they\'re → me' },
+  'ans-yes-ours-p': { answer: "Yes, they're ours.", art: '✔ 🪞🪞 · 🙋➕🙋', path: 'Yes → two+ → they\'re → ___ and me' },
+  'ans-no-mine-s': { answer: "No, it isn't mine.", art: '✖ 🪞 · 🙋', path: 'No → one → it isn\'t → me' },
+  'ans-no-ours-s': { answer: "No, it isn't ours.", art: '✖ 🪞 · 🙋➕🙋', path: 'No → one → it isn\'t → ___ and me' },
+  'ans-no-mine-p': { answer: "No, they aren't mine.", art: '✖ 🪞🪞 · 🙋', path: 'No → two+ → they aren\'t → me' },
+  'ans-no-ours-p': { answer: "No, they aren't ours.", art: '✖ 🪞🪞 · 🙋➕🙋', path: 'No → two+ → they aren\'t → ___ and me' }
+};
+
+let flowNode = 'start';
+
+function startFlow() {
+  flowNode = 'start';
+  renderFlow();
+  renderFlowMap();
+}
+
+function renderFlow() {
+  const stage = document.getElementById('flowStage');
+  const node = FLOW_NODES[flowNode];
+  if (!node) return;
+
+  if (node.answer) {
+    stage.innerHTML = `
+      <div class="flow-answer">
+        <div class="text-6xl mb-3" aria-hidden="true">${node.art}</div>
+        <p class="text-base font-bold text-stone-500 mb-1">${node.path}</p>
+        <p class="text-3xl md:text-4xl font-black text-emerald-800 mb-4">“${node.answer}”</p>
+        <button type="button" id="flowAgain" class="bg-amber-400 hover:bg-amber-300 font-black px-6 py-3 rounded-xl text-lg">↻ Try another path</button>
+      </div>
+    `;
+    document.getElementById('flowAgain').onclick = () => { beep('click'); startFlow(); };
+    return;
+  }
+
+  stage.innerHTML = `
+    <div class="text-center mb-4">
+      <div class="text-6xl mb-2" aria-hidden="true">${node.art}</div>
+      <p class="text-base font-bold text-stone-500">${node.title}</p>
+      <p class="text-2xl md:text-3xl font-black text-blue-900">${node.prompt}</p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-4" id="flowChoices"></div>
+  `;
+  const box = document.getElementById('flowChoices');
+  node.choices.forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `flow-choice ${c.tone}`;
+    b.innerHTML = `<span class="text-5xl" aria-hidden="true">${c.art}</span><span>${c.label}</span>`;
+    b.addEventListener('click', () => {
+      beep('click');
+      flowNode = c.next;
+      renderFlow();
+    });
+    box.appendChild(b);
+  });
+}
+
+function renderFlowMap() {
+  const el = document.getElementById('flowMap');
+  el.innerHTML = `
+    <div class="map-node mx-auto max-w-xs border-amber-400 bg-amber-50">
+      <span class="ico" aria-hidden="true">❓</span>
+      <span class="lbl">Problem: Is this / Are these yours?</span>
+    </div>
+    <div class="map-arrow">▼</div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <div class="map-node border-emerald-400 bg-emerald-50"><span class="ico">✔</span><span class="lbl">YES</span></div>
+        <div class="map-arrow">▼</div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-2">
+            <div class="map-node"><span class="ico">🪞</span><span class="lbl">one → it's</span></div>
+            <div class="map-arrow">▼</div>
+            <div class="map-node person-mine border-emerald-400"><span class="ico">🙋</span><span class="lbl">Yes, it's mine</span></div>
+            <div class="map-node person-ours border-purple-400"><span class="ico">🙋➕🙋</span><span class="lbl">Yes, it's ours</span></div>
+          </div>
+          <div class="space-y-2">
+            <div class="map-node"><span class="ico">🪞🪞</span><span class="lbl">two+ → they're</span></div>
+            <div class="map-arrow">▼</div>
+            <div class="map-node person-mine border-emerald-400"><span class="ico">🙋</span><span class="lbl">Yes, they're mine</span></div>
+            <div class="map-node person-ours border-purple-400"><span class="ico">🙋➕🙋</span><span class="lbl">Yes, they're ours</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <div class="map-node border-rose-400 bg-rose-50"><span class="ico">✖</span><span class="lbl">NO</span></div>
+        <div class="map-arrow">▼</div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-2">
+            <div class="map-node"><span class="ico">🪞</span><span class="lbl">one → it isn't</span></div>
+            <div class="map-arrow">▼</div>
+            <div class="map-node person-mine border-emerald-400"><span class="ico">🙋</span><span class="lbl">No, it isn't mine</span></div>
+            <div class="map-node person-ours border-purple-400"><span class="ico">🙋➕🙋</span><span class="lbl">No, it isn't ours</span></div>
+          </div>
+          <div class="space-y-2">
+            <div class="map-node"><span class="ico">🪞🪞</span><span class="lbl">two+ → they aren't</span></div>
+            <div class="map-arrow">▼</div>
+            <div class="map-node person-mine border-emerald-400"><span class="ico">🙋</span><span class="lbl">No, they aren't mine</span></div>
+            <div class="map-node person-ours border-purple-400"><span class="ico">🙋➕🙋</span><span class="lbl">No, they aren't ours</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 /* ---- Navigation ---- */
@@ -810,7 +1138,6 @@ function shuffle(arr) {
 }
 function uniq(arr) { return [...new Set(arr)]; }
 
-/** Clear sticky focus residue after touch answers (mobile) */
 function clearTapFocus() {
   try {
     if (document.activeElement && document.activeElement !== document.body) {
@@ -828,7 +1155,7 @@ function buildRail() {
 }
 
 function updateUI() {
-  document.querySelectorAll('.section').forEach((sec, i) => {
+  document.querySelectorAll('.section').forEach((sec) => {
     sec.classList.toggle('on', Number(sec.dataset.step) === currentStep);
   });
   document.getElementById('stepLabel').textContent = `${currentStep + 1} / ${STEPS.length}`;
@@ -840,10 +1167,10 @@ function updateUI() {
   document.getElementById('prevBtn').disabled = currentStep === 0;
   document.getElementById('nextBtn').disabled = currentStep === STEPS.length - 1;
 
-  // Enter/leave games
   if (currentStep === 7) startFairyGame();
   else if (currentStep === 8) startPlayground();
   else if (currentStep === 9) startQuiz();
+  else if (currentStep === 10) startFlow();
   else gameActive = false;
 }
 
@@ -873,13 +1200,10 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') { e.preventDefault(); goTo(currentStep + 1); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(currentStep - 1); }
   else if (e.key === ' ' || e.code === 'Space') {
-    // Space must NOT advance while a mini-game is interactive
     if (gameActive) {
       e.preventDefault();
       return;
     }
-    // Also ignore Space on lesson pages (arrows only) — boss: Space should not advance during games;
-    // safer classroom default: never use Space to advance
     e.preventDefault();
   }
 });
@@ -888,6 +1212,7 @@ window.addEventListener('keydown', (e) => {
 buildRail();
 renderVocab();
 renderPractice();
+renderFlowMap();
 updateUI();
 </script>
 </body>
