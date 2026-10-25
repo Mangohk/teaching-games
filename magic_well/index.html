@@ -23,7 +23,7 @@
       margin: 0;
       font-size: 20px;
     }
-    .shell { width: 100%; max-width: 1760px; }
+    .shell { width: 100%; max-width: none; }
     :fullscreen .shell,
     :-webkit-full-screen .shell { max-width: none; }
     :fullscreen main.panel,
@@ -750,13 +750,12 @@ function renderFairyRound() {
   const r = FAIRY_ROUNDS[fairyOrder[fairyIdx]];
   const q = r.plural ? 'Are these yours?' : 'Is this yours?';
   const opts = fairyOptions(r.answer);
-  const ownPic = r.owns ? '✅📦' : '🚫📦';
   stage.innerHTML = `
     <div class="text-center mb-4">
       <div class="text-7xl mb-2" aria-hidden="true">🧚‍♀️ ${r.items.join(' ')}</div>
       <div class="scene-strip mb-3">${speakerVisual(r.speakers)}</div>
-      <p class="text-xl font-bold text-stone-600">${ownPic} ${r.owns ? 'You OWN this' : 'You do NOT own this'}</p>
-      <p class="text-3xl font-black text-blue-900 mt-3">Fairy: “${q}”</p>
+      <p class="text-xl md:text-2xl font-black ${r.owns ? 'text-emerald-700' : 'text-rose-700'}">${r.owns ? 'You OWN this' : 'You do NOT own this'}</p>
+      <p class="text-3xl md:text-4xl font-black text-blue-900 mt-3">Fairy: “${q}”</p>
     </div>
     <div class="grid sm:grid-cols-2 gap-3" id="fairyOpts"></div>
   `;
@@ -950,14 +949,14 @@ function bindPgChoices(opts, correct, onDone) {
 
 /* ---- Quick-Fire Quiz ---- */
 const QUIZ_BANK = [
-  { q: 'Fairy holds 2 diamond rings to Karen alone. She does NOT own them.', a: "No, they aren't mine.", art: '💍💍 · 🙋 · 🚫' },
-  { q: 'Monitor finds ONE water bottle belonging to Jo Jo alone.', a: "Yes, it's mine.", art: '🧴 · 🙋 · ✅' },
-  { q: 'Monitor holds a comic book to two sisters. It belongs to BOTH.', a: "Yes, it's ours.", art: '📘 · 🙋➕🙋 · ✅' },
-  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours.", art: '🔑🔑🔑🔑🔑 · 🙋➕🙋 · 🚫' },
-  { q: 'Fairy holds ONE mirror to you alone. It IS yours.', a: "Yes, it's mine.", art: '🪞 · 🙋 · ✅' },
-  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours.", art: '💎💎 · 🙋➕🙋 · ✅' },
-  { q: 'Monitor holds two pencils to two girls. Pencils are NOT theirs.', a: "No, they aren't ours.", art: '✏️✏️ · 🙋➕🙋 · 🚫' },
-  { q: 'Fairy holds ONE backpack to two friends. It is NOT theirs.', a: "No, it isn't ours.", art: '🎒 · 🙋➕🙋 · 🚫' }
+  { q: 'Fairy holds 2 diamond rings to Karen alone. She does NOT own them.', a: "No, they aren't mine.", art: '💍💍 · 🙋' },
+  { q: 'Monitor finds ONE water bottle belonging to Jo Jo alone.', a: "Yes, it's mine.", art: '🧴 · 🙋' },
+  { q: 'Monitor holds a comic book to two sisters. It belongs to BOTH.', a: "Yes, it's ours.", art: '📘 · 🙋➕🙋' },
+  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours.", art: '🔑🔑🔑🔑🔑 · 🙋➕🙋' },
+  { q: 'Fairy holds ONE mirror to you alone. It IS yours.', a: "Yes, it's mine.", art: '🪞 · 🙋' },
+  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours.", art: '💎💎 · 🙋➕🙋' },
+  { q: 'Monitor holds two pencils to two girls. Pencils are NOT theirs.', a: "No, they aren't ours.", art: '✏️✏️ · 🙋➕🙋' },
+  { q: 'Fairy holds ONE backpack to two friends. It is NOT theirs.', a: "No, it isn't ours.", art: '🎒 · 🙋➕🙋' }
 ];
 const QUIZ_DISTRACTORS = [
   "No, it isn't mine.", "No, they aren't mine.", "No, they aren't ours.", "No, it isn't ours.",
