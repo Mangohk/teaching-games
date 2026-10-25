@@ -992,7 +992,8 @@
       QUESTIONS.forEach((q, idx) => {
         const opt = document.createElement('option');
         opt.value = idx;
-        opt.innerText = `Q${idx + 1}: ${q.part.split(':')[0]} (${q.spokenText})`;
+        // Number only — never part name or spokenText (answer spoiler for students)
+        opt.innerText = `Q${idx + 1}`;
         dropdown.appendChild(opt);
       });
     }
