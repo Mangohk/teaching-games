@@ -61,7 +61,19 @@
       transition: .12s;
       text-align: left;
     }
-    .big-tap:hover:not(:disabled) { border-color: #3b82f6; background: #eff6ff; transform: translateY(-2px); }
+    /* Hover only on real pointer devices — avoids sticky :hover after touch taps */
+    @media (hover: hover) and (pointer: fine) {
+      .big-tap:hover:not(:disabled) {
+        border-color: #3b82f6;
+        background: #eff6ff;
+        transform: translateY(-2px);
+      }
+    }
+    .big-tap:focus { outline: none; }
+    .big-tap:focus-visible {
+      outline: 3px solid #3b82f6;
+      outline-offset: 2px;
+    }
     .big-tap:disabled { opacity: .85; cursor: default; }
     .big-tap.ok { background: #22c55e !important; border-color: #15803d !important; color: #fff !important; }
     .big-tap.bad { background: #f43f5e !important; border-color: #be123c !important; color: #fff !important; }
@@ -513,6 +525,7 @@ function startFairyGame() {
 }
 
 function renderFairyRound() {
+  clearTapFocus();
   const stage = document.getElementById('fairyStage');
   const fb = document.getElementById('fairyFeedback');
   fb.textContent = '';
@@ -617,6 +630,7 @@ function startPlayground() {
 }
 
 function renderPlayground() {
+  clearTapFocus();
   const stage = document.getElementById('pgStage');
   const fb = document.getElementById('pgFeedback');
   fb.textContent = '';
@@ -735,6 +749,7 @@ function startQuiz() {
 }
 
 function renderQuiz() {
+  clearTapFocus();
   const stage = document.getElementById('quizStage');
   const fb = document.getElementById('quizFeedback');
   fb.textContent = '';
@@ -794,6 +809,15 @@ function shuffle(arr) {
   return a;
 }
 function uniq(arr) { return [...new Set(arr)]; }
+
+/** Clear sticky focus residue after touch answers (mobile) */
+function clearTapFocus() {
+  try {
+    if (document.activeElement && document.activeElement !== document.body) {
+      document.activeElement.blur();
+    }
+  } catch (_) { /* ignore */ }
+}
 
 function buildRail() {
   const rail = document.getElementById('stepRail');
