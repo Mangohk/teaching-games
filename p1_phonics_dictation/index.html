@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>P1 Phonics Dictation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Comic Sans MS', 'Comic Neue', 'Comic Sans', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    body {
+      background-color: #dbeafe; /* Light blue background */
+    }
+    .board-card {
+      background: #ffffff;
+      border: 5px solid #38bdf8;
+      box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.3), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+    }
+    .choice-card {
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    .choice-card:active {
+      transform: scale(0.95);
+    }
+    @keyframes wiggleWrong {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-12px) rotate(-3deg); }
+      40% { transform: translateX(12px) rotate(3deg); }
+      60% { transform: translateX(-8px); }
+      80% { transform: translateX(8px); }
+    }
+    .animate-wrong {
+      animation: wiggleWrong 0.45s ease-in-out;
+    }
+    @keyframes bounceGlow {
+      0% { transform: scale(0.94); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    .animate-correct {
+      animation: bounceGlow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    /* Rainbow title gradient */
+    .rainbow-text {
+      background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #06b6d4, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Star stamp strip (e-board) */
+    .star-strip-pill {
+      background: #fff;
+      border: 2px solid #38bdf8;
+      border-radius: 1rem;
+      padding: 0.35rem 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,.06);
+      max-width: 100%;
+    }
+    .star-total {
+      font-weight: 900;
+      font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+      color: #047857;
+      white-space: nowrap;
+      min-width: 3.5rem;
+    }
+    .stamp-track {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: nowrap;
+      min-height: clamp(2.5rem, 3.5vw, 3rem);
+    }
+    .stamp {
+      width: clamp(2.5rem, 3.5vw, 3rem);
+      height: clamp(2.5rem, 3.5vw, 3rem);
+      flex-shrink: 0;
+      display: block;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.15));
+    }
+    .stamp-slot {
+      width: clamp(2.5rem, 3.5vw, 3rem);
+      height: clamp(2.5rem, 3.5vw, 3rem);
+      flex-shrink: 0;
+      opacity: 0.55;
+    }
+    @keyframes stampIn {
+      0%   { transform: scale(0.4) rotate(-10deg); opacity: 0; }
+      70%  { transform: scale(1.12) rotate(3deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .stamp-in { animation: stampIn 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+    @keyframes stampOut {
+      0%   { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.55) translateY(-12px) rotate(12deg); opacity: 0; }
+    }
+    .stamp-out { animation: stampOut 0.32s ease-in forwards; }
+    @keyframes stampWiggle {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    .stamp-wiggle { animation: stampWiggle 0.28s ease-in-out; }
+    @media (prefers-reduced-motion: reduce) {
+      .stamp-in { animation: none; opacity: 1; transform: none; }
+      .stamp-out { animation: none; opacity: 0; }
+      .stamp-wiggle { animation: none; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden text-slate-800">
+
+  <!-- E-Board Top Header Bar -->
+  <header class="w-full bg-sky-200/90 border-b-4 border-sky-400 px-4 sm:px-8 py-3 flex flex-wrap items-center justify-between z-30 shadow-sm gap-3">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="bg-amber-400 hover:brightness-110 text-amber-950 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl text-xl sm:text-2xl font-extrabold shadow-md flex items-center justify-center border-2 border-amber-500 no-underline" title="Back to Teaching Games" aria-label="Back to Teaching Games">🎧</a>
+      <div>
+        <h1 class="text-xl sm:text-3xl font-black text-sky-900 tracking-wide flex items-center gap-2">
+          <span>P1 Phonics Dictation</span>
+          <span class="text-xs sm:text-sm bg-rose-500 text-white font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow">Dictation Ready!</span>
+        </h1>
+        <p class="text-xs sm:text-sm font-bold text-sky-800 hidden sm:block">
+          Sounds: <span class="text-rose-600 font-black">/a/ /s/ /t/ /p/ /g/ /o/ /d/ /m/ /n/ /i/</span> &amp; Blends
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Classroom Tools -->
+    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <div class="star-strip-pill" id="starStrip" data-stamp-max="8" aria-live="polite">
+        <span class="star-total" aria-label="Stars total">★×<span id="starCounter">0</span></span>
+        <div class="stamp-track" id="stampTrack" aria-hidden="true"></div>
+      </div>
+
+      <!-- British Voice Indicator / Toggle -->
+      <button onclick="toggleVoicePitch()" id="voiceSettingBtn" class="bg-white hover:bg-sky-50 active:scale-95 text-sky-900 border-2 border-sky-400 font-extrabold px-3 py-1.5 rounded-2xl text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5" title="Speech Voice info">
+        <span>🇬🇧</span>
+        <span id="voiceSpeedLabel">Voice: Normal</span>
+      </button>
+
+      <button onclick="toggleFullScreen()" class="p-2.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-md transition" title="Toggle Fullscreen">
+        ⛶
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Presentation Whiteboard Area -->
+  <main class="flex-1 w-full max-w-5xl mx-auto p-3 sm:p-6 flex flex-col justify-center items-center relative">
+
+    <!-- Mission & Category Badge Bar -->
+    <div class="w-full bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-200 border-4 border-amber-400 rounded-3xl p-3 sm:p-4 mb-4 shadow-md flex flex-wrap items-center justify-between gap-3 z-10">
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <span class="bg-amber-900 text-amber-100 text-sm sm:text-lg font-black px-4 py-1.5 rounded-2xl shadow-sm uppercase">
+          Question <span id="currentQNum">1</span> / 35
+        </span>
+        <span id="partTypeBadge" class="bg-white text-sky-900 text-xs sm:text-base font-black px-4 py-1.5 rounded-2xl border-2 border-amber-400 shadow-sm">
+          Part 1: Single Sounds
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="repeatSound()" id="btnHearSoundTop" class="bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-black text-sm sm:text-base px-5 py-2 rounded-2xl shadow-md border-2 border-rose-600 transition flex items-center gap-2">
+          <span class="text-xl">🔊</span>
+          <span>Listen Again</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Central Whiteboard Question Box -->
+    <div class="w-full board-card rounded-3xl p-5 sm:p-8 flex flex-col items-center justify-center relative min-h-[440px]">
+      
+      <!-- Big Speaker Prompt Section -->
+      <div class="flex flex-col items-center justify-center mb-6 w-full text-center">
+        
+        <button onclick="repeatSound()" class="group relative flex items-center justify-center p-5 sm:p-7 bg-gradient-to-b from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white rounded-full shadow-xl border-4 border-white transition transform active:scale-90 mb-3" title="Click to hear the sound">
+          <span class="text-5xl sm:text-7xl group-hover:scale-110 transition duration-200">🔊</span>
+          <span class="absolute -bottom-2 bg-amber-400 text-amber-950 text-xs sm:text-sm font-black px-3 py-0.5 rounded-full border-2 border-white shadow">
+            TAP TO LISTEN
+          </span>
+        </button>
+
+        <h2 id="instructionTitle" class="text-2xl sm:text-4xl font-black text-sky-900 mt-2">
+          Listen to the sound. What do you hear?
+        </h2>
+
+        <!-- Missing Word Frame for Questions 21-30 -->
+        <div id="missingWordDisplay" class="mt-4 hidden items-center justify-center gap-4 bg-sky-50 border-4 border-dashed border-sky-400 rounded-3xl px-8 py-4 shadow-inner">
+          <!-- Dynamically populated e.g. "p" + [ _ ] + "n" -->
+        </div>
+
+        <!-- Unjumble Slot Frame for Questions 31-35 -->
+        <div id="unjumbleDisplay" class="mt-4 hidden flex-col items-center justify-center gap-3 w-full max-w-xl">
+          <div class="text-xs sm:text-sm font-black text-sky-700 uppercase tracking-wider">
+            Tap the letters in the correct order:
+          </div>
+          <div id="unjumbleTargetSlots" class="flex items-center justify-center gap-2 sm:gap-3 p-3 bg-sky-50 border-4 border-dashed border-sky-400 rounded-3xl min-h-[90px] w-full shadow-inner">
+            <!-- Target letter boxes fill up as student taps letters -->
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="undoUnjumbleLetter()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-black px-4 py-1.5 rounded-xl transition shadow-xs">
+              ⌫ Undo
+            </button>
+            <button onclick="resetUnjumbleWord()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-black px-4 py-1.5 rounded-xl transition shadow-xs">
+              🔄 Clear
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Multiple Choice Big Word & Letter Buttons (Optimized for E-Board) -->
+      <div id="choicesGridContainer" class="w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 my-2 max-w-3xl">
+        <!-- Choices / Scrambled letters rendered dynamically -->
+      </div>
+
+      <!-- Post-Answer Correct Celebration Banner -->
+      <div id="feedbackBanner" class="w-full bg-emerald-100 border-4 border-emerald-400 rounded-3xl p-4 mt-6 hidden items-center justify-between gap-4 flex-wrap animate-correct">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl sm:text-4xl">🌟🎉</span>
+          <div class="text-left">
+            <span class="text-xs sm:text-sm font-black text-emerald-700 uppercase tracking-wider">Super Detective! That is correct!</span>
+            <div id="feedbackAnswerReveal" class="text-2xl sm:text-3xl font-black text-emerald-950">
+              The sound is: /a/
+            </div>
+          </div>
+        </div>
+
+        <button onclick="nextQuestion()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-base sm:text-xl px-7 py-3 rounded-2xl shadow-md border-2 border-emerald-700 transition ml-auto flex items-center gap-2">
+          <span>Next ➡️</span>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- E-Board Bottom Teacher Pacing Footer -->
+  <footer class="w-full bg-sky-200/90 border-t-4 border-sky-400 px-4 sm:px-8 py-3 flex flex-wrap items-center justify-between text-xs sm:text-sm text-sky-950 gap-3 z-30">
+    <div class="flex items-center gap-2">
+      <button onclick="prevQuestion()" id="btnPrevQ" class="bg-white hover:bg-sky-50 disabled:opacity-40 disabled:pointer-events-none text-sky-900 font-black px-4 py-2 rounded-2xl border-2 border-sky-400 shadow-sm transition active:scale-95">
+        ◀ Previous
+      </button>
+      <button onclick="nextQuestion()" id="btnNextQ" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-black px-6 py-2 rounded-2xl border-2 border-amber-500 shadow-sm transition active:scale-95">
+        Next ▶
+      </button>
+    </div>
+
+    <!-- Quick Jump Question Selector for Teachers -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="font-extrabold text-sky-900 hidden md:inline">Jump Question:</span>
+      <select id="jumpQuestionDropdown" onchange="jumpToQuestion(this.value)" class="bg-white text-sky-950 font-black px-4 py-2 rounded-2xl border-2 border-sky-400 text-sm focus:outline-none shadow-sm cursor-pointer">
+        <!-- 30 options dynamically filled -->
+      </select>
+      <button onclick="replayCurrentQuestion()" class="bg-white hover:bg-sky-50 text-sky-900 font-black px-4 py-2 rounded-2xl border-2 border-sky-400 shadow-sm transition active:scale-95">
+        Restart Question 🔄
+      </button>
+    </div>
+  </footer>
+
+  <!-- Final Revision Complete Modal (Stationary & Stable for Whiteboards) -->
+  <div id="finishModal" class="fixed inset-0 bg-sky-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <!-- Non-movable, strictly centered, solid window -->
+    <div class="bg-white border-8 border-amber-400 rounded-3xl p-6 sm:p-10 max-w-lg w-full text-center shadow-2xl relative">
+      <div class="text-6xl sm:text-7xl mb-2">🏆🎉🇬🇧</div>
+      <h3 class="text-3xl sm:text-4xl font-black text-sky-900 mb-1">DICTATION CHAMPIONS!</h3>
+      <p class="text-slate-600 text-base sm:text-lg mb-4 font-bold">You revised all 30 sounds, blends, and missing letters!</p>
+
+      <div class="bg-sky-50 rounded-2xl p-4 border-2 border-sky-200 text-sm sm:text-base font-black text-sky-950 mb-6 space-y-1">
+        <div>⭐ Total Stars Earned: <span id="finalScoreVal" class="text-emerald-600 font-black text-xl">35</span> / 35</div>
+        <div class="text-xs text-sky-700">Good luck on Tuesday, P1 Superstars!</div>
+      </div>
+
+      <div class="flex gap-3 justify-center">
+        <button onclick="restartGame()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black px-7 py-3 rounded-2xl text-base shadow-lg transition">
+          Practice Again 🔄
+        </button>
+        <button onclick="closeFinishModal()" class="bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 font-black px-5 py-3 rounded-2xl text-base transition">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       30 PHONICS QUESTIONS DATASET
+       Target Sounds: /a/ /s/ /t/ /p/ /g/ /o/ /d/ /m/ /n/ /i/
+       Q1-Q10:   Single sounds
+       Q11-Q20:  2-letter & 3-letter blends
+       Q21-Q30:  Listen to the word & choose the missing letter
+       ========================================================================= */
+    const QUESTIONS = [
+      // --- PART 1: SINGLE SOUNDS (1 - 10) ---
+      {
+        id: 1,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "a",
+        audioSrc: "audio/phoneme-a.mp3",
+        displaySound: "/a/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "a",
+        choices: ["a", "o", "s", "p"],
+        colorTheme: "rose"
+      },
+      {
+        id: 2,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "s",
+        audioSrc: "audio/phoneme-s.mp3",
+        displaySound: "/s/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "s",
+        choices: ["s", "t", "m", "n"],
+        colorTheme: "amber"
+      },
+      {
+        id: 3,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "t",
+        audioSrc: "audio/phoneme-t.mp3",
+        displaySound: "/t/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "t",
+        choices: ["p", "t", "d", "g"],
+        colorTheme: "emerald"
+      },
+      {
+        id: 4,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "p",
+        audioSrc: "audio/phoneme-p.mp3",
+        displaySound: "/p/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "p",
+        choices: ["m", "p", "d", "t"],
+        colorTheme: "sky"
+      },
+      {
+        id: 5,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "g",
+        audioSrc: "audio/phoneme-g.mp3",
+        displaySound: "/g/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "g",
+        choices: ["o", "d", "g", "p"],
+        colorTheme: "purple"
+      },
+      {
+        id: 6,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "o",
+        audioSrc: "audio/phoneme-o.mp3",
+        displaySound: "/o/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "o",
+        choices: ["a", "i", "o", "d"],
+        colorTheme: "pink"
+      },
+      {
+        id: 7,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "d",
+        audioSrc: "audio/phoneme-d.mp3",
+        displaySound: "/d/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "d",
+        choices: ["g", "p", "t", "d"],
+        colorTheme: "amber"
+      },
+      {
+        id: 8,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "m",
+        audioSrc: "audio/phoneme-m.mp3",
+        displaySound: "/m/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "m",
+        choices: ["n", "m", "s", "p"],
+        colorTheme: "emerald"
+      },
+      {
+        id: 9,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "n",
+        audioSrc: "audio/phoneme-n.mp3",
+        displaySound: "/n/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "n",
+        choices: ["m", "t", "n", "i"],
+        colorTheme: "sky"
+      },
+      {
+        id: 10,
+        part: "Part 1: Single Sounds",
+        type: "sound",
+        spokenText: "i",
+        audioSrc: "audio/phoneme-i.mp3",
+        displaySound: "/i/",
+        instruction: "Listen to the sound. What letter makes this sound?",
+        correct: "i",
+        choices: ["d", "a", "o", "i"],
+        colorTheme: "rose"
+      },
+
+      // --- PART 2: 2-LETTER & 3-LETTER BLENDS (11 - 20) ---
+      {
+        id: 11,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "as",
+        displaySound: "as",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "as",
+        choices: ["as", "at", "an", "is"],
+        colorTheme: "purple"
+      },
+      {
+        id: 12,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "tap",
+        displaySound: "tap",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "tap",
+        choices: ["tip", "tap", "top", "pat"],
+        colorTheme: "emerald"
+      },
+      {
+        id: 13,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "dog",
+        displaySound: "dog",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "dog",
+        choices: ["god", "dig", "dog", "dot"],
+        colorTheme: "amber"
+      },
+      {
+        id: 14,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "min",
+        displaySound: "min",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "min",
+        choices: ["man", "min", "pin", "tin"],
+        colorTheme: "rose"
+      },
+      {
+        id: 15,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "god",
+        displaySound: "god",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "god",
+        choices: ["dog", "god", "gap", "got"],
+        colorTheme: "sky"
+      },
+      {
+        id: 16,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "tip",
+        displaySound: "tip",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "tip",
+        choices: ["tap", "top", "pit", "tip"],
+        colorTheme: "pink"
+      },
+      {
+        id: 17,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "an",
+        displaySound: "an",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "an",
+        choices: ["in", "on", "an", "at"],
+        colorTheme: "emerald"
+      },
+      {
+        id: 18,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "man",
+        displaySound: "man",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "man",
+        choices: ["mat", "man", "pan", "pin"],
+        colorTheme: "amber"
+      },
+      {
+        id: 19,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "mat",
+        displaySound: "mat",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "mat",
+        choices: ["pat", "man", "map", "mat"],
+        colorTheme: "purple"
+      },
+      {
+        id: 20,
+        part: "Part 2: Sound Blends",
+        type: "blend",
+        spokenText: "pit",
+        displaySound: "pit",
+        instruction: "Listen and blend: Which word do you hear?",
+        correct: "pit",
+        choices: ["tip", "pot", "pit", "pat"],
+        colorTheme: "rose"
+      },
+
+      // --- PART 3: MISSING LETTER DICTATION (21 - 30) ---
+      {
+        id: 21,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "pan",
+        word: "pan",
+        prefix: "p",
+        missing: "a",
+        suffix: "n",
+        instruction: "Listen to the word: \"pan\". Which missing letter fills the blank?",
+        correct: "a",
+        choices: ["a", "o", "i", "s"],
+        colorTheme: "rose"
+      },
+      {
+        id: 22,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "dog",
+        word: "dog",
+        prefix: "d",
+        missing: "o",
+        suffix: "g",
+        instruction: "Listen to the word: \"dog\". Which missing letter fills the blank?",
+        correct: "o",
+        choices: ["a", "i", "o", "t"],
+        colorTheme: "amber"
+      },
+      {
+        id: 23,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "pin",
+        word: "pin",
+        prefix: "p",
+        missing: "i",
+        suffix: "n",
+        instruction: "Listen to the word: \"pin\". Which missing letter fills the blank?",
+        correct: "i",
+        choices: ["p", "a", "o", "i"],
+        colorTheme: "emerald"
+      },
+      {
+        id: 24,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "mat",
+        word: "mat",
+        prefix: "m",
+        missing: "a",
+        suffix: "t",
+        instruction: "Listen to the word: \"mat\". Which missing letter fills the blank?",
+        correct: "a",
+        choices: ["i", "o", "a", "d"],
+        colorTheme: "sky"
+      },
+      {
+        id: 25,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "pot",
+        word: "pot",
+        prefix: "p",
+        missing: "o",
+        suffix: "t",
+        instruction: "Listen to the word: \"pot\". Which missing letter fills the blank?",
+        correct: "o",
+        choices: ["a", "o", "i", "n"],
+        colorTheme: "purple"
+      },
+      {
+        id: 26,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "tip",
+        word: "tip",
+        prefix: "t",
+        missing: "i",
+        suffix: "p",
+        instruction: "Listen to the word: \"tip\". Which missing letter fills the blank?",
+        correct: "i",
+        choices: ["a", "o", "i", "g"],
+        colorTheme: "pink"
+      },
+      {
+        id: 27,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "tag",
+        word: "tag",
+        prefix: "t",
+        missing: "a",
+        suffix: "g",
+        instruction: "Listen to the word: \"tag\". Which missing letter fills the blank?",
+        correct: "a",
+        choices: ["o", "a", "i", "m"],
+        colorTheme: "emerald"
+      },
+      {
+        id: 28,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "dig",
+        word: "dig",
+        prefix: "d",
+        missing: "i",
+        suffix: "g",
+        instruction: "Listen to the word: \"dig\". Which missing letter fills the blank?",
+        correct: "i",
+        choices: ["i", "o", "a", "s"],
+        colorTheme: "amber"
+      },
+      {
+        id: 29,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "dot",
+        word: "dot",
+        prefix: "d",
+        missing: "o",
+        suffix: "t",
+        instruction: "Listen to the word: \"dot\". Which missing letter fills the blank?",
+        correct: "o",
+        choices: ["a", "i", "o", "t"],
+        colorTheme: "rose"
+      },
+      {
+        id: 30,
+        part: "Part 3: Missing Letter Dictation",
+        type: "missing",
+        spokenText: "man",
+        word: "man",
+        prefix: "m",
+        missing: "a",
+        suffix: "n",
+        instruction: "Listen to the word: \"man\". Which missing letter fills the blank?",
+        correct: "a",
+        choices: ["t", "i", "o", "a"],
+        colorTheme: "sky"
+      },
+
+      // --- PART 4: UNJUMBLE THE WORD (31 - 35) ---
+      {
+        id: 31,
+        part: "Part 4: Unjumble the Word",
+        type: "unjumble",
+        spokenText: "desk",
+        word: "desk",
+        scrambled: ["e", "s", "k", "d"],
+        instruction: "Listen to the word: \"desk\". Tap the letters in the correct order to spell it!",
+        correct: "desk",
+        colorTheme: "amber"
+      },
+      {
+        id: 32,
+        part: "Part 4: Unjumble the Word",
+        type: "unjumble",
+        spokenText: "six",
+        word: "six",
+        scrambled: ["x", "s", "i"],
+        instruction: "Listen to the word: \"six\". Tap the letters in the correct order to spell it!",
+        correct: "six",
+        colorTheme: "emerald"
+      },
+      {
+        id: 33,
+        part: "Part 4: Unjumble the Word",
+        type: "unjumble",
+        spokenText: "mat",
+        word: "mat",
+        scrambled: ["t", "m", "a"],
+        instruction: "Listen to the word: \"mat\". Tap the letters in the correct order to spell it!",
+        correct: "mat",
+        colorTheme: "rose"
+      },
+      {
+        id: 34,
+        part: "Part 4: Unjumble the Word",
+        type: "unjumble",
+        spokenText: "red",
+        word: "red",
+        scrambled: ["d", "r", "e"],
+        instruction: "Listen to the word: \"red\". Tap the letters in the correct order to spell it!",
+        correct: "red",
+        colorTheme: "purple"
+      },
+      {
+        id: 35,
+        part: "Part 4: Unjumble the Word",
+        type: "unjumble",
+        spokenText: "pen",
+        word: "pen",
+        scrambled: ["n", "p", "e"],
+        instruction: "Listen to the word: \"pen\". Tap the letters in the correct order to spell it!",
+        correct: "pen",
+        colorTheme: "sky"
+      }
+    ];
+
+    /* PHONETIC ENGINE FOR PURE PHONICS SOUNDS (NOT LETTER NAMES)
+       Standard TTS reads single characters as letter names ("ay", "ess", "tee", "pee", "jee").
+       To get pure British Phonics phonemes (/æ/, /s/, /t/, /p/, /g/, /ɒ/, /d/, /m/, /n/, /ɪ/),
+       we engineer precise phonetic respellings that British TTS voices pronounce as pure sounds. */
+    // Interim TTS fallback only (recorded MP3 is source of truth for Q1–10).
+    const PURE_PHONICS_MAP = {
+      "a": "aaa",
+      "s": "ssss",
+      "t": "tuh",
+      "p": "puh",
+      "g": "guh",
+      "o": "aw",
+      "d": "duh",
+      "m": "mmmm",
+      "n": "nnnn",
+      "i": "ih"
+    };
+
+    const STAMP_MAX = 8;
+    const STAMP_SVG = `<svg class="stamp" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="#FFF7ED" stroke="#D97706" stroke-width="3"/><path d="M32 10 L37.5 24.5 L53 25.5 L41 35.5 L44.5 50.5 L32 42.5 L19.5 50.5 L23 35.5 L11 25.5 L26.5 24.5 Z" fill="#FBBF24" stroke="#D97706" stroke-width="2" stroke-linejoin="round"/></svg>`;
+    const STAMP_SLOT_SVG = `<svg class="stamp-slot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 4" opacity="0.7"/><path d="M32 14 L36.5 25.5 L49 26.5 L39.5 34.5 L42.5 47 L32 40.5 L21.5 47 L24.5 34.5 L15 26.5 L27.5 25.5 Z" fill="none" stroke="#FCD34D" stroke-width="2" stroke-linejoin="round" opacity="0.55"/></svg>`;
+
+    let currentQIndex = 0;
+    let starsEarned = 0;
+    let activePhonemeAudio = null;
+    let roundAnswered = false;
+    let isSlowSpeech = false;
+    let unjumbleCurrentPicks = []; // tracks letters picked for Q31-Q35
+
+    // British Male Voice Engine
+    let britishMaleVoice = null;
+
+    function initSpeechVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const synth = window.speechSynthesis;
+
+      function updateVoiceList() {
+        const voices = synth.getVoices();
+        if (!voices || voices.length === 0) return;
+
+        // 1. Look for known British Male Voice names
+        const preferredBritishMale = voices.find(v => {
+          const name = v.name.toLowerCase();
+          const lang = v.lang.toLowerCase();
+          const isUK = lang.includes('en-gb') || lang.includes('en_gb') || lang.includes('en-uk');
+          const isMale = name.includes('male') || name.includes('george') || name.includes('oliver') ||
+                         name.includes('arthur') || name.includes('daniel') || name.includes('brian') ||
+                         name.includes('alfred') || name.includes('charles') || name.includes('harry');
+          return isUK && isMale;
+        });
+
+        // 2. Fallback: Any en-GB voice
+        const fallbackUK = voices.find(v => v.lang.toLowerCase().includes('en-gb') || v.lang.toLowerCase().includes('en_gb'));
+
+        // 3. Fallback: Any English Male voice
+        const fallbackMale = voices.find(v => {
+          const name = v.name.toLowerCase();
+          return v.lang.startsWith('en') && (name.includes('male') || name.includes('david') || name.includes('guy') || name.includes('james'));
+        });
+
+        britishMaleVoice = preferredBritishMale || fallbackUK || fallbackMale || voices[0];
+      }
+
+      updateVoiceList();
+      if (synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = updateVoiceList;
+      }
+    }
+
+    // Web Audio Sound FX Synthesizer (for cheerful chime / wrong buzz)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playChime(success = true) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (success) {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);       // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+          osc.frequency.setValueAtTime(1046.5, now + 0.24); // C6
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.setValueAtTime(190, now + 0.12);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        }
+      } catch (e) {}
+    }
+
+    function stopPhonemeAudio() {
+      if (activePhonemeAudio) {
+        try { activePhonemeAudio.pause(); } catch (e) {}
+        activePhonemeAudio = null;
+      }
+    }
+
+    // TTS for blends/words (Q11+). NEVER pass a length-1 letter to SpeechSynthesisUtterance.
+    function speakPhonicsFallback(textToSpeak) {
+      if (!('speechSynthesis' in window)) return;
+      const cleanKey = String(textToSpeak || '').trim().toLowerCase();
+      let phonicsText = '';
+      if (PURE_PHONICS_MAP[cleanKey]) {
+        phonicsText = PURE_PHONICS_MAP[cleanKey];
+      } else if (cleanKey.length === 1) {
+        // Safety: never utter a single letter name (e.g. "ay"/"ess")
+        return;
+      } else {
+        phonicsText = String(textToSpeak || '');
+      }
+      if (!phonicsText) return;
+
+      const synth = window.speechSynthesis;
+      try { synth.cancel(); } catch (e) {}
+      const utter = new SpeechSynthesisUtterance(phonicsText);
+      if (britishMaleVoice) utter.voice = britishMaleVoice;
+      utter.lang = 'en-GB';
+      utter.rate = isSlowSpeech ? 0.55 : 0.7;
+      utter.pitch = 0.95;
+      utter.volume = 1.0;
+      synth.speak(utter);
+    }
+
+    // Q1–10: HTMLAudioElement (+ audioSrc) first; Q11+: TTS spokenText.
+    function playPhonicsAudio(qOrText) {
+      const q = (qOrText && typeof qOrText === 'object') ? qOrText : null;
+      const text = q ? q.spokenText : String(qOrText || '');
+
+      stopPhonemeAudio();
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+
+      if (q && q.type === 'sound' && q.audioSrc) {
+        try {
+          const audio = new Audio(q.audioSrc);
+          activePhonemeAudio = audio;
+          const p = audio.play();
+          if (p && typeof p.catch === 'function') {
+            p.catch(() => speakPhonicsFallback(text));
+          }
+          return;
+        } catch (e) {
+          speakPhonicsFallback(text);
+          return;
+        }
+      }
+
+      speakPhonicsFallback(text);
+    }
+
+    function repeatSound() {
+      const q = QUESTIONS[currentQIndex];
+      playPhonicsAudio(q);
+    }
+
+    function renderStarTotal() {
+      document.getElementById('starCounter').innerText = String(starsEarned);
+    }
+
+    function ensureStampSlot() {
+      const track = document.getElementById('stampTrack');
+      if (!track) return;
+      if (starsEarned === 0 && track.querySelectorAll('.stamp').length === 0) {
+        track.innerHTML = STAMP_SLOT_SVG;
+      }
+    }
+
+    function addStarStamp() {
+      starsEarned += 1;
+      renderStarTotal();
+      const track = document.getElementById('stampTrack');
+      if (!track) return;
+      track.querySelectorAll('.stamp-slot').forEach((el) => el.remove());
+      const wrap = document.createElement('span');
+      wrap.innerHTML = STAMP_SVG;
+      const stamp = wrap.firstElementChild;
+      stamp.classList.add('stamp-in');
+      track.appendChild(stamp);
+      while (track.querySelectorAll('.stamp').length > STAMP_MAX) {
+        const oldest = track.querySelector('.stamp');
+        if (oldest) oldest.remove();
+      }
+    }
+
+    function removeStarStamp() {
+      const strip = document.getElementById('starStrip');
+      const track = document.getElementById('stampTrack');
+      if (starsEarned <= 0) {
+        starsEarned = 0;
+        renderStarTotal();
+        ensureStampSlot();
+        if (strip) {
+          strip.classList.remove('stamp-wiggle');
+          void strip.offsetWidth;
+          strip.classList.add('stamp-wiggle');
+          setTimeout(() => strip.classList.remove('stamp-wiggle'), 320);
+        }
+        return;
+      }
+      starsEarned -= 1;
+      renderStarTotal();
+      if (!track) return;
+      const stamps = track.querySelectorAll('.stamp');
+      const last = stamps[stamps.length - 1];
+      if (!last) {
+        ensureStampSlot();
+        return;
+      }
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) {
+        last.remove();
+        ensureStampSlot();
+        return;
+      }
+      last.classList.remove('stamp-in');
+      last.classList.add('stamp-out');
+      setTimeout(() => {
+        last.remove();
+        ensureStampSlot();
+      }, 320);
+    }
+
+    function resetStarStrip() {
+      starsEarned = 0;
+      renderStarTotal();
+      const track = document.getElementById('stampTrack');
+      if (track) track.innerHTML = STAMP_SLOT_SVG;
+    }
+
+    function toggleVoicePitch() {
+      isSlowSpeech = !isSlowSpeech;
+      const label = document.getElementById('voiceSpeedLabel');
+      label.innerText = isSlowSpeech ? "Voice: Slow Phonics 🐢" : "Voice: Normal 🇬🇧";
+      repeatSound();
+    }
+
+    // Populate question selector dropdown (1 to 30)
+    function initDropdown() {
+      const dropdown = document.getElementById('jumpQuestionDropdown');
+      dropdown.innerHTML = '';
+      QUESTIONS.forEach((q, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = `Q${idx + 1}: ${q.part.split(':')[0]} (${q.spokenText})`;
+        dropdown.appendChild(opt);
+      });
+    }
+
+    // Load question UI
+    function loadQuestion() {
+      const q = QUESTIONS[currentQIndex];
+      roundAnswered = false;
+
+      // Update Header & Category Badges
+      document.getElementById('currentQNum').innerText = q.id;
+      document.getElementById('partTypeBadge').innerText = q.part;
+      document.getElementById('jumpQuestionDropdown').value = currentQIndex;
+
+      // Update instructions
+      document.getElementById('instructionTitle').innerText = q.instruction;
+
+      // Hide Feedback Banner
+      const feedback = document.getElementById('feedbackBanner');
+      feedback.classList.add('hidden');
+      feedback.classList.remove('flex');
+
+      const missingDisplay = document.getElementById('missingWordDisplay');
+      const unjumbleDisplay = document.getElementById('unjumbleDisplay');
+
+      // Handle Layout based on question type
+      if (q.type === 'missing') {
+        missingDisplay.classList.remove('hidden');
+        missingDisplay.classList.add('flex');
+        unjumbleDisplay.classList.add('hidden');
+        unjumbleDisplay.classList.remove('flex');
+        missingDisplay.innerHTML = `
+          <span class="text-5xl sm:text-7xl font-black text-sky-800">${q.prefix}</span>
+          <div id="missingLetterBox" class="w-16 h-20 sm:w-24 sm:h-28 border-4 border-dashed border-rose-500 bg-white rounded-2xl flex items-center justify-center text-5xl sm:text-7xl font-black text-rose-600 shadow-md">
+            ?
+          </div>
+          <span class="text-5xl sm:text-7xl font-black text-sky-800">${q.suffix}</span>
+        `;
+      } else if (q.type === 'unjumble') {
+        missingDisplay.classList.add('hidden');
+        missingDisplay.classList.remove('flex');
+        unjumbleDisplay.classList.remove('hidden');
+        unjumbleDisplay.classList.add('flex');
+        unjumbleCurrentPicks = [];
+        renderUnjumbleSlots(q);
+      } else {
+        missingDisplay.classList.add('hidden');
+        missingDisplay.classList.remove('flex');
+        unjumbleDisplay.classList.add('hidden');
+        unjumbleDisplay.classList.remove('flex');
+      }
+
+      // Generate colorful, large choice cards or unjumble letter buttons
+      if (q.type === 'unjumble') {
+        renderUnjumbleButtons(q);
+      } else {
+        renderChoices(q);
+      }
+
+      // Previous / Next Nav State
+      document.getElementById('btnPrevQ').disabled = (currentQIndex === 0);
+      document.getElementById('btnNextQ').innerText = (currentQIndex === QUESTIONS.length - 1) ? 'Finish 🏆' : 'Next ▶';
+
+      // Auto-play the British pronunciation with a slight delay
+      setTimeout(() => {
+        repeatSound();
+      }, 350);
+    }
+
+    // Render large multiple choice cards with distinct cheerful palettes
+    function renderChoices(q) {
+      const container = document.getElementById('choicesGridContainer');
+      container.className = "w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 my-2 max-w-3xl";
+      container.innerHTML = '';
+
+      const colorSchemes = [
+        'bg-rose-500 hover:bg-rose-600 border-rose-600 text-white',
+        'bg-amber-400 hover:bg-amber-500 border-amber-500 text-amber-950',
+        'bg-emerald-500 hover:bg-emerald-600 border-emerald-600 text-white',
+        'bg-sky-500 hover:bg-sky-600 border-sky-600 text-white'
+      ];
+
+      q.choices.forEach((choice, index) => {
+        const btn = document.createElement('button');
+        const style = colorSchemes[index % colorSchemes.length];
+
+        btn.className = `choice-card ${style} border-b-8 p-4 sm:p-6 rounded-3xl shadow-xl flex flex-col items-center justify-center transition cursor-pointer`;
+        btn.innerHTML = `
+          <span class="bg-white/30 text-current text-xs sm:text-sm font-black px-2.5 py-0.5 rounded-lg mb-1 shadow-xs lowercase">
+            ${String.fromCharCode(97 + index)}
+          </span>
+          <span class="text-4xl sm:text-6xl font-black tracking-wider lowercase">
+            ${choice.toLowerCase()}
+          </span>
+        `;
+
+        btn.onclick = () => handleChoice(choice, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    /* --- UNJUMBLE ENGINE (Q31 - Q35) --- */
+    function renderUnjumbleSlots(q) {
+      const container = document.getElementById('unjumbleTargetSlots');
+      container.innerHTML = '';
+      const totalLetters = q.word.length;
+
+      for (let i = 0; i < totalLetters; i++) {
+        const slot = document.createElement('div');
+        const filledChar = unjumbleCurrentPicks[i] ? unjumbleCurrentPicks[i].char : '';
+        const isFilled = filledChar !== '';
+
+        slot.className = `w-14 h-18 sm:w-20 sm:h-24 rounded-2xl flex items-center justify-center text-4xl sm:text-6xl font-black border-4 shadow-md transition ${
+          isFilled
+            ? 'border-emerald-500 bg-emerald-50 text-emerald-800 scale-100'
+            : 'border-dashed border-sky-400 bg-white text-slate-300'
+        }`;
+        slot.innerText = isFilled ? filledChar : '_';
+        container.appendChild(slot);
+      }
+    }
+
+    function renderUnjumbleButtons(q) {
+      const container = document.getElementById('choicesGridContainer');
+      const cols = q.scrambled.length === 3 ? 'grid-cols-3' : 'grid-cols-4';
+      container.className = `w-full grid ${cols} gap-3 sm:gap-5 my-2 max-w-xl mx-auto`;
+      container.innerHTML = '';
+
+      const colorSchemes = [
+        'bg-rose-500 hover:bg-rose-600 border-rose-600 text-white',
+        'bg-amber-400 hover:bg-amber-500 border-amber-500 text-amber-950',
+        'bg-emerald-500 hover:bg-emerald-600 border-emerald-600 text-white',
+        'bg-sky-500 hover:bg-sky-600 border-sky-600 text-white'
+      ];
+
+      q.scrambled.forEach((char, index) => {
+        const btn = document.createElement('button');
+        const style = colorSchemes[index % colorSchemes.length];
+        const isUsed = unjumbleCurrentPicks.some(p => p.index === index);
+
+        btn.id = `unjumbleBtn_${index}`;
+        btn.className = `choice-card ${style} border-b-8 p-3 sm:p-5 rounded-3xl shadow-xl flex flex-col items-center justify-center transition cursor-pointer ${
+          isUsed ? 'opacity-30 pointer-events-none scale-90' : ''
+        }`;
+        btn.innerHTML = `
+          <span class="text-4xl sm:text-6xl font-black lowercase tracking-wider">
+            ${char.toLowerCase()}
+          </span>
+        `;
+
+        btn.onclick = () => handleUnjumblePick(char, index, q);
+        container.appendChild(btn);
+      });
+    }
+
+    function handleUnjumblePick(char, index, q) {
+      if (roundAnswered) return;
+      if (unjumbleCurrentPicks.some(p => p.index === index)) return;
+
+      unjumbleCurrentPicks.push({ char, index });
+      playChime(true);
+      renderUnjumbleSlots(q);
+      renderUnjumbleButtons(q);
+
+      // Check if full word has been formed
+      if (unjumbleCurrentPicks.length === q.word.length) {
+        const spelledWord = unjumbleCurrentPicks.map(p => p.char).join('');
+        if (spelledWord.toLowerCase() === q.correct.toLowerCase()) {
+          // Correct!
+          roundAnswered = true;
+          playChime(true);
+
+          addStarStamp();
+
+          // Highlight slots
+          const container = document.getElementById('unjumbleTargetSlots');
+          container.className = "flex items-center justify-center gap-2 sm:gap-3 p-3 bg-emerald-100 border-4 border-solid border-emerald-500 rounded-3xl min-h-[90px] w-full shadow-lg animate-correct";
+
+          // Reveal celebration banner
+          const revealEl = document.getElementById('feedbackAnswerReveal');
+          revealEl.innerText = `You spelled: "${q.correct}"!`;
+
+          const banner = document.getElementById('feedbackBanner');
+          banner.classList.remove('hidden');
+          banner.classList.add('flex');
+
+          setTimeout(() => {
+            playPhonicsAudio(q);
+          }, 200);
+        } else {
+          // Incorrect attempt: shake slots, lose a stamp, reset
+          playChime(false);
+          removeStarStamp();
+          const container = document.getElementById('unjumbleTargetSlots');
+          container.classList.add('animate-wrong');
+          setTimeout(() => {
+            container.classList.remove('animate-wrong');
+            unjumbleCurrentPicks = [];
+            renderUnjumbleSlots(q);
+            renderUnjumbleButtons(q);
+          }, 600);
+        }
+      }
+    }
+
+    function undoUnjumbleLetter() {
+      if (roundAnswered || unjumbleCurrentPicks.length === 0) return;
+      const q = QUESTIONS[currentQIndex];
+      unjumbleCurrentPicks.pop();
+      renderUnjumbleSlots(q);
+      renderUnjumbleButtons(q);
+    }
+
+    function resetUnjumbleWord() {
+      if (roundAnswered) return;
+      const q = QUESTIONS[currentQIndex];
+      unjumbleCurrentPicks = [];
+      renderUnjumbleSlots(q);
+      renderUnjumbleButtons(q);
+    }
+
+    function handleChoice(selectedChoice, buttonEl) {
+      if (roundAnswered) return;
+
+      const q = QUESTIONS[currentQIndex];
+
+      if (selectedChoice.toLowerCase() === q.correct.toLowerCase()) {
+        roundAnswered = true;
+        playChime(true);
+
+        // Highlight correct button
+        buttonEl.classList.add('ring-8', 'ring-emerald-400', 'scale-105');
+
+        // If missing word question, reveal letter inside the box
+        if (q.type === 'missing') {
+          const box = document.getElementById('missingLetterBox');
+          if (box) {
+            box.innerText = q.missing;
+            box.className = "w-16 h-20 sm:w-24 sm:h-28 border-4 border-solid border-emerald-500 bg-emerald-100 rounded-2xl flex items-center justify-center text-5xl sm:text-7xl font-black text-emerald-800 shadow-md animate-correct";
+          }
+        }
+
+        addStarStamp();
+
+        // Reveal answer message
+        const revealEl = document.getElementById('feedbackAnswerReveal');
+        if (q.type === 'missing') {
+          revealEl.innerText = `The word is "${q.word}" (Missing letter: ${q.correct})`;
+        } else if (q.type === 'blend') {
+          revealEl.innerText = `The blend is "${q.correct}"!`;
+        } else {
+          revealEl.innerText = `The sound is /${q.correct}/ (Letter: ${q.correct.toLowerCase()})`;
+        }
+
+        const banner = document.getElementById('feedbackBanner');
+        banner.classList.remove('hidden');
+        banner.classList.add('flex');
+
+        // Pronounce celebration voice
+        setTimeout(() => {
+          playPhonicsAudio(q);
+        }, 200);
+
+      } else {
+        // Wrong attempt — remove one stamp (clamp at 0)
+        playChime(false);
+        removeStarStamp();
+        buttonEl.classList.add('animate-wrong', 'opacity-60');
+        setTimeout(() => {
+          buttonEl.classList.remove('animate-wrong');
+        }, 500);
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQIndex < QUESTIONS.length - 1) {
+        currentQIndex++;
+        loadQuestion();
+      } else {
+        showFinishModal();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQIndex > 0) {
+        currentQIndex--;
+        loadQuestion();
+      }
+    }
+
+    function jumpToQuestion(index) {
+      currentQIndex = parseInt(index, 10);
+      loadQuestion();
+    }
+
+    function replayCurrentQuestion() {
+      loadQuestion();
+    }
+
+    function showFinishModal() {
+      playChime(true);
+      document.getElementById('finalScoreVal').innerText = starsEarned;
+      document.getElementById('finishModal').classList.remove('hidden');
+    }
+
+    function closeFinishModal() {
+      document.getElementById('finishModal').classList.add('hidden');
+    }
+
+    function restartGame() {
+      closeFinishModal();
+      currentQIndex = 0;
+      resetStarStrip();
+      loadQuestion();
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Keyboard navigation (Arrow keys and Space to replay sound)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        if (document.activeElement.tagName !== 'BUTTON') {
+          e.preventDefault();
+          repeatSound();
+        }
+      } else if (e.key === 'ArrowRight') {
+        nextQuestion();
+      } else if (e.key === 'ArrowLeft') {
+        prevQuestion();
+      }
+    });
+
+    // Initialize application on window load
+    window.onload = function() {
+      initSpeechVoices();
+      initDropdown();
+      resetStarStrip();
+      loadQuestion();
+    };
+  </script>
+</body>
+</html>
