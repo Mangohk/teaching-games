@@ -323,20 +323,87 @@
       try { window.speechSynthesis.cancel(); } catch (err) { /* no engine */ }
     }
 
-    // Optional stable en-US (or en) voice — missing voices must not block speak (X3).
-    function pickEnglishVoice() {
+    const SPEAK_RATE = 0.315; // classroom clarity; allowed band [0.315, 0.45]
+
+    const GB_FEMALE_NAME_RE = /google uk english female|uk english female|hazel|susan|serena|martha|\bfemale\b|\bwoman\b/i;
+    const EN_FEMALE_NAME_RE = /\bfemale\b|\bwoman\b|samantha|karen|moira|victoria|zira|tessa|fiona/i;
+
+    function voiceLang(v) {
+      return String((v && v.lang) || '').replace('_', '-');
+    }
+
+    function isEnGb(v) {
+      return /^en-GB\b/i.test(voiceLang(v));
+    }
+
+    function isEn(v) {
+      return /^en\b/i.test(voiceLang(v));
+    }
+
+    // Fallback order: en-GB female → any en-GB → en female → any en → null (still speak with lang/volume/rate).
+    function pickEnglishVoice(voicesList) {
       if (!window.speechSynthesis || typeof window.speechSynthesis.getVoices !== 'function') return null;
       try {
-        const voices = window.speechSynthesis.getVoices() || [];
-        return voices.find((v) => /^en-US/i.test(v.lang || ''))
-          || voices.find((v) => /^en\b/i.test(v.lang || ''))
-          || null;
+        const voices = Array.isArray(voicesList) ? voicesList : (window.speechSynthesis.getVoices() || []);
+        if (!voices.length) return null;
+
+        const gbFemaleNamed = voices.find((v) => isEnGb(v) && GB_FEMALE_NAME_RE.test(v.name || ''));
+        if (gbFemaleNamed) return gbFemaleNamed;
+
+        const gbFemaleLoose = voices.find((v) => isEnGb(v) && EN_FEMALE_NAME_RE.test(v.name || ''));
+        if (gbFemaleLoose) return gbFemaleLoose;
+
+        const anyGb = voices.find((v) => isEnGb(v));
+        if (anyGb) return anyGb;
+
+        const enFemale = voices.find((v) => isEn(v) && EN_FEMALE_NAME_RE.test(v.name || ''));
+        if (enFemale) return enFemale;
+
+        return voices.find((v) => isEn(v)) || null;
       } catch (err) {
         return null;
       }
     }
 
-    // Hear Word and auto-read share this helper (SC speakCurrentWord-aligned: Mute / cancel / lang / rate).
+    let cachedVoices = [];
+    let voicesHooked = false;
+
+    function refreshVoiceCache() {
+      if (!window.speechSynthesis || typeof window.speechSynthesis.getVoices !== 'function') return [];
+      try {
+        cachedVoices = window.speechSynthesis.getVoices() || [];
+      } catch (err) {
+        cachedVoices = [];
+      }
+      return cachedVoices;
+    }
+
+    function ensureVoicesHook() {
+      if (voicesHooked || !window.speechSynthesis) return;
+      voicesHooked = true;
+      refreshVoiceCache();
+      try {
+        if (typeof window.speechSynthesis.addEventListener === 'function') {
+          window.speechSynthesis.addEventListener('voiceschanged', refreshVoiceCache);
+        } else {
+          window.speechSynthesis.onvoiceschanged = refreshVoiceCache;
+        }
+      } catch (err) { /* ignore */ }
+    }
+
+    function resolveVoiceForSpeak() {
+      ensureVoicesHook();
+      let voices = cachedVoices.length ? cachedVoices : refreshVoiceCache();
+      let voice = pickEnglishVoice(voices);
+      if (!voice && !voices.length) {
+        // First getVoices() is often empty — refresh once more (voiceschanged / late load).
+        voices = refreshVoiceCache();
+        voice = pickEnglishVoice(voices);
+      }
+      return voice;
+    }
+
+    // Hear Word and auto-read share this helper (Mute / cancel / en-GB / volume / rate).
     function speakCurrent(opts) {
       const auto = !!(opts && opts.auto);
       if (state.muted || state.finished) return;
@@ -348,9 +415,10 @@
       try {
         cancelSpeech();
         const utterance = new SpeechSynthesisUtterance(spokenForm(item));
-        utterance.lang = 'en-US';
-        utterance.rate = 0.315;
-        const voice = pickEnglishVoice();
+        utterance.lang = 'en-GB';
+        utterance.volume = 1.0;
+        utterance.rate = SPEAK_RATE;
+        const voice = resolveVoiceForSpeak();
         if (voice) utterance.voice = voice;
         window.speechSynthesis.speak(utterance);
       } catch (err) {
@@ -564,6 +632,7 @@
 
     buildKeyboard();
     renderMute();
+    ensureVoicesHook();
     startRound();
 
     window.__DICTATION2 = {
@@ -575,6 +644,8 @@
       checkAnswer,
       speakCurrent,
       spokenForm,
+      pickEnglishVoice,
+      resolveVoiceForSpeak,
       currentItem,
       guessWord,
       flushAdvance() {
