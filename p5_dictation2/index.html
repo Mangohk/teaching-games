@@ -334,7 +334,8 @@
       try { window.speechSynthesis.cancel(); } catch (err) { /* no engine */ }
     }
 
-    const SPEAK_RATE = 0.315; // classroom clarity; allowed band [0.315, 0.45]
+    // Near-natural pace (was 0.315 — too slow / awkward). Keep en-GB female + volume 1.0.
+    const SPEAK_RATE = 0.95;
 
     const GB_FEMALE_NAME_RE = /google uk english female|uk english female|hazel|susan|serena|martha|\bfemale\b|\bwoman\b/i;
     const EN_FEMALE_NAME_RE = /\bfemale\b|\bwoman\b|samantha|karen|moira|victoria|zira|tessa|fiona/i;
