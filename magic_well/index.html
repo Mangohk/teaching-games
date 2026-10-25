@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Magic Well of Truth — P5 Possessive Pronouns</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1e3a5f;
+      --accent: #f59e0b;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Fredoka', system-ui, sans-serif;
+      user-select: none;
+      background: linear-gradient(145deg, #1e3a8a 0%, #0f766e 55%, #14532d 100%);
+      min-height: 100vh;
+      color: #1e293b;
+      margin: 0;
+    }
+    .font-body { font-family: 'Quicksand', sans-serif; }
+    .panel {
+      background: #fff;
+      border: 4px solid #fbbf24;
+      border-radius: 1.5rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+    .step-btn {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: .78rem;
+      padding: .45rem .7rem;
+      border-radius: .85rem;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .step-btn:hover { border-color: #f59e0b; background: #fffbeb; }
+    .step-btn.active {
+      background: #f59e0b;
+      border-color: #d97706;
+      color: #78350f;
+      box-shadow: 0 3px 0 #b45309;
+    }
+    .step-btn.done { border-color: #86efac; background: #ecfdf5; }
+    .big-tap {
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      border: 3px solid #cbd5e1;
+      background: #fff;
+      cursor: pointer;
+      transition: .12s;
+      text-align: left;
+    }
+    .big-tap:hover:not(:disabled) { border-color: #3b82f6; background: #eff6ff; transform: translateY(-2px); }
+    .big-tap:disabled { opacity: .85; cursor: default; }
+    .big-tap.ok { background: #22c55e !important; border-color: #15803d !important; color: #fff !important; }
+    .big-tap.bad { background: #f43f5e !important; border-color: #be123c !important; color: #fff !important; }
+    .big-tap.hint { background: #dcfce7 !important; border-color: #16a34a !important; color: #14532d !important; }
+    .icon-card {
+      border: 3px solid #e2e8f0;
+      border-radius: 1.25rem;
+      background: linear-gradient(180deg, #f8fafc, #fff);
+      padding: .75rem;
+      text-align: center;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+    }
+    .icon-card strong { font-size: .95rem; color: #1e3a8a; }
+    .icon-card span.tag {
+      font-size: .7rem;
+      font-weight: 800;
+      color: #b45309;
+      background: #fef3c7;
+      padding: .15rem .5rem;
+      border-radius: 999px;
+    }
+    .vocab-art { width: 72px; height: 72px; }
+    .section { display: none; }
+    .section.on { display: flex; flex-direction: column; gap: 1rem; animation: pop .3s ease; }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .pill-orange { color: #ea580c; font-weight: 800; }
+    kbd {
+      background: rgba(0,0,0,.25);
+      color: #fff;
+      padding: .1rem .45rem;
+      border-radius: .35rem;
+      font-family: ui-monospace, monospace;
+      font-size: .8rem;
+    }
+    .feedback {
+      min-height: 2rem;
+      font-weight: 800;
+      font-size: 1.15rem;
+      text-align: center;
+    }
+    .progress-track {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #34d399, #fbbf24);
+      width: 0%;
+      transition: width .35s ease;
+    }
+  </style>
+</head>
+<body class="p-3 md:p-5 flex flex-col items-center gap-3">
+
+  <!-- Header -->
+  <header class="w-full max-w-6xl panel px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="../index.html" class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-xl no-underline shadow hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">🪓</a>
+      <div class="min-w-0">
+        <h1 class="text-lg md:text-xl font-bold text-blue-950 leading-tight truncate">The Magic Well of Truth</h1>
+        <p class="text-xs md:text-sm text-blue-700 font-body font-semibold">
+          P5 · <span class="pill-orange">Is this / Are these yours?</span> → <span class="pill-orange">mine / ours</span>
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span id="stepLabel" class="bg-blue-100 text-blue-900 px-3 py-1.5 rounded-xl text-sm font-bold border border-blue-300">1 / 10</span>
+      <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-3.5 py-2 rounded-xl shadow active:scale-95">◀ Prev</button>
+      <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-3.5 py-2 rounded-xl shadow active:scale-95">Next ▶</button>
+      <button type="button" id="fsBtn" class="bg-stone-200 hover:bg-stone-300 p-2 rounded-xl" title="Fullscreen">⛶</button>
+      <button type="button" id="muteBtn" class="bg-stone-200 hover:bg-stone-300 p-2 rounded-xl" title="Mute">🔊</button>
+    </div>
+  </header>
+
+  <!-- Step rail -->
+  <nav id="stepRail" class="w-full max-w-6xl flex gap-1.5 overflow-x-auto pb-1" aria-label="Lesson steps"></nav>
+  <div class="w-full max-w-6xl progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- Main panel -->
+  <main class="w-full max-w-6xl panel p-4 md:p-8 min-h-[560px] relative">
+
+    <!-- 0 Goals -->
+    <section class="section on" data-step="0" id="sec-goals">
+      <div class="text-center">
+        <div class="inline-block bg-amber-100 border-2 border-amber-400 text-amber-900 px-4 py-1 rounded-full text-sm font-bold mb-3">Unit 4 · Possessive Pronouns</div>
+        <h2 class="text-3xl md:text-5xl font-black text-blue-900 mb-2">The Magic Well of Truth ✨</h2>
+        <p class="text-lg text-stone-600 font-body font-semibold max-w-3xl mx-auto">Tell the truth to the Water Fairy — claim what is <span class="pill-orange">mine</span> or <span class="pill-orange">ours</span>!</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4 mt-4">
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 text-center">
+          <div class="text-4xl mb-2">❓</div>
+          <h3 class="font-bold text-blue-900">Ask</h3>
+          <p class="text-sm font-body"><strong>Is this yours?</strong> (1)<br><strong>Are these yours?</strong> (2+)</p>
+        </div>
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 text-center">
+          <div class="text-4xl mb-2">🙋</div>
+          <h3 class="font-bold text-emerald-900">One person</h3>
+          <p class="text-sm font-body">Yes, it's <strong class="pill-orange">mine</strong>.<br>No, they aren't <strong class="pill-orange">mine</strong>.</p>
+        </div>
+        <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 text-center">
+          <div class="text-4xl mb-2">👫</div>
+          <h3 class="font-bold text-purple-900">A group</h3>
+          <p class="text-sm font-body">Yes, it's <strong class="pill-orange">ours</strong>.<br>No, they aren't <strong class="pill-orange">ours</strong>.</p>
+        </div>
+      </div>
+      <div class="text-center mt-2">
+        <button type="button" class="bg-emerald-500 hover:bg-emerald-400 text-white text-xl font-black px-8 py-3 rounded-2xl shadow-lg" data-goto="1">Begin → Vocab</button>
+      </div>
+    </section>
+
+    <!-- 1 Vocabulary -->
+    <section class="section" data-step="1" id="sec-vocab">
+      <h2 class="text-2xl md:text-3xl font-black text-blue-900">📚 Vocabulary — Accessories &amp; Objects</h2>
+      <p class="text-stone-600 font-body font-semibold">Tap each card. Use these words in the Fairy Well game later.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="vocabGrid"></div>
+      <p class="text-sm text-stone-500 font-body">Can you think of more accessories / objects for your word bank?</p>
+    </section>
+
+    <!-- 2 Story -->
+    <section class="section" data-step="2" id="sec-story">
+      <h2 class="text-2xl md:text-3xl font-black text-blue-900">🪓 Story Hook — The Honest Woodcutter</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl bg-gradient-to-br from-sky-100 to-amber-50 border-2 border-amber-300 p-4 flex flex-col items-center justify-center min-h-[220px]">
+          <div class="text-6xl mb-2">🧚‍♀️</div>
+          <div class="text-4xl">🧱</div>
+          <p class="mt-2 font-bold text-amber-900">Magic Well + Water Fairy</p>
+          <div class="flex gap-3 text-4xl mt-2"><span title="gold axe">🪓✨</span><span title="old axe">🪓</span></div>
+        </div>
+        <div class="space-y-3 font-body text-base md:text-lg">
+          <p class="bg-white border-2 border-stone-200 rounded-xl p-3"><strong class="text-blue-900">Fairy</strong> <em>(gold axe)</em>: “Is this <span class="pill-orange">yours</span>?”<br><strong class="text-amber-800">Woodcutter</strong>: “No, it isn't <span class="pill-orange">mine</span>.”</p>
+          <p class="bg-white border-2 border-stone-200 rounded-xl p-3"><strong class="text-blue-900">Fairy</strong> <em>(old axe)</em>: “Is this <span class="pill-orange">yours</span>?”<br><strong class="text-amber-800">Woodcutter</strong>: “Yes, it's <span class="pill-orange">mine</span>.”</p>
+          <p class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 font-bold text-emerald-900">He told the truth → the Fairy gave him both axes! Greedy people want gold too…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 Grammar singular/plural -->
+    <section class="section" data-step="3" id="sec-grammar">
+      <h2 class="text-2xl md:text-3xl font-black text-blue-900">🔤 Language Focus — Singular &amp; Plural</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl border-3 border-blue-300 bg-blue-50 p-4">
+          <h3 class="font-black text-blue-900 text-xl mb-2">ONE item</h3>
+          <p class="font-body text-lg">Q: <strong>Is this</strong> <span class="pill-orange">yours</span>?</p>
+          <p class="font-body">✔ Yes, <strong>it's</strong> <span class="pill-orange">mine / ours</span>.</p>
+          <p class="font-body">✖ No, <strong>it isn't</strong> <span class="pill-orange">mine / ours</span>.</p>
+        </div>
+        <div class="rounded-2xl border-3 border-violet-300 bg-violet-50 p-4">
+          <h3 class="font-black text-violet-900 text-xl mb-2">TWO+ items</h3>
+          <p class="font-body text-lg">Q: <strong>Are these</strong> <span class="pill-orange">yours</span>?</p>
+          <p class="font-body">✔ Yes, <strong>they're</strong> <span class="pill-orange">mine / ours</span>.</p>
+          <p class="font-body">✖ No, <strong>they aren't</strong> <span class="pill-orange">mine / ours</span>.</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4 mt-2">
+        <div class="rounded-2xl bg-emerald-50 border-2 border-emerald-300 p-4 text-center">
+          <div class="text-4xl mb-1">🙋</div>
+          <span class="text-3xl font-black text-emerald-600">mine</span>
+          <p class="font-body text-sm mt-1">One speaker → never say “ours” alone!</p>
+        </div>
+        <div class="rounded-2xl bg-purple-50 border-2 border-purple-300 p-4 text-center">
+          <div class="text-4xl mb-1">👫</div>
+          <span class="text-3xl font-black text-purple-600">ours</span>
+          <p class="font-body text-sm mt-1">Two+ speakers → never say “mine” together!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Master chart -->
+    <section class="section" data-step="4" id="sec-chart">
+      <h2 class="text-2xl md:text-3xl font-black text-blue-900 text-center">✨ The 4 Combinations of Truth</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div class="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4">
+          <p class="text-xs font-bold text-stone-500">1 item · 1 person</p>
+          <p class="font-bold">Is this yours?</p>
+          <p class="text-emerald-700 font-bold">✔ Yes, it's <u>mine</u>.</p>
+          <p class="text-rose-700 font-bold">✖ No, it isn't <u>mine</u>.</p>
+        </div>
+        <div class="rounded-2xl border-2 border-purple-300 bg-purple-50 p-4">
+          <p class="text-xs font-bold text-stone-500">1 item · group</p>
+          <p class="font-bold">Is this yours?</p>
+          <p class="text-emerald-700 font-bold">✔ Yes, it's <u>ours</u>.</p>
+          <p class="text-rose-700 font-bold">✖ No, it isn't <u>ours</u>.</p>
+        </div>
+        <div class="rounded-2xl border-2 border-sky-300 bg-sky-50 p-4">
+          <p class="text-xs font-bold text-stone-500">2+ items · 1 person</p>
+          <p class="font-bold">Are these yours?</p>
+          <p class="text-emerald-700 font-bold">✔ Yes, they're <u>mine</u>.</p>
+          <p class="text-rose-700 font-bold">✖ No, they aren't <u>mine</u>.</p>
+        </div>
+        <div class="rounded-2xl border-2 border-amber-300 bg-amber-50 p-4">
+          <p class="text-xs font-bold text-stone-500">2+ items · group</p>
+          <p class="font-bold">Are these yours?</p>
+          <p class="text-emerald-700 font-bold">✔ Yes, they're <u>ours</u>.</p>
+          <p class="text-rose-700 font-bold">✖ No, they aren't <u>ours</u>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 Whose extension -->
+    <section class="section" data-step="5" id="sec-whose">
+      <h2 class="text-2xl md:text-3xl font-black text-blue-900">🔎 Bonus: Whose…? / his · hers · theirs</h2>
+      <p class="font-body text-stone-600 font-semibold">Light extension from the language-focus page (not the main drill).</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl bg-orange-50 border-2 border-orange-300 p-4">
+          <p class="font-bold text-lg"><span class="pill-orange">Whose</span> backpack <strong>is this</strong>?</p>
+          <p class="font-body">It's <span class="pill-orange">mine / yours / his / hers / ours / theirs</span>.</p>
+          <p class="font-bold text-lg mt-3"><span class="pill-orange">Whose</span> watches <strong>are these</strong>?</p>
+          <p class="font-body">They're <span class="pill-orange">mine / yours / his / hers / ours / theirs</span>.</p>
+        </div>
+        <div class="rounded-2xl bg-stone-50 border-2 border-stone-300 p-4 font-body">
+          <p class="font-black text-blue-900 mb-2">Adjective → Pronoun</p>
+          <ul class="space-y-1 text-lg">
+            <li>my thing(s) → <span class="pill-orange">mine</span></li>
+            <li>your thing(s) → <span class="pill-orange">yours</span></li>
+            <li>his thing(s) → <span class="pill-orange">his</span></li>
+            <li>her thing(s) → <span class="pill-orange">hers</span></li>
+            <li>our thing(s) → <span class="pill-orange">ours</span></li>
+            <li>their thing(s) → <span class="pill-orange">theirs</span></li>
+          </ul>
+          <p class="mt-3 text-sm text-stone-500">Tony's bag → “It's <strong>his</strong>.” / My bag → “It's <strong>mine</strong>.”</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 Practice reveal (glasses fixed) -->
+    <section class="section" data-step="6" id="sec-practice">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-2xl md:text-3xl font-black text-blue-900">🧚 Practice — Fairy Scene 2</h2>
+        <button type="button" id="revealAllBtn" class="bg-violet-500 hover:bg-violet-400 text-white font-black px-4 py-2 rounded-xl">Reveal all</button>
+      </div>
+      <p class="font-body text-stone-600 font-semibold">Tap each amber box to show the answer. Item ⑤ is <strong>glasses</strong> (two boys).</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" id="practiceGrid"></div>
+    </section>
+
+    <!-- 7 Fairy Well game -->
+    <section class="section" data-step="7" id="sec-fairy">
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <h2 class="text-2xl md:text-3xl font-black text-blue-900">🎮 Fairy Well Mini-Game</h2>
+        <div class="font-black text-amber-700">Score: <span id="fairyScore">0</span> · <span id="fairyProgress">0</span>/<span id="fairyTotal">8</span></div>
+      </div>
+      <p class="font-body text-stone-600">The fairy shows item(s). Pick the full true answer. Covers all 4 combos.</p>
+      <div id="fairyStage" class="rounded-2xl bg-gradient-to-br from-sky-50 to-amber-50 border-2 border-amber-300 p-4 md:p-6 min-h-[320px]"></div>
+      <div class="feedback" id="fairyFeedback"></div>
+    </section>
+
+    <!-- 8 Playground game -->
+    <section class="section" data-step="8" id="sec-playground">
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <h2 class="text-2xl md:text-3xl font-black text-blue-900">🏫 Playground Lost &amp; Found</h2>
+        <div class="font-black text-amber-700">Score: <span id="pgScore">0</span> · <span id="pgProgress">0</span>/<span id="pgTotal">4</span></div>
+      </div>
+      <p class="font-body text-stone-600">Match Practice p.15: Monitor asks the boy and two girls.</p>
+      <div id="pgStage" class="rounded-2xl bg-gradient-to-br from-lime-50 to-sky-50 border-2 border-lime-300 p-4 md:p-6 min-h-[320px]"></div>
+      <div class="feedback" id="pgFeedback"></div>
+    </section>
+
+    <!-- 9 Quiz -->
+    <section class="section" data-step="9" id="sec-quiz">
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <h2 class="text-2xl md:text-3xl font-black text-blue-900">⚡ Quick-Fire Truth Detector</h2>
+        <div class="font-black text-amber-700">Score: <span id="quizScore">0</span></div>
+      </div>
+      <div id="quizStage" class="rounded-2xl bg-stone-50 border-2 border-stone-300 p-4 md:p-6 min-h-[320px]"></div>
+      <div class="feedback" id="quizFeedback"></div>
+    </section>
+
+    <!-- 10 Exit -->
+    <section class="section" data-step="10" id="sec-exit">
+      <h2 class="text-3xl font-black text-blue-900 text-center">🎟️ Exit Ticket</h2>
+      <div class="max-w-2xl mx-auto space-y-4 text-center">
+        <div class="rounded-2xl bg-blue-50 border-2 border-blue-200 p-4 font-body text-lg">
+          ☝️ One thing → <strong>Is this yours?</strong><br>
+          🙋 Alone → “Yes, it's <span class="pill-orange">mine</span>!” / “No, it isn't <span class="pill-orange">mine</span>!”
+        </div>
+        <div class="rounded-2xl bg-purple-50 border-2 border-purple-200 p-4 font-body text-lg">
+          ✌️ Two things → <strong>Are these yours?</strong><br>
+          👫 Together → “Yes, they're <span class="pill-orange">ours</span>!” / “No, they aren't <span class="pill-orange">ours</span>!”
+        </div>
+        <p class="font-bold text-xl text-amber-900">Exit question: The fairy holds two keys to you and your partner. You both own them. What do you say?</p>
+        <p class="text-2xl font-black text-emerald-700">“Yes, they're ours!”</p>
+        <button type="button" class="bg-emerald-500 text-white font-black px-6 py-3 rounded-2xl" data-goto="0">↻ Restart lesson</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="w-full max-w-6xl text-center text-white/80 text-sm font-body pb-2">
+    Arrows <kbd>◀</kbd> <kbd>▶</kbd> move lesson steps · Space does not skip during games · Mute &amp; fullscreen in the header
+  </footer>
+
+<script>
+const STEPS = [
+  { id: 'goals', label: 'Goals', phase: 'Teach' },
+  { id: 'vocab', label: 'Vocab', phase: 'Teach' },
+  { id: 'story', label: 'Story', phase: 'Teach' },
+  { id: 'grammar', label: 'Grammar', phase: 'Teach' },
+  { id: 'chart', label: 'Chart', phase: 'Teach' },
+  { id: 'whose', label: 'Whose?', phase: 'Teach' },
+  { id: 'practice', label: 'Practice', phase: 'Practice' },
+  { id: 'fairy', label: 'Fairy Game', phase: 'Play' },
+  { id: 'playground', label: 'Playground', phase: 'Play' },
+  { id: 'quiz', label: 'Quiz', phase: 'Play' },
+  { id: 'exit', label: 'Exit', phase: 'Wrap' }
+];
+
+let currentStep = 0;
+let muted = false;
+let gameActive = false; // blocks Space navigation
+const visited = new Set([0]);
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(ok) {
+  if (muted) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = ok === 'err' ? 'sawtooth' : 'sine';
+  o.frequency.value = ok === 'err' ? 140 : ok === 'click' ? 420 : 660;
+  g.gain.value = 0.12;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+  o.stop(audioCtx.currentTime + 0.2);
+}
+
+/* ---- Vocab (original SVG/CSS art — not textbook scans) ---- */
+const VOCAB = [
+  { name: 'a gold necklace', cat: 'Accessory', emoji: '📿', svg: 'necklace' },
+  { name: 'a silver ring', cat: 'Accessory', emoji: '💍', svg: 'ring' },
+  { name: 'earrings', cat: 'Accessory', emoji: '👂✨', svg: 'earrings' },
+  { name: 'a mirror', cat: 'Object', emoji: '🪞', svg: 'mirror' },
+  { name: 'a comb', cat: 'Object', emoji: '💇', svg: 'comb' },
+  { name: 'a hairbrush', cat: 'Object', emoji: '🪥', svg: 'brush' },
+  { name: 'a backpack', cat: 'Object', emoji: '🎒', svg: 'backpack' }
+];
+
+function vocabSvg(kind) {
+  const common = 'class="vocab-art" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"';
+  const map = {
+    necklace: `<svg ${common}><ellipse cx="40" cy="28" rx="22" ry="26" fill="none" stroke="#eab308" stroke-width="4"/><circle cx="40" cy="54" r="6" fill="#facc15" stroke="#ca8a04" stroke-width="2"/><circle cx="28" cy="48" r="4" fill="#fde047"/><circle cx="52" cy="48" r="4" fill="#fde047"/></svg>`,
+    ring: `<svg ${common}><circle cx="40" cy="42" r="18" fill="none" stroke="#94a3b8" stroke-width="7"/><circle cx="40" cy="42" r="10" fill="#f1f5f9"/><rect x="34" y="18" width="12" height="10" rx="2" fill="#cbd5e1"/></svg>`,
+    earrings: `<svg ${common}><path d="M28 18 q-8 20 0 40" fill="none" stroke="#a855f7" stroke-width="3"/><rect x="22" y="52" width="14" height="18" rx="3" fill="#7c3aed"/><path d="M52 18 q8 20 0 40" fill="none" stroke="#a855f7" stroke-width="3"/><rect x="44" y="52" width="14" height="18" rx="3" fill="#7c3aed"/></svg>`,
+    mirror: `<svg ${common}><ellipse cx="40" cy="34" rx="20" ry="22" fill="#bae6fd" stroke="#64748b" stroke-width="4"/><rect x="36" y="54" width="8" height="14" rx="2" fill="#94a3b8"/><ellipse cx="34" cy="28" rx="6" ry="8" fill="#ffffff" opacity=".55"/></svg>`,
+    comb: `<svg ${common}><rect x="14" y="28" width="52" height="12" rx="4" fill="#fb7185"/><g fill="#fda4af">${[18,26,34,42,50,58].map(x=>`<rect x="${x}" y="40" width="4" height="22" rx="1"/>`).join('')}</g></svg>`,
+    brush: `<svg ${common}><ellipse cx="40" cy="30" rx="22" ry="16" fill="#1e293b"/><g fill="#4ade80">${Array.from({length:8},(_,i)=>`<rect x="${22+i*5}" y="34" width="3" height="16" rx="1"/>`).join('')}</g><rect x="36" y="48" width="8" height="18" rx="3" fill="#334155"/></svg>`,
+    backpack: `<svg ${common}><rect x="22" y="22" width="36" height="44" rx="8" fill="#1d4ed8"/><rect x="28" y="30" width="24" height="16" rx="3" fill="#60a5fa"/><path d="M26 26 q14 -16 28 0" fill="none" stroke="#ef4444" stroke-width="4"/><rect x="18" y="34" width="6" height="20" rx="2" fill="#f87171"/><rect x="56" y="34" width="6" height="20" rx="2" fill="#f87171"/></svg>`
+  };
+  return map[kind] || '';
+}
+
+function renderVocab() {
+  const grid = document.getElementById('vocabGrid');
+  grid.innerHTML = VOCAB.map(v => `
+    <button type="button" class="icon-card" data-name="${v.name}">
+      ${vocabSvg(v.svg)}
+      <strong>${v.name}</strong>
+      <span class="tag">${v.cat}</span>
+    </button>
+  `).join('');
+  grid.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      beep('ok');
+      btn.classList.add('ring-4', 'ring-amber-400');
+      setTimeout(() => btn.classList.remove('ring-4', 'ring-amber-400'), 600);
+    });
+  });
+}
+
+/* ---- Practice Scene 2 (glasses fix) ---- */
+const PRACTICE = [
+  { n: '①', item: 'Earrings', art: '👂✨', q: 'Are these yours?', a: "No, they aren't mine.", who: '1 boy' },
+  { n: '②', item: 'Backpack', art: '🎒', q: 'Is this yours?', a: "No, it isn't mine.", who: '1 boy' },
+  { n: '③', item: 'Keys', art: '🔑🔑', q: 'Are these yours?', a: "Yes, they're mine.", who: '1 woman' },
+  { n: '④', item: 'Necklace', art: '📿', q: 'Is this yours?', a: "Yes, it's mine.", who: '1 girl' },
+  { n: '⑤', item: 'Glasses', art: '👓', q: 'Are these yours?', a: "No, they aren't ours.", who: '2 boys' },
+  { n: '⑥', item: 'Mirror', art: '🪞', q: 'Is this yours?', a: "Yes, it's ours.", who: '2 girls' }
+];
+
+function renderPractice() {
+  const grid = document.getElementById('practiceGrid');
+  grid.innerHTML = PRACTICE.map((p, i) => `
+    <div class="rounded-2xl border-2 border-blue-200 bg-white p-3 font-body">
+      <div class="flex justify-between font-black text-blue-900 mb-1"><span>${p.n} ${p.art} ${p.item}</span><span class="text-xs text-stone-500">${p.who}</span></div>
+      <p class="text-blue-900 font-bold text-sm">F: ${p.q}</p>
+      <button type="button" class="mt-2 w-full cursor-pointer bg-amber-100 hover:bg-amber-200 p-2 rounded-lg text-amber-950 font-bold transition text-sm" data-practice="${i}">Tap to reveal answer</button>
+    </div>
+  `).join('');
+  grid.querySelectorAll('[data-practice]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PRACTICE[Number(btn.dataset.practice)];
+      beep('ok');
+      btn.className = 'mt-2 w-full bg-emerald-100 text-emerald-900 p-2 rounded-lg font-bold border border-emerald-300 text-sm';
+      btn.textContent = p.a;
+      btn.disabled = true;
+    });
+  });
+}
+
+document.getElementById('revealAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('[data-practice]').forEach(btn => {
+    if (!btn.disabled) btn.click();
+  });
+});
+
+/* ---- Fairy Well mini-game ---- */
+const FAIRY_ROUNDS = [
+  { items: ['🪞'], plural: false, speakers: 1, owns: true, answer: "Yes, it's mine." },
+  { items: ['💍'], plural: false, speakers: 1, owns: false, answer: "No, it isn't mine." },
+  { items: ['🎒'], plural: false, speakers: 2, owns: true, answer: "Yes, it's ours." },
+  { items: ['🪞'], plural: false, speakers: 2, owns: false, answer: "No, it isn't ours." },
+  { items: ['🔑', '🔑'], plural: true, speakers: 1, owns: true, answer: "Yes, they're mine." },
+  { items: ['👓', '👓'], plural: true, speakers: 1, owns: false, answer: "No, they aren't mine." },
+  { items: ['📿', '📿'], plural: true, speakers: 2, owns: true, answer: "Yes, they're ours." },
+  { items: ['💍', '💍'], plural: true, speakers: 2, owns: false, answer: "No, they aren't ours." }
+];
+
+let fairyIdx = 0;
+let fairyScore = 0;
+let fairyOrder = [];
+
+function fairyOptions(correct) {
+  const pool = [
+    "Yes, it's mine.", "No, it isn't mine.",
+    "Yes, it's ours.", "No, it isn't ours.",
+    "Yes, they're mine.", "No, they aren't mine.",
+    "Yes, they're ours.", "No, they aren't ours."
+  ];
+  const opts = shuffle([correct, ...shuffle(pool.filter(x => x !== correct)).slice(0, 3)]);
+  return opts;
+}
+
+function startFairyGame() {
+  fairyOrder = shuffle([...FAIRY_ROUNDS.keys()]);
+  fairyIdx = 0;
+  fairyScore = 0;
+  document.getElementById('fairyScore').textContent = '0';
+  document.getElementById('fairyTotal').textContent = String(FAIRY_ROUNDS.length);
+  document.getElementById('fairyProgress').textContent = '0';
+  renderFairyRound();
+}
+
+function renderFairyRound() {
+  const stage = document.getElementById('fairyStage');
+  const fb = document.getElementById('fairyFeedback');
+  fb.textContent = '';
+  if (fairyIdx >= fairyOrder.length) {
+    gameActive = false;
+    stage.innerHTML = `<div class="text-center py-8">
+      <p class="text-3xl font-black text-emerald-700 mb-2">Well done! 🧚</p>
+      <p class="text-xl font-bold mb-4">Fairy Well score: ${fairyScore} / ${FAIRY_ROUNDS.length * 10}</p>
+      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl" id="fairyReplay">Play again</button>
+    </div>`;
+    document.getElementById('fairyReplay').onclick = () => { beep('click'); startFairyGame(); };
+    return;
+  }
+  gameActive = true;
+  const r = FAIRY_ROUNDS[fairyOrder[fairyIdx]];
+  const q = r.plural ? 'Are these yours?' : 'Is this yours?';
+  const who = r.speakers === 1 ? '🙋 You alone' : '👫 You + partner';
+  const opts = fairyOptions(r.answer);
+  stage.innerHTML = `
+    <div class="text-center mb-3">
+      <div class="text-5xl mb-2">🧚‍♀️ ${r.items.join(' ')}</div>
+      <p class="text-sm font-bold text-stone-500">${who} · ${r.owns ? 'You OWN this' : 'You do NOT own this'}</p>
+      <p class="text-2xl font-black text-blue-900 mt-2">Fairy: “${q}”</p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-3" id="fairyOpts"></div>
+  `;
+  const box = document.getElementById('fairyOpts');
+  opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'big-tap';
+    b.textContent = opt;
+    b.addEventListener('click', () => answerFairy(opt, r.answer, b));
+    box.appendChild(b);
+  });
+  document.getElementById('fairyProgress').textContent = String(fairyIdx);
+}
+
+function answerFairy(chosen, correct, btn) {
+  if (!gameActive) return;
+  gameActive = false;
+  const all = [...document.querySelectorAll('#fairyOpts .big-tap')];
+  all.forEach(b => b.disabled = true);
+  const fb = document.getElementById('fairyFeedback');
+  if (chosen === correct) {
+    beep('ok');
+    btn.classList.add('ok');
+    fairyScore += 10;
+    document.getElementById('fairyScore').textContent = String(fairyScore);
+    fb.innerHTML = '<span class="text-emerald-700">✨ Correct! The fairy smiles.</span>';
+  } else {
+    beep('err');
+    btn.classList.add('bad');
+    all.find(b => b.textContent === correct)?.classList.add('hint');
+    fb.innerHTML = `<span class="text-rose-700">Not quite. Truth: “${correct}”</span>`;
+  }
+  setTimeout(() => {
+    fairyIdx++;
+    document.getElementById('fairyProgress').textContent = String(fairyIdx);
+    renderFairyRound();
+  }, 3200);
+}
+
+/* ---- Playground Lost & Found (p.15) ---- */
+const PG = [
+  {
+    item: 'two drawings', art: '🖼️🖼️', plural: true,
+    boy: { ok: false, line: "No, they aren't mine." },
+    girls: { ok: true, line: "Yes, they're ours." },
+    q: 'Are these yours?'
+  },
+  {
+    item: 'a water bottle', art: '🧴', plural: false,
+    boy: { ok: true, line: "Yes, it's mine." },
+    girls: { ok: false, line: "No, it isn't ours." },
+    q: 'Is this yours?'
+  },
+  {
+    item: 'a comic book', art: '📘', plural: false,
+    boy: { ok: false, line: "No, it isn't mine." },
+    girls: { ok: true, line: "Yes, it's ours." },
+    q: 'Is this yours?'
+  },
+  {
+    item: 'two pencils', art: '✏️✏️', plural: true,
+    boy: { ok: true, line: "Yes, they're mine." },
+    girls: { ok: false, line: "No, they aren't ours." },
+    q: 'Are these yours?'
+  }
+];
+
+let pgIdx = 0;
+let pgScore = 0;
+let pgPhase = 'q'; // q | boy | girls
+
+function startPlayground() {
+  pgIdx = 0; pgScore = 0; pgPhase = 'q';
+  document.getElementById('pgScore').textContent = '0';
+  document.getElementById('pgTotal').textContent = String(PG.length);
+  document.getElementById('pgProgress').textContent = '0';
+  renderPlayground();
+}
+
+function renderPlayground() {
+  const stage = document.getElementById('pgStage');
+  const fb = document.getElementById('pgFeedback');
+  fb.textContent = '';
+  if (pgIdx >= PG.length) {
+    gameActive = false;
+    stage.innerHTML = `<div class="text-center py-8">
+      <p class="text-3xl font-black text-emerald-700">Lost &amp; Found cleared! 🏫</p>
+      <p class="text-xl font-bold my-3">Score: ${pgScore}</p>
+      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl" id="pgReplay">Play again</button>
+    </div>`;
+    document.getElementById('pgReplay').onclick = () => { beep('click'); startPlayground(); };
+    return;
+  }
+  gameActive = true;
+  const r = PG[pgIdx];
+  if (pgPhase === 'q') {
+    const wrongQ = r.plural ? 'Is this yours?' : 'Are these yours?';
+    stage.innerHTML = `
+      <div class="text-center mb-3">
+        <div class="text-5xl mb-2">${r.art}</div>
+        <p class="font-black text-blue-900 text-xl">Monitor holds: ${r.item}</p>
+        <p class="font-body text-stone-600 mt-1">What does the Monitor ask?</p>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
+    `;
+    bindPgChoices([r.q, wrongQ], r.q, () => { pgPhase = 'boy'; renderPlayground(); });
+  } else if (pgPhase === 'boy') {
+    stage.innerHTML = `
+      <div class="text-center mb-3">
+        <div class="text-5xl">${r.art}</div>
+        <p class="font-bold text-blue-900">Monitor: “${r.q}”</p>
+        <p class="text-3xl mt-2">👦 Boy ${r.boy.ok ? '✓' : '✗'}</p>
+        <p class="font-body">What does the <strong>boy</strong> say?</p>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
+    `;
+    const distractors = r.plural
+      ? ["Yes, they're mine.", "No, they aren't mine.", "Yes, it's mine.", "No, it isn't mine."]
+      : ["Yes, it's mine.", "No, it isn't mine.", "Yes, they're mine.", "No, they aren't mine."];
+    bindPgChoices(uniq([r.boy.line, ...distractors]).slice(0, 4), r.boy.line, () => { pgPhase = 'girls'; renderPlayground(); });
+  } else {
+    stage.innerHTML = `
+      <div class="text-center mb-3">
+        <div class="text-5xl">${r.art}</div>
+        <p class="font-bold text-blue-900">Monitor: “${r.q}”</p>
+        <p class="text-3xl mt-2">👧👧 Two girls ${r.girls.ok ? '✓' : '✗'}</p>
+        <p class="font-body">What do the <strong>two girls</strong> say?</p>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
+    `;
+    const distractors = r.plural
+      ? ["Yes, they're ours.", "No, they aren't ours.", "Yes, it's ours.", "No, it isn't ours."]
+      : ["Yes, it's ours.", "No, it isn't ours.", "Yes, they're ours.", "No, they aren't ours."];
+    bindPgChoices(uniq([r.girls.line, ...distractors]).slice(0, 4), r.girls.line, () => {
+      pgPhase = 'q';
+      pgIdx++;
+      document.getElementById('pgProgress').textContent = String(pgIdx);
+      renderPlayground();
+    });
+  }
+}
+
+function bindPgChoices(opts, correct, onDone) {
+  const box = document.getElementById('pgOpts');
+  shuffle(opts).forEach(opt => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'big-tap';
+    b.textContent = opt;
+    b.addEventListener('click', () => {
+      if (!gameActive) return;
+      gameActive = false;
+      [...box.querySelectorAll('.big-tap')].forEach(x => x.disabled = true);
+      const fb = document.getElementById('pgFeedback');
+      if (opt === correct) {
+        beep('ok'); b.classList.add('ok'); pgScore += 5;
+        document.getElementById('pgScore').textContent = String(pgScore);
+        fb.innerHTML = '<span class="text-emerald-700">✔ Great!</span>';
+      } else {
+        beep('err'); b.classList.add('bad');
+        [...box.querySelectorAll('.big-tap')].find(x => x.textContent === correct)?.classList.add('hint');
+        fb.innerHTML = `<span class="text-rose-700">Answer: “${correct}”</span>`;
+      }
+      setTimeout(() => { gameActive = true; onDone(); }, 2800);
+    });
+    box.appendChild(b);
+  });
+}
+
+/* ---- Quick-Fire Quiz ---- */
+const QUIZ_BANK = [
+  { q: 'Fairy holds 2 diamond rings to Karen alone. She does NOT own them.', a: "No, they aren't mine." },
+  { q: 'Monitor finds ONE water bottle belonging to Jo Jo alone.', a: "Yes, it's mine." },
+  { q: 'Monitor holds a comic book to two sisters. It belongs to BOTH.', a: "Yes, it's ours." },
+  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours." },
+  { q: 'Fairy holds ONE mirror to you alone. It IS yours.', a: "Yes, it's mine." },
+  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours." },
+  { q: 'Monitor holds two pencils to two girls. Pencils are NOT theirs.', a: "No, they aren't ours." },
+  { q: 'Fairy holds ONE backpack to two friends. It is NOT theirs.', a: "No, it isn't ours." }
+];
+const QUIZ_DISTRACTORS = [
+  "No, it isn't mine.", "No, they aren't mine.", "No, they aren't ours.", "No, it isn't ours.",
+  "Yes, it's mine.", "Yes, they're mine.", "Yes, it's ours.", "Yes, they're ours."
+];
+
+let quizQueue = [];
+let quizIdx = 0;
+let quizScore = 0;
+
+function startQuiz() {
+  quizQueue = shuffle([...QUIZ_BANK]).slice(0, 6);
+  quizIdx = 0;
+  quizScore = 0;
+  document.getElementById('quizScore').textContent = '0';
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const stage = document.getElementById('quizStage');
+  const fb = document.getElementById('quizFeedback');
+  fb.textContent = '';
+  if (quizIdx >= quizQueue.length) {
+    gameActive = false;
+    stage.innerHTML = `<div class="text-center py-8">
+      <p class="text-3xl font-black text-blue-900">Quiz complete! ⚡</p>
+      <p class="text-2xl font-bold my-3">${quizScore} / ${quizQueue.length * 10} points</p>
+      <p class="font-body mb-4">${quizScore >= 40 ? 'Truth detector: excellent!' : 'Review the 4 combinations and try again.'}</p>
+      <button type="button" class="bg-amber-400 font-black px-5 py-3 rounded-xl mr-2" id="quizReplay">Retry quiz</button>
+      <button type="button" class="bg-emerald-500 text-white font-black px-5 py-3 rounded-xl" data-goto="10">Exit ticket →</button>
+    </div>`;
+    document.getElementById('quizReplay').onclick = () => { beep('click'); startQuiz(); };
+    stage.querySelector('[data-goto]')?.addEventListener('click', (e) => goTo(Number(e.currentTarget.dataset.goto)));
+    return;
+  }
+  gameActive = true;
+  const item = quizQueue[quizIdx];
+  const opts = shuffle([item.a, ...shuffle(QUIZ_DISTRACTORS.filter(x => x !== item.a)).slice(0, 3)]);
+  stage.innerHTML = `
+    <p class="text-sm font-bold text-stone-500 mb-1">Question ${quizIdx + 1} of ${quizQueue.length}</p>
+    <p class="text-xl md:text-2xl font-black text-blue-900 mb-4">${item.q}</p>
+    <div class="grid sm:grid-cols-2 gap-3" id="quizOpts"></div>
+  `;
+  const box = document.getElementById('quizOpts');
+  opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'big-tap';
+    b.textContent = opt;
+    b.addEventListener('click', () => {
+      if (!gameActive) return;
+      gameActive = false;
+      [...box.querySelectorAll('.big-tap')].forEach(x => x.disabled = true);
+      if (opt === item.a) {
+        beep('ok'); b.classList.add('ok'); quizScore += 10;
+        document.getElementById('quizScore').textContent = String(quizScore);
+        fb.innerHTML = '<span class="text-emerald-700">🎉 Correct!</span>';
+      } else {
+        beep('err'); b.classList.add('bad');
+        [...box.querySelectorAll('.big-tap')].find(x => x.textContent === item.a)?.classList.add('hint');
+        fb.innerHTML = `<span class="text-rose-700">Right answer: “${item.a}”</span>`;
+      }
+      setTimeout(() => { quizIdx++; renderQuiz(); }, 3000);
+    });
+    box.appendChild(b);
+  });
+}
+
+/* ---- Navigation ---- */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function uniq(arr) { return [...new Set(arr)]; }
+
+function buildRail() {
+  const rail = document.getElementById('stepRail');
+  rail.innerHTML = STEPS.map((s, i) =>
+    `<button type="button" class="step-btn" data-step="${i}" title="${s.phase}: ${s.label}">${i + 1}. ${s.label}</button>`
+  ).join('');
+  rail.querySelectorAll('.step-btn').forEach(b => b.addEventListener('click', () => goTo(Number(b.dataset.step))));
+}
+
+function updateUI() {
+  document.querySelectorAll('.section').forEach((sec, i) => {
+    sec.classList.toggle('on', Number(sec.dataset.step) === currentStep);
+  });
+  document.getElementById('stepLabel').textContent = `${currentStep + 1} / ${STEPS.length}`;
+  document.getElementById('progressFill').style.width = `${((currentStep) / (STEPS.length - 1)) * 100}%`;
+  document.querySelectorAll('#stepRail .step-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === currentStep);
+    b.classList.toggle('done', visited.has(i) && i !== currentStep);
+  });
+  document.getElementById('prevBtn').disabled = currentStep === 0;
+  document.getElementById('nextBtn').disabled = currentStep === STEPS.length - 1;
+
+  // Enter/leave games
+  if (currentStep === 7) startFairyGame();
+  else if (currentStep === 8) startPlayground();
+  else if (currentStep === 9) startQuiz();
+  else gameActive = false;
+}
+
+function goTo(n) {
+  if (n < 0 || n >= STEPS.length) return;
+  beep('click');
+  currentStep = n;
+  visited.add(n);
+  updateUI();
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(currentStep - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(currentStep + 1));
+document.querySelectorAll('[data-goto]').forEach(el => {
+  el.addEventListener('click', () => goTo(Number(el.dataset.goto)));
+});
+document.getElementById('muteBtn').addEventListener('click', () => {
+  muted = !muted;
+  document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+});
+document.getElementById('fsBtn').addEventListener('click', () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') { e.preventDefault(); goTo(currentStep + 1); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(currentStep - 1); }
+  else if (e.key === ' ' || e.code === 'Space') {
+    // Space must NOT advance while a mini-game is interactive
+    if (gameActive) {
+      e.preventDefault();
+      return;
+    }
+    // Also ignore Space on lesson pages (arrows only) — boss: Space should not advance during games;
+    // safer classroom default: never use Space to advance
+    e.preventDefault();
+  }
+});
+
+// Init
+buildRail();
+renderVocab();
+renderPractice();
+updateUI();
+</script>
+</body>
+</html>
