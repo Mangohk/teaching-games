@@ -21,8 +21,22 @@
       min-height: 100vh;
       color: #1e293b;
       margin: 0;
-      font-size: 18px;
+      font-size: 20px;
     }
+    .shell { width: 100%; max-width: 1760px; }
+    :fullscreen .shell,
+    :-webkit-full-screen .shell { max-width: none; }
+    :fullscreen main.panel,
+    :-webkit-full-screen main.panel {
+      max-width: none;
+      width: 100%;
+      min-height: calc(100vh - 11rem);
+      font-size: 1.12em;
+    }
+    :fullscreen .step-btn,
+    :-webkit-full-screen .step-btn { font-size: 1.05rem; padding: .65rem 1rem; }
+    :fullscreen .big-tap,
+    :-webkit-full-screen .big-tap { font-size: 1.55rem; }
     .font-body { font-family: 'Quicksand', sans-serif; }
     .panel {
       background: #fff;
@@ -33,8 +47,8 @@
     .step-btn {
       font-family: inherit;
       font-weight: 700;
-      font-size: .9rem;
-      padding: .55rem .85rem;
+      font-size: 1rem;
+      padding: .6rem 1rem;
       border-radius: .85rem;
       border: 2px solid #cbd5e1;
       background: #f8fafc;
@@ -53,18 +67,26 @@
     .big-tap {
       font-family: inherit;
       font-weight: 800;
-      font-size: 1.35rem;
-      padding: 1.15rem 1.35rem;
+      font-size: 1.45rem;
+      padding: 1.25rem 1.45rem;
       border-radius: 1.1rem;
       border: 3px solid #cbd5e1;
       background: #fff;
       cursor: pointer;
       transition: .12s;
       text-align: left;
-      min-height: 4.25rem;
+      min-height: 4.5rem;
       display: flex;
       align-items: center;
-      gap: .75rem;
+      gap: .85rem;
+    }
+    .opt-vis {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: 1.65rem;
+      line-height: 1;
+      flex-shrink: 0;
     }
     @media (hover: hover) and (pointer: fine) {
       .big-tap:hover:not(:disabled) {
@@ -104,7 +126,21 @@
       padding: .2rem .65rem;
       border-radius: 999px;
     }
-    .vocab-art { width: 110px; height: 110px; }
+    .vocab-art { width: 128px; height: 128px; }
+    .axe-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .35rem;
+      padding: .75rem 1rem;
+      border-radius: 1rem;
+      border: 3px solid;
+      min-width: 9rem;
+    }
+    .axe-card.gold { background: #fffbeb; border-color: #eab308; }
+    .axe-card.own { background: #f5f5f4; border-color: #78716c; }
+    .axe-pic { font-size: 3.25rem; line-height: 1; }
+    .axe-card .axe-label { font-weight: 900; font-size: 1.05rem; }
     .section { display: none; }
     .section.on { display: flex; flex-direction: column; gap: 1.1rem; animation: pop .3s ease; }
     @keyframes pop {
@@ -235,34 +271,34 @@
     .map-arrow { text-align: center; font-size: 1.4rem; color: #64748b; font-weight: 900; padding: .15rem 0; }
   </style>
 </head>
-<body class="p-3 md:p-5 flex flex-col items-center gap-3">
+<body class="p-2 md:p-4 flex flex-col items-center gap-2 md:gap-3">
 
   <!-- Header -->
-  <header class="w-full max-w-6xl panel px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+  <header class="shell w-full panel px-4 py-3 flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
       <a href="../index.html" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl no-underline shadow hover:brightness-110" title="Back to Teaching Games" aria-label="Back to Teaching Games">🪓</a>
       <div class="min-w-0">
-        <h1 class="text-xl md:text-2xl font-bold text-blue-950 leading-tight truncate">The Magic Well of Truth</h1>
-        <p class="text-sm md:text-base text-blue-700 font-body font-semibold">
+        <h1 class="text-2xl md:text-3xl font-bold text-blue-950 leading-tight truncate">The Magic Well of Truth</h1>
+        <p class="text-base md:text-lg text-blue-700 font-body font-semibold">
           P5 · <span class="pill-orange">Is this / Are these yours?</span> → <span class="pill-orange">mine / ours</span>
         </p>
       </div>
     </div>
     <div class="flex items-center gap-2 flex-wrap">
-      <span id="stepLabel" class="bg-blue-100 text-blue-900 px-3 py-1.5 rounded-xl text-base font-bold border border-blue-300">1 / 11</span>
-      <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow active:scale-95 text-lg">◀ Prev</button>
-      <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow active:scale-95 text-lg">Next ▶</button>
+      <span id="stepLabel" class="bg-blue-100 text-blue-900 px-3 py-1.5 rounded-xl text-lg font-bold border border-blue-300">1 / 11</span>
+      <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow active:scale-95 text-xl">◀ Prev</button>
+      <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow active:scale-95 text-xl">Next ▶</button>
       <button type="button" id="fsBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Fullscreen">⛶</button>
       <button type="button" id="muteBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Mute">🔊</button>
     </div>
   </header>
 
   <!-- Step rail -->
-  <nav id="stepRail" class="w-full max-w-6xl flex gap-1.5 overflow-x-auto pb-1" aria-label="Lesson steps"></nav>
-  <div class="w-full max-w-6xl progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <nav id="stepRail" class="shell w-full flex gap-2 overflow-x-auto pb-1" aria-label="Lesson steps"></nav>
+  <div class="shell w-full progress-track"><div class="progress-fill" id="progressFill"></div></div>
 
   <!-- Main panel -->
-  <main class="w-full max-w-6xl panel p-4 md:p-8 min-h-[620px] relative">
+  <main class="shell w-full panel p-4 md:p-8 min-h-[680px] relative">
 
     <!-- 0 Goals -->
     <section class="section on" data-step="0" id="sec-goals">
@@ -281,12 +317,19 @@
         <div class="vis-card person-mine">
           <div class="vis-emoji" aria-hidden="true">🙋</div>
           <h3 class="font-black text-emerald-800 text-2xl">1 person → <span class="pill-orange">mine</span></h3>
-          <p class="text-lg font-body">Yes, it's <strong>mine</strong>.<br>No, it isn't <strong>mine</strong>.</p>
+          <p class="text-lg md:text-xl font-body leading-snug">
+            🪞 Yes, <strong>it's</strong> <strong class="pill-orange">mine</strong>. / No, <strong>it isn't</strong> <strong class="pill-orange">mine</strong>.<br>
+            🪞🪞 Yes, <strong>they're</strong> <strong class="pill-orange">mine</strong>. / No, <strong>they aren't</strong> <strong class="pill-orange">mine</strong>.
+          </p>
         </div>
         <div class="vis-card person-ours">
           <div class="vis-emoji" aria-hidden="true">🙋➕🙋</div>
-          <h3 class="font-black text-purple-800 text-2xl">___ and me → <span class="pill-orange">ours</span></h3>
-          <p class="text-lg font-body">Yes, it's <strong>ours</strong>.<br>No, they aren't <strong>ours</strong>.</p>
+          <h3 class="font-black text-purple-800 text-2xl">2 people → <span class="pill-orange">ours</span></h3>
+          <p class="text-base md:text-lg font-body font-semibold text-purple-800 mb-1">(e.g. <em>Tom and me</em> — put a friend’s name in the blank)</p>
+          <p class="text-lg md:text-xl font-body leading-snug">
+            🪞 Yes, <strong>it's</strong> <strong class="pill-orange">ours</strong>. / No, <strong>it isn't</strong> <strong class="pill-orange">ours</strong>.<br>
+            🪞🪞 Yes, <strong>they're</strong> <strong class="pill-orange">ours</strong>. / No, <strong>they aren't</strong> <strong class="pill-orange">ours</strong>.
+          </p>
         </div>
       </div>
       <div class="text-center mt-1">
@@ -297,7 +340,7 @@
     <!-- 1 Vocabulary -->
     <section class="section" data-step="1" id="sec-vocab">
       <h2 class="text-3xl md:text-4xl font-black text-blue-900">📚 Vocabulary — Accessories &amp; Objects</h2>
-      <p class="text-stone-600 font-body font-semibold text-lg md:text-xl">Big pictures! Tap a card. Use these words in the Fairy Well game.</p>
+      <p class="text-stone-600 font-body font-semibold text-xl md:text-2xl">Tap each card — the drawing matches the word. Use these in the Fairy Well game.</p>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="vocabGrid"></div>
     </section>
 
@@ -308,24 +351,38 @@
         <div class="rounded-2xl bg-gradient-to-br from-sky-100 to-amber-50 border-3 border-amber-400 p-5 flex flex-col items-center justify-center min-h-[280px]">
           <div class="text-7xl mb-2" aria-hidden="true">🧚‍♀️</div>
           <div class="text-6xl" aria-hidden="true">🧱💧</div>
-          <p class="mt-3 font-black text-amber-900 text-2xl">Magic Well + Water Fairy</p>
-          <div class="flex gap-6 text-5xl mt-3" aria-hidden="true">
-            <span title="gold axe">🪓✨</span>
-            <span title="old axe">🪓</span>
+          <p class="mt-3 font-black text-amber-900 text-2xl md:text-3xl">Magic Well + Water Fairy</p>
+          <div class="flex flex-wrap gap-4 justify-center mt-4">
+            <div class="axe-card gold" title="shiny gold axe — NOT his">
+              <span class="axe-pic" aria-hidden="true">✨🪓💛</span>
+              <span class="axe-label text-amber-800">GOLD axe</span>
+              <span class="text-sm font-bold text-rose-700">NOT his</span>
+            </div>
+            <div class="axe-card own" title="old wooden axe — his own">
+              <span class="axe-pic" aria-hidden="true">🪵🪓</span>
+              <span class="axe-label text-stone-700">OWN old axe</span>
+              <span class="text-sm font-bold text-emerald-700">HIS</span>
+            </div>
           </div>
         </div>
-        <div class="space-y-4 font-body text-xl">
+        <div class="space-y-4 font-body text-xl md:text-2xl">
           <div class="bg-white border-3 border-rose-200 rounded-2xl p-4 flex gap-4 items-center">
-            <div class="text-5xl shrink-0" aria-hidden="true">🪓✨</div>
-            <p><strong class="text-blue-900">Fairy</strong>: “Is this <span class="pill-orange">yours</span>?”<br>
+            <div class="axe-card gold shrink-0 py-2 px-3">
+              <span class="axe-pic text-4xl" aria-hidden="true">✨🪓💛</span>
+              <span class="axe-label text-amber-800 text-sm">GOLD</span>
+            </div>
+            <p><strong class="text-blue-900">Fairy</strong> <em>(gold axe)</em>: “Is this <span class="pill-orange">yours</span>?”<br>
             <strong class="text-amber-800">Woodcutter</strong>: “No, it isn't <span class="pill-orange">mine</span>.”</p>
           </div>
           <div class="bg-white border-3 border-emerald-300 rounded-2xl p-4 flex gap-4 items-center">
-            <div class="text-5xl shrink-0" aria-hidden="true">🪓</div>
-            <p><strong class="text-blue-900">Fairy</strong>: “Is this <span class="pill-orange">yours</span>?”<br>
+            <div class="axe-card own shrink-0 py-2 px-3">
+              <span class="axe-pic text-4xl" aria-hidden="true">🪵🪓</span>
+              <span class="axe-label text-stone-700 text-sm">OWN</span>
+            </div>
+            <p><strong class="text-blue-900">Fairy</strong> <em>(old axe)</em>: “Is this <span class="pill-orange">yours</span>?”<br>
             <strong class="text-amber-800">Woodcutter</strong>: “Yes, it's <span class="pill-orange">mine</span>.”</p>
           </div>
-          <div class="bg-emerald-50 border-3 border-emerald-400 rounded-2xl p-4 font-bold text-emerald-900 text-xl flex gap-3 items-center">
+          <div class="bg-emerald-50 border-3 border-emerald-400 rounded-2xl p-4 font-bold text-emerald-900 text-xl md:text-2xl flex gap-3 items-center">
             <span class="text-4xl" aria-hidden="true">🎁</span>
             <span>He told the truth → Fairy gave him both axes!</span>
           </div>
@@ -356,12 +413,12 @@
         <div class="vis-card person-mine p-5">
           <div class="vis-emoji-lg" aria-hidden="true">🙋</div>
           <span class="text-4xl md:text-5xl font-black text-emerald-600">mine</span>
-          <p class="font-body text-lg md:text-xl mt-1">1 person (me) → never say “ours” alone!</p>
+          <p class="font-body text-xl md:text-2xl mt-1">1 person (me) → never say “ours” alone!</p>
         </div>
         <div class="vis-card person-ours p-5">
           <div class="vis-emoji-lg" aria-hidden="true">🙋➕🙋</div>
           <span class="text-4xl md:text-5xl font-black text-purple-600">ours</span>
-          <p class="font-body text-lg md:text-xl mt-1">___ and me → never say “mine” together!</p>
+          <p class="font-body text-xl md:text-2xl mt-1">2 people (e.g. <em>Tom and me</em>) → never say “mine” together!</p>
         </div>
       </div>
     </section>
@@ -379,7 +436,7 @@
         </div>
         <div class="rounded-2xl border-4 border-purple-300 bg-purple-50 p-4 text-center">
           <div class="combo-art mb-1" aria-hidden="true">🪞 · 🙋➕🙋</div>
-          <p class="text-base font-bold text-stone-500">1 item · ___ and me</p>
+          <p class="text-base font-bold text-stone-500">1 item · 2 people (Tom and me)</p>
           <p class="font-black text-xl">Is this yours?</p>
           <p class="text-emerald-700 font-black text-xl">✔ Yes, it's <u>ours</u>.</p>
           <p class="text-rose-700 font-black text-xl">✖ No, it isn't <u>ours</u>.</p>
@@ -393,7 +450,7 @@
         </div>
         <div class="rounded-2xl border-4 border-amber-300 bg-amber-50 p-4 text-center">
           <div class="combo-art mb-1" aria-hidden="true">🪞🪞 · 🙋➕🙋</div>
-          <p class="text-base font-bold text-stone-500">2+ items · ___ and me</p>
+          <p class="text-base font-bold text-stone-500">2+ items · 2 people (Tom and me)</p>
           <p class="font-black text-xl">Are these yours?</p>
           <p class="text-emerald-700 font-black text-xl">✔ Yes, they're <u>ours</u>.</p>
           <p class="text-rose-700 font-black text-xl">✖ No, they aren't <u>ours</u>.</p>
@@ -429,7 +486,7 @@
             <div class="vis-card py-3"><span class="text-3xl">👉</span><span>your → <span class="pill-orange">yours</span></span></div>
             <div class="vis-card py-3"><span class="text-3xl">👦</span><span>his → <span class="pill-orange">his</span></span></div>
             <div class="vis-card py-3"><span class="text-3xl">👧</span><span>her → <span class="pill-orange">hers</span></span></div>
-            <div class="vis-card py-3 person-ours"><span class="text-3xl">🙋➕🙋</span><span>our → <span class="pill-orange">ours</span></span></div>
+            <div class="vis-card py-3 person-ours"><span class="text-3xl">🙋➕🙋</span><span>our (Tom and me) → <span class="pill-orange">ours</span></span></div>
             <div class="vis-card py-3"><span class="text-3xl">👥</span><span>their → <span class="pill-orange">theirs</span></span></div>
           </div>
         </div>
@@ -485,8 +542,8 @@
 
       <div id="flowStage" class="rounded-2xl bg-gradient-to-br from-amber-50 to-sky-50 border-4 border-amber-300 p-4 md:p-6 min-h-[300px]"></div>
 
-      <details open class="rounded-2xl border-3 border-stone-200 bg-white p-4">
-        <summary class="cursor-pointer font-black text-blue-900 text-xl">📌 Full map (all 8 answers) — YES &amp; NO same depth</summary>
+      <details class="rounded-2xl border-3 border-stone-200 bg-white p-4">
+        <summary class="cursor-pointer font-black text-blue-900 text-xl md:text-2xl">📌 Full map (all 8 answers) — tap to open · YES &amp; NO same depth</summary>
         <div class="mt-4 space-y-3" id="flowMap"></div>
       </details>
 
@@ -500,7 +557,7 @@
     </section>
   </main>
 
-  <footer class="w-full max-w-6xl text-center text-white/80 text-sm font-body pb-2">
+  <footer class="shell w-full text-center text-white/80 text-base font-body pb-2">
     Arrows <kbd>◀</kbd> <kbd>▶</kbd> move lesson steps · Space does not skip during games · Mute &amp; fullscreen in the header
   </footer>
 
@@ -543,25 +600,31 @@ function beep(ok) {
 
 /* ---- Vocab (original SVG/CSS art — not textbook scans) ---- */
 const VOCAB = [
-  { name: 'a gold necklace', cat: 'Accessory', emoji: '📿', svg: 'necklace' },
-  { name: 'a silver ring', cat: 'Accessory', emoji: '💍', svg: 'ring' },
-  { name: 'earrings', cat: 'Accessory', emoji: '👂✨', svg: 'earrings' },
-  { name: 'a mirror', cat: 'Object', emoji: '🪞', svg: 'mirror' },
-  { name: 'a comb', cat: 'Object', emoji: '💇', svg: 'comb' },
-  { name: 'a hairbrush', cat: 'Object', emoji: '🪥', svg: 'brush' },
-  { name: 'a backpack', cat: 'Object', emoji: '🎒', svg: 'backpack' }
+  { name: 'a gold necklace', cat: 'Accessory', svg: 'necklace' },
+  { name: 'a silver ring', cat: 'Accessory', svg: 'ring' },
+  { name: 'earrings', cat: 'Accessory', svg: 'earrings' },
+  { name: 'a mirror', cat: 'Object', svg: 'mirror' },
+  { name: 'a comb', cat: 'Object', svg: 'comb' },
+  { name: 'a hairbrush', cat: 'Object', svg: 'brush' },
+  { name: 'a backpack', cat: 'Object', svg: 'backpack' }
 ];
 
 function vocabSvg(kind) {
-  const common = 'class="vocab-art" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"';
+  const common = 'class="vocab-art" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" role="img"';
   const map = {
-    necklace: `<svg ${common}><ellipse cx="40" cy="28" rx="22" ry="26" fill="none" stroke="#eab308" stroke-width="4"/><circle cx="40" cy="54" r="6" fill="#facc15" stroke="#ca8a04" stroke-width="2"/><circle cx="28" cy="48" r="4" fill="#fde047"/><circle cx="52" cy="48" r="4" fill="#fde047"/></svg>`,
-    ring: `<svg ${common}><circle cx="40" cy="42" r="18" fill="none" stroke="#94a3b8" stroke-width="7"/><circle cx="40" cy="42" r="10" fill="#f1f5f9"/><rect x="34" y="18" width="12" height="10" rx="2" fill="#cbd5e1"/></svg>`,
-    earrings: `<svg ${common}><path d="M28 18 q-8 20 0 40" fill="none" stroke="#a855f7" stroke-width="3"/><rect x="22" y="52" width="14" height="18" rx="3" fill="#7c3aed"/><path d="M52 18 q8 20 0 40" fill="none" stroke="#a855f7" stroke-width="3"/><rect x="44" y="52" width="14" height="18" rx="3" fill="#7c3aed"/></svg>`,
-    mirror: `<svg ${common}><ellipse cx="40" cy="34" rx="20" ry="22" fill="#bae6fd" stroke="#64748b" stroke-width="4"/><rect x="36" y="54" width="8" height="14" rx="2" fill="#94a3b8"/><ellipse cx="34" cy="28" rx="6" ry="8" fill="#ffffff" opacity=".55"/></svg>`,
-    comb: `<svg ${common}><rect x="14" y="28" width="52" height="12" rx="4" fill="#fb7185"/><g fill="#fda4af">${[18,26,34,42,50,58].map(x=>`<rect x="${x}" y="40" width="4" height="22" rx="1"/>`).join('')}</g></svg>`,
-    brush: `<svg ${common}><ellipse cx="40" cy="30" rx="22" ry="16" fill="#1e293b"/><g fill="#4ade80">${Array.from({length:8},(_,i)=>`<rect x="${22+i*5}" y="34" width="3" height="16" rx="1"/>`).join('')}</g><rect x="36" y="48" width="8" height="18" rx="3" fill="#334155"/></svg>`,
-    backpack: `<svg ${common}><rect x="22" y="22" width="36" height="44" rx="8" fill="#1d4ed8"/><rect x="28" y="30" width="24" height="16" rx="3" fill="#60a5fa"/><path d="M26 26 q14 -16 28 0" fill="none" stroke="#ef4444" stroke-width="4"/><rect x="18" y="34" width="6" height="20" rx="2" fill="#f87171"/><rect x="56" y="34" width="6" height="20" rx="2" fill="#f87171"/></svg>`
+    // Gold chain around neck + pendant
+    necklace: `<svg ${common} aria-label="gold necklace"><ellipse cx="40" cy="22" rx="18" ry="10" fill="none" stroke="#ca8a04" stroke-width="3.5"/><path d="M22 24 Q18 48 40 62 Q62 48 58 24" fill="none" stroke="#eab308" stroke-width="4"/><circle cx="40" cy="64" r="8" fill="#facc15" stroke="#a16207" stroke-width="2"/><circle cx="40" cy="64" r="3" fill="#fef08a"/></svg>`,
+    // Finger ring with gem on top
+    ring: `<svg ${common} aria-label="silver ring"><ellipse cx="40" cy="50" rx="22" ry="14" fill="none" stroke="#94a3b8" stroke-width="7"/><ellipse cx="40" cy="50" rx="12" ry="7" fill="#f8fafc"/><polygon points="40,18 48,34 32,34" fill="#38bdf8" stroke="#0369a1" stroke-width="2"/><rect x="34" y="32" width="12" height="8" rx="2" fill="#cbd5e1"/></svg>`,
+    // Pair of dangling earrings (left + right)
+    earrings: `<svg ${common} aria-label="earrings"><circle cx="24" cy="14" r="4" fill="#a855f7"/><line x1="24" y1="18" x2="24" y2="40" stroke="#7c3aed" stroke-width="3"/><circle cx="24" cy="52" r="12" fill="#c084fc" stroke="#6b21a8" stroke-width="2"/><circle cx="56" cy="14" r="4" fill="#a855f7"/><line x1="56" y1="18" x2="56" y2="40" stroke="#7c3aed" stroke-width="3"/><circle cx="56" cy="52" r="12" fill="#c084fc" stroke="#6b21a8" stroke-width="2"/></svg>`,
+    // Hand mirror with reflective face + handle
+    mirror: `<svg ${common} aria-label="mirror"><ellipse cx="40" cy="32" rx="22" ry="24" fill="#e0f2fe" stroke="#475569" stroke-width="5"/><ellipse cx="40" cy="32" rx="14" ry="16" fill="#7dd3fc"/><ellipse cx="34" cy="26" rx="5" ry="7" fill="#fff" opacity=".7"/><rect x="35" y="54" width="10" height="18" rx="3" fill="#64748b"/><rect x="32" y="70" width="16" height="6" rx="2" fill="#475569"/></svg>`,
+    // Flat comb with teeth pointing down
+    comb: `<svg ${common} aria-label="comb"><rect x="12" y="18" width="56" height="14" rx="5" fill="#f472b6" stroke="#be185d" stroke-width="2"/><g stroke="#be185d" stroke-width="3" stroke-linecap="round">${[18,26,34,42,50,58].map(x=>`<line x1="${x}" y1="32" x2="${x}" y2="64"/>`).join('')}</g></svg>`,
+    // Hairbrush: oval bristle head + long handle (NOT a toothbrush)
+    brush: `<svg ${common} aria-label="hairbrush"><ellipse cx="32" cy="36" rx="20" ry="24" fill="#1e293b"/><g fill="#86efac">${Array.from({length:5},(_,r)=>Array.from({length:4},(_,c)=>`<circle cx="${22+c*7}" cy="${22+r*8}" r="2.2"/>`).join('')).join('')}</g><rect x="48" y="30" width="26" height="12" rx="6" fill="#f59e0b" stroke="#b45309" stroke-width="2"/></svg>`,
+    backpack: `<svg ${common} aria-label="backpack"><rect x="22" y="22" width="36" height="44" rx="8" fill="#1d4ed8"/><rect x="28" y="30" width="24" height="16" rx="3" fill="#60a5fa"/><path d="M26 26 q14 -16 28 0" fill="none" stroke="#ef4444" stroke-width="4"/><rect x="18" y="34" width="6" height="20" rx="2" fill="#f87171"/><rect x="56" y="34" width="6" height="20" rx="2" fill="#f87171"/></svg>`
   };
   return map[kind] || '';
 }
@@ -571,7 +634,6 @@ function renderVocab() {
   grid.innerHTML = VOCAB.map(v => `
     <button type="button" class="icon-card" data-name="${v.name}">
       ${vocabSvg(v.svg)}
-      <div class="text-3xl" aria-hidden="true">${v.emoji}</div>
       <strong>${v.name}</strong>
       <span class="tag">${v.cat}</span>
     </button>
@@ -703,18 +765,27 @@ function renderFairyRound() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'big-tap';
-    b.innerHTML = `<span aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
+    b.innerHTML = optButtonHtml(opt);
+    b.dataset.opt = opt;
     b.addEventListener('click', () => answerFairy(opt, r.answer, b));
     box.appendChild(b);
   });
   document.getElementById('fairyProgress').textContent = String(fairyIdx);
 }
 
+/** Quantity + people cues only — never ✔/✖ before the student answers */
 function optVisual(opt) {
-  const mine = opt.includes('mine');
-  const yes = opt.startsWith('Yes');
+  if (opt === 'Is this yours?') return '🪞 · 1️⃣';
+  if (opt === 'Are these yours?') return '🪞🪞 · 2️⃣+';
+  const mine = /\bmine\b/.test(opt);
+  const plural = /they(?:'re| aren't)/i.test(opt);
   const people = mine ? '🙋' : '🙋➕🙋';
-  return `${yes ? '✔' : '✖'} ${people}`;
+  const items = plural ? '🪞🪞' : '🪞';
+  return `${items} ${people}`;
+}
+
+function optButtonHtml(opt) {
+  return `<span class="opt-vis" aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
 }
 
 function answerFairy(chosen, correct, btn) {
@@ -732,7 +803,7 @@ function answerFairy(chosen, correct, btn) {
   } else {
     beep('err');
     btn.classList.add('bad');
-    all.find(b => b.textContent.includes(correct))?.classList.add('hint');
+    all.find(b => b.dataset.opt === correct)?.classList.add('hint');
     fb.innerHTML = `<span class="text-rose-700">Not quite. Truth: “${correct}”</span>`;
   }
   setTimeout(() => {
@@ -802,11 +873,13 @@ function renderPlayground() {
   const r = PG[pgIdx];
   if (pgPhase === 'q') {
     const wrongQ = r.plural ? 'Is this yours?' : 'Are these yours?';
+    const askArt = r.plural ? '🪞🪞 · two or more' : '🪞 · one thing';
     stage.innerHTML = `
       <div class="text-center mb-4">
         <div class="text-7xl mb-2" aria-hidden="true">🧑‍🏫 ${r.art}</div>
-        <p class="font-black text-blue-900 text-2xl">Monitor holds: ${r.item}</p>
-        <p class="font-body text-stone-600 mt-2 text-xl">What does the Monitor ask?</p>
+        <p class="font-black text-blue-900 text-2xl md:text-3xl">Monitor holds: ${r.item}</p>
+        <p class="text-xl font-bold text-stone-500 mt-1">${askArt}</p>
+        <p class="font-body text-stone-600 mt-2 text-xl md:text-2xl">What does the Monitor ask?</p>
       </div>
       <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
     `;
@@ -815,9 +888,9 @@ function renderPlayground() {
     stage.innerHTML = `
       <div class="text-center mb-4">
         <div class="text-7xl" aria-hidden="true">${r.art}</div>
-        <p class="font-bold text-blue-900 text-2xl">Monitor: “${r.q}”</p>
-        <div class="mt-3 speaker-badge one text-2xl"><span aria-hidden="true">👦</span> Boy ${r.boy.ok ? '✓ owns' : '✗ does not'} → mine</div>
-        <p class="font-body text-xl mt-2">What does the <strong>boy</strong> say?</p>
+        <p class="font-bold text-blue-900 text-2xl md:text-3xl">Monitor: “${r.q}”</p>
+        <div class="mt-3 speaker-badge one text-2xl"><span aria-hidden="true">👦</span> Boy (1 person) → mine</div>
+        <p class="font-body text-xl md:text-2xl mt-2">What does the <strong>boy</strong> say?</p>
       </div>
       <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
     `;
@@ -829,9 +902,9 @@ function renderPlayground() {
     stage.innerHTML = `
       <div class="text-center mb-4">
         <div class="text-7xl" aria-hidden="true">${r.art}</div>
-        <p class="font-bold text-blue-900 text-2xl">Monitor: “${r.q}”</p>
-        <div class="mt-3 speaker-badge two text-2xl"><span aria-hidden="true">👧👧</span> Two girls ${r.girls.ok ? '✓ own' : '✗ do not'} → ours</div>
-        <p class="font-body text-xl mt-2">What do the <strong>two girls</strong> say?</p>
+        <p class="font-bold text-blue-900 text-2xl md:text-3xl">Monitor: “${r.q}”</p>
+        <div class="mt-3 speaker-badge two text-2xl"><span aria-hidden="true">👧👧</span> Two girls → ours</div>
+        <p class="font-body text-xl md:text-2xl mt-2">What do the <strong>two girls</strong> say?</p>
       </div>
       <div class="grid sm:grid-cols-2 gap-3" id="pgOpts"></div>
     `;
@@ -853,7 +926,8 @@ function bindPgChoices(opts, correct, onDone) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'big-tap';
-    b.innerHTML = `<span aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
+    b.dataset.opt = opt;
+    b.innerHTML = optButtonHtml(opt);
     b.addEventListener('click', () => {
       if (!gameActive) return;
       gameActive = false;
@@ -865,7 +939,7 @@ function bindPgChoices(opts, correct, onDone) {
         fb.innerHTML = '<span class="text-emerald-700">✔ Great!</span>';
       } else {
         beep('err'); b.classList.add('bad');
-        [...box.querySelectorAll('.big-tap')].find(x => x.textContent.includes(correct))?.classList.add('hint');
+        [...box.querySelectorAll('.big-tap')].find(x => x.dataset.opt === correct)?.classList.add('hint');
         fb.innerHTML = `<span class="text-rose-700">Answer: “${correct}”</span>`;
       }
       setTimeout(() => { gameActive = true; onDone(); }, 2800);
@@ -879,9 +953,9 @@ const QUIZ_BANK = [
   { q: 'Fairy holds 2 diamond rings to Karen alone. She does NOT own them.', a: "No, they aren't mine.", art: '💍💍 · 🙋 · 🚫' },
   { q: 'Monitor finds ONE water bottle belonging to Jo Jo alone.', a: "Yes, it's mine.", art: '🧴 · 🙋 · ✅' },
   { q: 'Monitor holds a comic book to two sisters. It belongs to BOTH.', a: "Yes, it's ours.", art: '📘 · 🙋➕🙋 · ✅' },
-  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours.", art: '🔑🔑 · 🙋➕🙋 · 🚫' },
+  { q: 'Fairy holds five keys to two boys. Keys are NOT theirs.', a: "No, they aren't ours.", art: '🔑🔑🔑🔑🔑 · 🙋➕🙋 · 🚫' },
   { q: 'Fairy holds ONE mirror to you alone. It IS yours.', a: "Yes, it's mine.", art: '🪞 · 🙋 · ✅' },
-  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours.", art: '👂✨ · 🙋➕🙋 · ✅' },
+  { q: 'Fairy holds two earrings to you and your partner. You both own them.', a: "Yes, they're ours.", art: '💎💎 · 🙋➕🙋 · ✅' },
   { q: 'Monitor holds two pencils to two girls. Pencils are NOT theirs.', a: "No, they aren't ours.", art: '✏️✏️ · 🙋➕🙋 · 🚫' },
   { q: 'Fairy holds ONE backpack to two friends. It is NOT theirs.', a: "No, it isn't ours.", art: '🎒 · 🙋➕🙋 · 🚫' }
 ];
@@ -935,7 +1009,8 @@ function renderQuiz() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'big-tap';
-    b.innerHTML = `<span aria-hidden="true">${optVisual(opt)}</span><span>${opt}</span>`;
+    b.dataset.opt = opt;
+    b.innerHTML = optButtonHtml(opt);
     b.addEventListener('click', () => {
       if (!gameActive) return;
       gameActive = false;
@@ -946,7 +1021,7 @@ function renderQuiz() {
         fb.innerHTML = '<span class="text-emerald-700">🎉 Correct!</span>';
       } else {
         beep('err'); b.classList.add('bad');
-        [...box.querySelectorAll('.big-tap')].find(x => x.textContent.includes(item.a))?.classList.add('hint');
+        [...box.querySelectorAll('.big-tap')].find(x => x.dataset.opt === item.a)?.classList.add('hint');
         fb.innerHTML = `<span class="text-rose-700">Right answer: “${item.a}”</span>`;
       }
       setTimeout(() => { quizIdx++; renderQuiz(); }, 3000);
@@ -978,19 +1053,19 @@ const FLOW_NODES = {
   'yes-one': {
     title: "one thing → it's",
     art: "🪞 → it's",
-    prompt: 'Who does it belong to?',
+    prompt: 'Whose is it?',
     choices: [
-      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-yes-mine-s', tone: 'mine' },
-      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-yes-ours-s', tone: 'ours' }
+      { label: 'mine — 1 person (me)', art: '🙋 mine', next: 'ans-yes-mine-s', tone: 'mine' },
+      { label: 'ours — 2 people (e.g. Tom and me)', art: '🙋➕🙋 ours', next: 'ans-yes-ours-s', tone: 'ours' }
     ]
   },
   'yes-two': {
     title: "two or more → they're",
     art: "🪞🪞 → they're",
-    prompt: 'Who do they belong to?',
+    prompt: 'Whose are they?',
     choices: [
-      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-yes-mine-p', tone: 'mine' },
-      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-yes-ours-p', tone: 'ours' }
+      { label: 'mine — 1 person (me)', art: '🙋 mine', next: 'ans-yes-mine-p', tone: 'mine' },
+      { label: 'ours — 2 people (e.g. Tom and me)', art: '🙋➕🙋 ours', next: 'ans-yes-ours-p', tone: 'ours' }
     ]
   },
   'no-count': {
@@ -1005,29 +1080,29 @@ const FLOW_NODES = {
   'no-one': {
     title: "one thing → it isn't",
     art: "🪞 → it isn't",
-    prompt: 'Who were we thinking of?',
+    prompt: 'Not whose?',
     choices: [
-      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-no-mine-s', tone: 'mine' },
-      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-no-ours-s', tone: 'ours' }
+      { label: 'mine — 1 person (me)', art: '🙋 mine', next: 'ans-no-mine-s', tone: 'mine' },
+      { label: 'ours — 2 people (e.g. Tom and me)', art: '🙋➕🙋 ours', next: 'ans-no-ours-s', tone: 'ours' }
     ]
   },
   'no-two': {
     title: "two or more → they aren't",
     art: "🪞🪞 → they aren't",
-    prompt: 'Who were we thinking of?',
+    prompt: 'Not whose?',
     choices: [
-      { label: 'belong to me (1 person)', art: '🙋', next: 'ans-no-mine-p', tone: 'mine' },
-      { label: 'belong to ___ and me', art: '🙋➕🙋', next: 'ans-no-ours-p', tone: 'ours' }
+      { label: 'mine — 1 person (me)', art: '🙋 mine', next: 'ans-no-mine-p', tone: 'mine' },
+      { label: 'ours — 2 people (e.g. Tom and me)', art: '🙋➕🙋 ours', next: 'ans-no-ours-p', tone: 'ours' }
     ]
   },
-  'ans-yes-mine-s': { answer: "Yes, it's mine.", art: '✔ 🪞 · 🙋', path: 'Yes → one → it\'s → me' },
-  'ans-yes-ours-s': { answer: "Yes, it's ours.", art: '✔ 🪞 · 🙋➕🙋', path: 'Yes → one → it\'s → ___ and me' },
-  'ans-yes-mine-p': { answer: "Yes, they're mine.", art: '✔ 🪞🪞 · 🙋', path: 'Yes → two+ → they\'re → me' },
-  'ans-yes-ours-p': { answer: "Yes, they're ours.", art: '✔ 🪞🪞 · 🙋➕🙋', path: 'Yes → two+ → they\'re → ___ and me' },
-  'ans-no-mine-s': { answer: "No, it isn't mine.", art: '✖ 🪞 · 🙋', path: 'No → one → it isn\'t → me' },
-  'ans-no-ours-s': { answer: "No, it isn't ours.", art: '✖ 🪞 · 🙋➕🙋', path: 'No → one → it isn\'t → ___ and me' },
-  'ans-no-mine-p': { answer: "No, they aren't mine.", art: '✖ 🪞🪞 · 🙋', path: 'No → two+ → they aren\'t → me' },
-  'ans-no-ours-p': { answer: "No, they aren't ours.", art: '✖ 🪞🪞 · 🙋➕🙋', path: 'No → two+ → they aren\'t → ___ and me' }
+  'ans-yes-mine-s': { answer: "Yes, it's mine.", art: '✔ 🪞 · 🙋', path: "Yes → one → it's → mine (1 person)" },
+  'ans-yes-ours-s': { answer: "Yes, it's ours.", art: '✔ 🪞 · 🙋➕🙋', path: "Yes → one → it's → ours (Tom and me)" },
+  'ans-yes-mine-p': { answer: "Yes, they're mine.", art: '✔ 🪞🪞 · 🙋', path: "Yes → two+ → they're → mine (1 person)" },
+  'ans-yes-ours-p': { answer: "Yes, they're ours.", art: '✔ 🪞🪞 · 🙋➕🙋', path: "Yes → two+ → they're → ours (Tom and me)" },
+  'ans-no-mine-s': { answer: "No, it isn't mine.", art: '✖ 🪞 · 🙋', path: "No → one → it isn't → mine (1 person)" },
+  'ans-no-ours-s': { answer: "No, it isn't ours.", art: '✖ 🪞 · 🙋➕🙋', path: "No → one → it isn't → ours (Tom and me)" },
+  'ans-no-mine-p': { answer: "No, they aren't mine.", art: '✖ 🪞🪞 · 🙋', path: "No → two+ → they aren't → mine (1 person)" },
+  'ans-no-ours-p': { answer: "No, they aren't ours.", art: '✖ 🪞🪞 · 🙋➕🙋', path: "No → two+ → they aren't → ours (Tom and me)" }
 };
 
 let flowNode = 'start';
@@ -1071,7 +1146,7 @@ function renderFlow() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = `flow-choice ${c.tone}`;
-    b.innerHTML = `<span class="text-5xl" aria-hidden="true">${c.art}</span><span>${c.label}</span>`;
+    b.innerHTML = `<span class="text-5xl" aria-hidden="true">${c.art}</span><span class="text-center leading-tight">${c.label}</span>`;
     b.addEventListener('click', () => {
       beep('click');
       flowNode = c.next;
@@ -1195,8 +1270,12 @@ document.getElementById('muteBtn').addEventListener('click', () => {
   document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
 });
 document.getElementById('fsBtn').addEventListener('click', () => {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
-  else document.exitFullscreen?.();
+  const root = document.documentElement;
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    (root.requestFullscreen || root.webkitRequestFullscreen)?.call(root);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+  }
 });
 
 window.addEventListener('keydown', (e) => {
