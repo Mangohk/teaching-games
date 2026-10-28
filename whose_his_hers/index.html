@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whose …? It's / They're his · hers · theirs — P5</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0f2744;
+      --panel: #fffdf7;
+      --his: #2563eb;
+      --hers: #db2777;
+      --theirs: #059669;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(251, 191, 36, .28), transparent 42%),
+        radial-gradient(circle at 88% 12%, rgba(56, 189, 248, .22), transparent 40%),
+        linear-gradient(145deg, #0c4a6e 0%, #115e59 48%, #14532d 100%);
+      user-select: none;
+    }
+    .shell { width: min(1180px, 100%); }
+    :fullscreen .shell, :-webkit-full-screen .shell { width: min(1400px, 100%); }
+    .panel {
+      background: var(--panel);
+      border: 4px solid #fbbf24;
+      border-radius: 1.4rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+    .section { display: none; }
+    .section.on { display: flex; flex-direction: column; gap: 1rem; animation: pop .28s ease; }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+    @keyframes flashIn {
+      from { opacity: 0; transform: scale(.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .shake { animation: shake .35s ease; }
+    .flash-line {
+      animation: flashIn .35s ease;
+      background: #ecfdf5;
+      border: 3px solid #22c55e;
+      color: #14532d;
+      border-radius: 1rem;
+      padding: .85rem 1.1rem;
+      font-weight: 800;
+      font-size: clamp(1.35rem, 2.6vw, 2rem);
+      text-align: center;
+    }
+    .step-btn {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: .95rem;
+      padding: .55rem .9rem;
+      border-radius: .9rem;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .step-btn.active {
+      background: #f59e0b;
+      border-color: #d97706;
+      color: #78350f;
+      box-shadow: 0 3px 0 #b45309;
+    }
+    .step-btn.done { border-color: #86efac; background: #ecfdf5; }
+    .big-choice {
+      font-family: inherit;
+      font-weight: 800;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      min-height: 5.2rem;
+      border-radius: 1.2rem;
+      border: 4px solid #94a3b8;
+      background: #fff;
+      cursor: pointer;
+      padding: 1rem 1.2rem;
+      transition: .12s;
+    }
+    .big-choice:hover:not(:disabled) { transform: translateY(-2px); }
+    .big-choice:disabled { cursor: default; }
+    .big-choice.his { border-color: #60a5fa; color: #1d4ed8; background: #eff6ff; }
+    .big-choice.hers { border-color: #f472b6; color: #be185d; background: #fdf2f8; }
+    .big-choice.theirs { border-color: #34d399; color: #047857; background: #ecfdf5; }
+    .big-choice.ok { background: #22c55e !important; border-color: #15803d !important; color: #fff !important; }
+    .big-choice.bad { background: #f43f5e !important; border-color: #be123c !important; color: #fff !important; }
+    .basket {
+      min-height: 10rem;
+      border: 4px dashed #94a3b8;
+      border-radius: 1.25rem;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: .45rem;
+      padding: .85rem;
+      cursor: pointer;
+      transition: .12s;
+    }
+    .basket:hover { transform: translateY(-2px); }
+    .basket.his { border-color: #3b82f6; background: #eff6ff; }
+    .basket.hers { border-color: #ec4899; background: #fdf2f8; }
+    .basket.theirs { border-color: #10b981; background: #ecfdf5; }
+    .basket.flash { box-shadow: 0 0 0 4px #86efac; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 999px;
+      padding: .25rem .7rem;
+      font-weight: 800;
+      font-size: .95rem;
+    }
+    .item-art {
+      width: min(100%, 420px);
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 1.1rem;
+      border: 4px solid #e2e8f0;
+      background: #fff;
+    }
+    .reveal-card {
+      border: 4px solid #cbd5e1;
+      border-radius: 1.25rem;
+      background: #fff;
+      overflow: hidden;
+      cursor: pointer;
+      text-align: center;
+      min-height: 14rem;
+      transition: .15s;
+    }
+    .reveal-card:hover { transform: translateY(-3px); }
+    .reveal-card.open { border-color: #f59e0b; }
+    .reveal-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
+    .reveal-card .face {
+      padding: 1rem;
+      font-weight: 900;
+      font-size: 1.8rem;
+    }
+    .build-slot {
+      min-height: 4.2rem;
+      min-width: 9rem;
+      border: 4px dashed #94a3b8;
+      border-radius: 1rem;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      padding: .6rem 1rem;
+    }
+    .build-slot.filled { border-style: solid; border-color: #22c55e; background: #ecfdf5; color: #14532d; }
+    .progress-track { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, #34d399, #fbbf24); transition: width .3s ease; }
+    .pill { display: inline-block; background: #fef3c7; color: #92400e; border: 2px solid #f59e0b; border-radius: 999px; padding: .2rem .75rem; font-weight: 800; }
+    .feedback { min-height: 2.6rem; font-weight: 800; font-size: clamp(1.2rem, 2.2vw, 1.7rem); text-align: center; }
+    .story-line { font-size: clamp(1.25rem, 2.4vw, 1.85rem); font-weight: 700; line-height: 1.35; }
+    .muted { color: #64748b; font-family: 'Nunito', sans-serif; }
+  </style>
+</head>
+<body class="p-2 md:p-4 flex flex-col items-center gap-2 md:gap-3">
+
+  <header class="shell w-full panel px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="../index.html" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl no-underline shadow" title="Back to Teaching Games" aria-label="Back">🏠</a>
+      <div class="min-w-0">
+        <h1 class="text-2xl md:text-3xl font-bold leading-tight truncate">Whose …? his · hers · theirs</h1>
+        <p class="text-base md:text-lg muted font-semibold">P5 · It’s / They’re + possessive pronouns · e-board</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span id="stepLabel" class="bg-sky-100 text-sky-950 px-3 py-1.5 rounded-xl text-lg font-bold border border-sky-300">1 / 8</span>
+      <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow text-xl">◀ Prev</button>
+      <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow text-xl">Next ▶</button>
+      <button type="button" id="speakBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Speak">🔊</button>
+      <button type="button" id="fsBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Fullscreen">⛶</button>
+    </div>
+  </header>
+
+  <nav id="stepRail" class="shell w-full flex gap-2 overflow-x-auto pb-1" aria-label="Lesson steps"></nav>
+  <div class="shell w-full progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <main class="shell w-full panel p-4 md:p-7 min-h-[640px]">
+
+    <!-- 0 Goals -->
+    <section class="section on" data-step="0">
+      <div class="text-center">
+        <span class="pill mb-3">The Ten Brothers · Part 3</span>
+        <h2 class="text-4xl md:text-5xl font-black text-sky-950 mt-2">Whose … is this / are these?</h2>
+        <p class="text-2xl md:text-3xl mt-3 font-bold">Answer: <span class="text-blue-700">It’s / They’re</span> <span class="text-pink-700">his / hers / theirs</span>.</p>
+      </div>
+      <img src="images/image_s1_hero.jpg" alt="Ten Brothers hero art" class="item-art mx-auto mt-2">
+      <div class="grid md:grid-cols-3 gap-4 mt-2">
+        <div class="rounded-2xl border-4 border-blue-300 bg-blue-50 p-4 text-center">
+          <p class="text-xl font-black text-blue-800">Ask</p>
+          <p class="text-2xl font-bold mt-1">Whose … is this?<br>Whose … are these?</p>
+        </div>
+        <div class="rounded-2xl border-4 border-pink-300 bg-pink-50 p-4 text-center">
+          <p class="text-xl font-black text-pink-800">Answer</p>
+          <p class="text-2xl font-bold mt-1">It’s / They’re<br>his · hers · theirs.</p>
+        </div>
+        <div class="rounded-2xl border-4 border-emerald-300 bg-emerald-50 p-4 text-center">
+          <p class="text-xl font-black text-emerald-800">Talk</p>
+          <p class="text-2xl font-bold mt-1">Things that belong to<br>him, her, or them.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 Grammar frames -->
+    <section class="section" data-step="1">
+      <h2 class="text-3xl md:text-4xl font-black text-center">Sentence frames</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl border-4 border-sky-300 bg-sky-50 p-5">
+          <p class="text-xl font-black text-sky-800 mb-2">One thing</p>
+          <p class="text-3xl font-black">Whose necklace <span class="text-amber-600">is this</span>?</p>
+          <p class="text-3xl font-black mt-3 text-emerald-700">It’s hers.</p>
+        </div>
+        <div class="rounded-2xl border-4 border-violet-300 bg-violet-50 p-5">
+          <p class="text-xl font-black text-violet-800 mb-2">Two or more</p>
+          <p class="text-3xl font-black">Whose earrings <span class="text-amber-600">are these</span>?</p>
+          <p class="text-3xl font-black mt-3 text-emerald-700">They’re theirs.</p>
+        </div>
+      </div>
+      <div class="rounded-2xl border-4 border-amber-300 bg-amber-50 p-4 text-center">
+        <p class="text-xl muted font-bold">Tip</p>
+        <p class="text-2xl font-black">If the things are already named, you can ask: <span class="text-sky-800">Whose are they?</span></p>
+        <p class="text-xl muted mt-2 font-semibold">Optional extra: Those are theirs.</p>
+      </div>
+      <img src="images/image_s4_items.jpg" alt="Items strip" class="item-art mx-auto">
+    </section>
+
+    <!-- 2 Click-reveal demo -->
+    <section class="section" data-step="2">
+      <h2 class="text-3xl md:text-4xl font-black text-center">Tap to reveal: his · hers · theirs</h2>
+      <p class="text-center text-xl muted font-bold">Tap each card. Big voices!</p>
+      <div class="grid md:grid-cols-3 gap-4" id="revealGrid"></div>
+    </section>
+
+    <!-- 3 Activity 1: Whose is this? -->
+    <section class="section" data-step="3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-3xl md:text-4xl font-black">1 · Whose is this?</h2>
+        <span id="a1Progress" class="pill">1 / 6</span>
+      </div>
+      <p class="text-center text-2xl font-bold" id="a1Question">Whose backpack is this?</p>
+      <div class="flex justify-center"><img id="a1Img" class="item-art" alt=""></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="a1Choices"></div>
+      <div class="feedback" id="a1Feedback"></div>
+      <div class="flex justify-center gap-3">
+        <button type="button" id="a1NextItem" class="bg-sky-600 text-white font-black text-xl px-5 py-3 rounded-2xl hidden">Next item ▶</button>
+      </div>
+    </section>
+
+    <!-- 4 Activity 2: Sort -->
+    <section class="section" data-step="4">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-3xl md:text-4xl font-black">2 · Sort the things</h2>
+        <span id="a2Progress" class="pill">0 / 6</span>
+      </div>
+      <p class="text-center text-xl muted font-bold">Tap a basket for this item.</p>
+      <div class="flex flex-col items-center gap-2" id="a2CurrentWrap">
+        <p class="text-2xl font-black" id="a2Label">backpack</p>
+        <img id="a2Img" class="item-art" alt="">
+      </div>
+      <div class="grid md:grid-cols-3 gap-4" id="a2Baskets">
+        <button type="button" class="basket his" data-key="his"><span class="text-3xl font-black text-blue-700">His</span><div class="chips" id="basket-his"></div></button>
+        <button type="button" class="basket hers" data-key="hers"><span class="text-3xl font-black text-pink-700">Hers</span><div class="chips" id="basket-hers"></div></button>
+        <button type="button" class="basket theirs" data-key="theirs"><span class="text-3xl font-black text-emerald-700">Theirs</span><div class="chips" id="basket-theirs"></div></button>
+      </div>
+      <div class="feedback" id="a2Feedback"></div>
+    </section>
+
+    <!-- 5 Activity 3: Build -->
+    <section class="section" data-step="5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-3xl md:text-4xl font-black">3 · Build the answer</h2>
+        <span id="a3Progress" class="pill">1 / 5</span>
+      </div>
+      <p class="text-center text-2xl md:text-3xl font-black" id="a3Question">Whose necklace is this?</p>
+      <div class="flex justify-center"><img id="a3Img" class="item-art" alt=""></div>
+      <div class="flex flex-wrap items-center justify-center gap-3 my-2">
+        <div class="build-slot" id="slot1">① …</div>
+        <div class="build-slot" id="slot2">② …</div>
+        <span class="text-4xl font-black">.</span>
+      </div>
+      <p class="text-center text-xl font-bold muted" id="a3Hint">Step 1: Choose It’s or They’re</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="a3Choices"></div>
+      <div class="feedback" id="a3Feedback"></div>
+      <div class="flex justify-center">
+        <button type="button" id="a3NextItem" class="bg-sky-600 text-white font-black text-xl px-5 py-3 rounded-2xl hidden">Next sentence ▶</button>
+      </div>
+    </section>
+
+    <!-- 6 Activity 4: Story check -->
+    <section class="section" data-step="6">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-3xl md:text-4xl font-black">4 · Story check</h2>
+        <span id="a4Progress" class="pill">1 / 5</span>
+      </div>
+      <div class="rounded-2xl border-4 border-stone-300 bg-white p-4">
+        <p class="text-lg font-black text-amber-700 mb-1" id="a4Scene">Ten Brothers</p>
+        <img id="a4Img" class="item-art mx-auto mb-3" alt="">
+        <p class="story-line text-center" id="a4Line"></p>
+      </div>
+      <div class="grid grid-cols-2 gap-3" id="a4TF">
+        <button type="button" class="big-choice" data-ok="true">✅ Correct</button>
+        <button type="button" class="big-choice" data-ok="false">❌ Wrong</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 hidden" id="a4Fix"></div>
+      <div class="feedback" id="a4Feedback"></div>
+      <div class="flex justify-center">
+        <button type="button" id="a4NextItem" class="bg-sky-600 text-white font-black text-xl px-5 py-3 rounded-2xl hidden">Next scene ▶</button>
+      </div>
+    </section>
+
+    <!-- 7 Exit ticket -->
+    <section class="section" data-step="7">
+      <h2 class="text-3xl md:text-4xl font-black text-center">Exit ticket</h2>
+      <p class="text-center text-xl muted font-bold">3 quick checks — say it big!</p>
+      <div class="grid gap-4" id="exitGrid"></div>
+      <div class="rounded-2xl border-4 border-emerald-300 bg-emerald-50 p-5 text-center mt-2">
+        <p class="text-3xl font-black text-emerald-800">Great work — his / hers / theirs!</p>
+        <p class="text-xl muted font-bold mt-2">Remember: Practice 2 rings → <strong>his</strong> (one owner). Exit ticket rings → <strong>theirs</strong> (two or more).</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ========== Data (English Master keys) ========== */
+    const IMG = (name) => `images/${name}`;
+
+    const REVEAL = [
+      { key: 'his', title: 'his', line: "It's his. / They're his.", img: 'image_s6_his.jpg', note: 'one boy / man' },
+      { key: 'hers', title: 'hers', line: "It's hers. / They're hers.", img: 'image_s6_hers.jpg', note: 'one girl / woman' },
+      { key: 'theirs', title: 'theirs', line: "It's theirs. / They're theirs.", img: 'image_s6_theirs.jpg', note: 'two or more people' }
+    ];
+
+    // Practice 2 + story items — rings → HIS (one person). Do not mix with Exit ticket.
+    const PRACTICE2 = [
+      { id: 'backpack', label: 'backpack', q: 'Whose backpack is this?', verb: "It's", poss: 'his', img: 'image_s12_q4.jpg', plural: false },
+      { id: 'watches', label: 'watches', q: 'Whose watches are these?', verb: "They're", poss: 'theirs', img: 'image_s12_q1.jpg', plural: true },
+      { id: 'necklace', label: 'necklace', q: 'Whose necklace is this?', verb: "It's", poss: 'hers', img: 'image_s13_necklace.jpg', plural: false },
+      { id: 'earrings', label: 'earrings', q: 'Whose earrings are these?', verb: "They're", poss: 'hers', img: 'image_s9_earrings.jpg', plural: true },
+      { id: 'mirror', label: 'mirror', q: 'Whose mirror is this?', verb: "It's", poss: 'theirs', img: 'image_s12_q3.jpg', plural: false },
+      { id: 'rings', label: 'rings', q: 'Whose rings are these?', verb: "They're", poss: 'his', img: 'image_s11_practice2.jpg', plural: true }
+    ];
+
+    const STORY = [
+      {
+        scene: 'Necklaces · Ten Brothers',
+        img: 'image_s7_necklaces.jpg',
+        line: "Ming: Whose necklaces are these? Brother 1: They're theirs.",
+        correct: true,
+        speak: "Whose necklaces are these? They're theirs."
+      },
+      {
+        scene: 'One necklace · Ten Brothers',
+        img: 'image_s7_necklaces.jpg',
+        line: 'Brother 2: Yes. One necklace is his.',
+        correct: true,
+        speak: 'One necklace is his.'
+      },
+      {
+        scene: 'Comb & hairbrush',
+        img: 'image_s8_comb.jpg',
+        // English Master: Our boss's (not My)
+        line: "Ng Ho: Our boss's wife has beautiful hair. The comb and hairbrush are hers.",
+        correct: true,
+        speak: "The comb and hairbrush are hers."
+      },
+      {
+        scene: 'Earrings · fix the mistake',
+        img: 'image_s9_earrings.jpg',
+        // Wrong on purpose: should be theirs (our boss has ten daughters)
+        line: 'Ng Ho: No, our boss has ten daughters. The earrings are hers.',
+        correct: false,
+        fix: 'theirs',
+        full: "They're theirs.",
+        speak: 'The earrings are theirs.'
+      },
+      {
+        scene: 'Forest watch',
+        img: 'image_s10_forest.jpg',
+        line: "Brother 3: That's not yours! It's his!",
+        correct: true,
+        speak: "That's not yours! It's his!"
+      }
+    ];
+
+    const EXIT = [
+      { q: 'Whose necklace is this?', a: "It's hers.", hint: 'one girl' },
+      { q: 'Whose rings are these?', a: "They're theirs.", hint: 'two or more people (exit ticket key)' },
+      { q: 'Whose watches are these?', a: "They're theirs.", hint: 'two boys' }
+    ];
+
+    const STEPS = [
+      { id: 0, label: 'Goals' },
+      { id: 1, label: 'Frames' },
+      { id: 2, label: 'Reveal' },
+      { id: 3, label: '1 Whose?' },
+      { id: 4, label: '2 Sort' },
+      { id: 5, label: '3 Build' },
+      { id: 6, label: '4 Story' },
+      { id: 7, label: 'Exit' }
+    ];
+
+    let step = 0;
+    let muted = false;
+    let lastSpeak = 'Whose is this? It\'s his. They\'re hers. They\'re theirs.';
+
+    /* ========== TTS ========== */
+    function speak(text) {
+      lastSpeak = text;
+      if (muted || !('speechSynthesis' in window)) return;
+      try { speechSynthesis.cancel(); } catch (e) {}
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-GB';
+      u.rate = 0.92;
+      const voices = speechSynthesis.getVoices();
+      const gb = voices.find(v => /en-GB/i.test(v.lang) && /female|woman|samantha|susan|serena|sonia|libby/i.test(v.name))
+        || voices.find(v => /en-GB/i.test(v.lang))
+        || voices.find(v => /^en/i.test(v.lang));
+      if (gb) u.voice = gb;
+      speechSynthesis.speak(u);
+    }
+
+    /* ========== Nav ========== */
+    function buildRail() {
+      const rail = document.getElementById('stepRail');
+      rail.innerHTML = '';
+      STEPS.forEach((s, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'step-btn' + (i === step ? ' active' : '') + (i < step ? ' done' : '');
+        b.textContent = s.label;
+        b.onclick = () => go(i);
+        rail.appendChild(b);
+      });
+      document.getElementById('stepLabel').textContent = `${step + 1} / ${STEPS.length}`;
+      document.getElementById('progressFill').style.width = `${((step + 1) / STEPS.length) * 100}%`;
+    }
+
+    function go(i) {
+      step = Math.max(0, Math.min(STEPS.length - 1, i));
+      document.querySelectorAll('.section').forEach(sec => {
+        sec.classList.toggle('on', Number(sec.dataset.step) === step);
+      });
+      buildRail();
+      if (step === 2) initReveal();
+      if (step === 3) initA1();
+      if (step === 4) initA2();
+      if (step === 5) initA3();
+      if (step === 6) initA4();
+      if (step === 7) initExit();
+    }
+
+    document.getElementById('prevBtn').onclick = () => go(step - 1);
+    document.getElementById('nextBtn').onclick = () => go(step + 1);
+    document.getElementById('speakBtn').onclick = () => {
+      if (muted) {
+        muted = false;
+        document.getElementById('speakBtn').textContent = '🔊';
+      }
+      speak(lastSpeak);
+    };
+    document.getElementById('speakBtn').oncontextmenu = (e) => {
+      e.preventDefault();
+      muted = !muted;
+      document.getElementById('speakBtn').textContent = muted ? '🔇' : '🔊';
+    };
+    document.getElementById('fsBtn').onclick = () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    };
+
+    /* ========== Reveal ========== */
+    function initReveal() {
+      const grid = document.getElementById('revealGrid');
+      grid.innerHTML = '';
+      REVEAL.forEach(card => {
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'reveal-card';
+        el.innerHTML = `
+          <img src="${IMG(card.img)}" alt="${card.title}">
+          <div class="face">?</div>
+          <p class="muted font-bold pb-3">${card.note}</p>
+        `;
+        el.onclick = () => {
+          el.classList.add('open');
+          el.querySelector('.face').textContent = card.title;
+          el.insertAdjacentHTML('beforeend', `<p class="flash-line mx-3 mb-3">${card.line}</p>`);
+          speak(card.line);
+          el.onclick = null;
+        };
+        grid.appendChild(el);
+      });
+    }
+
+    /* ========== Activity 1 ========== */
+    let a1Index = 0;
+    let a1Locked = false;
+
+    function initA1() {
+      a1Index = 0;
+      a1Locked = false;
+      renderA1();
+    }
+
+    function renderA1() {
+      const item = PRACTICE2[a1Index];
+      document.getElementById('a1Progress').textContent = `${a1Index + 1} / ${PRACTICE2.length}`;
+      document.getElementById('a1Question').textContent = item.q;
+      const img = document.getElementById('a1Img');
+      img.src = IMG(item.img);
+      img.alt = item.label;
+      document.getElementById('a1Feedback').textContent = '';
+      document.getElementById('a1NextItem').classList.add('hidden');
+      a1Locked = false;
+      lastSpeak = item.q;
+      speak(item.q);
+
+      const box = document.getElementById('a1Choices');
+      box.innerHTML = '';
+      ['his', 'hers', 'theirs'].forEach(k => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `big-choice ${k}`;
+        b.textContent = k[0].toUpperCase() + k.slice(1);
+        b.onclick = () => pickA1(k, b);
+        box.appendChild(b);
+      });
+    }
+
+    function pickA1(key, btn) {
+      if (a1Locked) return;
+      const item = PRACTICE2[a1Index];
+      const full = `${item.verb} ${item.poss}.`;
+      if (key === item.poss) {
+        a1Locked = true;
+        btn.classList.add('ok');
+        document.getElementById('a1Feedback').innerHTML = `<span class="flash-line">✓ ${full}</span>`;
+        speak(full);
+        document.getElementById('a1NextItem').classList.toggle('hidden', a1Index >= PRACTICE2.length - 1);
+        if (a1Index >= PRACTICE2.length - 1) {
+          document.getElementById('a1Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">All done — Next ▶ for Sort!</p>`;
+        }
+      } else {
+        btn.classList.add('bad', 'shake');
+        setTimeout(() => btn.classList.remove('bad', 'shake'), 450);
+        document.getElementById('a1Feedback').textContent = 'Try again!';
+      }
+    }
+
+    document.getElementById('a1NextItem').onclick = () => {
+      if (a1Index < PRACTICE2.length - 1) {
+        a1Index += 1;
+        renderA1();
+      }
+    };
+
+    /* ========== Activity 2 Sort ========== */
+    let a2Queue = [];
+    let a2Done = 0;
+
+    function initA2() {
+      a2Queue = PRACTICE2.slice();
+      a2Done = 0;
+      ['his', 'hers', 'theirs'].forEach(k => {
+        document.getElementById(`basket-${k}`).innerHTML = '';
+      });
+      document.getElementById('a2Feedback').textContent = '';
+      showA2();
+    }
+
+    function showA2() {
+      document.getElementById('a2Progress').textContent = `${a2Done} / ${PRACTICE2.length}`;
+      if (!a2Queue.length) {
+        document.getElementById('a2CurrentWrap').innerHTML = `<p class="text-3xl font-black text-emerald-700">All sorted!</p>`;
+        document.getElementById('a2Feedback').innerHTML = `<span class="flash-line">Well done — Next ▶ for Build!</span>`;
+        return;
+      }
+      const item = a2Queue[0];
+      document.getElementById('a2Label').textContent = item.label;
+      const img = document.getElementById('a2Img');
+      img.src = IMG(item.img);
+      img.alt = item.label;
+      lastSpeak = item.q;
+      speak(`Sort this. ${item.q}`);
+    }
+
+    document.querySelectorAll('#a2Baskets .basket').forEach(basket => {
+      basket.onclick = () => {
+        if (!a2Queue.length) return;
+        const item = a2Queue[0];
+        const key = basket.dataset.key;
+        const full = `${item.verb} ${item.poss}.`;
+        if (key === item.poss) {
+          a2Queue.shift();
+          a2Done += 1;
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.textContent = item.label;
+          document.getElementById(`basket-${key}`).appendChild(chip);
+          basket.classList.add('flash');
+          setTimeout(() => basket.classList.remove('flash'), 400);
+          document.getElementById('a2Feedback').innerHTML = `<span class="flash-line">✓ ${full}</span>`;
+          speak(full);
+          showA2();
+        } else {
+          basket.classList.add('shake');
+          setTimeout(() => basket.classList.remove('shake'), 400);
+          document.getElementById('a2Feedback').textContent = 'Bounce back — try another basket!';
+        }
+      };
+    });
+
+    /* ========== Activity 3 Build ========== */
+    let a3Index = 0;
+    let a3Step = 1;
+    let a3Verb = null;
+    let a3Poss = null;
+
+    function initA3() {
+      a3Index = 0;
+      resetA3Round();
+    }
+
+    function resetA3Round() {
+      a3Step = 1;
+      a3Verb = null;
+      a3Poss = null;
+      const item = PRACTICE2[a3Index];
+      document.getElementById('a3Progress').textContent = `${a3Index + 1} / ${PRACTICE2.length}`;
+      document.getElementById('a3Question').textContent = item.q;
+      const img = document.getElementById('a3Img');
+      img.src = IMG(item.img);
+      img.alt = item.label;
+      document.getElementById('slot1').textContent = '① …';
+      document.getElementById('slot1').classList.remove('filled');
+      document.getElementById('slot2').textContent = '② …';
+      document.getElementById('slot2').classList.remove('filled');
+      document.getElementById('a3Hint').textContent = 'Step 1: Choose It’s or They’re';
+      document.getElementById('a3Feedback').textContent = '';
+      document.getElementById('a3NextItem').classList.add('hidden');
+      lastSpeak = item.q;
+      speak(item.q);
+      renderA3Choices();
+    }
+
+    function renderA3Choices() {
+      const box = document.getElementById('a3Choices');
+      box.innerHTML = '';
+      const item = PRACTICE2[a3Index];
+      const opts = a3Step === 1
+        ? [
+            { v: "It's", ok: item.verb === "It's" },
+            { v: "They're", ok: item.verb === "They're" }
+          ]
+        : [
+            { v: 'his', ok: item.poss === 'his', cls: 'his' },
+            { v: 'hers', ok: item.poss === 'hers', cls: 'hers' },
+            { v: 'theirs', ok: item.poss === 'theirs', cls: 'theirs' }
+          ];
+      opts.forEach(o => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `big-choice ${o.cls || ''}`;
+        b.textContent = o.v;
+        b.onclick = () => pickA3(o, b);
+        box.appendChild(b);
+      });
+    }
+
+    function pickA3(opt, btn) {
+      const item = PRACTICE2[a3Index];
+      if (!opt.ok) {
+        btn.classList.add('bad', 'shake');
+        setTimeout(() => btn.classList.remove('bad', 'shake'), 450);
+        return;
+      }
+      btn.classList.add('ok');
+      if (a3Step === 1) {
+        a3Verb = opt.v;
+        document.getElementById('slot1').textContent = a3Verb;
+        document.getElementById('slot1').classList.add('filled');
+        a3Step = 2;
+        document.getElementById('a3Hint').textContent = 'Step 2: Choose his / hers / theirs';
+        setTimeout(renderA3Choices, 200);
+      } else {
+        a3Poss = opt.v;
+        document.getElementById('slot2').textContent = a3Poss;
+        document.getElementById('slot2').classList.add('filled');
+        const full = `${item.verb} ${item.poss}.`;
+        document.getElementById('a3Feedback').innerHTML = `<span class="flash-line">✓ ${full}</span>`;
+        document.getElementById('a3Hint').textContent = 'Revealed!';
+        speak(full);
+        document.getElementById('a3Choices').innerHTML = '';
+        document.getElementById('a3NextItem').classList.toggle('hidden', a3Index >= PRACTICE2.length - 1);
+        if (a3Index >= PRACTICE2.length - 1) {
+          document.getElementById('a3Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">Build complete — Next ▶ for Story!</p>`;
+        }
+      }
+    }
+
+    document.getElementById('a3NextItem').onclick = () => {
+      if (a3Index < PRACTICE2.length - 1) {
+        a3Index += 1;
+        resetA3Round();
+      }
+    };
+
+    /* ========== Activity 4 Story ========== */
+    let a4Index = 0;
+    let a4Phase = 'tf'; // tf | fix | done
+
+    function initA4() {
+      a4Index = 0;
+      a4Phase = 'tf';
+      renderA4();
+    }
+
+    function renderA4() {
+      const s = STORY[a4Index];
+      document.getElementById('a4Progress').textContent = `${a4Index + 1} / ${STORY.length}`;
+      document.getElementById('a4Scene').textContent = s.scene;
+      const img = document.getElementById('a4Img');
+      img.src = IMG(s.img);
+      img.alt = s.scene;
+      document.getElementById('a4Line').textContent = s.line;
+      document.getElementById('a4Feedback').textContent = '';
+      document.getElementById('a4NextItem').classList.add('hidden');
+      document.getElementById('a4TF').classList.remove('hidden');
+      document.getElementById('a4Fix').classList.add('hidden');
+      document.getElementById('a4Fix').innerHTML = '';
+      a4Phase = 'tf';
+      lastSpeak = s.speak || s.line;
+      speak(s.line);
+      document.querySelectorAll('#a4TF .big-choice').forEach(b => {
+        b.classList.remove('ok', 'bad');
+        b.disabled = false;
+      });
+    }
+
+    document.querySelectorAll('#a4TF .big-choice').forEach(btn => {
+      btn.onclick = () => {
+        if (a4Phase !== 'tf') return;
+        const s = STORY[a4Index];
+        const sayCorrect = btn.dataset.ok === 'true';
+        if (sayCorrect === s.correct) {
+          btn.classList.add('ok');
+          a4Phase = 'done';
+          if (s.correct) {
+            document.getElementById('a4Feedback').innerHTML = `<span class="flash-line">✓ Good grammar!</span>`;
+            speak(s.speak || 'Good!');
+            document.getElementById('a4NextItem').classList.toggle('hidden', a4Index >= STORY.length - 1);
+            if (a4Index >= STORY.length - 1) {
+              document.getElementById('a4Feedback').innerHTML += `<p class="mt-2 font-black text-emerald-700">Story done — Next ▶ Exit ticket!</p>`;
+            }
+          } else {
+            // They correctly spotted the wrong sentence — now fix
+            a4Phase = 'fix';
+            document.getElementById('a4Feedback').textContent = 'Yes — that line is wrong. Fix it: his / hers / theirs?';
+            showA4Fix(s);
+          }
+        } else {
+          btn.classList.add('bad', 'shake');
+          setTimeout(() => btn.classList.remove('bad', 'shake'), 450);
+          document.getElementById('a4Feedback').textContent = 'Look again!';
+        }
+      };
+    });
+
+    function showA4Fix(s) {
+      document.getElementById('a4TF').classList.add('hidden');
+      const box = document.getElementById('a4Fix');
+      box.classList.remove('hidden');
+      box.innerHTML = '';
+      ['his', 'hers', 'theirs'].forEach(k => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `big-choice ${k}`;
+        b.textContent = k;
+        b.onclick = () => {
+          if (k === s.fix) {
+            b.classList.add('ok');
+            // no space before period (English Master)
+            const full = s.full || `They're ${k}.`;
+            document.getElementById('a4Feedback').innerHTML = `<span class="flash-line">✓ ${full}</span>`;
+            speak(full);
+            a4Phase = 'done';
+            document.getElementById('a4NextItem').classList.toggle('hidden', a4Index >= STORY.length - 1);
+          } else {
+            b.classList.add('bad', 'shake');
+            setTimeout(() => b.classList.remove('bad', 'shake'), 450);
+          }
+        };
+        box.appendChild(b);
+      });
+    }
+
+    document.getElementById('a4NextItem').onclick = () => {
+      if (a4Index < STORY.length - 1) {
+        a4Index += 1;
+        renderA4();
+      }
+    };
+
+    /* ========== Exit ========== */
+    function initExit() {
+      const grid = document.getElementById('exitGrid');
+      grid.innerHTML = '';
+      EXIT.forEach((ex, i) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'reveal-card text-left';
+        card.innerHTML = `
+          <div class="p-5">
+            <p class="text-lg font-black text-amber-700">Check ${i + 1}</p>
+            <p class="text-2xl md:text-3xl font-black mt-2">${ex.q}</p>
+            <p class="text-xl muted mt-3 font-bold">Tap to reveal · ${ex.hint}</p>
+            <p class="face text-emerald-700 hidden answer"></p>
+          </div>
+        `;
+        card.onclick = () => {
+          const ans = card.querySelector('.answer');
+          ans.textContent = ex.a;
+          ans.classList.remove('hidden');
+          card.classList.add('open');
+          speak(ex.a);
+          card.onclick = null;
+        };
+        grid.appendChild(card);
+      });
+      lastSpeak = "Whose necklace is this? It's hers. Whose rings are these? They're theirs.";
+    }
+
+    // Voices may load async
+    if ('speechSynthesis' in window) {
+      speechSynthesis.getVoices();
+      speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+    }
+
+    buildRail();
+    lastSpeak = "Whose is this? It's his. They're hers. They're theirs.";
+  </script>
+</body>
+</html>
