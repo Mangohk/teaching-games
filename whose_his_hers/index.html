@@ -259,10 +259,148 @@
     }
     .build-card.active { border-color: #f59e0b; box-shadow: 0 0 0 3px #fde68a; }
     .build-card.done { border-color: #22c55e; background: #f0fdf4; }
+    .build-card img { width: min(100%, 11vh, 112px); }
+    .build-card .set-tag {
+      font-size: .85rem;
+      font-weight: 800;
+      color: #92400e;
+      background: #fef3c7;
+      border-radius: 999px;
+      padding: .05rem .45rem;
+    }
+    .build-head {
+      grid-column: 1 / -1;
+      margin: .15rem 0 0;
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: #92400e;
+    }
     .build-work .q-xl { text-align: center; }
+    .whose-art.whose-scene {
+      aspect-ratio: auto;
+      width: min(100%, 680px);
+      max-height: min(40vh, 380px);
+      background: #fff;
+    }
+    .reveal-task {
+      border: 4px solid #cbd5e1;
+      border-radius: 1.25rem;
+      background: #fff;
+      padding: .75rem .75rem 1rem;
+      text-align: center;
+    }
+    .reveal-task.done { border-color: #22c55e; background: #f0fdf4; }
+    .reveal-task img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: .8rem;
+      display: block;
+      filter: saturate(.7) brightness(.9);
+    }
+    .reveal-task.done img { filter: none; }
+    .drop-slot {
+      min-height: 4.6rem;
+      min-width: 9.2rem;
+      margin: .35rem auto 0;
+      border: 4px dashed #94a3b8;
+      border-radius: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      vertical-align: middle;
+    }
+    .drop-slot.hot { border-color: #f59e0b; background: #fffbeb; }
+    .drop-slot .drag-chip { min-width: 7rem; min-height: 3.4rem; font-size: 1.7rem; box-shadow: none; }
+    .drag-bank {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      min-height: 5.6rem;
+      padding: .35rem;
+    }
+    .drag-chip {
+      font-family: inherit;
+      font-weight: 900;
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      min-width: 8.8rem;
+      min-height: 4.8rem;
+      padding: .55rem 1.3rem;
+      border-radius: 1.2rem;
+      border: 4px solid #94a3b8;
+      background: #fff;
+      cursor: grab;
+      touch-action: none;
+    }
+    .drag-chip:active { cursor: grabbing; }
+    .drag-chip.his { border-color: #60a5fa; color: #1d4ed8; background: #eff6ff; }
+    .drag-chip.hers { border-color: #f472b6; color: #be185d; background: #fdf2f8; }
+    .drag-chip.theirs { border-color: #34d399; color: #047857; background: #ecfdf5; }
+    .match-board {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .7rem 4.2rem;
+      touch-action: none;
+    }
+    .match-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .match-col { display: flex; flex-direction: column; gap: .65rem; position: relative; z-index: 1; }
+    .match-row {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      min-height: 5rem;
+      padding: .4rem .7rem;
+      border: 4px solid #e2e8f0;
+      border-radius: 1.1rem;
+      background: #fff;
+      font-weight: 800;
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      line-height: 1.2;
+      cursor: pointer;
+      touch-action: none;
+      text-align: left;
+    }
+    .match-row.right { flex-direction: row-reverse; text-align: right; }
+    .match-row.selected { border-color: #f59e0b; box-shadow: 0 0 0 3px #fde68a; }
+    .match-row.done { border-color: #22c55e; background: #f0fdf4; }
+    .match-row img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      background: #f8f0e0;
+      border-radius: .65rem;
+      flex: none;
+    }
+    .match-dot {
+      width: 1.85rem;
+      height: 1.85rem;
+      min-width: 1.85rem;
+      border-radius: 50%;
+      border: 5px solid #0f2744;
+      background: #fff;
+      flex: none;
+    }
+    .match-row.done .match-dot { background: #22c55e; border-color: #14532d; }
+    .match-row .his { color: #1d4ed8; }
+    .match-row .hers { color: #be185d; }
+    .match-row .theirs { color: #047857; }
     @media (max-width: 980px) {
       .build-layout { grid-template-columns: 1fr; }
       .build-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .match-board { gap: .6rem 2.2rem; }
+    }
+    @media (max-width: 640px) {
+      .match-board { grid-template-columns: 1fr; gap: .5rem; }
     }
   </style>
 </head>
@@ -277,7 +415,7 @@
       </div>
     </div>
     <div class="flex items-center gap-2 flex-wrap">
-      <span id="stepLabel" class="bg-sky-100 text-sky-950 px-3 py-1.5 rounded-xl text-lg font-bold border border-sky-300">1 / 8</span>
+      <span id="stepLabel" class="bg-sky-100 text-sky-950 px-3 py-1.5 rounded-xl text-lg font-bold border border-sky-300">1 / 7</span>
       <button type="button" id="prevBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow text-xl">◀ Prev</button>
       <button type="button" id="nextBtn" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-4 py-2.5 rounded-xl shadow text-xl">Next ▶</button>
       <button type="button" id="speakBtn" class="bg-stone-200 hover:bg-stone-300 p-2.5 rounded-xl text-xl" title="Speak">🔊</button>
@@ -315,8 +453,8 @@
       </div>
     </section>
 
-    <!-- 1 Grammar frames -->
-    <section class="section" data-step="1">
+    <!-- Frames (after Story) -->
+    <section class="section" data-step="2">
       <h2 class="text-3xl md:text-4xl font-black text-center">Sentence frames</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <div class="rounded-2xl border-4 border-sky-300 bg-sky-50 p-5">
@@ -337,18 +475,21 @@
       </div>
     </section>
 
-    <!-- 2 Click-reveal demo -->
-    <section class="section" data-step="2">
-      <h2 class="text-3xl md:text-4xl font-black text-center">Tap to reveal: his · hers · theirs</h2>
-      <p class="text-center text-xl muted font-bold">Tap each card. Big voices!</p>
+    <!-- Reveal: drag the possessive into the sentence -->
+    <section class="section" data-step="3">
+      <h2 class="text-3xl md:text-4xl font-black text-center">Drag: his · hers · theirs</h2>
+      <p class="text-center text-xl muted font-bold">Drag each word into the right sentence.</p>
       <div class="grid md:grid-cols-3 gap-4" id="revealGrid"></div>
+      <div class="drag-bank" id="revealBank" aria-label="Word bank"></div>
+      <div class="feedback" id="revealFeedback"></div>
     </section>
 
-    <!-- 3 Activity 1: Whose is this? -->
-    <section class="section" data-step="3">
+    <!-- Whose: original six, then six scene cards -->
+    <section class="section" data-step="4">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2 class="text-3xl md:text-4xl font-black">1 · Whose is this?</h2>
-        <span id="a1Progress" class="pill">1 / 6</span>
+        <span id="a1Set" class="pill">Ten Brothers</span>
+        <span id="a1Progress" class="pill">1 / 12</span>
       </div>
       <p class="q-xl" id="a1Question">Whose backpack is this?</p>
       <div class="flex justify-center"><img id="a1Img" class="whose-art" alt=""></div>
@@ -359,11 +500,11 @@
       </div>
     </section>
 
-    <!-- 4 Activity 2: Build the answer — 2×3 Ten Brothers stills -->
-    <section class="section" data-step="4">
+    <!-- Build: original six stills, then the same six scene cards -->
+    <section class="section" data-step="5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2 class="text-3xl md:text-4xl font-black">2 · Build the answer</h2>
-        <span id="a3Progress" class="pill">0 / 6</span>
+        <span id="a3Progress" class="pill">0 / 12</span>
       </div>
       <div class="build-layout">
         <div class="build-grid" id="buildGrid"></div>
@@ -381,12 +522,13 @@
       </div>
     </section>
 
-    <!-- 5 Activity 3: Story check -->
-    <section class="section" data-step="5">
+    <!-- Story: narrative first. Three boss-flagged Correct/Wrong checks are removed. -->
+    <section class="section" data-step="1">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-3xl md:text-4xl font-black">3 · Story check</h2>
-        <span id="a4Progress" class="pill">1 / 5</span>
+        <h2 class="text-3xl md:text-4xl font-black">Story</h2>
+        <span id="a4Progress" class="pill">1 / 4</span>
       </div>
+      <p class="text-center text-xl muted font-bold">Notice his, hers, and theirs in the story.</p>
       <div class="rounded-2xl border-4 border-stone-300 bg-white p-4">
         <p class="text-lg font-black text-amber-700 mb-1" id="a4Scene">Ten Brothers</p>
         <img id="a4Img" class="story-art mx-auto mb-3" alt="">
@@ -403,15 +545,18 @@
       </div>
     </section>
 
-    <!-- 6 Exit ticket -->
+    <!-- Exit: dot-to-dot matching -->
     <section class="section" data-step="6">
-      <h2 class="text-3xl md:text-4xl font-black text-center">Exit ticket</h2>
-      <img src="images/story/story-ten-brothers-cover.png" alt="The Ten Brothers" class="exit-thumb">
-      <p class="text-center text-xl muted font-bold">3 quick checks — say it big!</p>
-      <div class="grid gap-4" id="exitGrid"></div>
-      <div class="rounded-2xl border-4 border-emerald-300 bg-emerald-50 p-5 text-center mt-2">
-        <p class="text-3xl font-black text-emerald-800">Great work — his / hers / theirs!</p>
-        <p class="text-xl muted font-bold mt-2">Remember: Practice 2 rings → <strong>his</strong> (one owner). Exit ticket rings → <strong>theirs</strong> (two or more).</p>
+      <h2 class="text-3xl md:text-4xl font-black text-center">Exit · Join the dots</h2>
+      <p class="text-center text-xl muted font-bold">Drag from a question dot to the matching answer. You can also tap, then tap.</p>
+      <div class="match-board" id="exitBoard">
+        <svg class="match-svg" id="exitSvg" aria-hidden="true"></svg>
+        <div class="match-col" id="exitLeft"></div>
+        <div class="match-col" id="exitRight"></div>
+      </div>
+      <div class="feedback" id="exitFeedback"></div>
+      <div class="rounded-2xl border-4 border-emerald-300 bg-emerald-50 p-4 text-center">
+        <p class="text-xl font-bold">Practice rings → <strong>his</strong> (one owner). Exit rings → <strong>theirs</strong> (two or more).</p>
       </div>
     </section>
 
@@ -422,26 +567,37 @@
     const IMG = (name) => `images/${name}`;
 
     const REVEAL = [
-      { key: 'his', title: 'his', line: "It's his. / They're his.", img: 'image_s6_his.jpg', note: 'one boy / man' },
-      { key: 'hers', title: 'hers', line: "It's hers. / They're hers.", img: 'image_s6_hers.jpg', note: 'one girl / woman' },
-      { key: 'theirs', title: 'theirs', line: "It's theirs. / They're theirs.", img: 'image_s6_theirs.jpg', note: 'two or more people' }
+      { key: 'his', title: 'his', sentence: 'It’s', line: 'It’s his. They’re his.', img: 'image_s6_his.jpg', note: 'one boy / man' },
+      { key: 'hers', title: 'hers', sentence: 'It’s', line: 'It’s hers. They’re hers.', img: 'image_s6_hers.jpg', note: 'one girl / woman' },
+      { key: 'theirs', title: 'theirs', sentence: 'They’re', line: 'It’s theirs. They’re theirs.', img: 'image_s6_theirs.jpg', note: 'two or more people' }
     ];
 
     // Whose + Build share one key. Pocket watch is singular → his. Earrings → theirs. Rings in this set → his.
-    const PRACTICE2 = [
-      { id: 'backpack', label: 'backpack', q: 'Whose backpack is this?', verb: 'It’s', poss: 'his', img: 'whose/whose-backpack.png', plural: false },
-      { id: 'watch', label: 'pocket watch', q: 'Whose pocket watch is this?', verb: 'It’s', poss: 'his', img: 'whose/whose-watches.png', plural: false },
-      { id: 'necklace', label: 'necklace', q: 'Whose necklace is this?', verb: 'It’s', poss: 'hers', img: 'whose/whose-necklace.png', plural: false },
-      { id: 'earrings', label: 'earrings', q: 'Whose earrings are these?', verb: 'They’re', poss: 'theirs', img: 'whose/whose-earrings.png', plural: true },
-      { id: 'mirror', label: 'mirror', q: 'Whose mirror is this?', verb: 'It’s', poss: 'theirs', img: 'whose/whose-mirror.png', plural: false },
-      { id: 'rings', label: 'rings', q: 'Whose rings are these?', verb: 'They’re', poss: 'his', img: 'whose/whose-rings.png', plural: true }
+    // Scene cards are added after the six Ten Brothers stills. Same answer when the picture is that item.
+    const TEN = [
+      { id: 'backpack', label: 'backpack', q: 'Whose backpack is this?', verb: 'It’s', poss: 'his', img: 'whose/whose-backpack.png', plural: false, set: 'Ten Brothers' },
+      { id: 'watch', label: 'pocket watch', q: 'Whose pocket watch is this?', verb: 'It’s', poss: 'his', img: 'whose/whose-watches.png', plural: false, set: 'Ten Brothers' },
+      { id: 'necklace', label: 'necklace', q: 'Whose necklace is this?', verb: 'It’s', poss: 'hers', img: 'whose/whose-necklace.png', plural: false, set: 'Ten Brothers' },
+      { id: 'earrings', label: 'earrings', q: 'Whose earrings are these?', verb: 'They’re', poss: 'theirs', img: 'whose/whose-earrings.png', plural: true, set: 'Ten Brothers' },
+      { id: 'mirror', label: 'mirror', q: 'Whose mirror is this?', verb: 'It’s', poss: 'theirs', img: 'whose/whose-mirror.png', plural: false, set: 'Ten Brothers' },
+      { id: 'rings', label: 'rings', q: 'Whose rings are these?', verb: 'They’re', poss: 'his', img: 'whose/whose-rings.png', plural: true, set: 'Ten Brothers' }
     ];
+    const SCENES = [
+      { id: 'scene1', label: 'backpack', q: 'Whose backpack is this?', verb: 'It’s', poss: 'his', img: 'scenes/scene-1-backpack.png', plural: false, set: 'Scene 1', scene: true },
+      { id: 'scene2', label: 'keyrings', q: 'Whose are these?', verb: 'They’re', poss: 'theirs', img: 'scenes/scene-2-keyrings.png', plural: true, set: 'Scene 2', scene: true },
+      { id: 'scene3', label: 'necklace', q: 'Whose necklace is this?', verb: 'It’s', poss: 'hers', img: 'scenes/scene-3-necklace.png', plural: false, set: 'Scene 3', scene: true },
+      { id: 'scene4', label: 'keys', q: 'Whose keys are these?', verb: 'They’re', poss: 'hers', img: 'scenes/scene-4-keys.png', plural: true, set: 'Scene 4', scene: true },
+      { id: 'scene5', label: 'mirror', q: 'Whose mirror is this?', verb: 'It’s', poss: 'theirs', img: 'scenes/scene-5-mirror.png', plural: false, set: 'Scene 5', scene: true },
+      { id: 'scene6', label: 'two round things', q: 'Whose are these?', verb: 'They’re', poss: 'his', img: 'scenes/scene-6-rounds.png', plural: true, set: 'Scene 6', scene: true }
+    ];
+    const PRACTICE2 = TEN.concat(SCENES);
     const BUILD = PRACTICE2.map((item) => ({
       ...item,
-      img: item.img.replace('whose/whose-', 'build/build-')
+      img: item.scene ? item.img : item.img.replace('whose/whose-', 'build/build-')
     }));
 
-    // Long Story Check lines stay as written. New stills are the open, Ng Ho forest, and cave climax.
+    // Story is for noticing. The three Correct/Wrong checks boss removed:
+    // "Whose necklaces are these?", "One necklace is his.", and "Look! Treasure in the cave!"
     const STORY = [
       {
         scene: 'The Ten Brothers',
@@ -449,20 +605,6 @@
         line: 'The Ten Brothers!',
         look: true,
         speak: 'The Ten Brothers!'
-      },
-      {
-        scene: 'Necklaces · Ten Brothers',
-        img: 'story/story-cave.png',
-        line: "Ming: Whose necklaces are these? Brother 1: They're theirs.",
-        correct: true,
-        speak: "Whose necklaces are these? They're theirs."
-      },
-      {
-        scene: 'One necklace · Ten Brothers',
-        img: 'story/story-cave.png',
-        line: 'Brother 2: Yes. One necklace is his.',
-        correct: true,
-        speak: 'One necklace is his.'
       },
       {
         scene: 'Forest · Ng Ho',
@@ -488,29 +630,28 @@
         line: "Brother 3: That's not yours! It's his!",
         correct: true,
         speak: "That's not yours! It's his!"
-      },
-      {
-        scene: 'Cave',
-        img: 'story/story-cave.png',
-        line: 'Look! Treasure in the cave!',
-        correct: true,
-        speak: 'Look! Treasure in the cave!'
       }
     ];
 
+    // Exit dot-to-dot. Rings here stay theirs (two or more), not the practice "his".
     const EXIT = [
-      { q: 'Whose necklace is this?', a: 'It’s hers.', hint: 'one girl' },
-      { q: 'Whose rings are these?', a: 'They’re theirs.', hint: 'two or more people (exit ticket key)' },
-      { q: 'Whose pocket watch is this?', a: 'It’s his.', hint: 'one pocket watch' }
+      { id: 'backpack', prompt: 'Whose backpack is this?', answer: 'It’s his.', poss: 'his', img: 'whose/whose-backpack.png' },
+      { id: 'watch', prompt: 'Whose pocket watch is this?', answer: 'It’s his.', poss: 'his', img: 'whose/whose-watches.png' },
+      { id: 'necklace', prompt: 'Whose necklace is this?', answer: 'It’s hers.', poss: 'hers', img: 'whose/whose-necklace.png' },
+      { id: 'earrings', prompt: 'Whose earrings are these?', answer: 'They’re theirs.', poss: 'theirs', img: 'whose/whose-earrings.png' },
+      { id: 'mirror', prompt: 'Whose mirror is this?', answer: 'It’s theirs.', poss: 'theirs', img: 'whose/whose-mirror.png' },
+      { id: 'rings', prompt: 'Whose rings are these?', answer: 'They’re theirs.', poss: 'theirs', img: 'whose/whose-rings.png' }
     ];
+    // Fixed shuffle so the right column is not already lined up.
+    const EXIT_RIGHT_ORDER = ['necklace', 'earrings', 'backpack', 'mirror', 'rings', 'watch'];
 
     const STEPS = [
       { id: 0, label: 'Goals' },
-      { id: 1, label: 'Frames' },
-      { id: 2, label: 'Reveal' },
-      { id: 3, label: '1 Whose?' },
-      { id: 4, label: '2 Build' },
-      { id: 5, label: '3 Story' },
+      { id: 1, label: 'Story' },
+      { id: 2, label: 'Frames' },
+      { id: 3, label: 'Reveal' },
+      { id: 4, label: '1 Whose?' },
+      { id: 5, label: '2 Build' },
       { id: 6, label: 'Exit' }
     ];
 
@@ -556,10 +697,10 @@
         sec.classList.toggle('on', Number(sec.dataset.step) === step);
       });
       buildRail();
-      if (step === 2) initReveal();
-      if (step === 3) initA1();
-      if (step === 4) initA3();
-      if (step === 5) initA4();
+      if (step === 1) initA4();
+      if (step === 3) initReveal();
+      if (step === 4) initA1();
+      if (step === 5) initA3();
       if (step === 6) initExit();
     }
 
@@ -582,28 +723,118 @@
       else document.exitFullscreen?.();
     };
 
-    /* ========== Reveal ========== */
+    /* ========== Reveal (drag the word into the sentence) ========== */
     function initReveal() {
       const grid = document.getElementById('revealGrid');
+      const bank = document.getElementById('revealBank');
+      const feedback = document.getElementById('revealFeedback');
       grid.innerHTML = '';
+      bank.innerHTML = '';
+      feedback.textContent = '';
       REVEAL.forEach(card => {
-        const el = document.createElement('button');
-        el.type = 'button';
-        el.className = 'reveal-card';
+        const el = document.createElement('article');
+        el.className = 'reveal-task';
+        el.dataset.key = card.key;
         el.innerHTML = `
-          <img src="${IMG(card.img)}" alt="${card.title}">
-          <div class="face">?</div>
-          <p class="muted font-bold pb-3">${card.note}</p>
+          <img src="${IMG(card.img)}" alt="">
+          <p class="text-xl font-black mt-2">${card.note}</p>
+          <p class="text-2xl md:text-3xl font-black mt-1">${card.sentence}
+            <span class="drop-slot" data-answer="${card.key}"></span>.</p>
+          <p class="extra flash-line mt-3 hidden"></p>
         `;
-        el.onclick = () => {
-          el.classList.add('open');
-          el.querySelector('.face').textContent = card.title;
-          el.insertAdjacentHTML('beforeend', `<p class="flash-line mx-3 mb-3">${card.line}</p>`);
-          speak(card.line);
-          el.onclick = null;
-        };
         grid.appendChild(el);
       });
+      REVEAL.forEach(card => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = `drag-chip ${card.key}`;
+        chip.textContent = card.key;
+        chip.dataset.word = card.key;
+        bank.appendChild(chip);
+        bindRevealChip(chip);
+      });
+      lastSpeak = 'Drag his, hers, or theirs.';
+    }
+
+    function bindRevealChip(chip) {
+      chip.addEventListener('pointerdown', (e) => {
+        if (chip.dataset.locked === '1') return;
+        e.preventDefault();
+        chip.setPointerCapture(e.pointerId);
+        const start = { x: e.clientX, y: e.clientY };
+        const orig = chip.getBoundingClientRect();
+        chip.style.position = 'fixed';
+        chip.style.left = orig.left + 'px';
+        chip.style.top = orig.top + 'px';
+        chip.style.width = orig.width + 'px';
+        chip.style.zIndex = '40';
+        chip.style.margin = '0';
+        const move = (ev) => {
+          chip.style.left = (orig.left + ev.clientX - start.x) + 'px';
+          chip.style.top = (orig.top + ev.clientY - start.y) + 'px';
+          markRevealHot(ev.clientX, ev.clientY, chip);
+        };
+        const up = (ev) => {
+          chip.removeEventListener('pointermove', move);
+          chip.removeEventListener('pointerup', up);
+          chip.removeEventListener('pointercancel', up);
+          document.querySelectorAll('.drop-slot.hot').forEach(s => s.classList.remove('hot'));
+          const slot = revealSlotAt(ev.clientX, ev.clientY, chip);
+          chip.style.position = '';
+          chip.style.left = '';
+          chip.style.top = '';
+          chip.style.width = '';
+          chip.style.zIndex = '';
+          chip.style.margin = '';
+          if (!slot) return;
+          const task = slot.closest('.reveal-task');
+          if (slot.dataset.answer === chip.dataset.word && !slot.dataset.filled) {
+            slot.dataset.filled = '1';
+            chip.dataset.locked = '1';
+            slot.appendChild(chip);
+            task.classList.add('done');
+            const card = REVEAL.find(c => c.key === chip.dataset.word);
+            const extra = task.querySelector('.extra');
+            extra.textContent = card.line;
+            extra.classList.remove('hidden');
+            speak(card.line);
+            const done = document.querySelectorAll('.reveal-task.done').length;
+            const feedback = document.getElementById('revealFeedback');
+            if (done === REVEAL.length) {
+              feedback.innerHTML = '<span class="flash-line">Revealed — his, hers, theirs!</span>';
+            } else {
+              feedback.textContent = '';
+            }
+          } else {
+            task.classList.add('shake');
+            setTimeout(() => task.classList.remove('shake'), 450);
+            document.getElementById('revealFeedback').textContent = 'Try again!';
+          }
+        };
+        chip.addEventListener('pointermove', move);
+        chip.addEventListener('pointerup', up);
+        chip.addEventListener('pointercancel', up);
+      });
+    }
+
+    function revealSlotAt(x, y, chip) {
+      chip.style.pointerEvents = 'none';
+      const stack = document.elementsFromPoint(x, y);
+      chip.style.pointerEvents = '';
+      for (const el of stack) {
+        if (!el.closest) continue;
+        const slot = el.classList && el.classList.contains('drop-slot') ? el : el.closest('.drop-slot');
+        if (slot) return slot;
+        const task = el.closest('.reveal-task');
+        if (task) return task.querySelector('.drop-slot');
+      }
+      return null;
+    }
+
+    function markRevealHot(x, y, chip) {
+      document.querySelectorAll('.drop-slot.hot').forEach(s => s.classList.remove('hot'));
+      const slot = revealSlotAt(x, y, chip);
+      if (slot && !slot.dataset.filled) slot.classList.add('hot');
     }
 
     /* ========== Activity 1 ========== */
@@ -620,9 +851,11 @@
       const item = PRACTICE2[a1Index];
       document.getElementById('a1Progress').textContent = `${a1Index + 1} / ${PRACTICE2.length}`;
       document.getElementById('a1Question').textContent = item.q;
+      document.getElementById('a1Set').textContent = item.set;
       const img = document.getElementById('a1Img');
       img.src = IMG(item.img);
       img.alt = item.label;
+      img.classList.toggle('whose-scene', !!item.scene);
       document.getElementById('a1Feedback').textContent = '';
       document.getElementById('a1NextItem').classList.add('hidden');
       a1Locked = false;
@@ -684,13 +917,24 @@
     function renderBuildGrid() {
       const grid = document.getElementById('buildGrid');
       grid.innerHTML = '';
+      const head1 = document.createElement('p');
+      head1.className = 'build-head';
+      head1.textContent = 'Ten Brothers';
+      grid.appendChild(head1);
       BUILD.forEach((item, i) => {
+        if (i === TEN.length) {
+          const head2 = document.createElement('p');
+          head2.className = 'build-head';
+          head2.textContent = 'Scene cards';
+          grid.appendChild(head2);
+        }
         const full = `${item.verb} ${item.poss}.`;
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'build-card' + (i === a3Index ? ' active' : '') + (a3Done[i] ? ' done' : '');
         b.innerHTML = `
           <img src="${IMG(item.img)}" alt="${item.label}">
+          <p class="set-tag">${item.set}</p>
           <p class="cap">${item.q}</p>
           ${a3Done[i] ? `<p class="ans">${full}</p>` : ''}
         `;
@@ -788,7 +1032,7 @@
         const next = a3Done.findIndex((done) => !done);
         const token = (a3Token += 1);
         if (next === -1) {
-          document.getElementById('a3Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">Build complete — Next ▶ for Story!</p>`;
+          document.getElementById('a3Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">Build complete — Next ▶ for Exit!</p>`;
         } else {
           setTimeout(() => {
             if (token !== a3Token) return;
@@ -835,7 +1079,7 @@
         const last = a4Index >= STORY.length - 1;
         document.getElementById('a4NextItem').classList.toggle('hidden', last);
         if (last) {
-          document.getElementById('a4Feedback').innerHTML = `<p class="mt-2 font-black text-emerald-700">Story done — Next ▶ Exit ticket!</p>`;
+          document.getElementById('a4Feedback').innerHTML = `<p class="mt-2 font-black text-emerald-700">Story done — Next ▶ for Frames!</p>`;
         }
       }
     }
@@ -853,7 +1097,7 @@
             speak(s.speak || 'Good!');
             document.getElementById('a4NextItem').classList.toggle('hidden', a4Index >= STORY.length - 1);
             if (a4Index >= STORY.length - 1) {
-              document.getElementById('a4Feedback').innerHTML += `<p class="mt-2 font-black text-emerald-700">Story done — Next ▶ Exit ticket!</p>`;
+              document.getElementById('a4Feedback').innerHTML += `<p class="mt-2 font-black text-emerald-700">Story done — Next ▶ for Frames!</p>`;
             }
           } else {
             // They correctly spotted the wrong sentence — now fix
@@ -904,34 +1148,162 @@
       }
     };
 
-    /* ========== Exit ========== */
+    /* ========== Exit (dot-to-dot) ========== */
+    let exitLeftState = [];
+    let exitRightState = [];
+    let exitLinks = [];
+    let exitSel = null;
+    let exitDrag = null;
+
     function initExit() {
-      const grid = document.getElementById('exitGrid');
-      grid.innerHTML = '';
-      EXIT.forEach((ex, i) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'reveal-card text-left';
-        card.innerHTML = `
-          <div class="p-5">
-            <p class="text-lg font-black text-amber-700">Check ${i + 1}</p>
-            <p class="text-2xl md:text-3xl font-black mt-2">${ex.q}</p>
-            <p class="text-xl muted mt-3 font-bold">Tap to reveal · ${ex.hint}</p>
-            <p class="face text-emerald-700 hidden answer"></p>
-          </div>
-        `;
-        card.onclick = () => {
-          const ans = card.querySelector('.answer');
-          ans.textContent = ex.a;
-          ans.classList.remove('hidden');
-          card.classList.add('open');
-          speak(ex.a);
-          card.onclick = null;
-        };
-        grid.appendChild(card);
-      });
-      lastSpeak = 'Whose necklace is this? It’s hers. Whose rings are these? They’re theirs. Whose pocket watch is this? It’s his.';
+      exitLinks = [];
+      exitSel = null;
+      exitDrag = null;
+      const left = document.getElementById('exitLeft');
+      const right = document.getElementById('exitRight');
+      left.innerHTML = '';
+      right.innerHTML = '';
+      document.getElementById('exitFeedback').textContent = '';
+      exitLeftState = EXIT.map(item => ({ ...item, done: false }));
+      const byId = Object.fromEntries(EXIT.map(item => [item.id, item]));
+      exitRightState = EXIT_RIGHT_ORDER.map(id => ({ ...byId[id], rid: 'R-' + id, done: false }));
+      exitLeftState.forEach(item => left.appendChild(exitRow(item, false)));
+      exitRightState.forEach(item => right.appendChild(exitRow(item, true)));
+      drawExitLines();
+      lastSpeak = 'Join each question to the answer.';
     }
+
+    function exitRow(item, isRight) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'match-row' + (isRight ? ' right' : '');
+      b.dataset.side = isRight ? 'right' : 'left';
+      const id = isRight ? item.rid : item.id;
+      b.dataset.id = id;
+      const dot = `<span class="match-dot" data-dot="${id}"></span>`;
+      if (isRight) {
+        const painted = item.answer.replace(item.poss, `<span class="${item.poss}">${item.poss}</span>`);
+        b.innerHTML = `<span>${painted}</span>${dot}`;
+      } else {
+        b.innerHTML = `${dot}<img src="${IMG(item.img)}" alt="">${'<span>' + item.prompt + '</span>'}`;
+      }
+      b.addEventListener('pointerdown', (e) => onExitDown(e, b));
+      return b;
+    }
+
+    function onExitDown(e, row) {
+      if (e.button != null && e.button !== 0) return;
+      e.preventDefault();
+      if (row.dataset.side === 'right') {
+        if (exitSel) tryExitConnect(exitSel, row.dataset.id);
+        return;
+      }
+      const item = exitLeftState.find(x => x.id === row.dataset.id);
+      if (!item || item.done) return;
+      exitSel = item.id;
+      document.querySelectorAll('#exitLeft .match-row').forEach(r => {
+        r.classList.toggle('selected', r.dataset.id === item.id);
+      });
+      speak(item.prompt);
+      row.setPointerCapture(e.pointerId);
+      const move = (ev) => {
+        const board = document.getElementById('exitBoard');
+        const br = board.getBoundingClientRect();
+        const dot = row.querySelector('.match-dot').getBoundingClientRect();
+        exitDrag = {
+          a: { x: dot.left + dot.width / 2 - br.left, y: dot.top + dot.height / 2 - br.top },
+          b: { x: ev.clientX - br.left, y: ev.clientY - br.top }
+        };
+        drawExitLines();
+      };
+      const up = (ev) => {
+        row.removeEventListener('pointermove', move);
+        row.removeEventListener('pointerup', up);
+        row.removeEventListener('pointercancel', up);
+        exitDrag = null;
+        const target = exitRowAt(ev.clientX, ev.clientY);
+        if (target && target.dataset.side === 'right') tryExitConnect(item.id, target.dataset.id);
+        else drawExitLines();
+      };
+      row.addEventListener('pointermove', move);
+      row.addEventListener('pointerup', up);
+      row.addEventListener('pointercancel', up);
+    }
+
+    function exitRowAt(x, y) {
+      const stack = document.elementsFromPoint(x, y);
+      for (const el of stack) {
+        const row = el.closest && el.closest('.match-row');
+        if (row && row.dataset.side === 'right') return row;
+      }
+      return null;
+    }
+
+    function tryExitConnect(leftId, rightId) {
+      const L = exitLeftState.find(x => x.id === leftId);
+      const R = exitRightState.find(x => x.rid === rightId);
+      const feedback = document.getElementById('exitFeedback');
+      if (!L || !R || L.done) return;
+      if (R.done) {
+        const other = exitRightState.find(x => !x.done && x.answer === L.answer);
+        if (other && R.answer === L.answer) tryExitConnect(leftId, other.rid);
+        else feedback.textContent = 'That answer is already used.';
+        return;
+      }
+      if (L.answer !== R.answer) {
+        const row = document.querySelector(`#exitRight .match-row[data-id="${rightId}"]`);
+        row.classList.add('shake');
+        setTimeout(() => row.classList.remove('shake'), 450);
+        feedback.textContent = 'Try again!';
+        drawExitLines();
+        return;
+      }
+      L.done = true;
+      R.done = true;
+      exitLinks.push({ left: L.id, right: R.rid });
+      exitSel = null;
+      document.querySelectorAll('.match-row.selected').forEach(r => r.classList.remove('selected'));
+      document.querySelector(`#exitLeft .match-row[data-id="${L.id}"]`).classList.add('done');
+      document.querySelector(`#exitRight .match-row[data-id="${R.rid}"]`).classList.add('done');
+      speak(L.answer);
+      feedback.innerHTML = exitLeftState.every(x => x.done)
+        ? '<span class="flash-line">Joined — his, hers, theirs!</span>'
+        : '';
+      drawExitLines();
+    }
+
+    function drawExitLines() {
+      const board = document.getElementById('exitBoard');
+      const svg = document.getElementById('exitSvg');
+      if (!board || !svg) return;
+      const br = board.getBoundingClientRect();
+      svg.setAttribute('width', String(br.width));
+      svg.setAttribute('height', String(br.height));
+      svg.setAttribute('viewBox', `0 0 ${br.width} ${br.height}`);
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      const pt = (id) => {
+        const dot = board.querySelector(`[data-dot="${id}"]`);
+        if (!dot) return null;
+        const r = dot.getBoundingClientRect();
+        return { x: r.left + r.width / 2 - br.left, y: r.top + r.height / 2 - br.top };
+      };
+      const add = (a, b, color) => {
+        if (!a || !b) return;
+        const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        l.setAttribute('x1', a.x);
+        l.setAttribute('y1', a.y);
+        l.setAttribute('x2', b.x);
+        l.setAttribute('y2', b.y);
+        l.setAttribute('stroke', color);
+        l.setAttribute('stroke-width', '7');
+        l.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(l);
+      };
+      exitLinks.forEach(link => add(pt(link.left), pt(link.right), '#15803d'));
+      if (exitDrag) add(exitDrag.a, exitDrag.b, '#d97706');
+    }
+
+    window.addEventListener('resize', () => { if (step === 6) drawExitLines(); });
 
     // Voices may load async
     if ('speechSynthesis' in window) {
