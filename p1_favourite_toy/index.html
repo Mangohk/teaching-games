@@ -17,13 +17,18 @@
     --sit-edge: #F9A825;
     --tail-bg: #FFCCBC;
     --tail-edge: #E64A19;
+    --top-line: #90CAF9;
+    --mid-line: #42A5F5;
     --baseline: #212121;
-    --safe: 4vw;
-    --nav-h: 96px;
-    --q: clamp(40px, 5.5vw, 84px);
-    --zone: clamp(24px, 3.2vw, 44px);
-    --step: clamp(20px, 2.2vw, 32px);
-    --btn: clamp(18px, 2vw, 28px);
+    --bottom-line: #FFAB91;
+    --safe-top: 24px;
+    --safe-side: 112px; /* room for side Prev/Next */
+    --safe-bottom: 24px;
+    --nav-reserve: 0px;
+    --q: clamp(36px, 5vw, 80px);
+    --zone: clamp(22px, 2.8vw, 40px);
+    --step: clamp(18px, 2vw, 30px);
+    --btn: clamp(16px, 1.8vw, 26px);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,6 +41,7 @@
     color: var(--text);
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    touch-action: manipulation;
   }
 
   #deck {
@@ -48,22 +54,20 @@
     display: none;
     position: absolute;
     inset: 0;
-    padding: var(--safe);
-    /* Reserve clear space above fixed Prev/Next so content never hides under nav */
-    padding-bottom: calc(var(--nav-h) + 20px);
+    padding: var(--safe-top) var(--safe-side) var(--safe-bottom);
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: clamp(8px, 1.2vh, 20px);
+    gap: clamp(6px, 1vh, 16px);
     background: var(--bg);
     animation: fadeIn 0.28s ease;
     overflow: auto;
     overscroll-behavior: contain;
+    max-height: 100vh;
   }
   .slide.active { display: flex; }
-  /* Vertically centre only when content is short enough not to collide with nav */
   @media (min-height: 900px) {
-    .slide.active { justify-content: safe center; }
+    .slide.active:not([data-id="letter-game"]) { justify-content: safe center; }
   }
 
   @keyframes fadeIn {
@@ -73,8 +77,8 @@
 
   .progress {
     position: fixed;
-    top: 1.2vw;
-    right: 2vw;
+    top: 12px;
+    right: 20px;
     font-size: clamp(14px, 1.4vw, 22px);
     color: #8E8E93;
     opacity: 0.7;
@@ -82,40 +86,40 @@
     pointer-events: none;
   }
 
+  /* Side Prev / Next — preferred e-board safe area */
   .nav {
     position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
-    height: var(--nav-h);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5vw;
-    z-index: 60;
+    inset: 0;
     pointer-events: none;
-    background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0.92) 28%, var(--bg) 55%);
-    padding: 12px 16px 18px;
-    box-sizing: border-box;
+    z-index: 60;
   }
   .nav button {
     pointer-events: auto;
-    min-width: 68px;
-    min-height: 56px;
-    padding: 0 22px;
-    font-size: var(--btn);
-    font-weight: 700;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    min-height: 80px;
+    padding: 0;
+    font-size: clamp(14px, 1.4vw, 20px);
+    font-weight: 800;
     border: 3px solid #1C1C1E;
-    border-radius: 14px;
+    border-radius: 18px;
     background: #fff;
     color: var(--text);
     cursor: pointer;
     box-shadow: 0 4px 0 #C7C7CC;
+    line-height: 1.15;
   }
-  .nav button:active { transform: translateY(2px); box-shadow: 0 2px 0 #C7C7CC; }
+  .nav #prevBtn { left: 16px; }
+  .nav #nextBtn { right: 16px; }
+  .nav button:active { transform: translateY(calc(-50% + 2px)); box-shadow: 0 2px 0 #C7C7CC; }
   .nav button:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
 
   h1.title {
-    font-size: clamp(56px, 8vw, 120px);
+    font-size: clamp(48px, 7vw, 110px);
     font-weight: 800;
     letter-spacing: -0.02em;
     text-align: center;
@@ -134,7 +138,6 @@
     text-align: center;
   }
 
-  /* Home */
   .home-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -166,7 +169,6 @@
   .home-btn.game { background: linear-gradient(135deg, #FFCCBC, #F8BBD0); }
   .home-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #C7C7CC; }
 
-  /* How-to cards */
   .howto {
     display: flex;
     flex-wrap: wrap;
@@ -193,7 +195,6 @@
     border: 3px solid #1C1C1E;
   }
 
-  /* Toy image */
   .toy-wrap {
     display: flex;
     align-items: center;
@@ -238,7 +239,6 @@
   .toy-card.correct { border: 8px solid var(--correct); }
   .toy-card.picked { transform: scale(1.04); }
 
-  /* Choice buttons */
   .choices {
     display: flex;
     gap: clamp(16px, 2.5vw, 40px);
@@ -256,7 +256,7 @@
     font-weight: 800;
     cursor: pointer;
     background: #fff;
-    color: #1C1C1E; /* word labels stay neutral dark — never match colour name */
+    color: #1C1C1E;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -266,20 +266,24 @@
   }
   .choice:active { transform: translateY(2px); }
   .choice .swatch {
-    width: clamp(40px, 5vw, 64px);
-    height: clamp(40px, 5vw, 64px);
-    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
     border: 3px solid #1C1C1E;
     flex-shrink: 0;
   }
-  .choice .word {
+  .choice .word,
+  .color-word,
+  .swatch-label,
+  [data-color-label] {
     color: #1C1C1E !important;
+    -webkit-text-fill-color: #1C1C1E;
   }
-  /* Colour Point: text labels must NOT be tinted to the colour name */
   .slide[data-game="colour"] .choice,
   .slide[data-game="colour"] .choice.correct,
   .slide[data-game="colour"] .choice .word {
     color: #1C1C1E !important;
+    -webkit-text-fill-color: #1C1C1E;
   }
   .choice.correct {
     border-color: var(--correct);
@@ -314,7 +318,6 @@
   .badge.texture { background: var(--texture); }
   .badge.size { background: var(--size); }
 
-  /* Checklist */
   .check-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -338,60 +341,100 @@
   }
   .check-cell .ico { font-size: clamp(36px, 4.5vw, 56px); }
 
-  /* Letter line canvas */
-  .line-canvas {
-    width: min(88vw, 1100px);
-    height: min(52vh, 420px);
+  /* ===== Four handwriting lines + three bands ===== */
+  .letter-play-board {
+    width: min(72vw, 980px);
+    max-height: calc(100vh - 48px - var(--nav-reserve));
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    flex: 0 1 auto;
+  }
+  .writing-board {
+    position: relative;
+    width: 100%;
+    height: min(46vh, 420px);
     border: 4px solid #1C1C1E;
     border-radius: 16px;
     overflow: hidden;
-    position: relative;
     background: #fff;
+    display: grid;
+    grid-template-rows: 2px 1fr 2px 1fr 8px 1fr 2px;
   }
-  .band {
-    flex: 1;
+  .wb-line { width: 100%; pointer-events: none; z-index: 3; }
+  .wb-line.top { background: var(--top-line); height: 2px; }
+  .wb-line.mid {
+    height: 0;
+    border-top: 2px dashed var(--mid-line);
+    background: transparent;
+  }
+  .wb-line.base { background: var(--baseline); height: 8px; }
+  .wb-line.bottom { background: var(--bottom-line); height: 2px; }
+
+  .wb-band {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(12px, 2.5vw, 40px);
-    position: relative;
-    transition: opacity 0.25s;
+    gap: clamp(10px, 2vw, 28px);
+    min-height: 0;
+    transition: opacity 0.2s, box-shadow 0.15s;
   }
-  .band.tall { background: var(--tall-bg); }
-  .band.sit { background: var(--sit-bg); }
-  .band.tail { background: var(--tail-bg); }
-  .band.dim { opacity: 0.4; }
-  .band .label {
+  .wb-band.tall { background: var(--tall-bg); }
+  .wb-band.sit { background: var(--sit-bg); }
+  .wb-band.tail { background: var(--tail-bg); }
+  .wb-band.dim { opacity: 0.38; }
+  .wb-band.locked {
+    opacity: 0.32;
+    filter: grayscale(0.55);
+    pointer-events: none;
+  }
+  .wb-band .zone-label {
     position: absolute;
-    left: 12px;
-    font-size: var(--zone);
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(18px, 2.4vw, 32px);
     font-weight: 800;
-    opacity: 0.85;
+    opacity: 0.9;
+    pointer-events: none;
   }
-  .band.tall .label { color: var(--tall-edge); }
-  .band.sit .label { color: var(--sit-edge); }
-  .band.tail .label { color: var(--tail-edge); }
-  .baseline {
-    height: 8px;
-    background: var(--baseline);
-    flex-shrink: 0;
-    z-index: 2;
+  .wb-band.tall .zone-label { color: var(--tall-edge); }
+  .wb-band.sit .zone-label { color: var(--sit-edge); }
+  .wb-band.tail .zone-label { color: var(--tail-edge); }
+  .wb-band.drop-hot.drag-over:not(.locked) {
+    box-shadow: inset 0 0 0 6px rgba(27,138,74,0.55);
   }
-  .midline {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    border-top: 2px dashed rgba(0,0,0,0.18);
+  .wb-band.correct-zone {
+    box-shadow: inset 0 0 0 8px var(--correct);
   }
+
   .sample-letter {
-    font-size: clamp(56px, 9vw, 120px);
+    font-size: clamp(42px, 7vh, 96px);
     font-weight: 800;
     color: #1C1C1E;
     line-height: 1;
-    text-shadow: 0 0 2px #fff, 0 0 4px #fff;
-    letter-spacing: 0.04em;
+    pointer-events: none;
   }
+  /* Teaching placement: sit/tall sit on baseline; tall extends up; tail hangs down */
+  .wb-band.sit .sample-letter { align-self: flex-end; margin-bottom: 2px; }
+  .wb-band.tall .sample-letter { align-self: stretch; display: flex; align-items: flex-end; padding-bottom: 2px; }
+  .wb-band.tail .sample-letter { align-self: flex-start; margin-top: -18%; }
+
+  .placed-letter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(56px, 10vh, 120px);
+    font-weight: 800;
+    color: #1C1C1E;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .placed-letter.sit { bottom: calc(33.33% + 8px); }
+  .placed-letter.tall { bottom: calc(33.33% + 8px); }
+  .placed-letter.tail { top: calc(66.66% - 4px); }
 
   .legend {
     display: flex;
@@ -402,12 +445,12 @@
   .legend-card {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: #fff;
     border: 3px solid #1C1C1E;
     border-radius: 14px;
-    padding: 10px 18px;
-    font-size: var(--step);
+    padding: 8px 14px;
+    font-size: clamp(16px, 1.8vw, 24px);
     font-weight: 800;
   }
   .legend-swatch {
@@ -417,95 +460,11 @@
     border: 2px solid #1C1C1E;
   }
 
-  /* Letter game */
-  .game-letter-card {
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: 4px solid #E5E5EA;
-    padding: clamp(12px, 2vw, 28px) clamp(28px, 5vw, 80px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 30vw;
-    flex: 0 1 auto;
-    min-height: 0;
-  }
+  /* DnD game layout */
   .slide[data-id="letter-game"] {
-    gap: clamp(6px, 0.9vh, 14px);
     justify-content: flex-start !important;
-    padding-top: clamp(12px, 2vh, 28px);
+    gap: clamp(6px, 0.8vh, 12px);
   }
-  .slide[data-id="letter-game"] .q {
-    font-size: clamp(32px, 5vh, 72px);
-  }
-  .game-letter {
-    font-size: clamp(56px, 11vh, 160px);
-    font-weight: 800;
-    line-height: 1;
-    color: #1C1C1E;
-  }
-  .zones {
-    width: min(88vw, 900px);
-    display: flex;
-    flex-direction: column;
-    flex: 0 1 auto;
-    height: auto;
-    min-height: 140px;
-    max-height: min(32vh, 340px);
-    border: 4px solid #1C1C1E;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 4px;
-  }
-  .zone-btn {
-    flex: 1;
-    border: none;
-    cursor: pointer;
-    font-size: var(--zone);
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    position: relative;
-    transition: transform 0.12s, box-shadow 0.12s;
-    color: var(--text);
-  }
-  .zone-btn.tall { background: var(--tall-bg); color: var(--tall-edge); }
-  .zone-btn.sit { background: var(--sit-bg); color: var(--sit-edge); }
-  .zone-btn.tail { background: var(--tail-bg); color: var(--tail-edge); }
-  .zone-btn .hint {
-    font-size: clamp(18px, 2vw, 28px);
-    font-weight: 600;
-    opacity: 0.7;
-  }
-  .zone-btn.picked {
-    box-shadow: inset 0 0 0 10px currentColor;
-    transform: scale(1.02);
-    z-index: 1;
-  }
-  .zone-btn.correct-zone {
-    box-shadow: inset 0 0 0 10px var(--correct);
-    background: #C8E6C9 !important;
-    color: var(--correct) !important;
-  }
-  .zone-btn.locked {
-    opacity: 0.35;
-    cursor: not-allowed;
-    filter: grayscale(0.5);
-  }
-  .zone-btn .check-mark {
-    font-size: clamp(32px, 4vw, 48px);
-    display: none;
-  }
-  .zone-btn.correct-zone .check-mark { display: inline; }
-  .zone-baseline {
-    height: 8px;
-    background: var(--baseline);
-    flex-shrink: 0;
-  }
-
   .stage-bar {
     display: flex;
     gap: 12px;
@@ -514,8 +473,8 @@
     flex-wrap: wrap;
   }
   .stage-btn {
-    padding: 10px 20px;
-    font-size: clamp(16px, 1.8vw, 24px);
+    padding: 10px 18px;
+    font-size: clamp(15px, 1.6vw, 22px);
     font-weight: 800;
     border: 3px solid #1C1C1E;
     border-radius: 12px;
@@ -527,9 +486,63 @@
     color: #fff;
   }
   .round-label {
-    font-size: clamp(18px, 2vw, 28px);
+    font-size: clamp(16px, 1.8vw, 24px);
     font-weight: 700;
     color: #636366;
+  }
+
+  .dnd-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-height: calc(100vh - 48px);
+  }
+  .dnd-board-wrap {
+    width: min(72vw, 980px);
+  }
+  .dnd-board-wrap .writing-board {
+    height: min(42vh, 380px);
+  }
+
+  .letter-tray {
+    min-height: clamp(100px, 16vh, 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(72vw, 980px);
+  }
+  .letter-tile {
+    width: clamp(100px, 18vw, 200px);
+    height: clamp(100px, 18vw, 200px);
+    border: 5px solid #1C1C1E;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 8px 0 #C7C7CC;
+    font-size: clamp(64px, 14vw, 140px);
+    font-weight: 800;
+    color: #1C1C1E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    z-index: 20;
+    position: relative;
+  }
+  .letter-tile:active, .letter-tile.dragging { cursor: grabbing; box-shadow: 0 12px 28px rgba(0,0,0,0.2); }
+  .letter-tile.solved {
+    border-color: var(--correct);
+    border-width: 8px;
+    background: #E8F5E9;
+  }
+  .letter-tile.ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.95;
+    margin: 0;
   }
 
   .end-check {
@@ -537,16 +550,12 @@
     color: var(--correct);
     line-height: 1;
   }
-
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
 <div class="progress" id="progress">1 / 1</div>
-
 <div id="deck">
-
-  <!-- ========== 0 HOME ========== -->
   <section class="slide active" data-id="home">
     <h1 class="title">Favourite Toy</h1>
     <p class="subtitle">P1 · Vocab + Letter lines</p>
@@ -711,139 +720,173 @@
     </div>
   </section>
 
+
   <!-- ========== LETTER LINES TEACH ========== -->
   <section class="slide" data-id="letter-intro">
     <h2 class="q">Letter lines</h2>
-    <p class="subtitle">Three places · one baseline</p>
-    <div class="line-canvas" aria-hidden="true">
-      <div class="band tall"><span class="label">Tall</span><span class="midline"></span></div>
-      <div class="band sit"><span class="label">Sit</span></div>
-      <div class="baseline" title="Baseline"></div>
-      <div class="band tail"><span class="label">Tail</span></div>
-    </div>
-    <div class="legend">
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · up</div>
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · on the line</div>
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · down</div>
+    <p class="subtitle">Four lines · Tall · Sit · Tail</p>
+    <div class="letter-play-board">
+      <div class="writing-board" aria-hidden="true">
+        <div class="wb-line top"></div>
+        <div class="wb-band tall"><span class="zone-label">Tall</span></div>
+        <div class="wb-line mid"></div>
+        <div class="wb-band sit"><span class="zone-label">Sit</span></div>
+        <div class="wb-line base" title="baseline"></div>
+        <div class="wb-band tail"><span class="zone-label">Tail</span></div>
+        <div class="wb-line bottom"></div>
+      </div>
+      <div class="legend">
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · up</div>
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · on the line</div>
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · down</div>
+      </div>
     </div>
   </section>
 
   <section class="slide" data-id="letter-sit">
     <h2 class="q">Sit</h2>
     <p class="subtitle">These letters sit on the line</p>
-    <div class="line-canvas">
-      <div class="band tall dim"><span class="label">Tall</span></div>
-      <div class="band sit">
-        <span class="label">Sit</span>
-        <span class="sample-letter">a</span>
-        <span class="sample-letter">c</span>
-        <span class="sample-letter">e</span>
-        <span class="sample-letter">o</span>
+    <div class="letter-play-board">
+      <div class="writing-board">
+        <div class="wb-line top"></div>
+        <div class="wb-band tall dim"><span class="zone-label">Tall</span></div>
+        <div class="wb-line mid"></div>
+        <div class="wb-band sit">
+          <span class="zone-label">Sit</span>
+          <span class="sample-letter">a</span>
+          <span class="sample-letter">c</span>
+          <span class="sample-letter">e</span>
+          <span class="sample-letter">o</span>
+        </div>
+        <div class="wb-line base"></div>
+        <div class="wb-band tail dim"><span class="zone-label">Tail</span></div>
+        <div class="wb-line bottom"></div>
       </div>
-      <div class="baseline"></div>
-      <div class="band tail dim"><span class="label">Tail</span></div>
-    </div>
-    <div class="legend">
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · a c e o …</div>
+      <div class="legend">
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · a c e o …</div>
+      </div>
     </div>
   </section>
 
   <section class="slide" data-id="letter-tall">
     <h2 class="q">Tall</h2>
-    <p class="subtitle">These letters go up</p>
-    <div class="line-canvas">
-      <div class="band tall">
-        <span class="label">Tall</span>
-        <span class="sample-letter">b</span>
-        <span class="sample-letter">d</span>
-        <span class="sample-letter">h</span>
-        <span class="sample-letter">l</span>
+    <p class="subtitle">These letters are tall. They go up.</p>
+    <div class="letter-play-board">
+      <div class="writing-board">
+        <div class="wb-line top"></div>
+        <div class="wb-band tall">
+          <span class="zone-label">Tall</span>
+          <span class="sample-letter">b</span>
+          <span class="sample-letter">d</span>
+          <span class="sample-letter">h</span>
+          <span class="sample-letter">l</span>
+        </div>
+        <div class="wb-line mid"></div>
+        <div class="wb-band sit dim"><span class="zone-label">Sit</span></div>
+        <div class="wb-line base"></div>
+        <div class="wb-band tail dim"><span class="zone-label">Tail</span></div>
+        <div class="wb-line bottom"></div>
       </div>
-      <div class="band sit dim"><span class="label">Sit</span></div>
-      <div class="baseline"></div>
-      <div class="band tail dim"><span class="label">Tail</span></div>
-    </div>
-    <div class="legend">
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · b d h l …</div>
+      <div class="legend">
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · b d h l …</div>
+      </div>
     </div>
   </section>
 
   <section class="slide" data-id="letter-tail">
     <h2 class="q">Tail</h2>
-    <p class="subtitle">These letters go down</p>
-    <div class="line-canvas">
-      <div class="band tall dim"><span class="label">Tall</span></div>
-      <div class="band sit dim"><span class="label">Sit</span></div>
-      <div class="baseline"></div>
-      <div class="band tail">
-        <span class="label">Tail</span>
-        <span class="sample-letter">g</span>
-        <span class="sample-letter">j</span>
-        <span class="sample-letter">p</span>
-        <span class="sample-letter">y</span>
+    <p class="subtitle">These letters have a tail. They go down.</p>
+    <div class="letter-play-board">
+      <div class="writing-board">
+        <div class="wb-line top"></div>
+        <div class="wb-band tall dim"><span class="zone-label">Tall</span></div>
+        <div class="wb-line mid"></div>
+        <div class="wb-band sit dim"><span class="zone-label">Sit</span></div>
+        <div class="wb-line base"></div>
+        <div class="wb-band tail">
+          <span class="zone-label">Tail</span>
+          <span class="sample-letter">g</span>
+          <span class="sample-letter">j</span>
+          <span class="sample-letter">p</span>
+          <span class="sample-letter">y</span>
+        </div>
+        <div class="wb-line bottom"></div>
       </div>
-    </div>
-    <div class="legend">
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · g j p y …</div>
+      <div class="legend">
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · g j p y …</div>
+      </div>
     </div>
   </section>
 
   <section class="slide" data-id="letter-mixed">
     <h2 class="q">Compare</h2>
     <p class="subtitle">One from each group</p>
-    <div class="line-canvas">
-      <div class="band tall">
-        <span class="label">Tall</span>
-        <span class="sample-letter">b</span>
+    <div class="letter-play-board">
+      <div class="writing-board">
+        <div class="wb-line top"></div>
+        <div class="wb-band tall">
+          <span class="zone-label">Tall</span>
+          <span class="sample-letter">b</span>
+        </div>
+        <div class="wb-line mid"></div>
+        <div class="wb-band sit">
+          <span class="zone-label">Sit</span>
+          <span class="sample-letter">a</span>
+        </div>
+        <div class="wb-line base"></div>
+        <div class="wb-band tail">
+          <span class="zone-label">Tail</span>
+          <span class="sample-letter">g</span>
+        </div>
+        <div class="wb-line bottom"></div>
       </div>
-      <div class="band sit">
-        <span class="label">Sit</span>
-        <span class="sample-letter">a</span>
+      <div class="legend">
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · b</div>
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · a</div>
+        <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · g</div>
       </div>
-      <div class="baseline"></div>
-      <div class="band tail">
-        <span class="label">Tail</span>
-        <span class="sample-letter">g</span>
-      </div>
-    </div>
-    <div class="legend">
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · b</div>
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · a</div>
-      <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · g</div>
     </div>
   </section>
 
-  <!-- ========== LETTER GAME ========== -->
+  <!-- ========== LETTER GAME DnD ========== -->
   <section class="slide" data-id="letter-game">
     <h2 class="q">Where does it go?</h2>
     <div class="stage-bar">
       <span class="round-label" id="roundLabel">1 / 8</span>
       <button type="button" class="stage-btn active" id="stageABtn">Stage A · Sit + Tall</button>
-      <button type="button" class="stage-btn" id="stageBBtn">Unlock Stage B · + Tail</button>
+      <button type="button" class="stage-btn" id="stageBBtn">Unlock Tail</button>
     </div>
-    <div class="game-letter-card">
-      <span class="game-letter" id="gameLetter">a</span>
+    <div class="dnd-layout">
+      <div class="dnd-board-wrap">
+        <div class="writing-board" id="dndBoard">
+          <div class="wb-line top"></div>
+          <div class="wb-band tall drop-hot" data-zone="tall" id="zoneTall"><span class="zone-label">Tall</span></div>
+          <div class="wb-line mid"></div>
+          <div class="wb-band sit drop-hot" data-zone="sit" id="zoneSit"><span class="zone-label">Sit</span></div>
+          <div class="wb-line base"></div>
+          <div class="wb-band tail drop-hot locked" data-zone="tail" id="zoneTail"><span class="zone-label">Tail</span></div>
+          <div class="wb-line bottom"></div>
+          <span class="placed-letter hidden" id="placedLetter" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div class="letter-tray" id="letterTray">
+        <div class="letter-tile" id="letterTile" draggable="false">a</div>
+      </div>
+      <div class="feedback" id="gameFeedback" aria-live="polite"></div>
     </div>
-    <div class="zones" id="zones">
-      <button type="button" class="zone-btn tall" data-zone="tall">Tall <span class="hint">↑ up</span> <span class="check-mark">✓</span></button>
-      <button type="button" class="zone-btn sit" data-zone="sit">Sit <span class="hint">— on the line</span> <span class="check-mark">✓</span></button>
-      <div class="zone-baseline"></div>
-      <button type="button" class="zone-btn tail locked" data-zone="tail" id="tailZone">Tail <span class="hint">↓ down</span> <span class="check-mark">✓</span></button>
-    </div>
-    <div class="feedback" id="gameFeedback" aria-live="polite"></div>
   </section>
 
   <section class="slide" data-id="letter-end">
     <div class="end-check">✓</div>
-    <h2 class="q">Great listening!</h2>
+    <h2 class="q">Great placing!</h2>
     <p class="subtitle">Sit · Tall · Tail</p>
   </section>
 
 </div>
 
 <nav class="nav" aria-label="Slide navigation">
-  <button type="button" id="prevBtn" aria-label="Previous">← Prev</button>
-  <button type="button" id="nextBtn" aria-label="Next">Next →</button>
+  <button type="button" id="prevBtn" aria-label="Previous">←<br>Prev</button>
+  <button type="button" id="nextBtn" aria-label="Next">Next<br>→</button>
 </nav>
 
 <script>
@@ -854,7 +897,7 @@
   const nextBtn = document.getElementById('nextBtn');
   let idx = 0;
 
-  // Soft classroom success ding (vocab + letter). Wrong answers stay silent.
+  // Soft classroom success ding (vocab + letter DnD). Wrong answers stay silent.
   const successAudio = new Audio('assets/success.wav');
   successAudio.preload = 'auto';
   successAudio.volume = 0.55;
@@ -867,14 +910,15 @@
     } catch (e) {}
   }
 
-  const LETTER_GROUPS = {
-    sit: 'aceimnorsuvwxz'.split(''),
-    tall: 'bdfhklt'.split(''),
-    tail: 'gjpqy'.split('')
-  };
+  const SIT = 'aceimnorsuvwxz'.split('');
+  const TALL = 'bdfhklt'.split('');
+  const TAIL = 'gjpqy'.split('');
+  const ZONE_OF = {};
+  SIT.forEach(l => ZONE_OF[l] = 'sit');
+  TALL.forEach(l => ZONE_OF[l] = 'tall');
+  TAIL.forEach(l => ZONE_OF[l] = 'tail');
 
-  // Round list: mix sit/tall/tail — Stage A will skip tail until unlocked
-  // Stage A: sit + tall only (~8). Stage B: mixed with tail (~8).
+  // Stage A: sit+tall only. Stage B: +tail. ~6–8 rounds.
   const ROUNDS_A = [
     { letter: 'a', zone: 'sit' },
     { letter: 'b', zone: 'tall' },
@@ -887,16 +931,16 @@
   ];
   const ROUNDS_B = [
     { letter: 'a', zone: 'sit' },
-    { letter: 'b', zone: 'tall' },
     { letter: 'g', zone: 'tail' },
+    { letter: 'b', zone: 'tall' },
+    { letter: 'j', zone: 'tail' },
     { letter: 'c', zone: 'sit' },
-    { letter: 'h', zone: 'tall' },
     { letter: 'p', zone: 'tail' },
-    { letter: 'o', zone: 'sit' },
+    { letter: 'h', zone: 'tall' },
     { letter: 'y', zone: 'tail' }
   ];
 
-  let stage = 'A'; // A = sit+tall only; B = all three
+  let stage = 'A';
   let roundIdx = 0;
   let letterSolved = false;
 
@@ -912,20 +956,13 @@
     progressEl.textContent = (idx + 1) + ' / ' + slides.length;
     prevBtn.disabled = idx === 0;
     nextBtn.disabled = idx === slides.length - 1;
-
-    // Reset letter game when entering
     if (slides[idx].dataset.id === 'letter-game') {
-      // keep stage; ensure UI matches
       applyStage();
       if (roundIdx >= activeRounds().length) roundIdx = 0;
       renderLetterRound();
     }
   }
-
-  function go(delta) {
-    showSlide(idx + delta);
-  }
-
+  function go(delta) { showSlide(idx + delta); }
   function jumpTo(id) {
     const i = slides.findIndex(s => s.dataset.id === id);
     if (i >= 0) showSlide(i);
@@ -933,15 +970,10 @@
 
   prevBtn.addEventListener('click', () => go(-1));
   nextBtn.addEventListener('click', () => go(1));
-
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
-    else if (e.key === 'ArrowRight' || e.key === ' ') {
-      e.preventDefault();
-      go(1);
-    }
+    else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
   });
-
   document.querySelectorAll('[data-jump]').forEach(btn => {
     btn.addEventListener('click', () => jumpTo(btn.dataset.jump));
   });
@@ -950,7 +982,6 @@
   slides.forEach(slide => {
     const answer = slide.dataset.answer;
     if (!answer) return;
-
     const feedback = slide.querySelector('.feedback');
     const toyWrap = slide.querySelector('.toy-wrap');
 
@@ -966,26 +997,19 @@
       }
       playSuccess();
     }
-
     function tryAgain() {
-      // No loud fail sound — silent / soft UI only
       if (feedback) {
         feedback.textContent = 'Try again';
         feedback.className = 'feedback retry';
       }
     }
-
     slide.querySelectorAll('.choice').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.classList.contains('correct')) return;
-        if (btn.dataset.val === answer) {
-          markCorrect(btn);
-        } else {
-          tryAgain();
-        }
+        if (btn.dataset.val === answer) markCorrect(btn);
+        else tryAgain();
       });
     });
-
     slide.querySelectorAll('.toy-card').forEach(card => {
       card.addEventListener('click', () => {
         if (card.classList.contains('correct')) return;
@@ -993,36 +1017,44 @@
         card.classList.add('picked');
         if (card.dataset.val === answer) {
           markCorrect(card);
-          // also highlight matching choice button
           slide.querySelectorAll('.choice').forEach(b => {
             if (b.dataset.val === answer) b.classList.add('correct');
           });
-        } else {
-          tryAgain();
-        }
+        } else tryAgain();
       });
     });
   });
 
-  // Letter game
-  const gameLetterEl = document.getElementById('gameLetter');
-  const roundLabel = document.getElementById('roundLabel');
+  // ===== Letter DnD =====
+  const tile = document.getElementById('letterTile');
+  const tray = document.getElementById('letterTray');
+  const placedLetter = document.getElementById('placedLetter');
   const gameFeedback = document.getElementById('gameFeedback');
+  const roundLabel = document.getElementById('roundLabel');
   const stageABtn = document.getElementById('stageABtn');
   const stageBBtn = document.getElementById('stageBBtn');
-  const tailZone = document.getElementById('tailZone');
+  const zoneTall = document.getElementById('zoneTall');
+  const zoneSit = document.getElementById('zoneSit');
+  const zoneTail = document.getElementById('zoneTail');
+  const zones = [zoneTall, zoneSit, zoneTail];
 
   function applyStage() {
-    const locked = stage === 'A';
-    if (locked) {
-      tailZone.classList.add('locked');
-      stageABtn.classList.add('active');
-      stageBBtn.classList.remove('active');
-    } else {
-      tailZone.classList.remove('locked');
-      stageABtn.classList.remove('active');
-      stageBBtn.classList.add('active');
-    }
+    const lockTail = stage === 'A';
+    zoneTail.classList.toggle('locked', lockTail);
+    stageABtn.classList.toggle('active', stage === 'A');
+    stageBBtn.classList.toggle('active', stage === 'B');
+  }
+
+  function clearBoardMarks() {
+    zones.forEach(z => z.classList.remove('correct-zone', 'drag-over'));
+    placedLetter.classList.add('hidden');
+    placedLetter.textContent = '';
+    placedLetter.className = 'placed-letter hidden';
+    tile.classList.remove('solved', 'hidden');
+    tile.style.transform = '';
+    tile.style.left = '';
+    tile.style.top = '';
+    tile.style.position = '';
   }
 
   function renderLetterRound() {
@@ -1033,66 +1065,129 @@
     }
     const r = rounds[roundIdx];
     letterSolved = false;
-    gameLetterEl.textContent = r.letter;
+    clearBoardMarks();
+    tile.textContent = r.letter;
     roundLabel.textContent = (roundIdx + 1) + ' / ' + rounds.length;
     gameFeedback.textContent = '';
     gameFeedback.className = 'feedback';
-    document.querySelectorAll('.zone-btn').forEach(z => {
-      z.classList.remove('picked', 'correct-zone');
-    });
+    // ensure tile back in tray
+    if (tile.parentElement !== tray) tray.appendChild(tile);
   }
 
   function nextLetterRound() {
     roundIdx++;
     const rounds = activeRounds();
-    if (roundIdx >= rounds.length) {
-      jumpTo('letter-end');
-    } else {
-      renderLetterRound();
-    }
+    if (roundIdx >= rounds.length) jumpTo('letter-end');
+    else renderLetterRound();
   }
 
   stageABtn.addEventListener('click', () => {
-    stage = 'A';
-    roundIdx = 0;
-    applyStage();
-    renderLetterRound();
+    stage = 'A'; roundIdx = 0; applyStage(); renderLetterRound();
   });
-
   stageBBtn.addEventListener('click', () => {
-    stage = 'B';
-    roundIdx = 0;
-    applyStage();
-    renderLetterRound();
+    stage = 'B'; roundIdx = 0; applyStage(); renderLetterRound();
   });
 
-  document.querySelectorAll('.zone-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (letterSolved) return;
-      if (btn.classList.contains('locked')) return;
-      const rounds = activeRounds();
-      const r = rounds[roundIdx];
-      if (!r) return;
-      document.querySelectorAll('.zone-btn').forEach(z => z.classList.remove('picked'));
-      btn.classList.add('picked');
-      if (btn.dataset.zone === r.zone) {
-        letterSolved = true;
-        btn.classList.add('correct-zone');
-        gameFeedback.textContent = '✓ ' + r.zone;
-        gameFeedback.className = 'feedback ok';
-        playSuccess();
-        setTimeout(() => {
-          if (slides[idx].dataset.id === 'letter-game') nextLetterRound();
-        }, 900);
-      } else {
-        // Silent miss — no harsh buzz
-        gameFeedback.textContent = 'Try again';
-        gameFeedback.className = 'feedback retry';
-      }
-    });
-  });
+  // Pointer drag (mouse + touch / e-board)
+  let dragging = false;
+  let ghost = null;
+  let originRect = null;
+  let grabDX = 0, grabDY = 0;
 
-  // Init
+  function pointFromEvent(e) {
+    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function zoneUnder(x, y) {
+    for (const z of zones) {
+      if (z.classList.contains('locked')) continue;
+      const r = z.getBoundingClientRect();
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return z;
+    }
+    return null;
+  }
+
+  function startDrag(e) {
+    if (letterSolved) return;
+    if (slides[idx].dataset.id !== 'letter-game') return;
+    e.preventDefault();
+    dragging = true;
+    tile.classList.add('dragging');
+    originRect = tile.getBoundingClientRect();
+    const p = pointFromEvent(e);
+    grabDX = p.x - originRect.left;
+    grabDY = p.y - originRect.top;
+    ghost = tile.cloneNode(true);
+    ghost.classList.add('ghost');
+    ghost.style.width = originRect.width + 'px';
+    ghost.style.height = originRect.height + 'px';
+    ghost.style.left = originRect.left + 'px';
+    ghost.style.top = originRect.top + 'px';
+    document.body.appendChild(ghost);
+    tile.style.opacity = '0.25';
+  }
+
+  function moveDrag(e) {
+    if (!dragging || !ghost) return;
+    e.preventDefault();
+    const p = pointFromEvent(e);
+    ghost.style.left = (p.x - grabDX) + 'px';
+    ghost.style.top = (p.y - grabDY) + 'px';
+    const z = zoneUnder(p.x, p.y);
+    zones.forEach(zone => zone.classList.toggle('drag-over', zone === z));
+  }
+
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    tile.classList.remove('dragging');
+    tile.style.opacity = '';
+    zones.forEach(z => z.classList.remove('drag-over'));
+    const p = pointFromEvent(e);
+    const z = zoneUnder(p.x, p.y);
+    if (ghost) { ghost.remove(); ghost = null; }
+
+    const rounds = activeRounds();
+    const r = rounds[roundIdx];
+    if (!r) return;
+
+    if (z && z.dataset.zone === r.zone) {
+      letterSolved = true;
+      z.classList.add('correct-zone');
+      placedLetter.textContent = r.letter;
+      placedLetter.className = 'placed-letter ' + r.zone;
+      placedLetter.classList.remove('hidden');
+      tile.classList.add('solved', 'hidden');
+      gameFeedback.textContent = '✓ ' + r.zone;
+      gameFeedback.className = 'feedback ok';
+      playSuccess(); // sfx.correct
+      setTimeout(() => {
+        if (slides[idx].dataset.id === 'letter-game') nextLetterRound();
+      }, 950);
+    } else {
+      // snap back — silent Try again
+      gameFeedback.textContent = 'Try again';
+      gameFeedback.className = 'feedback retry';
+      if (tile.parentElement !== tray) tray.appendChild(tile);
+    }
+  }
+
+  tile.addEventListener('pointerdown', (e) => {
+    tile.setPointerCapture?.(e.pointerId);
+    startDrag(e);
+  });
+  tile.addEventListener('pointermove', moveDrag);
+  tile.addEventListener('pointerup', endDrag);
+  tile.addEventListener('pointercancel', endDrag);
+  // Fallback touch
+  tile.addEventListener('touchstart', startDrag, { passive: false });
+  window.addEventListener('touchmove', moveDrag, { passive: false });
+  window.addEventListener('touchend', endDrag);
+  window.addEventListener('mousemove', moveDrag);
+  window.addEventListener('mouseup', endDrag);
+
   applyStage();
   showSlide(0);
 })();
