@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Favourite Toy — P1 E-board</title>
+<style>
+  :root {
+    --bg: #F5F5F7;
+    --text: #1C1C1E;
+    --correct: #1B8A4A;
+    --texture: #5B4B8A;
+    --size: #0A7A5A;
+    --tall-bg: #B3E5FC;
+    --tall-edge: #0277BD;
+    --sit-bg: #FFF9C4;
+    --sit-edge: #F9A825;
+    --tail-bg: #FFCCBC;
+    --tail-edge: #E64A19;
+    --baseline: #212121;
+    --safe: 4vw;
+    --q: clamp(48px, 6.5vw, 96px);
+    --zone: clamp(28px, 3.5vw, 48px);
+    --step: clamp(22px, 2.5vw, 36px);
+    --btn: clamp(20px, 2.2vw, 32px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  #deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    position: absolute;
+    inset: 0;
+    padding: var(--safe);
+    padding-bottom: calc(var(--safe) + 88px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 1.5vw, 28px);
+    background: var(--bg);
+    animation: fadeIn 0.28s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0.55; }
+    to { opacity: 1; }
+  }
+
+  .progress {
+    position: fixed;
+    top: 1.2vw;
+    right: 2vw;
+    font-size: clamp(14px, 1.4vw, 22px);
+    color: #8E8E93;
+    opacity: 0.7;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .nav {
+    position: fixed;
+    bottom: 1.5vw;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2vw;
+    z-index: 60;
+    pointer-events: none;
+  }
+  .nav button {
+    pointer-events: auto;
+    min-width: 72px;
+    min-height: 64px;
+    padding: 0 28px;
+    font-size: var(--btn);
+    font-weight: 700;
+    border: 3px solid #1C1C1E;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: 0 4px 0 #C7C7CC;
+  }
+  .nav button:active { transform: translateY(2px); box-shadow: 0 2px 0 #C7C7CC; }
+  .nav button:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+
+  h1.title {
+    font-size: clamp(56px, 8vw, 120px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-align: center;
+    line-height: 1.05;
+  }
+  h2.q {
+    font-size: var(--q);
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.15;
+  }
+  .subtitle {
+    font-size: var(--step);
+    font-weight: 600;
+    color: #3A3A3C;
+    text-align: center;
+  }
+
+  /* Home */
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 2vw, 32px);
+    width: min(90vw, 1100px);
+    margin-top: 2vh;
+  }
+  .home-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: clamp(120px, 18vh, 200px);
+    padding: 20px;
+    border: 4px solid #1C1C1E;
+    border-radius: 24px;
+    background: #fff;
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #C7C7CC;
+    color: var(--text);
+  }
+  .home-btn .emoji { font-size: clamp(40px, 5vw, 64px); line-height: 1; }
+  .home-btn.vocab { background: linear-gradient(135deg, #FFE082, #FFCC80); }
+  .home-btn.check { background: linear-gradient(135deg, #C8E6C9, #A5D6A7); }
+  .home-btn.letter { background: linear-gradient(135deg, #B3E5FC, #FFF9C4); }
+  .home-btn.game { background: linear-gradient(135deg, #FFCCBC, #F8BBD0); }
+  .home-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #C7C7CC; }
+
+  /* How-to cards */
+  .howto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(12px, 2vw, 28px);
+    justify-content: center;
+    max-width: 92vw;
+  }
+  .howto-card {
+    background: #fff;
+    border: 4px solid #1C1C1E;
+    border-radius: 20px;
+    padding: clamp(16px, 2vw, 28px);
+    min-width: clamp(180px, 22vw, 280px);
+    text-align: center;
+    font-size: var(--step);
+    font-weight: 700;
+  }
+  .howto-card .big { font-size: var(--q); display: block; margin-bottom: 8px; }
+  .pill-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .pill {
+    width: clamp(36px, 4vw, 56px);
+    height: clamp(36px, 4vw, 56px);
+    border-radius: 50%;
+    border: 3px solid #1C1C1E;
+  }
+
+  /* Toy image */
+  .toy-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 24px;
+    border: 4px solid #E5E5EA;
+    padding: clamp(8px, 1vw, 20px);
+    max-height: 48vh;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+  .toy-wrap img {
+    max-height: 44vh;
+    max-width: min(50vw, 520px);
+    object-fit: contain;
+    display: block;
+  }
+  .toy-wrap.correct {
+    border: 8px solid var(--correct);
+    box-shadow: 0 0 0 4px rgba(27,138,74,0.2);
+  }
+  .toy-pair {
+    display: flex;
+    gap: clamp(16px, 3vw, 48px);
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .toy-card {
+    background: #fff;
+    border: 5px solid #E5E5EA;
+    border-radius: 20px;
+    padding: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .toy-card img { display: block; object-fit: contain; }
+  .toy-card.big-toy img { max-height: 38vh; max-width: 36vw; }
+  .toy-card.small-toy img { max-height: 18vh; max-width: 18vw; }
+  .toy-card.correct { border: 8px solid var(--correct); }
+  .toy-card.picked { transform: scale(1.04); }
+
+  /* Choice buttons */
+  .choices {
+    display: flex;
+    gap: clamp(16px, 2.5vw, 40px);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .choice {
+    min-width: clamp(140px, 18vw, 260px);
+    min-height: clamp(72px, 10vh, 120px);
+    padding: 16px 28px;
+    border: 5px solid #1C1C1E;
+    border-radius: 20px;
+    font-size: var(--btn);
+    font-weight: 800;
+    cursor: pointer;
+    background: #fff;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 5px 0 #C7C7CC;
+  }
+  .choice:active { transform: translateY(2px); }
+  .choice .swatch {
+    width: clamp(40px, 5vw, 64px);
+    height: clamp(40px, 5vw, 64px);
+    border-radius: 50%;
+    border: 3px solid #1C1C1E;
+  }
+  .choice.correct {
+    border-color: var(--correct);
+    border-width: 8px;
+    background: #E8F5E9;
+    color: var(--correct);
+    box-shadow: 0 5px 0 #A5D6A7;
+  }
+  .choice.texture { border-color: var(--texture); color: var(--texture); }
+  .choice.texture.correct { border-color: var(--correct); color: var(--correct); }
+  .choice.size { border-color: var(--size); color: var(--size); }
+  .choice.size.correct { border-color: var(--correct); color: var(--correct); }
+
+  .feedback {
+    font-size: var(--step);
+    font-weight: 700;
+    min-height: 1.4em;
+    text-align: center;
+  }
+  .feedback.ok { color: var(--correct); }
+  .feedback.retry { color: #636366; }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: clamp(16px, 1.8vw, 26px);
+    font-weight: 800;
+    color: #fff;
+  }
+  .badge.colour { background: linear-gradient(90deg,#FF5252,#FF9800,#FFEB3B,#4CAF50,#2196F3,#9C27B0); }
+  .badge.texture { background: var(--texture); }
+  .badge.size { background: var(--size); }
+
+  /* Checklist */
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(12px, 1.8vw, 28px);
+    width: min(92vw, 1000px);
+  }
+  .check-cell {
+    background: #fff;
+    border: 4px solid #1C1C1E;
+    border-radius: 20px;
+    padding: clamp(16px, 2vw, 28px);
+    text-align: center;
+    font-size: var(--zone);
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-height: clamp(100px, 16vh, 160px);
+    justify-content: center;
+  }
+  .check-cell .ico { font-size: clamp(36px, 4.5vw, 56px); }
+
+  /* Letter line canvas */
+  .line-canvas {
+    width: min(88vw, 1100px);
+    height: min(52vh, 420px);
+    display: flex;
+    flex-direction: column;
+    border: 4px solid #1C1C1E;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+  }
+  .band {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 2.5vw, 40px);
+    position: relative;
+    transition: opacity 0.25s;
+  }
+  .band.tall { background: var(--tall-bg); }
+  .band.sit { background: var(--sit-bg); }
+  .band.tail { background: var(--tail-bg); }
+  .band.dim { opacity: 0.4; }
+  .band .label {
+    position: absolute;
+    left: 12px;
+    font-size: var(--zone);
+    font-weight: 800;
+    opacity: 0.85;
+  }
+  .band.tall .label { color: var(--tall-edge); }
+  .band.sit .label { color: var(--sit-edge); }
+  .band.tail .label { color: var(--tail-edge); }
+  .baseline {
+    height: 8px;
+    background: var(--baseline);
+    flex-shrink: 0;
+    z-index: 2;
+  }
+  .midline {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    border-top: 2px dashed rgba(0,0,0,0.18);
+  }
+  .sample-letter {
+    font-size: clamp(56px, 9vw, 120px);
+    font-weight: 800;
+    color: #1C1C1E;
+    line-height: 1;
+    text-shadow: 0 0 2px #fff, 0 0 4px #fff;
+    letter-spacing: 0.04em;
+  }
+
+  .legend {
+    display: flex;
+    gap: clamp(10px, 1.5vw, 24px);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .legend-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 3px solid #1C1C1E;
+    border-radius: 14px;
+    padding: 10px 18px;
+    font-size: var(--step);
+    font-weight: 800;
+  }
+  .legend-swatch {
+    width: clamp(28px, 3vw, 40px);
+    height: clamp(28px, 3vw, 40px);
+    border-radius: 8px;
+    border: 2px solid #1C1C1E;
+  }
+
+  /* Letter game */
+  .game-letter-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 4px solid #E5E5EA;
+    padding: clamp(12px, 2vw, 28px) clamp(28px, 5vw, 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30vw;
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+  .slide[data-id="letter-game"] {
+    gap: clamp(8px, 1vh, 20px);
+  }
+  .slide[data-id="letter-game"] .q {
+    font-size: clamp(36px, 6vh, 84px);
+  }
+  .game-letter {
+    font-size: clamp(64px, 14vh, 220px);
+    font-weight: 800;
+    line-height: 1;
+    color: #1C1C1E;
+  }
+  .zones {
+    width: min(88vw, 900px);
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 156px;
+    max-height: min(36vh, 420px);
+    border: 4px solid #1C1C1E;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .zone-btn {
+    flex: 1;
+    border: none;
+    cursor: pointer;
+    font-size: var(--zone);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    transition: transform 0.12s, box-shadow 0.12s;
+    color: var(--text);
+  }
+  .zone-btn.tall { background: var(--tall-bg); color: var(--tall-edge); }
+  .zone-btn.sit { background: var(--sit-bg); color: var(--sit-edge); }
+  .zone-btn.tail { background: var(--tail-bg); color: var(--tail-edge); }
+  .zone-btn .hint {
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: 600;
+    opacity: 0.7;
+  }
+  .zone-btn.picked {
+    box-shadow: inset 0 0 0 10px currentColor;
+    transform: scale(1.02);
+    z-index: 1;
+  }
+  .zone-btn.correct-zone {
+    box-shadow: inset 0 0 0 10px var(--correct);
+    background: #C8E6C9 !important;
+    color: var(--correct) !important;
+  }
+  .zone-btn.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+  }
+  .zone-btn .check-mark {
+    font-size: clamp(32px, 4vw, 48px);
+    display: none;
+  }
+  .zone-btn.correct-zone .check-mark { display: inline; }
+  .zone-baseline {
+    height: 8px;
+    background: var(--baseline);
+    flex-shrink: 0;
+  }
+
+  .stage-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stage-btn {
+    padding: 10px 20px;
+    font-size: clamp(16px, 1.8vw, 24px);
+    font-weight: 800;
+    border: 3px solid #1C1C1E;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+  }
+  .stage-btn.active {
+    background: #1C1C1E;
+    color: #fff;
+  }
+  .round-label {
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: 700;
+    color: #636366;
+  }
+
+  .end-check {
+    font-size: clamp(80px, 12vw, 160px);
+    color: var(--correct);
+    line-height: 1;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="progress" id="progress">1 / 1</div>
+
+<div id="deck">
+
+  <!-- ========== 0 HOME ========== -->
+  <section class="slide active" data-id="home">
+    <h1 class="title">Favourite Toy</h1>
+    <p class="subtitle">P1 · Vocab + Letter lines</p>
+    <div class="home-grid">
+      <button class="home-btn vocab" data-jump="colour-howto"><span class="emoji">🎨</span>Vocab games</button>
+      <button class="home-btn check" data-jump="checklist"><span class="emoji">✅</span>Checklist tip</button>
+      <button class="home-btn letter" data-jump="letter-intro"><span class="emoji">📏</span>Letter lines</button>
+      <button class="home-btn game" data-jump="letter-game"><span class="emoji">🎯</span>Letter game</button>
+    </div>
+  </section>
+
+  <!-- ========== COLOUR POINT ========== -->
+  <section class="slide" data-id="colour-howto">
+    <span class="badge colour">Colour Point</span>
+    <h2 class="q">How to play</h2>
+    <div class="howto">
+      <div class="howto-card"><span class="big">👀</span>Look at the toy</div>
+      <div class="howto-card"><span class="big">👂</span>Listen for a colour</div>
+      <div class="howto-card">
+        <span class="big">👆</span>Point / tap the colour
+        <div class="pill-row">
+          <span class="pill" style="background:#FFEB3B"></span>
+          <span class="pill" style="background:#F44336"></span>
+          <span class="pill" style="background:#2196F3"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="colour-q1" data-game="colour" data-answer="yellow">
+    <span class="badge colour">Colour Point</span>
+    <h2 class="q">What colour is it?</h2>
+    <div class="toy-wrap" id="colour-q1-img">
+      <img src="assets/image2.jpg" alt="yellow duck" />
+    </div>
+    <div class="choices">
+      <button class="choice" data-val="yellow"><span class="swatch" style="background:#FFEB3B"></span>yellow</button>
+      <button class="choice" data-val="blue"><span class="swatch" style="background:#2196F3"></span>blue</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <section class="slide" data-id="colour-q2" data-game="colour" data-answer="red">
+    <span class="badge colour">Colour Point</span>
+    <h2 class="q">What colour is it?</h2>
+    <div class="toy-wrap">
+      <img src="assets/image3.jpg" alt="red truck" />
+    </div>
+    <div class="choices">
+      <button class="choice" data-val="green"><span class="swatch" style="background:#4CAF50"></span>green</button>
+      <button class="choice" data-val="red"><span class="swatch" style="background:#F44336"></span>red</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <section class="slide" data-id="colour-q3" data-game="colour" data-answer="blue">
+    <span class="badge colour">Colour Point</span>
+    <h2 class="q">What colour is it?</h2>
+    <div class="toy-wrap">
+      <img src="assets/image4.jpg" alt="blue ball" />
+    </div>
+    <div class="choices">
+      <button class="choice" data-val="blue"><span class="swatch" style="background:#2196F3"></span>blue</button>
+      <button class="choice" data-val="orange"><span class="swatch" style="background:#FF9800"></span>orange</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <!-- ========== FEEL IT ========== -->
+  <section class="slide" data-id="feel-howto">
+    <span class="badge texture">Feel It!</span>
+    <h2 class="q">Soft or hard?</h2>
+    <p class="subtitle">Stage A · two choices</p>
+    <div class="howto">
+      <div class="howto-card" style="border-color:var(--texture)"><span class="big">🧸</span>soft</div>
+      <div class="howto-card" style="border-color:var(--texture)"><span class="big">🧱</span>hard</div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="feel-q1" data-game="texture" data-answer="soft">
+    <span class="badge texture">Feel It!</span>
+    <h2 class="q">Soft or hard?</h2>
+    <div class="toy-wrap">
+      <img src="assets/image8.jpg" alt="teddy bear" />
+    </div>
+    <div class="choices">
+      <button class="choice texture" data-val="soft">🧸 soft</button>
+      <button class="choice texture" data-val="hard">🧱 hard</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <section class="slide" data-id="feel-q2" data-game="texture" data-answer="hard">
+    <span class="badge texture">Feel It!</span>
+    <h2 class="q">Soft or hard?</h2>
+    <div class="toy-wrap">
+      <img src="assets/image9.jpg" alt="orange car" />
+    </div>
+    <div class="choices">
+      <button class="choice texture" data-val="soft">🧸 soft</button>
+      <button class="choice texture" data-val="hard">🧱 hard</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <!-- ========== BIG OR SMALL ========== -->
+  <section class="slide" data-id="size-howto">
+    <span class="badge size">Big or Small?</span>
+    <h2 class="q">How to play</h2>
+    <div class="howto">
+      <div class="howto-card" style="border-color:var(--size)"><span class="big">🐻</span>Look · compare</div>
+      <div class="howto-card" style="border-color:var(--size)"><span class="big">👆</span>Point to big or small</div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="size-q1" data-game="size" data-answer="big">
+    <span class="badge size">Big or Small?</span>
+    <h2 class="q">Which is big?</h2>
+    <div class="toy-pair">
+      <button class="toy-card big-toy" data-val="big" type="button">
+        <img src="assets/image8.jpg" alt="big bear" />
+      </button>
+      <button class="toy-card small-toy" data-val="small" type="button">
+        <img src="assets/image9.jpg" alt="tiny car" />
+      </button>
+    </div>
+    <div class="choices">
+      <button class="choice size" data-val="big">big</button>
+      <button class="choice size" data-val="small">small</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <section class="slide" data-id="size-q2" data-game="size" data-answer="big">
+    <span class="badge size">Big or Small?</span>
+    <h2 class="q">Which is big?</h2>
+    <div class="toy-pair">
+      <button class="toy-card big-toy" data-val="big" type="button">
+        <img src="assets/image4.jpg" alt="big ball" />
+      </button>
+      <button class="toy-card small-toy" data-val="small" type="button">
+        <img src="assets/image13.jpg" alt="tiny duck" />
+      </button>
+    </div>
+    <div class="choices">
+      <button class="choice size" data-val="big">big</button>
+      <button class="choice size" data-val="small">small</button>
+    </div>
+    <div class="feedback" aria-live="polite"></div>
+  </section>
+
+  <!-- ========== CHECKLIST ========== -->
+  <section class="slide" data-id="checklist">
+    <h2 class="q">Now finish your checklist</h2>
+    <div class="check-grid">
+      <div class="check-cell"><span class="ico">👤</span>Name</div>
+      <div class="check-cell"><span class="ico">🎂</span>Age</div>
+      <div class="check-cell"><span class="ico">🧸</span>Toy</div>
+      <div class="check-cell"><span class="ico">🎨</span>Colour</div>
+      <div class="check-cell"><span class="ico">✋</span>Texture</div>
+      <div class="check-cell"><span class="ico">📐</span>Size</div>
+    </div>
+  </section>
+
+  <!-- ========== LETTER LINES TEACH ========== -->
+  <section class="slide" data-id="letter-intro">
+    <h2 class="q">Letter lines</h2>
+    <p class="subtitle">Three places · one baseline</p>
+    <div class="line-canvas" aria-hidden="true">
+      <div class="band tall"><span class="label">Tall</span><span class="midline"></span></div>
+      <div class="band sit"><span class="label">Sit</span></div>
+      <div class="baseline" title="Baseline"></div>
+      <div class="band tail"><span class="label">Tail</span></div>
+    </div>
+    <div class="legend">
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · up</div>
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · on the line</div>
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · down</div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="letter-sit">
+    <h2 class="q">Sit</h2>
+    <p class="subtitle">These letters sit on the line</p>
+    <div class="line-canvas">
+      <div class="band tall dim"><span class="label">Tall</span></div>
+      <div class="band sit">
+        <span class="label">Sit</span>
+        <span class="sample-letter">a</span>
+        <span class="sample-letter">c</span>
+        <span class="sample-letter">e</span>
+        <span class="sample-letter">o</span>
+      </div>
+      <div class="baseline"></div>
+      <div class="band tail dim"><span class="label">Tail</span></div>
+    </div>
+    <div class="legend">
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · a c e o …</div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="letter-tall">
+    <h2 class="q">Tall</h2>
+    <p class="subtitle">These letters go up</p>
+    <div class="line-canvas">
+      <div class="band tall">
+        <span class="label">Tall</span>
+        <span class="sample-letter">b</span>
+        <span class="sample-letter">d</span>
+        <span class="sample-letter">h</span>
+        <span class="sample-letter">l</span>
+      </div>
+      <div class="band sit dim"><span class="label">Sit</span></div>
+      <div class="baseline"></div>
+      <div class="band tail dim"><span class="label">Tail</span></div>
+    </div>
+    <div class="legend">
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · b d h l …</div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="letter-tail">
+    <h2 class="q">Tail</h2>
+    <p class="subtitle">These letters go down</p>
+    <div class="line-canvas">
+      <div class="band tall dim"><span class="label">Tall</span></div>
+      <div class="band sit dim"><span class="label">Sit</span></div>
+      <div class="baseline"></div>
+      <div class="band tail">
+        <span class="label">Tail</span>
+        <span class="sample-letter">g</span>
+        <span class="sample-letter">j</span>
+        <span class="sample-letter">p</span>
+        <span class="sample-letter">y</span>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · g j p y …</div>
+    </div>
+  </section>
+
+  <section class="slide" data-id="letter-mixed">
+    <h2 class="q">Compare</h2>
+    <p class="subtitle">One from each group</p>
+    <div class="line-canvas">
+      <div class="band tall">
+        <span class="label">Tall</span>
+        <span class="sample-letter">b</span>
+      </div>
+      <div class="band sit">
+        <span class="label">Sit</span>
+        <span class="sample-letter">a</span>
+      </div>
+      <div class="baseline"></div>
+      <div class="band tail">
+        <span class="label">Tail</span>
+        <span class="sample-letter">g</span>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--tall-bg);border-color:var(--tall-edge)"></span>Tall · b</div>
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--sit-bg);border-color:var(--sit-edge)"></span>Sit · a</div>
+      <div class="legend-card"><span class="legend-swatch" style="background:var(--tail-bg);border-color:var(--tail-edge)"></span>Tail · g</div>
+    </div>
+  </section>
+
+  <!-- ========== LETTER GAME ========== -->
+  <section class="slide" data-id="letter-game">
+    <h2 class="q">Where does it go?</h2>
+    <div class="stage-bar">
+      <span class="round-label" id="roundLabel">1 / 8</span>
+      <button type="button" class="stage-btn active" id="stageABtn">Stage A · Sit + Tall</button>
+      <button type="button" class="stage-btn" id="stageBBtn">Unlock Stage B · + Tail</button>
+    </div>
+    <div class="game-letter-card">
+      <span class="game-letter" id="gameLetter">a</span>
+    </div>
+    <div class="zones" id="zones">
+      <button type="button" class="zone-btn tall" data-zone="tall">Tall <span class="hint">↑ up</span> <span class="check-mark">✓</span></button>
+      <button type="button" class="zone-btn sit" data-zone="sit">Sit <span class="hint">— on the line</span> <span class="check-mark">✓</span></button>
+      <div class="zone-baseline"></div>
+      <button type="button" class="zone-btn tail locked" data-zone="tail" id="tailZone">Tail <span class="hint">↓ down</span> <span class="check-mark">✓</span></button>
+    </div>
+    <div class="feedback" id="gameFeedback" aria-live="polite"></div>
+  </section>
+
+  <section class="slide" data-id="letter-end">
+    <div class="end-check">✓</div>
+    <h2 class="q">Great listening!</h2>
+    <p class="subtitle">Sit · Tall · Tail</p>
+  </section>
+
+</div>
+
+<nav class="nav" aria-label="Slide navigation">
+  <button type="button" id="prevBtn" aria-label="Previous">← Prev</button>
+  <button type="button" id="nextBtn" aria-label="Next">Next →</button>
+</nav>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progressEl = document.getElementById('progress');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let idx = 0;
+
+  const LETTER_GROUPS = {
+    sit: 'aceimnorsuvwxz'.split(''),
+    tall: 'bdfhklt'.split(''),
+    tail: 'gjpqy'.split('')
+  };
+
+  // Round list: mix sit/tall/tail — Stage A will skip tail until unlocked
+  // Stage A: sit + tall only (~8). Stage B: mixed with tail (~8).
+  const ROUNDS_A = [
+    { letter: 'a', zone: 'sit' },
+    { letter: 'b', zone: 'tall' },
+    { letter: 'c', zone: 'sit' },
+    { letter: 'h', zone: 'tall' },
+    { letter: 'e', zone: 'sit' },
+    { letter: 'd', zone: 'tall' },
+    { letter: 'o', zone: 'sit' },
+    { letter: 'l', zone: 'tall' }
+  ];
+  const ROUNDS_B = [
+    { letter: 'a', zone: 'sit' },
+    { letter: 'b', zone: 'tall' },
+    { letter: 'g', zone: 'tail' },
+    { letter: 'c', zone: 'sit' },
+    { letter: 'h', zone: 'tall' },
+    { letter: 'p', zone: 'tail' },
+    { letter: 'o', zone: 'sit' },
+    { letter: 'y', zone: 'tail' }
+  ];
+
+  let stage = 'A'; // A = sit+tall only; B = all three
+  let roundIdx = 0;
+  let letterSolved = false;
+
+  function activeRounds() {
+    return stage === 'A' ? ROUNDS_A.slice() : ROUNDS_B.slice();
+  }
+
+  function showSlide(i) {
+    if (i < 0 || i >= slides.length) return;
+    slides[idx].classList.remove('active');
+    idx = i;
+    slides[idx].classList.add('active');
+    progressEl.textContent = (idx + 1) + ' / ' + slides.length;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+
+    // Reset letter game when entering
+    if (slides[idx].dataset.id === 'letter-game') {
+      // keep stage; ensure UI matches
+      applyStage();
+      if (roundIdx >= activeRounds().length) roundIdx = 0;
+      renderLetterRound();
+    }
+  }
+
+  function go(delta) {
+    showSlide(idx + delta);
+  }
+
+  function jumpTo(id) {
+    const i = slides.findIndex(s => s.dataset.id === id);
+    if (i >= 0) showSlide(i);
+  }
+
+  prevBtn.addEventListener('click', () => go(-1));
+  nextBtn.addEventListener('click', () => go(1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    else if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      go(1);
+    }
+  });
+
+  document.querySelectorAll('[data-jump]').forEach(btn => {
+    btn.addEventListener('click', () => jumpTo(btn.dataset.jump));
+  });
+
+  // Vocab choice handlers
+  slides.forEach(slide => {
+    const answer = slide.dataset.answer;
+    if (!answer) return;
+
+    const feedback = slide.querySelector('.feedback');
+    const toyWrap = slide.querySelector('.toy-wrap');
+
+    function markCorrect(el) {
+      el.classList.add('correct');
+      if (toyWrap) toyWrap.classList.add('correct');
+      slide.querySelectorAll('.toy-card').forEach(c => {
+        if (c.dataset.val === answer) c.classList.add('correct');
+      });
+      if (feedback) {
+        feedback.textContent = '✓ ' + answer;
+        feedback.className = 'feedback ok';
+      }
+    }
+
+    function tryAgain() {
+      if (feedback) {
+        feedback.textContent = 'Try again';
+        feedback.className = 'feedback retry';
+      }
+    }
+
+    slide.querySelectorAll('.choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('correct')) return;
+        if (btn.dataset.val === answer) {
+          markCorrect(btn);
+        } else {
+          tryAgain();
+        }
+      });
+    });
+
+    slide.querySelectorAll('.toy-card').forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('correct')) return;
+        slide.querySelectorAll('.toy-card').forEach(c => c.classList.remove('picked'));
+        card.classList.add('picked');
+        if (card.dataset.val === answer) {
+          markCorrect(card);
+          // also highlight matching choice button
+          slide.querySelectorAll('.choice').forEach(b => {
+            if (b.dataset.val === answer) b.classList.add('correct');
+          });
+        } else {
+          tryAgain();
+        }
+      });
+    });
+  });
+
+  // Letter game
+  const gameLetterEl = document.getElementById('gameLetter');
+  const roundLabel = document.getElementById('roundLabel');
+  const gameFeedback = document.getElementById('gameFeedback');
+  const stageABtn = document.getElementById('stageABtn');
+  const stageBBtn = document.getElementById('stageBBtn');
+  const tailZone = document.getElementById('tailZone');
+
+  function applyStage() {
+    const locked = stage === 'A';
+    if (locked) {
+      tailZone.classList.add('locked');
+      stageABtn.classList.add('active');
+      stageBBtn.classList.remove('active');
+    } else {
+      tailZone.classList.remove('locked');
+      stageABtn.classList.remove('active');
+      stageBBtn.classList.add('active');
+    }
+  }
+
+  function renderLetterRound() {
+    const rounds = activeRounds();
+    if (roundIdx >= rounds.length) {
+      jumpTo('letter-end');
+      return;
+    }
+    const r = rounds[roundIdx];
+    letterSolved = false;
+    gameLetterEl.textContent = r.letter;
+    roundLabel.textContent = (roundIdx + 1) + ' / ' + rounds.length;
+    gameFeedback.textContent = '';
+    gameFeedback.className = 'feedback';
+    document.querySelectorAll('.zone-btn').forEach(z => {
+      z.classList.remove('picked', 'correct-zone');
+    });
+  }
+
+  function nextLetterRound() {
+    roundIdx++;
+    const rounds = activeRounds();
+    if (roundIdx >= rounds.length) {
+      jumpTo('letter-end');
+    } else {
+      renderLetterRound();
+    }
+  }
+
+  stageABtn.addEventListener('click', () => {
+    stage = 'A';
+    roundIdx = 0;
+    applyStage();
+    renderLetterRound();
+  });
+
+  stageBBtn.addEventListener('click', () => {
+    stage = 'B';
+    roundIdx = 0;
+    applyStage();
+    renderLetterRound();
+  });
+
+  document.querySelectorAll('.zone-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (letterSolved) return;
+      if (btn.classList.contains('locked')) return;
+      const rounds = activeRounds();
+      const r = rounds[roundIdx];
+      if (!r) return;
+      document.querySelectorAll('.zone-btn').forEach(z => z.classList.remove('picked'));
+      btn.classList.add('picked');
+      if (btn.dataset.zone === r.zone) {
+        letterSolved = true;
+        btn.classList.add('correct-zone');
+        gameFeedback.textContent = '✓ ' + r.zone;
+        gameFeedback.className = 'feedback ok';
+        setTimeout(() => {
+          if (slides[idx].dataset.id === 'letter-game') nextLetterRound();
+        }, 900);
+      } else {
+        gameFeedback.textContent = 'Try again';
+        gameFeedback.className = 'feedback retry';
+      }
+    });
+  });
+
+  // Init
+  applyStage();
+  showSlide(0);
+})();
+</script>
+</body>
+</html>
