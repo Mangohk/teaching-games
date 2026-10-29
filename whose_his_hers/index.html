@@ -272,30 +272,11 @@
       </div>
     </section>
 
-    <!-- 4 Activity 2: Sort -->
+    <!-- 4 Activity 2: Build the answer (teacher PNGs 01–06) -->
     <section class="section" data-step="4">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-3xl md:text-4xl font-black">2 · Sort the things</h2>
-        <span id="a2Progress" class="pill">0 / 6</span>
-      </div>
-      <p class="text-center text-xl muted font-bold">Tap a basket for this item.</p>
-      <div class="flex flex-col items-center gap-2" id="a2CurrentWrap">
-        <p class="text-2xl font-black" id="a2Label">backpack</p>
-        <img id="a2Img" class="item-art" alt="">
-      </div>
-      <div class="grid md:grid-cols-3 gap-4" id="a2Baskets">
-        <button type="button" class="basket his" data-key="his"><span class="text-3xl font-black text-blue-700">His</span><div class="chips" id="basket-his"></div></button>
-        <button type="button" class="basket hers" data-key="hers"><span class="text-3xl font-black text-pink-700">Hers</span><div class="chips" id="basket-hers"></div></button>
-        <button type="button" class="basket theirs" data-key="theirs"><span class="text-3xl font-black text-emerald-700">Theirs</span><div class="chips" id="basket-theirs"></div></button>
-      </div>
-      <div class="feedback" id="a2Feedback"></div>
-    </section>
-
-    <!-- 5 Activity 3: Build -->
-    <section class="section" data-step="5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-3xl md:text-4xl font-black">3 · Build the answer</h2>
-        <span id="a3Progress" class="pill">1 / 5</span>
+        <h2 class="text-3xl md:text-4xl font-black">2 · Build the answer</h2>
+        <span id="a3Progress" class="pill">1 / 6</span>
       </div>
       <p class="text-center text-2xl md:text-3xl font-black" id="a3Question">Whose necklace is this?</p>
       <div class="flex justify-center"><img id="a3Img" class="item-art" alt=""></div>
@@ -312,10 +293,10 @@
       </div>
     </section>
 
-    <!-- 6 Activity 4: Story check -->
-    <section class="section" data-step="6">
+    <!-- 5 Activity 3: Story check -->
+    <section class="section" data-step="5">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-3xl md:text-4xl font-black">4 · Story check</h2>
+        <h2 class="text-3xl md:text-4xl font-black">3 · Story check</h2>
         <span id="a4Progress" class="pill">1 / 5</span>
       </div>
       <div class="rounded-2xl border-4 border-stone-300 bg-white p-4">
@@ -334,8 +315,8 @@
       </div>
     </section>
 
-    <!-- 7 Exit ticket -->
-    <section class="section" data-step="7">
+    <!-- 6 Exit ticket -->
+    <section class="section" data-step="6">
       <h2 class="text-3xl md:text-4xl font-black text-center">Exit ticket</h2>
       <p class="text-center text-xl muted font-bold">3 quick checks — say it big!</p>
       <div class="grid gap-4" id="exitGrid"></div>
@@ -357,15 +338,17 @@
       { key: 'theirs', title: 'theirs', line: "It's theirs. / They're theirs.", img: 'image_s6_theirs.jpg', note: 'two or more people' }
     ];
 
-    // Practice 2 + story items — rings → HIS (one person). Do not mix with Exit ticket.
+    // Practice 2 / Build items — teacher PNGs 01–06. rings → HIS (one man). Do not mix with Exit ticket.
     const PRACTICE2 = [
-      { id: 'backpack', label: 'backpack', q: 'Whose backpack is this?', verb: "It's", poss: 'his', img: 'image_s12_q4.jpg', plural: false },
-      { id: 'watches', label: 'watches', q: 'Whose watches are these?', verb: "They're", poss: 'theirs', img: 'image_s12_q1.jpg', plural: true },
-      { id: 'necklace', label: 'necklace', q: 'Whose necklace is this?', verb: "It's", poss: 'hers', img: 'image_s13_necklace.jpg', plural: false },
-      { id: 'earrings', label: 'earrings', q: 'Whose earrings are these?', verb: "They're", poss: 'hers', img: 'image_s9_earrings.jpg', plural: true },
-      { id: 'mirror', label: 'mirror', q: 'Whose mirror is this?', verb: "It's", poss: 'theirs', img: 'image_s12_q3.jpg', plural: false },
-      { id: 'rings', label: 'rings', q: 'Whose rings are these?', verb: "They're", poss: 'his', img: 'image_s11_practice2.jpg', plural: true }
+      { id: 'backpack', label: 'backpack', q: 'Whose backpack is this?', verb: "It's", poss: 'his', img: 'build-01.png', plural: false },
+      { id: 'watches', label: 'watches', q: 'Whose watches are these?', verb: "They're", poss: 'theirs', img: 'build-02.png', plural: true },
+      { id: 'necklace', label: 'necklace', q: 'Whose necklace is this?', verb: "It's", poss: 'hers', img: 'build-03.png', plural: false },
+      { id: 'earrings', label: 'earrings', q: 'Whose earrings are these?', verb: "They're", poss: 'hers', img: 'build-04.png', plural: true },
+      { id: 'mirror', label: 'mirror', q: 'Whose mirror is this?', verb: "It's", poss: 'theirs', img: 'build-05.png', plural: false },
+      { id: 'rings', label: 'rings', q: 'Whose rings are these?', verb: "They're", poss: 'his', img: 'build-06.png', plural: true }
     ];
+    // Build the answer uses the same 6 teacher scenes (PNG order 01…06)
+    const BUILD = PRACTICE2;
 
     const STORY = [
       {
@@ -420,10 +403,9 @@
       { id: 1, label: 'Frames' },
       { id: 2, label: 'Reveal' },
       { id: 3, label: '1 Whose?' },
-      { id: 4, label: '2 Sort' },
-      { id: 5, label: '3 Build' },
-      { id: 6, label: '4 Story' },
-      { id: 7, label: 'Exit' }
+      { id: 4, label: '2 Build' },
+      { id: 5, label: '3 Story' },
+      { id: 6, label: 'Exit' }
     ];
 
     let step = 0;
@@ -470,10 +452,9 @@
       buildRail();
       if (step === 2) initReveal();
       if (step === 3) initA1();
-      if (step === 4) initA2();
-      if (step === 5) initA3();
-      if (step === 6) initA4();
-      if (step === 7) initExit();
+      if (step === 4) initA3();
+      if (step === 5) initA4();
+      if (step === 6) initExit();
     }
 
     document.getElementById('prevBtn').onclick = () => go(step - 1);
@@ -565,7 +546,7 @@
         speak(full);
         document.getElementById('a1NextItem').classList.toggle('hidden', a1Index >= PRACTICE2.length - 1);
         if (a1Index >= PRACTICE2.length - 1) {
-          document.getElementById('a1Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">All done — Next ▶ for Sort!</p>`;
+          document.getElementById('a1Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">All done — Next ▶ for Build!</p>`;
         }
       } else {
         btn.classList.add('bad', 'shake');
@@ -581,63 +562,7 @@
       }
     };
 
-    /* ========== Activity 2 Sort ========== */
-    let a2Queue = [];
-    let a2Done = 0;
-
-    function initA2() {
-      a2Queue = PRACTICE2.slice();
-      a2Done = 0;
-      ['his', 'hers', 'theirs'].forEach(k => {
-        document.getElementById(`basket-${k}`).innerHTML = '';
-      });
-      document.getElementById('a2Feedback').textContent = '';
-      showA2();
-    }
-
-    function showA2() {
-      document.getElementById('a2Progress').textContent = `${a2Done} / ${PRACTICE2.length}`;
-      if (!a2Queue.length) {
-        document.getElementById('a2CurrentWrap').innerHTML = `<p class="text-3xl font-black text-emerald-700">All sorted!</p>`;
-        document.getElementById('a2Feedback').innerHTML = `<span class="flash-line">Well done — Next ▶ for Build!</span>`;
-        return;
-      }
-      const item = a2Queue[0];
-      document.getElementById('a2Label').textContent = item.label;
-      const img = document.getElementById('a2Img');
-      img.src = IMG(item.img);
-      img.alt = item.label;
-      lastSpeak = item.q;
-      speak(`Sort this. ${item.q}`);
-    }
-
-    document.querySelectorAll('#a2Baskets .basket').forEach(basket => {
-      basket.onclick = () => {
-        if (!a2Queue.length) return;
-        const item = a2Queue[0];
-        const key = basket.dataset.key;
-        const full = `${item.verb} ${item.poss}.`;
-        if (key === item.poss) {
-          a2Queue.shift();
-          a2Done += 1;
-          const chip = document.createElement('span');
-          chip.className = 'chip';
-          chip.textContent = item.label;
-          document.getElementById(`basket-${key}`).appendChild(chip);
-          basket.classList.add('flash');
-          setTimeout(() => basket.classList.remove('flash'), 400);
-          document.getElementById('a2Feedback').innerHTML = `<span class="flash-line">✓ ${full}</span>`;
-          speak(full);
-          showA2();
-        } else {
-          basket.classList.add('shake');
-          setTimeout(() => basket.classList.remove('shake'), 400);
-          document.getElementById('a2Feedback').textContent = 'Bounce back — try another basket!';
-        }
-      };
-    });
-
-    /* ========== Activity 3 Build ========== */
+    /* ========== Activity 2 Build (teacher PNGs) ========== */
     let a3Index = 0;
     let a3Step = 1;
     let a3Verb = null;
@@ -652,8 +577,8 @@
       a3Step = 1;
       a3Verb = null;
       a3Poss = null;
-      const item = PRACTICE2[a3Index];
-      document.getElementById('a3Progress').textContent = `${a3Index + 1} / ${PRACTICE2.length}`;
+      const item = BUILD[a3Index];
+      document.getElementById('a3Progress').textContent = `${a3Index + 1} / ${BUILD.length}`;
       document.getElementById('a3Question').textContent = item.q;
       const img = document.getElementById('a3Img');
       img.src = IMG(item.img);
@@ -673,7 +598,7 @@
     function renderA3Choices() {
       const box = document.getElementById('a3Choices');
       box.innerHTML = '';
-      const item = PRACTICE2[a3Index];
+      const item = BUILD[a3Index];
       const opts = a3Step === 1
         ? [
             { v: "It's", ok: item.verb === "It's" },
@@ -695,7 +620,7 @@
     }
 
     function pickA3(opt, btn) {
-      const item = PRACTICE2[a3Index];
+      const item = BUILD[a3Index];
       if (!opt.ok) {
         btn.classList.add('bad', 'shake');
         setTimeout(() => btn.classList.remove('bad', 'shake'), 450);
@@ -718,15 +643,15 @@
         document.getElementById('a3Hint').textContent = 'Revealed!';
         speak(full);
         document.getElementById('a3Choices').innerHTML = '';
-        document.getElementById('a3NextItem').classList.toggle('hidden', a3Index >= PRACTICE2.length - 1);
-        if (a3Index >= PRACTICE2.length - 1) {
+        document.getElementById('a3NextItem').classList.toggle('hidden', a3Index >= BUILD.length - 1);
+        if (a3Index >= BUILD.length - 1) {
           document.getElementById('a3Feedback').innerHTML += `<p class="mt-2 text-emerald-700 font-black">Build complete — Next ▶ for Story!</p>`;
         }
       }
     }
 
     document.getElementById('a3NextItem').onclick = () => {
-      if (a3Index < PRACTICE2.length - 1) {
+      if (a3Index < BUILD.length - 1) {
         a3Index += 1;
         resetA3Round();
       }
