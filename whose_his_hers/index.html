@@ -459,12 +459,12 @@
       <div class="grid md:grid-cols-2 gap-4">
         <div class="rounded-2xl border-4 border-sky-300 bg-sky-50 p-5">
           <p class="text-xl font-black text-sky-800 mb-2">One thing</p>
-          <p class="text-3xl font-black">Whose necklace <span class="text-amber-600">is this</span>?</p>
-          <p class="text-3xl font-black mt-3 text-emerald-700">It’s hers.</p>
+          <p class="text-3xl font-black">Whose backpack <span class="text-amber-600">is it</span>?</p>
+          <p class="text-3xl font-black mt-3 text-emerald-700">It’s his.</p>
         </div>
         <div class="rounded-2xl border-4 border-violet-300 bg-violet-50 p-5">
           <p class="text-xl font-black text-violet-800 mb-2">Two or more</p>
-          <p class="text-3xl font-black">Whose earrings <span class="text-amber-600">are these</span>?</p>
+          <p class="text-3xl font-black">Whose necklaces <span class="text-amber-600">are these</span>?</p>
           <p class="text-3xl font-black mt-3 text-emerald-700">They’re theirs.</p>
         </div>
       </div>
@@ -491,7 +491,7 @@
         <span id="a1Set" class="pill">Ten Brothers</span>
         <span id="a1Progress" class="pill">1 / 12</span>
       </div>
-      <p class="q-xl" id="a1Question">Whose backpack is this?</p>
+      <p class="q-xl" id="a1Question">Whose backpack is it?</p>
       <div class="flex justify-center"><img id="a1Img" class="whose-art" alt=""></div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="a1Choices"></div>
       <div class="feedback" id="a1Feedback"></div>
@@ -509,7 +509,7 @@
       <div class="build-layout">
         <div class="build-grid" id="buildGrid"></div>
         <div class="build-work">
-          <p class="q-xl" id="a3Question">Whose backpack is this?</p>
+          <p class="q-xl" id="a3Question">Whose backpack is it?</p>
           <div class="flex flex-wrap items-center justify-center gap-3 my-2">
             <div class="build-slot" id="slot1">① …</div>
             <div class="build-slot" id="slot2">② …</div>
@@ -556,7 +556,7 @@
       </div>
       <div class="feedback" id="exitFeedback"></div>
       <div class="rounded-2xl border-4 border-emerald-300 bg-emerald-50 p-4 text-center">
-        <p class="text-xl font-bold">Practice rings → <strong>his</strong> (one owner). Exit rings → <strong>theirs</strong> (two or more).</p>
+        <p class="text-xl font-bold">One thing: <strong>It’s</strong> his / hers. Two or more: <strong>They’re</strong> his / hers / theirs.</p>
       </div>
     </section>
 
@@ -572,15 +572,19 @@
       { key: 'theirs', title: 'theirs', sentence: 'They’re', line: 'It’s theirs. They’re theirs.', img: 'image_s6_theirs.jpg', note: 'two or more people' }
     ];
 
-    // Whose + Build share one key. Pocket watch is singular → his. Earrings → theirs. Rings in this set → his.
-    // Scene cards are added after the six Ten Brothers stills. Same answer when the picture is that item.
+    // Whose + Build share one Ten Brothers key.
+    // Backpack and pocket watch → It’s his. Necklaces and earrings → They’re theirs.
+    // Hairbrush and silver comb → They’re hers. Glasses → They’re his.
+    // Comb art is the existing still image_s13_combbrush.jpg.
+    // Glasses art is a crop of Brother 1 from image_s7_necklaces.jpg (no glasses-only still).
+    // Scene cards stay on their own key (PR #35). They are not this six.
     const TEN = [
-      { id: 'backpack', label: 'backpack', q: 'Whose backpack is this?', verb: 'It’s', poss: 'his', img: 'whose/whose-backpack.png', plural: false, set: 'Ten Brothers' },
-      { id: 'watch', label: 'pocket watch', q: 'Whose pocket watch is this?', verb: 'It’s', poss: 'his', img: 'whose/whose-watches.png', plural: false, set: 'Ten Brothers' },
-      { id: 'necklace', label: 'necklace', q: 'Whose necklace is this?', verb: 'It’s', poss: 'hers', img: 'whose/whose-necklace.png', plural: false, set: 'Ten Brothers' },
+      { id: 'backpack', label: 'backpack', q: 'Whose backpack is it?', verb: 'It’s', poss: 'his', img: 'whose/whose-backpack.png', plural: false, set: 'Ten Brothers' },
+      { id: 'watch', label: 'pocket watch', q: 'Whose pocket watch is it?', verb: 'It’s', poss: 'his', img: 'whose/whose-watches.png', plural: false, set: 'Ten Brothers' },
+      { id: 'necklaces', label: 'necklaces', q: 'Whose necklaces are these?', verb: 'They’re', poss: 'theirs', img: 'whose/whose-necklace.png', plural: true, set: 'Ten Brothers' },
       { id: 'earrings', label: 'earrings', q: 'Whose earrings are these?', verb: 'They’re', poss: 'theirs', img: 'whose/whose-earrings.png', plural: true, set: 'Ten Brothers' },
-      { id: 'mirror', label: 'mirror', q: 'Whose mirror is this?', verb: 'It’s', poss: 'theirs', img: 'whose/whose-mirror.png', plural: false, set: 'Ten Brothers' },
-      { id: 'rings', label: 'rings', q: 'Whose rings are these?', verb: 'They’re', poss: 'his', img: 'whose/whose-rings.png', plural: true, set: 'Ten Brothers' }
+      { id: 'comb', label: 'hairbrush and silver comb', q: 'Whose hairbrush and silver comb are these?', verb: 'They’re', poss: 'hers', img: 'image_s13_combbrush.jpg', plural: true, set: 'Ten Brothers' },
+      { id: 'glasses', label: 'glasses', q: 'Whose glasses are these?', verb: 'They’re', poss: 'his', img: 'whose/whose-glasses.png', plural: true, set: 'Ten Brothers' }
     ];
     const SCENES = [
       { id: 'scene1', label: 'backpack', q: 'Whose backpack is this?', verb: 'It’s', poss: 'his', img: 'scenes/scene-1-backpack.png', plural: false, set: 'Scene 1', scene: true },
@@ -633,17 +637,17 @@
       }
     ];
 
-    // Exit dot-to-dot. Rings here stay theirs (two or more), not the practice "his".
+    // Exit uses the same Ten Brothers six. Two cards can share an answer line.
     const EXIT = [
-      { id: 'backpack', prompt: 'Whose backpack is this?', answer: 'It’s his.', poss: 'his', img: 'whose/whose-backpack.png' },
-      { id: 'watch', prompt: 'Whose pocket watch is this?', answer: 'It’s his.', poss: 'his', img: 'whose/whose-watches.png' },
-      { id: 'necklace', prompt: 'Whose necklace is this?', answer: 'It’s hers.', poss: 'hers', img: 'whose/whose-necklace.png' },
+      { id: 'backpack', prompt: 'Whose backpack is it?', answer: 'It’s his.', poss: 'his', img: 'whose/whose-backpack.png' },
+      { id: 'watch', prompt: 'Whose pocket watch is it?', answer: 'It’s his.', poss: 'his', img: 'whose/whose-watches.png' },
+      { id: 'necklaces', prompt: 'Whose necklaces are these?', answer: 'They’re theirs.', poss: 'theirs', img: 'whose/whose-necklace.png' },
       { id: 'earrings', prompt: 'Whose earrings are these?', answer: 'They’re theirs.', poss: 'theirs', img: 'whose/whose-earrings.png' },
-      { id: 'mirror', prompt: 'Whose mirror is this?', answer: 'It’s theirs.', poss: 'theirs', img: 'whose/whose-mirror.png' },
-      { id: 'rings', prompt: 'Whose rings are these?', answer: 'They’re theirs.', poss: 'theirs', img: 'whose/whose-rings.png' }
+      { id: 'comb', prompt: 'Whose hairbrush and silver comb are these?', answer: 'They’re hers.', poss: 'hers', img: 'image_s13_combbrush.jpg' },
+      { id: 'glasses', prompt: 'Whose glasses are these?', answer: 'They’re his.', poss: 'his', img: 'whose/whose-glasses.png' }
     ];
     // Fixed shuffle so the right column is not already lined up.
-    const EXIT_RIGHT_ORDER = ['necklace', 'earrings', 'backpack', 'mirror', 'rings', 'watch'];
+    const EXIT_RIGHT_ORDER = ['necklaces', 'earrings', 'backpack', 'comb', 'glasses', 'watch'];
 
     const STEPS = [
       { id: 0, label: 'Goals' },
