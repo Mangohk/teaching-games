@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P5 English Writing: Goldilocks - A New Ending (Classroom E-Board Large Edition)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Quicksand for clean, thick classroom visibility -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .font-body {
+      font-family: 'Quicksand', sans-serif;
+    }
+    .slide-shadow {
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    }
+    .pop-in {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.97); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-800 via-amber-700 to-amber-950 text-slate-900 min-h-screen flex flex-col items-center justify-between p-3 md:p-6 overflow-hidden">
+
+  <!-- TOP HEADER / CONTROLS (LARGE TOUCH TARGETS) -->
+  <header class="w-full max-w-7xl bg-white/95 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl flex items-center justify-between border-4 border-amber-400 z-20">
+    <div class="flex items-center space-x-3">
+      <a href="./index.html" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl no-underline shadow hover:brightness-110" title="Back to Story Ending Workshop" aria-label="Back to Story Ending Workshop">✍️</a>
+      <a href="../index.html" class="text-sm font-black text-amber-800 hover:text-amber-950 underline decoration-2 underline-offset-2 hidden sm:inline" title="Teaching Games hub">Hub</a>
+      <span class="text-4xl" aria-hidden="true">🐻🥣</span>
+      <div>
+        <h1 class="text-2xl md:text-3xl font-black text-amber-950 leading-tight">
+          Goldilocks: A New Ending
+        </h1>
+        <p class="text-base text-amber-800 font-bold font-body">
+          Writing Task: <span class="text-emerald-700 font-black">≥ 80 Words • Past Tense • Simile • Moral</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Slide Navigation & Tools -->
+    <div class="flex items-center space-x-3">
+      <span id="slideIndicator" class="bg-amber-100 text-amber-950 px-4 py-2 rounded-xl text-lg font-black border-2 border-amber-300">
+        Slide 1 / 20
+      </span>
+      <button onclick="prevSlide()" class="bg-amber-400 hover:bg-amber-300 active:scale-95 text-amber-950 font-black px-5 py-2.5 rounded-xl shadow-md transition text-lg flex items-center gap-1">
+        ◀ Prev
+      </button>
+      <button onclick="nextSlide()" class="bg-amber-400 hover:bg-amber-300 active:scale-95 text-amber-950 font-black px-5 py-2.5 rounded-xl shadow-md transition text-lg flex items-center gap-1">
+        Next ▶
+      </button>
+      <button onclick="toggleFullScreen()" title="Full Screen" class="bg-stone-100 hover:bg-stone-200 text-stone-800 px-3.5 py-2.5 rounded-xl text-lg font-black transition border border-stone-300">
+        ⛶
+      </button>
+      <button onclick="toggleMute()" id="muteBtn" title="Toggle Sound" class="bg-stone-100 hover:bg-stone-200 text-stone-800 px-3.5 py-2.5 rounded-xl text-lg font-black transition border border-stone-300">
+        🔊
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN SLIDES CANVAS -->
+  <main class="w-full max-w-7xl flex-1 flex items-center justify-center my-3 relative">
+    <div class="w-full bg-[#fffcf7] rounded-3xl slide-shadow border-4 border-amber-400 p-8 md:p-12 min-h-[660px] flex flex-col justify-between relative overflow-y-auto">
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 1: TITLE & CORE REQUIREMENTS -->
+      <!-- ======================================================== -->
+      <section id="slide-1" class="slide flex flex-col justify-between h-full">
+        <div class="text-center mt-2">
+          <div class="inline-block bg-amber-100 border-2 border-amber-400 text-amber-950 px-6 py-2 rounded-full text-xl font-bold mb-4">
+            ⭐ P5 English Writing Task
+          </div>
+          <h2 class="text-5xl md:text-6xl font-black text-amber-950 tracking-wide mb-3">
+            Goldilocks & The 3 Bears 🐻
+          </h2>
+          <p class="text-3xl md:text-4xl text-amber-800 font-body font-black">
+            "When the bears came home..."
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto max-w-6xl mx-auto w-full">
+          <div class="bg-white border-4 border-amber-300 rounded-3xl p-6 text-center shadow-md">
+            <div class="text-6xl mb-2">📝</div>
+            <h3 class="text-3xl font-black text-amber-950">Starting Line</h3>
+            <p class="text-2xl text-stone-700 font-body font-bold mt-2">
+              Must start from: <br><span class="text-amber-800 font-black text-2xl">"When the bears came home..."</span>
+            </p>
+          </div>
+          <div class="bg-white border-4 border-emerald-300 rounded-3xl p-6 text-center shadow-md">
+            <div class="text-6xl mb-2">📏</div>
+            <h3 class="text-3xl font-black text-emerald-950">Word Count</h3>
+            <p class="text-2xl text-stone-700 font-body font-bold mt-2">
+              At least <span class="text-emerald-700 font-black text-3xl">80 words</span>!<br>All in past tense.
+            </p>
+          </div>
+          <div class="bg-white border-4 border-purple-300 rounded-3xl p-6 text-center shadow-md">
+            <div class="text-6xl mb-2">💡</div>
+            <h3 class="text-3xl font-black text-purple-950">The Moral</h3>
+            <p class="text-2xl text-stone-700 font-body font-bold mt-2">
+              End with a clear lesson:<br><span class="text-purple-800 font-black text-2xl">"From this incident, Goldilocks learned that…"</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <button onclick="nextSlide()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-3xl font-black px-12 py-4 rounded-2xl shadow-lg transition transform active:scale-95 inline-flex items-center gap-3">
+            <span>Start Lesson</span> ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 2: WHAT DO WE KNOW? (THE 3 PROBLEMS) -->
+      <!-- ======================================================== -->
+      <section id="slide-2" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-4">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-blue-700 bg-blue-100 px-4 py-1.5 rounded-full">
+              Story Recap
+            </span>
+            <span class="text-xl font-bold text-stone-600">Before the Bears Arrived</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            What Problems Did Goldilocks Cause?
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+          <!-- 1. Porridge -->
+          <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-7xl mb-3 block">🥣</span>
+            <h3 class="text-3xl font-black text-amber-950 mb-2">1. The Porridge</h3>
+            <p class="text-2xl text-stone-800 font-body font-bold">
+              Goldilocks <span class="text-amber-800 font-black underline">ate all</span> of Baby Bear's porridge!
+            </p>
+          </div>
+
+          <!-- 2. Chair -->
+          <div class="bg-rose-50 border-4 border-rose-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-7xl mb-3 block">🪑💥</span>
+            <h3 class="text-3xl font-black text-rose-950 mb-2">2. The Chair</h3>
+            <p class="text-2xl text-stone-800 font-body font-bold">
+              Baby Bear's small chair <span class="text-rose-700 font-black underline">broke into pieces</span>!
+            </p>
+          </div>
+
+          <!-- 3. Bed -->
+          <div class="bg-purple-50 border-4 border-purple-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-7xl mb-3 block">🛏️💤</span>
+            <h3 class="text-3xl font-black text-purple-950 mb-2">3. The Bed</h3>
+            <p class="text-2xl text-stone-800 font-body font-bold">
+              She was <span class="text-purple-700 font-black underline">sleeping soundly</span> in Baby Bear's bed!
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-amber-100 border-2 border-amber-300 rounded-2xl p-4 text-center text-3xl font-black text-amber-950 font-body">
+          🚪 Then... the three bears opened the door and came home!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 3: MANDATORY STARTING LINE -->
+      <!-- ======================================================== -->
+      <section id="slide-3" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-4">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Your Opening Sentence
+            </span>
+            <span class="text-xl font-bold text-stone-600">Sentence 1</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Start Your Story Exactly Like This:
+          </h2>
+        </div>
+
+        <div class="bg-white border-4 border-amber-400 rounded-3xl p-8 my-auto shadow-md max-w-5xl mx-auto w-full text-center">
+          <span class="text-8xl mb-4 block">🐻🏡</span>
+          <div class="bg-amber-50 border-4 border-amber-300 rounded-2xl p-6">
+            <p class="text-4xl md:text-5xl font-black text-amber-950 leading-relaxed font-body">
+              "When the bears came home, they..."
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-xl md:text-2xl text-stone-800 font-bold font-body">
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">...found the empty bowl.</div>
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">...saw the broken chair.</div>
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">...walked upstairs quietly.</div>
+          </div>
+        </div>
+
+        <div class="text-center text-2xl font-black text-amber-900 font-body">
+          Everyone starts with these exact words! ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 4: HOW DO THEY FEEL? (VOCABULARY) -->
+      <!-- ======================================================== -->
+      <section id="slide-4" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-rose-700 bg-rose-100 px-4 py-1.5 rounded-full">
+              Feelings Vocabulary
+            </span>
+            <span class="text-xl font-bold text-stone-600">Describing Emotions</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            How Did the Characters Feel?
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 my-auto font-body">
+          <div class="bg-rose-50 border-4 border-rose-300 rounded-3xl p-6 text-center shadow-sm">
+            <div class="text-7xl mb-2">😡</div>
+            <h4 class="font-black text-rose-950 text-3xl">angry</h4>
+            <p class="text-xl text-rose-800 font-bold mt-2">Papa Bear roared!</p>
+          </div>
+          <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-6 text-center shadow-sm">
+            <div class="text-7xl mb-2">😲</div>
+            <h4 class="font-black text-amber-950 text-3xl">shocked</h4>
+            <p class="text-xl text-amber-800 font-bold mt-2">Baby Bear saw his bed!</p>
+          </div>
+          <div class="bg-blue-50 border-4 border-blue-300 rounded-3xl p-6 text-center shadow-sm">
+            <div class="text-7xl mb-2">😨</div>
+            <h4 class="font-black text-blue-950 text-3xl">scared</h4>
+            <p class="text-xl text-blue-800 font-bold mt-2">Goldilocks trembled!</p>
+          </div>
+          <div class="bg-purple-50 border-4 border-purple-300 rounded-3xl p-6 text-center shadow-sm">
+            <div class="text-7xl mb-2">😢</div>
+            <h4 class="font-black text-purple-950 text-3xl">sorry</h4>
+            <p class="text-xl text-purple-800 font-bold mt-2">She felt guilty.</p>
+          </div>
+        </div>
+
+        <div class="bg-amber-100 rounded-2xl p-4 text-center text-2xl font-black text-amber-950 font-body">
+          Pick 1 feeling for the bears and 1 feeling for Goldilocks!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 5: FEELINGS + BECAUSE (SAMPLE SENTENCES IN LARGE TEXT) -->
+      <!-- ======================================================== -->
+      <section id="slide-5" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Sentence Formula
+            </span>
+            <span class="text-xl font-bold text-stone-600">Feelings + Reasons</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Pattern: Feelings + "because..."
+          </h2>
+        </div>
+
+        <div class="space-y-6 my-auto max-w-5xl mx-auto w-full font-body">
+          <!-- Model 1 -->
+          <div class="bg-white border-4 border-rose-300 rounded-3xl p-6 shadow-sm">
+            <span class="text-base font-black uppercase text-rose-700 block mb-1">Example 1 (The Bears):</span>
+            <p class="text-3xl md:text-4xl font-extrabold text-stone-900 leading-snug">
+              "Baby Bear was <span class="text-rose-600 underline font-black">furious</span> 
+              because <span class="text-stone-700">his chair was broken</span>."
+            </p>
+          </div>
+
+          <!-- Model 2 -->
+          <div class="bg-white border-4 border-blue-300 rounded-3xl p-6 shadow-sm">
+            <span class="text-base font-black uppercase text-blue-700 block mb-1">Example 2 (Goldilocks):</span>
+            <p class="text-3xl md:text-4xl font-extrabold text-stone-900 leading-snug">
+              "Goldilocks was <span class="text-blue-600 underline font-black">terrified</span> 
+              because <span class="text-stone-700">three huge bears stood over her</span>."
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-2xl p-4 text-center text-2xl font-black text-emerald-950 font-body">
+          💡 Adding "because..." makes your sentence longer and gives reasons!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 6: STORY VOCABULARY PART 1 (KNOCK, SHARE, FORGIVE) -->
+      <!-- ======================================================== -->
+      <section id="slide-6" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Vocabulary (Part 1)
+            </span>
+            <span class="text-xl font-bold text-stone-600">Verbs for Your Story</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Action Words with Large Examples:
+          </h2>
+        </div>
+
+        <div class="space-y-4 my-auto max-w-5xl mx-auto w-full font-body">
+          <!-- Knock -->
+          <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-6 flex items-center gap-6 shadow-sm">
+            <span class="text-7xl">🚪✊</span>
+            <div>
+              <strong class="text-amber-950 font-black text-3xl block">knock</strong>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-1">
+                "Please <span class="text-amber-800 font-black underline">knock</span> on the door before you enter."
+              </p>
+            </div>
+          </div>
+
+          <!-- Share -->
+          <div class="bg-emerald-50 border-4 border-emerald-300 rounded-3xl p-6 flex items-center gap-6 shadow-sm">
+            <span class="text-7xl">🍲🤝</span>
+            <div>
+              <strong class="text-emerald-950 font-black text-3xl block">share</strong>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-1">
+                "We can <span class="text-emerald-800 font-black underline">share</span> this warm bowl of porridge."
+              </p>
+            </div>
+          </div>
+
+          <!-- Forgive -->
+          <div class="bg-pink-50 border-4 border-pink-300 rounded-3xl p-6 flex items-center gap-6 shadow-sm">
+            <span class="text-7xl">🫂💖</span>
+            <div>
+              <strong class="text-pink-950 font-black text-3xl block">forgive</strong>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-1">
+                "The bears decided to <span class="text-pink-800 font-black underline">forgive</span> her."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center text-xl text-stone-500 font-bold font-body">
+          Next 3 words on the next slide ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 7: STORY VOCABULARY PART 2 (PROMISE, POLITE, LESSON) -->
+      <!-- ======================================================== -->
+      <section id="slide-7" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Vocabulary (Part 2)
+            </span>
+            <span class="text-xl font-bold text-stone-600">Words for the Ending</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Ending Words with Large Examples:
+          </h2>
+        </div>
+
+        <div class="space-y-4 my-auto max-w-5xl mx-auto w-full font-body">
+          <!-- Promise -->
+          <div class="bg-purple-50 border-4 border-purple-300 rounded-3xl p-6 flex items-center gap-6 shadow-sm">
+            <span class="text-7xl">🤙⭐</span>
+            <div>
+              <strong class="text-purple-950 font-black text-3xl block">promise</strong>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-1">
+                "She <span class="text-purple-800 font-black underline">promised</span> never to do it again."
+              </p>
+            </div>
+          </div>
+
+          <!-- Polite -->
+          <div class="bg-blue-50 border-4 border-blue-300 rounded-3xl p-6 flex items-center gap-6 shadow-sm">
+            <span class="text-7xl">🙏💬</span>
+            <div>
+              <strong class="text-blue-950 font-black text-3xl block">polite</strong>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-1">
+                "Be <span class="text-blue-800 font-black underline">polite</span> and say sorry with nice words."
+              </p>
+            </div>
+          </div>
+
+          <!-- Lesson -->
+          <div class="bg-amber-100 border-4 border-amber-400 rounded-3xl p-6 flex items-center gap-6 shadow-sm">
+            <span class="text-7xl">💡📖</span>
+            <div>
+              <strong class="text-amber-950 font-black text-3xl block">lesson</strong>
+              <p class="text-2xl md:text-3xl text-stone-900 font-bold mt-1">
+                "Goldilocks learned an important <span class="text-amber-950 font-black underline">lesson</span>."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center text-xl text-stone-500 font-bold font-body">
+          Try to use at least two of these words in your ending!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 8: SIMILES PART 1 (MOUSE & BEE) -->
+      <!-- ======================================================== -->
+      <section id="slide-8" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-purple-700 bg-purple-100 px-4 py-1.5 rounded-full">
+              Similes (Part 1)
+            </span>
+            <span class="text-xl font-bold text-stone-600">Figurative Language</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Similes: as ... as a ...
+          </h2>
+        </div>
+
+        <div class="space-y-6 my-auto max-w-5xl mx-auto w-full font-body">
+          <!-- 1. Mouse -->
+          <div class="bg-white border-4 border-amber-300 rounded-3xl p-8 flex items-center gap-8 shadow-md">
+            <span class="text-8xl">🐭</span>
+            <div>
+              <div class="text-3xl md:text-4xl font-black text-amber-950">as timid as a mouse</div>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-3 leading-relaxed">
+                "When Goldilocks opened her eyes, she was <span class="text-amber-800 font-black underline">as timid as a mouse</span>."
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. Bee -->
+          <div class="bg-white border-4 border-yellow-300 rounded-3xl p-8 flex items-center gap-8 shadow-md">
+            <span class="text-8xl">🐝</span>
+            <div>
+              <div class="text-3xl md:text-4xl font-black text-yellow-950">as busy as a bee</div>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-3 leading-relaxed">
+                "She was <span class="text-yellow-800 font-black underline">as busy as a bee</span> when she cleaned up the messy cottage."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-100 rounded-2xl p-4 text-center text-2xl font-black text-purple-950 font-body">
+          Two more fun animal similes on the next slide! ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 9: SIMILES PART 2 (PIG & RABBIT) -->
+      <!-- ======================================================== -->
+      <section id="slide-9" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-purple-700 bg-purple-100 px-4 py-1.5 rounded-full">
+              Similes (Part 2)
+            </span>
+            <span class="text-xl font-bold text-stone-600">Figurative Language</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            More Animal Similes:
+          </h2>
+        </div>
+
+        <div class="space-y-6 my-auto max-w-5xl mx-auto w-full font-body">
+          <!-- 3. Pig -->
+          <div class="bg-white border-4 border-rose-300 rounded-3xl p-8 flex items-center gap-8 shadow-md">
+            <span class="text-8xl">🐷</span>
+            <div>
+              <div class="text-3xl md:text-4xl font-black text-rose-950">as lazy as a pig</div>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-3 leading-relaxed">
+                "She was <span class="text-rose-800 font-black underline">as lazy as a pig</span>, sleeping in someone else's bed!"
+              </p>
+            </div>
+          </div>
+
+          <!-- 4. Rabbit -->
+          <div class="bg-white border-4 border-sky-300 rounded-3xl p-8 flex items-center gap-8 shadow-md">
+            <span class="text-8xl">🐰</span>
+            <div>
+              <div class="text-3xl md:text-4xl font-black text-sky-950">as scared as a rabbit</div>
+              <p class="text-2xl md:text-3xl text-stone-800 font-bold mt-3 leading-relaxed">
+                "Her heart beat fast, and she was <span class="text-sky-800 font-black underline">as scared as a rabbit</span>."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-100 rounded-2xl p-4 text-center text-2xl font-black text-emerald-950 font-body">
+          💡 Pick at least ONE animal simile to put into your story!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 10: WHAT WOULD THE BEARS SAY? (DIALOGUE 1) -->
+      <!-- ======================================================== -->
+      <section id="slide-10" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-blue-700 bg-blue-100 px-4 py-1.5 rounded-full">
+              Dialogue Practice (Part 1)
+            </span>
+            <span class="text-xl font-bold text-stone-600">Direct Speech</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            What Would the Bears Say? 🐻
+          </h2>
+        </div>
+
+        <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-sm">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="text-7xl">🐻🗯️</span>
+            <h3 class="text-3xl md:text-4xl font-black text-amber-950">Choose 1 line for the Bears:</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-white p-5 rounded-2xl border-2 border-amber-200 text-2xl md:text-3xl font-extrabold text-stone-900">
+              • <em>"Who is sleeping in my bed?" cried Baby Bear.</em>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border-2 border-amber-200 text-2xl md:text-3xl font-extrabold text-stone-900">
+              • <em>"Why did you enter our home without knocking?" roared Papa Bear.</em>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border-2 border-amber-200 text-2xl md:text-3xl font-extrabold text-stone-900">
+              • <em>"Are you alright, little girl?" asked Mama Bear gently.</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center text-2xl font-black text-amber-900 font-body">
+          Now let's see how Goldilocks answers! ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 11: WHAT WOULD GOLDILOCKS SAY? (DIALOGUE 2) -->
+      <!-- ======================================================== -->
+      <section id="slide-11" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-pink-700 bg-pink-100 px-4 py-1.5 rounded-full">
+              Dialogue Practice (Part 2)
+            </span>
+            <span class="text-xl font-bold text-stone-600">Direct Speech</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            What Would Goldilocks Say? 👧
+          </h2>
+        </div>
+
+        <div class="bg-pink-50 border-4 border-pink-300 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-sm">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="text-7xl">👧🗯️</span>
+            <h3 class="text-3xl md:text-4xl font-black text-pink-950">Choose 1 line for Goldilocks:</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-white p-5 rounded-2xl border-2 border-pink-200 text-2xl md:text-3xl font-extrabold text-stone-900">
+              • <em>"Please don't be angry! I am deeply sorry!" she cried.</em>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border-2 border-pink-200 text-2xl md:text-3xl font-extrabold text-stone-900">
+              • <em>"I was hungry and lost in the dark woods," she explained.</em>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border-2 border-pink-200 text-2xl md:text-3xl font-extrabold text-stone-900">
+              • <em>"Let me help you fix the broken chair right now!" she promised.</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-amber-100 rounded-2xl p-4 text-center text-xl font-bold text-amber-950 font-body">
+          Punctuation: Don't forget quotation marks <strong>" ... "</strong> and a comma before <em>she said</em>!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 12: ENDING PATH A (THE HELPFUL FIXER) -->
+      <!-- ======================================================== -->
+      <section id="slide-12" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Ending Choice A
+            </span>
+            <span class="text-xl font-bold text-stone-600">Idea 1</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Path A: The Helpful Fixer&nbsp; 🛠️
+          </h2>
+        </div>
+
+        <div class="bg-white border-4 border-emerald-400 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-md">
+          <div class="flex items-center gap-6 mb-4">
+            <span class="text-8xl">🛠️🍲</span>
+            <div>
+              <h3 class="text-3xl md:text-4xl font-black text-emerald-950">Apologize and Repair</h3>
+              <p class="text-2xl text-stone-600 font-bold mt-1">She stays and makes things right.</p>
+            </div>
+          </div>
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-6 text-2xl md:text-3xl text-stone-800 font-extrabold space-y-3 leading-relaxed">
+            <p>1. Goldilocks stays and apologizes politely.</p>
+            <p>2. She uses glue to fix Baby Bear's broken chair.</p>
+            <p>3. She cooks fresh warm porridge with sweet berries.</p>
+          </div>
+          <p class="mt-3 text-xl font-bold text-emerald-800">✍️ Write these ideas in the past tense.</p>
+          <div class="mt-4 bg-emerald-100 p-4 rounded-xl text-center text-2xl font-black text-emerald-950">
+            💡 Moral: Always make things right when you make a mistake.
+          </div>
+        </div>
+
+        <div class="text-center text-xl text-stone-500 font-bold font-body">
+          Path B is on the next slide ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 13: ENDING PATH B (THE POLITE APOLOGY) -->
+      <!-- ======================================================== -->
+      <section id="slide-13" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-blue-700 bg-blue-100 px-4 py-1.5 rounded-full">
+              Ending Choice B
+            </span>
+            <span class="text-xl font-bold text-stone-600">Idea 2</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Path B: The Polite Guest&nbsp; 🤝
+          </h2>
+        </div>
+
+        <div class="bg-white border-4 border-blue-400 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-md">
+          <div class="flex items-center gap-6 mb-4">
+            <span class="text-8xl">🤝🧺</span>
+            <div>
+              <h3 class="text-3xl md:text-4xl font-black text-blue-950">Sharing and Manners</h3>
+              <p class="text-2xl text-stone-600 font-bold mt-1">She shares food from her picnic basket.</p>
+            </div>
+          </div>
+          <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-2xl md:text-3xl text-stone-800 font-extrabold space-y-3 leading-relaxed">
+            <p>1. She opens her basket and shares apples and biscuits.</p>
+            <p>2. She sweeps the crumbs off the floor.</p>
+            <p>3. The bears forgive her and invite her to be their friend.</p>
+          </div>
+          <p class="mt-3 text-xl font-bold text-blue-800">✍️ Write these ideas in the past tense.</p>
+          <div class="mt-4 bg-blue-100 p-4 rounded-xl text-center text-2xl font-black text-blue-950">
+            💡 Moral: Always knock and ask before touching others' things.
+          </div>
+        </div>
+
+        <div class="text-center text-xl text-stone-500 font-bold font-body">
+          Path C is on the next slide ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 14: ENDING PATH C (THE GUILTY RETURN) -->
+      <!-- ======================================================== -->
+      <section id="slide-14" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-purple-700 bg-purple-100 px-4 py-1.5 rounded-full">
+              Ending Choice C
+            </span>
+            <span class="text-xl font-bold text-stone-600">Idea 3</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Path C: The Big Realization&nbsp; 💌
+          </h2>
+        </div>
+
+        <div class="bg-white border-4 border-purple-400 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-md">
+          <div class="flex items-center gap-6 mb-4">
+            <span class="text-8xl">🏃‍♀️💌</span>
+            <div>
+              <h3 class="text-3xl md:text-4xl font-black text-purple-950">Escape and Return</h3>
+              <p class="text-2xl text-stone-600 font-bold mt-1">She runs away, but comes back with an apology.</p>
+            </div>
+          </div>
+          <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-6 text-2xl md:text-3xl text-stone-800 font-extrabold space-y-3 leading-relaxed">
+            <p>1. She runs into the woods in fright.</p>
+            <p>2. At home, she feels guilty about Baby Bear's chair.</p>
+            <p>3. The next day, she returns with wild honey and flowers.</p>
+          </div>
+          <p class="mt-3 text-xl font-bold text-purple-800">✍️ Write these ideas in the past tense.</p>
+          <div class="mt-4 bg-purple-100 p-4 rounded-xl text-center text-2xl font-black text-purple-950">
+            💡 Moral: Always respect other people's privacy.
+          </div>
+        </div>
+
+        <div class="text-center text-xl text-stone-500 font-bold font-body">
+          Which path do you like best? Talk with your partner!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 15: TIME CONNECTORS (FLOW) -->
+      <!-- ======================================================== -->
+      <section id="slide-15" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-amber-700 bg-amber-100 px-4 py-1.5 rounded-full">
+              Story Flow
+            </span>
+            <span class="text-xl font-bold text-stone-600">Time Connectors</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Connect Your Sentences in Order ⏳
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 my-auto font-body">
+          <div class="bg-blue-50 border-4 border-blue-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-5xl mb-2 block">1️⃣ 🚪</span>
+            <h4 class="text-2xl font-black text-blue-950">When / First</h4>
+            <p class="text-xl text-stone-700 font-bold mt-2">When the bears came home...</p>
+          </div>
+          <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-5xl mb-2 block">2️⃣ 😢</span>
+            <h4 class="text-2xl font-black text-amber-950">Suddenly</h4>
+            <p class="text-xl text-stone-700 font-bold mt-2">Suddenly, Baby Bear cried...</p>
+          </div>
+          <div class="bg-purple-50 border-4 border-purple-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-5xl mb-2 block">3️⃣ 🙏</span>
+            <h4 class="text-2xl font-black text-purple-950">Then / After that</h4>
+            <p class="text-xl text-stone-700 font-bold mt-2">Then, Goldilocks apologized...</p>
+          </div>
+          <div class="bg-emerald-50 border-4 border-emerald-300 rounded-3xl p-6 text-center shadow-sm">
+            <span class="text-5xl mb-2 block">4️⃣ 🤗</span>
+            <h4 class="text-2xl font-black text-emerald-950">Finally / In the end</h4>
+            <p class="text-xl text-stone-700 font-bold mt-2">Finally, they forgave her...</p>
+          </div>
+        </div>
+
+        <div class="bg-white border-4 border-stone-300 rounded-2xl p-4 text-center text-2xl font-black text-stone-800 font-body">
+          Use at least 3 connectors to make your story easy to read!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 16: SUPPORTED WRITING FRAME (LARGE FONT) -->
+      <!-- ======================================================== -->
+      <section id="slide-16" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Writing Scaffold
+            </span>
+                      </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Supported Story Frame (94 Words) 📝
+          </h2>
+        </div>
+
+        <div class="bg-white border-4 border-amber-300 rounded-3xl p-8 my-auto font-body text-2xl md:text-3xl space-y-4 shadow-sm leading-relaxed text-stone-900">
+          <p>
+            <span class="mr-2" aria-hidden="true">🐻🚪</span><strong>When the bears came home</strong>, they found the empty bowls and the broken chair. They went upstairs and saw Goldilocks in Baby Bear's bed.
+          </p>
+          <p>
+            <span class="mr-2" aria-hidden="true">😢</span><strong>Suddenly</strong>, Baby Bear shouted loudly. Goldilocks was 
+            <span class="text-blue-700 underline font-black">as timid as a mouse</span> because three angry bears were staring at her.
+          </p>
+          <p>
+            <span class="mr-2" aria-hidden="true">🛠️</span><strong>Instead of running away</strong>, she stood up and said, <em>"I am very sorry!"</em> She helped fix the chair and cooked warm food.
+          </p>
+          <p>
+            <span class="mr-2" aria-hidden="true">💡</span><strong>Finally</strong>, the bears forgave her. She learned that 
+            <span class="text-emerald-700 font-black underline">she must always knock and ask before touching others' things</span>.
+          </p>
+        </div>
+
+        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-2xl p-4 text-center text-2xl font-black text-emerald-950 font-body">
+          Total: 94 Words • Easily passes the 80-word minimum!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 17: EXTENSION (5-POINT PLAN) -->
+      <!-- ======================================================== -->
+      <section id="slide-17" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-purple-700 bg-purple-100 px-4 py-1.5 rounded-full">
+              Advanced Extension
+            </span>
+                      </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            5-Point Challenge 🚀
+          </h2>
+        </div>
+
+        <div class="bg-purple-50 border-4 border-purple-300 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-md space-y-4 text-2xl md:text-3xl font-extrabold text-stone-900">
+          <p class="flex items-center gap-3">
+            <span class="text-4xl">1️⃣</span>
+            <span><strong>Sensory Details:</strong> Describe Papa Bear's rumbling growl.</span>
+          </p>
+          <p class="flex items-center gap-3">
+            <span class="text-4xl">2️⃣</span>
+            <span><strong>Vivid Verbs:</strong> Use <em>stammered, confessed, gasped</em>.</span>
+          </p>
+          <p class="flex items-center gap-3">
+            <span class="text-4xl">3️⃣</span>
+            <span><strong>Rich Dialogue:</strong> Include 2 lines of well-punctuated speech.</span>
+          </p>
+          <p class="flex items-center gap-3">
+            <span class="text-4xl">4️⃣</span>
+            <span><strong>2 Similes:</strong> e.g., <em>as timid as a mouse</em> AND <em>as busy as a bee</em>.</span>
+          </p>
+          <p class="flex items-center gap-3">
+            <span class="text-4xl">5️⃣</span>
+            <span><strong>Deep Moral:</strong> Explain how she changed her behavior forever.</span>
+          </p>
+        </div>
+
+        <div class="bg-white border-2 border-purple-300 rounded-2xl p-4 text-center text-2xl font-black text-purple-950 font-body">
+          Aim for <strong>100–120 words</strong>! See the model on the next slide ➔
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 18: HIGH-LEVEL MODEL STORY (105 WORDS) -->
+      <!-- ======================================================== -->
+      <section id="slide-18" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              High-Level Model
+            </span>
+            <span class="text-xl font-bold text-stone-600">105 Words</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Read Our Model Ending Together 📖
+          </h2>
+        </div>
+
+        <div class="bg-white border-4 border-emerald-400 rounded-3xl p-8 my-auto font-body text-2xl md:text-3xl leading-relaxed shadow-sm text-stone-900 space-y-4">
+          <p>
+            <span class="mr-2" aria-hidden="true">🐻🚪</span><strong>When the bears came home</strong>, they discovered their ruined porridge and cracked furniture. Suddenly, Baby Bear pointed and gasped, <em>"Look! A girl is sleeping in my bed!"</em>
+          </p>
+          <p>
+            <span class="mr-2" aria-hidden="true">😢</span>Goldilocks awoke instantly. She was <span class="text-purple-700 font-black">as timid as a mouse</span> under Papa Bear's glare. However, she confessed politely, <em>"I was hungry and lost. Please forgive me."</em>
+          </p>
+          <p>
+            <span class="mr-2" aria-hidden="true">🛠️💡</span>She was <span class="text-amber-700 font-black">as busy as a bee</span>, sweeping the floor and fixing the chair. Finally, the bears smiled warmly. From this incident, she learned that <strong>we must always respect other people's homes and ask before using their things</strong>.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between text-2xl font-black text-stone-600 font-body">
+          <span>✔ Prompt Starter</span>
+          <span>✔ 2 Animal Similes</span>
+          <span>✔ Clear Moral</span>
+          <span class="text-emerald-700 text-3xl font-black">Total: 105 Words</span>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 19: HOW TO WRITE THE MORAL (FORMULAS) -->
+      <!-- ======================================================== -->
+      <section id="slide-19" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-yellow-700 bg-yellow-100 px-4 py-1.5 rounded-full">
+              Final Paragraph
+            </span>
+            <span class="text-xl font-bold text-stone-600">The Moral</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Pick 1 Moral Sentence for the End:
+          </h2>
+        </div>
+
+        <div class="space-y-4 my-auto max-w-5xl mx-auto w-full font-body">
+          <!-- Pattern 1 -->
+          <div class="bg-white border-4 border-amber-300 rounded-3xl p-6 shadow-sm">
+            <span class="text-lg font-black uppercase text-amber-800 block mb-1">💡 Pattern 1:</span>
+            <p class="text-2xl md:text-3xl font-extrabold text-stone-900 leading-snug">
+              "From this incident, Goldilocks learned that <br>
+              <span class="text-amber-800 underline font-black">she should always ask before touching other people's things</span>."
+            </p>
+          </div>
+
+          <!-- Pattern 2 -->
+          <div class="bg-white border-4 border-emerald-300 rounded-3xl p-6 shadow-sm">
+            <span class="text-lg font-black uppercase text-emerald-800 block mb-1">❤️ Pattern 2:</span>
+            <p class="text-2xl md:text-3xl font-extrabold text-stone-900 leading-snug">
+              "The lesson is that <br>
+              <span class="text-emerald-800 underline font-black">it is important to say sorry and make things right</span>."
+            </p>
+          </div>
+
+          <!-- Pattern 3 -->
+          <div class="bg-white border-4 border-purple-300 rounded-3xl p-6 shadow-sm">
+            <span class="text-lg font-black uppercase text-purple-800 block mb-1">🚪 Pattern 3:</span>
+            <p class="text-2xl md:text-3xl font-extrabold text-stone-900 leading-snug">
+              "We should always remember to <br>
+              <span class="text-purple-800 underline font-black">knock on the door and respect other people's privacy</span>."
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center text-xl text-stone-500 font-bold font-body">
+          Every story must end with one of these lessons!
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SLIDE 20: FINAL CHECKLIST & WRITE! -->
+      <!-- ======================================================== -->
+      <section id="slide-20" class="slide hidden flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between border-b-4 border-stone-200 pb-3 mb-3">
+            <span class="text-lg uppercase font-extrabold tracking-widest text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+              Time to Write!
+            </span>
+            <span class="text-xl font-bold text-stone-600">Classroom Writing Time</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-amber-950">
+            Final Checklist: Check Your Work!&nbsp; ✍️
+          </h2>
+        </div>
+
+        <div class="bg-emerald-50 border-4 border-emerald-300 rounded-3xl p-8 my-auto max-w-5xl mx-auto w-full font-body shadow-md">
+          <ul class="text-2xl md:text-3xl text-emerald-950 space-y-4 font-black">
+            <li class="flex items-center gap-3">
+              <span class="text-3xl">☑</span>
+              <span>1. Did you start with: <em>"When the bears came home..."</em>?</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="text-3xl">☑</span>
+              <span>2. Are your action verbs in past tense (<em>saw, cried, fixed</em>)?</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="text-3xl">☑</span>
+              <span>3. Did you describe feelings and use at least 1 simile?</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="text-3xl">☑</span>
+              <span>4. Did you include a clear moral / lesson at the end?</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="text-3xl">☑</span>
+              <span>5. Did you reach at least <strong>80 words</strong>?</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="flex items-center justify-center gap-6">
+          <button onclick="goToSlide(1)" class="bg-stone-800 hover:bg-stone-700 text-white font-black text-2xl px-8 py-3.5 rounded-2xl shadow-md transition">
+            ↺ Back to Slide 1
+          </button>
+          <button onclick="goToSlide(16)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-2xl px-8 py-3.5 rounded-2xl shadow-md transition">
+            📝 Open Writing Frame
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full max-w-7xl text-center text-base text-white/90 font-bold font-body">
+    Use <kbd class="bg-black/30 px-3 py-1 rounded-lg text-white font-mono">◀</kbd> and <kbd class="bg-black/30 px-3 py-1 rounded-lg text-white font-mono">▶</kbd> keyboard arrows or touch buttons to navigate.
+  </footer>
+
+  <!-- CONTROLLER SCRIPT -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 20;
+    let isMuted = false;
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type = 'sine') {
+      if (isMuted) return;
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    function soundClick() {
+      playTone(480, 0.05);
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊';
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    function updateSlideUI() {
+      for (let i = 1; i <= totalSlides; i++) {
+        const el = document.getElementById(`slide-${i}`);
+        if (el) {
+          if (i === currentSlide) {
+            el.classList.remove('hidden');
+            el.classList.add('pop-in');
+          } else {
+            el.classList.add('hidden');
+            el.classList.remove('pop-in');
+          }
+        }
+      }
+      document.getElementById('slideIndicator').textContent = `Slide ${currentSlide} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        soundClick();
+        currentSlide++;
+        updateSlideUI();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        soundClick();
+        currentSlide--;
+        updateSlideUI();
+      }
+    }
+
+    function goToSlide(num) {
+      soundClick();
+      currentSlide = num;
+      updateSlideUI();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    window.onload = function() {
+      updateSlideUI();
+    };
+  </script>
+</body>
+</html>
