@@ -513,9 +513,8 @@
     { id: 'close_door', text: 'Close the door, please.', img: 'action-close-door.png', kind: 'close' }
   ];
 
-  const L3_PRIORITY = ['l3-stand', 'l3-chair-move', 'l3-book', 'l3-door', 'l3-computer'];
-
-  // Locked zones from HOTSPOTS-LOCK-2026-11-16.md (exact paste)
+  // Hit priority (hard-coded): MISS-child/stand > book > door > chair > computer > miss
+  // Locked zones from HOTSPOTS-LOCK-2026-11-16-v2.md (exact paste)
   const DIFF_LEVELS = [
     {
       name: 'Our Classroom',
@@ -523,6 +522,7 @@
       right: 'spot-a-right.png',
       need: 3,
       priority: ['l1-chair', 'l1-computer', 'l1-window'],
+      missZones: [],
       diffs: [
         {
           id: 'l1-chair',
@@ -558,36 +558,18 @@
       left: 'spot-b-left.png',
       right: 'spot-b-right.png',
       need: 4,
-      priority: ['l2-desk', 'l2-blackboard', 'l2-door', 'l2-book'],
+      // MISS-child / stand > book > door > chair > computer
+      // Level 2: MISS-child first, then book > door > desk > blackboard
+      priority: ['l2-book', 'l2-door', 'l2-desk', 'l2-blackboard'],
+      missZones: [{ side: 'both', x: 10, y: 18, w: 18, h: 62 }],
       diffs: [
-        {
-          id: 'l2-desk',
-          say: "Yes! It's a desk.",
-          follow: 'Point to the desk.',
-          hint2: 'Look at the desk.',
-          type: 'A',
-          zones: [{ side: 'both', x: 50, y: 74, w: 19, h: 24 }],
-          helpRegion: { side: 'left', x: 48, y: 68, w: 24, h: 32 }
-        },
-        {
-          id: 'l2-blackboard',
-          say: "Yes! It's a blackboard.",
-          follow: 'Look at the blackboard.',
-          hint2: 'Look at the blackboard.',
-          type: 'A',
-          zones: [{ side: 'both', x: 28, y: 6, w: 34, h: 36 }],
-          helpRegion: { side: 'left', x: 20, y: 0, w: 50, h: 48 }
-        },
         {
           id: 'l2-door',
           say: 'Yes! Open the door, please.',
           follow: null,
           hint2: 'Look at the door.',
           type: 'B',
-          zones: [
-            { side: 'both', x: 1, y: 6, w: 8, h: 64 },
-            { side: 'both', x: 1, y: 6, w: 19, h: 11 }
-          ],
+          zones: [{ side: 'both', x: 1, y: 6, w: 17, h: 68 }],
           helpRegion: { side: 'right', x: 0, y: 5, w: 33, h: 80 }
         },
         {
@@ -596,8 +578,26 @@
           follow: null,
           hint2: 'Look at the book.',
           type: 'B',
-          zones: [{ side: 'both', x: 43, y: 55, w: 24, h: 16 }],
+          zones: [{ side: 'both', x: 42, y: 52, w: 26, h: 18 }],
           helpRegion: { side: 'right', x: 30, y: 35, w: 40, h: 40 }
+        },
+        {
+          id: 'l2-desk',
+          say: "Yes! It's a desk.",
+          follow: 'Point to the desk.',
+          hint2: 'Look at the desk.',
+          type: 'A',
+          zones: [{ side: 'left', x: 56, y: 76, w: 20, h: 18 }],
+          helpRegion: { side: 'left', x: 52, y: 70, w: 28, h: 28 }
+        },
+        {
+          id: 'l2-blackboard',
+          say: "Yes! It's a blackboard.",
+          follow: 'Look at the blackboard.',
+          hint2: 'Look at the blackboard.',
+          type: 'A',
+          zones: [{ side: 'both', x: 26, y: 6, w: 42, h: 42 }],
+          helpRegion: { side: 'left', x: 20, y: 0, w: 50, h: 48 }
         }
       ]
     },
@@ -606,7 +606,9 @@
       left: 'spot-c-left.png',
       right: 'spot-c-right.png',
       need: 5,
-      priority: L3_PRIORITY.slice(),
+      // stand > book > door > chair > computer
+      priority: ['l3-stand', 'l3-book', 'l3-door', 'l3-chair-move', 'l3-computer'],
+      missZones: [],
       diffs: [
         {
           id: 'l3-stand',
@@ -616,12 +618,11 @@
           type: 'B',
           sitDownBonus: true,
           zones: [
-            { side: 'left', x: 16, y: 24, w: 20, h: 18 },
-            { side: 'left', x: 20, y: 42, w: 12, h: 8 },
-            { side: 'left', x: 23, y: 50, w: 14, h: 22 },
-            { side: 'left', x: 23, y: 70, w: 15, h: 24 },
-            { side: 'right', x: 21, y: 52, w: 15, h: 42 },
-            { side: 'right', x: 61, y: 28, w: 18, h: 66 }
+            { side: 'left', x: 16, y: 22, w: 20, h: 20 },
+            { side: 'left', x: 16, y: 42, w: 16, h: 20 },
+            { side: 'left', x: 16, y: 62, w: 22, h: 30 },
+            { side: 'right', x: 20, y: 50, w: 18, h: 42 },
+            { side: 'right', x: 61, y: 26, w: 17, h: 66 }
           ],
           helpRegion: { side: 'right', x: 55, y: 24, w: 28, h: 72 }
         },
@@ -632,9 +633,8 @@
           hint2: 'Look at the door.',
           type: 'B',
           zones: [
-            { side: 'both', x: 1, y: 6, w: 13, h: 65 },
-            { side: 'right', x: 14, y: 6, w: 6, h: 65 },
-            { side: 'left', x: 15, y: 6, w: 6, h: 17 }
+            { side: 'left', x: 1, y: 8, w: 14, h: 68 },
+            { side: 'right', x: 1, y: 6, w: 18, h: 70 }
           ],
           helpRegion: { side: 'left', x: 0, y: 0, w: 33, h: 85 }
         },
@@ -645,8 +645,8 @@
           hint2: 'Look at the chair.',
           type: 'A',
           zones: [
-            { side: 'left', x: 14, y: 50, w: 7, h: 40 },
-            { side: 'right', x: 79, y: 56, w: 21, h: 40 }
+            { side: 'left', x: 10, y: 50, w: 16, h: 42 },
+            { side: 'right', x: 78, y: 56, w: 22, h: 38 }
           ],
           helpRegion: { side: 'right', x: 60, y: 40, w: 40, h: 55 }
         },
@@ -656,7 +656,7 @@
           follow: 'Look at the computer.',
           hint2: 'Look at the computer.',
           type: 'A',
-          zones: [{ side: 'left', x: 73, y: 47, w: 26, h: 32 }],
+          zones: [{ side: 'left', x: 72, y: 46, w: 28, h: 30 }],
           helpRegion: { side: 'left', x: 70, y: 44, w: 28, h: 38 }
         },
         {
@@ -666,10 +666,10 @@
           hint2: 'Look at the book.',
           type: 'B',
           zones: [
-            { side: 'left', x: 42, y: 53, w: 26, h: 16 },
-            { side: 'right', x: 47, y: 54, w: 13, h: 12 }
+            { side: 'left', x: 38, y: 52, w: 30, h: 20 },
+            { side: 'right', x: 44, y: 52, w: 17, h: 18 }
           ],
-          helpRegion: { side: 'left', x: 38, y: 48, w: 32, h: 26 }
+          helpRegion: { side: 'left', x: 36, y: 48, w: 34, h: 28 }
         }
       ]
     }
@@ -994,6 +994,11 @@
 
   function hitTest(side, px, py) {
     const L = DIFF_LEVELS[state.level];
+    // Highest priority: MISS-child (not scored)
+    for (const z of (L.missZones || [])) {
+      if (!zoneMatchesSide(z, side)) continue;
+      if (pointInZone(px, py, z)) return { miss: true };
+    }
     const order = L.priority.slice();
     for (const id of order) {
       if (state.found.has(id)) continue;
@@ -1001,7 +1006,7 @@
       if (!diff) continue;
       for (const z of diff.zones) {
         if (!zoneMatchesSide(z, side)) continue;
-        if (pointInZone(px, py, z)) return diff;
+        if (pointInZone(px, py, z)) return { diff };
       }
     }
     return null;
@@ -1018,9 +1023,10 @@
     if (state.view !== 'diffs' || state.phase !== 'find') return;
     const frame = $(side === 'left' ? 'frame-left' : 'frame-right');
     const { x, y } = eventToPercent(frame, evt);
-    const diff = hitTest(side, x, y);
-    if (diff) onDiffHit(diff.id);
-    else onDiffMiss();
+    const hit = hitTest(side, x, y);
+    if (!hit) onDiffMiss();
+    else if (hit.miss) onDiffMiss();
+    else onDiffHit(hit.diff.id);
   }
 
   ['hits-left', 'hits-right'].forEach(id => {

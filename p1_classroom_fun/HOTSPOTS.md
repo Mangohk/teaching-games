@@ -1,43 +1,45 @@
 # Part 1 hotspot mapping (Find the Differences / 搵不同)
 
+**Lock:** `HOTSPOTS-LOCK-2026-11-16-v2.md` (supersedes v1).  
 Coordinates are **percent of the 1152×864 scene** (`x, y, w, h`).  
-Locked 2026-11-16 designer paste (`HOTSPOTS-LOCK-2026-11-16.md`). Overlays: `lock-b-*` = Level 2, `lock-c-*` = Level 3.
+Overlays: `lock2-b-*` = Level 2, `lock2-c-*` = Level 3.
 
-Hit-testing uses **hard-coded priority** (not DOM order). Level 3:
+## Hit priority (hard-coded, not DOM/z-index)
 
-`l3-stand` > `l3-chair-move` > `l3-book` > `l3-door` > `l3-computer` > miss
+**MISS-child / stand > book > door > chair > computer > full-picture miss**
 
-No MISS-child zone — tapping the child (same in both pictures) uses the miss handler.  
-Found rings: **each zone separately**, only on the side that owns that zone.  
-Designer boxes are **not** expanded to 80×80 CSS px.
+- Level 2 `MISS-child` is **not** a scored difference; onHit = *That's the same. Try again!*
+- No CSS `.spot-hit { min-width/min-height: 80px }` — do not grow designer boxes.
+- Found rings: **each zone separately**; left stand = three boxes (never one big rect); old chair left-only (no ring on right).
 
 ## Level 1 — Our Classroom (`spot-a-*`) — 3 differences
 
-| # | Id | Zones | hint2 |
-|---|----|-------|-------|
-| 1 | `l1-chair` | both 24,52,18,36 | Look at the chair. |
-| 2 | `l1-computer` | both 68,58,28,36 | Look at the computer. |
-| 3 | `l1-window` | both 72,6,24,42 | Look at the window. |
+| Id | Zones | hint2 |
+|----|-------|-------|
+| `l1-chair` | both 24,52,18,36 | Look at the chair. |
+| `l1-computer` | both 68,58,28,36 | Look at the computer. |
+| `l1-window` | both 72,6,24,42 | Look at the window. |
 
-## Level 2 — What is different? (`spot-b-*`) — 4 differences
+## Level 2 — What is different? (`spot-b-*`) — 4 differences + MISS
 
-| # | Id | Zones | hint2 |
-|---|----|-------|-------|
-| 4 | `l2-desk` | both 50,74,19,24 (right edge 69%; not computer table) | Look at the desk. |
-| 5 | `l2-blackboard` | both 28,6,34,36 | Look at the blackboard. |
-| 6 | `l2-door` | both 1,6,8,64 (leaf) + both 1,6,19,11 (top) | Look at the door. |
-| 7 | `l2-book` | both 43,55,24,16 | Look at the book. |
+| Id | Zones | Notes |
+|----|-------|-------|
+| **MISS-child** | both 10,18,18,62 | miss only; not scored |
+| `l2-door` | both 1,6,17,68 | |
+| `l2-book` | both 42,52,26,18 | |
+| `l2-desk` | **left only** 56,76,20,18 | no right desk zone |
+| `l2-blackboard` | both 26,6,42,42 | |
 
 ## Level 3 — What changed? (`spot-c-*`) — 5 differences
 
-| # | Id | Zones | hint2 |
-|---|----|-------|-------|
-| 8 | `l3-stand` (+ sitDownBonus) | left 16,24,20,18 · 20,42,12,8 · 23,50,14,22 · 23,70,15,24 · right 21,52,15,42 · 61,28,18,66 | Look at the boy. |
-| 9 | `l3-door` | both 1,6,13,65 · right 14,6,6,65 · left 15,6,6,17 | Look at the door. |
-| 10 | `l3-chair-move` | left 14,50,7,40 · right 79,56,21,40 | Look at the chair. |
-| 11 | `l3-computer` | **left only** 73,47,26,32 | Look at the computer. |
-| 12 | `l3-book` | left 42,53,26,16 · right 47,54,13,12 | Look at the book. |
+| Id | Zones |
+|----|-------|
+| `l3-stand` (+ sitDownBonus) | left head 16,22,20,20 · body 16,42,16,20 · legs 16,62,22,30 · right empty 20,50,18,42 · right kid 61,26,17,66 |
+| `l3-door` | left 1,8,14,68 · right 1,6,18,70 |
+| `l3-chair-move` | left 10,50,16,42 · right 78,56,22,38 |
+| `l3-computer` | **left only** 72,46,28,30 |
+| `l3-book` | left 38,52,30,20 · right 44,52,17,18 (right edge 61%) |
 
 After Stand up + We did it!: **Now sit down, please.**
 
-Ignored non-differences: side-table camera angle, faint wall/sill traces.
+Do **not** use UI original L3 stand `both 16,20,22,72` or standing-child `right 54,24,26,68`.
