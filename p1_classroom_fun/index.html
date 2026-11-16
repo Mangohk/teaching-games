@@ -78,7 +78,7 @@
       background: #fff; border-color: #cbd5e1; color: var(--ink);
       box-shadow: 0 3px 0 rgba(15,23,42,0.08);
     }
-    .btn-lg { min-height: 80px; padding: 0.75rem 1.4rem; font-size: 1.25rem; border-radius: 1.15rem; }
+    .btn-lg { min-height: 80px; padding: 0.75rem 1.4rem; font-size: 1.55rem; border-radius: 1.15rem; }
     .mode-badge {
       background: #e0f2fe; border: 2px solid #7dd3fc; color: #0c4a6e;
       padding: 0.4rem 0.9rem; border-radius: 999px; font-weight: 800; font-size: 1rem;
@@ -132,7 +132,7 @@
 
     .progress-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem 0.9rem;
-      margin: 0.35rem 0 0.65rem; font-size: 1.15rem;
+      margin: 0.35rem 0 0.65rem; font-size: clamp(1.2rem, 2.2vw, 1.6rem);
     }
     .slots { display: flex; gap: 0.4rem; }
     .slot {
@@ -148,7 +148,8 @@
     }
     .scene-col { display: flex; flex-direction: column; min-height: 0; }
     .scene-label {
-      text-align: center; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 700;
+      text-align: center; font-family: 'Fredoka', sans-serif;
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 700;
       margin-bottom: 0.35rem; color: #0f172a;
     }
     .scene-frame {
@@ -207,7 +208,7 @@
     }
     .bottom-bar .line {
       font-family: 'Fredoka', sans-serif; font-weight: 700;
-      font-size: clamp(1.25rem, 2.8vw, 1.85rem);
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
       text-align: center; max-width: min(920px, 68vw); line-height: 1.2;
     }
     .bottom-bar .actions { display: flex; gap: 0.55rem; flex-wrap: wrap; justify-content: center; }
@@ -217,8 +218,8 @@
       background: #fff; border: 3px solid #94a3b8; border-radius: 1.2rem;
       padding: 0.85rem 1rem; text-align: center;
     }
-    .prompt-box .prompt-label { color: var(--muted); font-size: 1rem; margin: 0 0 0.25rem; }
-    .prompt-box .prompt-main { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.4rem, 3vw, 2rem); }
+    .prompt-box .prompt-label { color: var(--muted); font-size: clamp(1.2rem, 2.2vw, 1.6rem); margin: 0 0 0.25rem; }
+    .prompt-box .prompt-main { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
     .prompt-art {
       width: min(360px, 70vw); height: min(280px, 36vh); margin: 0.35rem auto 0;
       object-fit: contain; display: block;
@@ -229,6 +230,7 @@
       padding: 0.75rem; font-size: 1.2rem; font-weight: 800; color: var(--ink);
       box-shadow: 0 8px 0 #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
     }
+    .choice.choice-word { font-size: clamp(1.8rem, 3.6vw, 2.7rem); font-family: 'Fredoka', sans-serif; font-weight: 700; }
     .choice img { width: 100%; max-height: 160px; object-fit: contain; }
     .choice.correct { background: #dcfce7; border-color: #16a34a; box-shadow: 0 8px 0 #15803d; }
     .choice.wrong { background: #ffe4e6; border-color: #e11d48; box-shadow: 0 8px 0 #be123c; }
@@ -241,59 +243,165 @@
       box-shadow: 0 8px 0 rgba(217,119,6,0.25); gap: 0.45rem;
     }
     .flash-card img { width: min(220px, 100%); height: 150px; object-fit: contain; }
-    .flash-card span { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.35rem; }
+    .flash-card span { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.7rem, 3.2vw, 2.3rem); }
 
+    @property --spin {
+      syntax: '<angle>';
+      inherits: true;
+      initial-value: 330deg;
+    }
     .spinner-stage { display: grid; place-items: center; gap: 0.85rem; padding-bottom: 0.5rem; }
     .spinner-badge {
       background: #ecfccb; border: 2px solid #65a30d; color: #365314;
       padding: 0.35rem 0.8rem; border-radius: 999px; font-weight: 800;
     }
     .spinner-row {
-      display: flex; flex-direction: column; align-items: center; gap: 0.85rem; width: 100%;
+      display: flex; flex-direction: row; justify-content: center; align-items: center;
+      gap: 1rem; width: 100%; flex-wrap: wrap;
     }
-    .wheel-wrap { position: relative; width: min(420px, 78vw); aspect-ratio: 1; }
+    .wheel-wrap {
+      position: relative;
+      width: min(380px, 42vw, 46vh);
+      aspect-ratio: 1;
+      container-type: size;
+      flex: 0 0 auto;
+    }
+    .spin-pointer {
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: clamp(40px, 15cqw, 52px);
+      width: auto;
+      z-index: 20;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 0 rgba(72, 40, 8, 0.25));
+    }
     .spin-wheel {
-      width: 100%; height: 100%; border-radius: 50%;
-      border: 8px solid #0f172a;
+      --spin: 330deg;
+      position: relative;
+      z-index: 1;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      border: 10px solid #482808;
       background: conic-gradient(
-        #38bdf8 0 60deg, #4ade80 60deg 120deg, #fbbf24 120deg 180deg,
-        #fb7185 180deg 240deg, #a3e635 240deg 300deg, #67e8f9 300deg 360deg
+        #7DD6FA 0 60deg,
+        #7396DC 60deg 120deg,
+        #F0C838 120deg 180deg,
+        #E48066 180deg 240deg,
+        #20B8BD 240deg 300deg,
+        #E09848 300deg 360deg
       );
-      transition: transform 2.2s cubic-bezier(0.12, 0.75, 0.12, 1);
-      box-shadow: inset 0 0 0 6px rgba(255,255,255,0.35), 0 12px 0 rgba(15,23,42,0.15);
-      display: grid; place-items: center;
+      box-shadow:
+        inset 0 0 0 6px #FFEDC4,
+        0 10px 0 rgba(72, 40, 8, 0.18);
+      transform: rotate(var(--spin));
+      transition: --spin 2.2s cubic-bezier(0.12, 0.75, 0.12, 1);
+      cursor: pointer;
     }
-    .spin-labels {
-      position: absolute; inset: 0; pointer-events: none;
-      font-family: 'Fredoka', sans-serif; font-size: clamp(0.72rem, 2vw, 0.95rem); font-weight: 700;
+    .spin-hub {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 18%; height: 18%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #482808;
+      box-shadow: inset 0 0 0 3px #FFEDC4;
+      z-index: 3;
+      pointer-events: none;
     }
-    .spin-labels span {
-      position: absolute; left: 50%; top: 50%; width: 44%; text-align: center;
-      transform-origin: left center; color: #0f172a; text-shadow: 0 1px 0 #fff;
+    .spin-item {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
     }
-    .pointer {
-      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 14px solid transparent; border-right: 14px solid transparent;
-      border-top: 28px solid #e11d48; z-index: 2;
-      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.2));
+    /* Icon and label are independent: each at its own radius on the slice midline.
+       Never one flex column — that flips icon/label order on the bottom half. */
+    .spin-part {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center center;
+      transform:
+        translate(-50%, -50%)
+        rotate(var(--mid))
+        translateY(calc(-1 * var(--rad)))
+        rotate(calc(0deg - var(--mid) - var(--spin)));
+    }
+    .spin-part-icon {
+      --rad: 36cqw; /* farther out, just inside outer ring */
+      width: clamp(64px, 22cqw, 72px);
+      height: clamp(64px, 22cqw, 72px);
+    }
+    .spin-part-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .spin-part-lab {
+      --rad: 22cqw; /* farther in; clear of hub and neighbour two-line words */
+      width: clamp(4rem, 24cqw, 5.2rem);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.1rem, 6.4cqw, 1.25rem);
+      line-height: 1.05;
+      color: #482808;
+      text-align: center;
+      text-shadow: 0 1px 0 rgba(255, 237, 196, 0.9);
     }
     .spin-result {
-      text-align: center; background: #fff; border: 4px solid #38bdf8; border-radius: 1.2rem;
-      padding: 0.85rem 1.1rem; min-width: min(520px, 90vw);
+      text-align: center;
+      background: #FFEDC4;
+      border: 5px solid #482808;
+      border-radius: 1.2rem;
+      padding: 0.75rem 1rem;
+      width: min(360px, 46vw);
+      flex: 0 0 auto;
+      box-shadow: 0 8px 0 rgba(72, 40, 8, 0.12);
     }
-    .spin-result h3 { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.5rem, 3.2vw, 2.1rem); }
-    .spin-result img { width: min(280px, 60vw); height: 180px; object-fit: contain; margin-top: 0.4rem; }
-
+    .spin-result.win-pulse {
+      animation: winPulse 0.7s ease;
+    }
+    @keyframes winPulse {
+      0% { box-shadow: 0 0 0 0 rgba(72, 40, 8, 0.0); }
+      40% { box-shadow: 0 0 0 6px rgba(72, 40, 8, 0.18); }
+      100% { box-shadow: 0 8px 0 rgba(72, 40, 8, 0.12); }
+    }
+    .spin-result h3 {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+      color: #482808;
+      line-height: 1.15;
+    }
+    .spin-result img {
+      width: min(340px, 100%);
+      height: min(340px, 36vh, 100%);
+      aspect-ratio: 1;
+      object-fit: contain;
+      margin-top: 0.45rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
     @media (max-height: 800px) {
-      .spinner-row {
-        flex-direction: row; justify-content: center; align-items: center; gap: 1rem;
-        flex-wrap: wrap;
-      }
       .wheel-wrap { width: min(300px, 42vw); }
-      .spin-result { min-width: 0; width: min(320px, 46vw); padding: 0.55rem 0.75rem; }
-      .spin-result img { width: min(160px, 36vw); height: 160px; }
-      .spin-result h3 { font-size: clamp(1.1rem, 2.4vw, 1.45rem); }
+      .spin-result { width: 320px; padding: 0.55rem 0.7rem; }
+      .spin-result img { width: 320px; height: 320px; max-height: none; }
+      .spin-result h3 { font-size: clamp(1.35rem, 2.8vw, 1.9rem); }
+    }
+    @media (min-height: 801px) {
+      .wheel-wrap { width: min(400px, 40vw); }
+      .spin-result { width: min(360px, 38vw); min-width: 340px; }
+      .spin-result img { width: 340px; height: 340px; max-width: 100%; }
+      .spin-part-icon { width: clamp(72px, 22cqw, 96px); height: clamp(72px, 22cqw, 96px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .spin-wheel { transition: none !important; }
+      .spin-result.win-pulse { animation: none; }
     }
 
     .victory {
@@ -449,9 +557,11 @@
         <div class="spinner-badge">Class time! Let's move!</div>
         <div class="spinner-row">
           <div class="wheel-wrap">
-            <div class="pointer" aria-hidden="true"></div>
-            <div class="spin-wheel" id="spin-wheel"></div>
-            <div class="spin-labels" id="spin-labels"></div>
+            <img class="spin-pointer" src="./art/spinner-pointer.png" alt="" width="512" height="512">
+            <div class="spin-wheel" id="spin-wheel" aria-label="Class Spinner">
+              <div class="spin-hub" aria-hidden="true"></div>
+              <div id="spin-items"></div>
+            </div>
           </div>
           <div class="spin-result" id="spin-result">
             <h3 id="spin-text">Touch the wheel!</h3>
@@ -676,13 +786,15 @@
   ];
 
   const SPINNER_SEGMENTS = [
-    { label: 'Look at', kind: 'look' },
-    { label: 'Point to', kind: 'point' },
-    { label: 'Open', kind: 'open' },
-    { label: 'Close', kind: 'close' },
-    { label: 'Sit down', kind: 'sit' },
-    { label: 'Stand up', kind: 'stand' }
+    { label: 'Look at', lines: ['Look', 'at'], kind: 'look', color: '#7DD6FA', icon: 'spin-icon-look.png' },
+    { label: 'Point to', lines: ['Point', 'to'], kind: 'point', color: '#7396DC', icon: 'spin-icon-point.png' },
+    { label: 'Open', lines: ['Open'], kind: 'open', color: '#F0C838', icon: 'spin-icon-open.png' },
+    { label: 'Close', lines: ['Close'], kind: 'close', color: '#E48066', icon: 'spin-icon-close.png' },
+    { label: 'Sit down', lines: ['Sit', 'down'], kind: 'sit', color: '#20B8BD', icon: 'spin-icon-sit.png' },
+    { label: 'Stand up', lines: ['Stand', 'up'], kind: 'stand', color: '#E09848', icon: 'spin-icon-stand.png' }
   ];
+  // Slice i occupies [i*60, (i+1)*60) from 12 o'clock; centre at i*60+30.
+  // Wheel --spin brings that centre under the fixed pointer when --spin = -(centre) mod 360.
 
   let voiceOn = true;
   let stars = 0;
@@ -766,25 +878,49 @@
     });
   }
 
+  let cancelGate = Promise.resolve();
+  let utterTimer = null;
+
   function cancelSpeech() {
     speakQueue = [];
     speaking = false;
     pendingSpeak = null;
     if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
     if (window.speechSynthesis) window.speechSynthesis.cancel();
+    // Chrome cancel race: brief beat before next speak()
+    cancelGate = new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  function finishUtterance(item) {
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    speaking = false;
+    if (item && item.onEnd) {
+      const cb = item.onEnd;
+      item.onEnd = null;
+      cb();
+    }
+    speakNext();
   }
 
   function speakNext() {
     if (!voiceOn || speaking) return;
     if (!speakQueue.length) return;
-    if (!window.speechSynthesis) return;
+    if (!window.speechSynthesis) {
+      // drain queue so promises resolve
+      while (speakQueue.length) {
+        const item = speakQueue.shift();
+        if (item.onEnd) item.onEnd();
+      }
+      return;
+    }
     refreshVoiceCache();
     const voices = window.speechSynthesis.getVoices() || [];
     if (!voices.length && !voicesReady) {
       if (!voicesWaitTimer) {
         voicesWaitTimer = setTimeout(() => {
           voicesWaitTimer = null;
-          voicesReady = true; // timeout: speak with whatever is available
+          voicesReady = true;
           speakNext();
         }, 1000);
       }
@@ -792,36 +928,40 @@
     }
     const item = speakQueue.shift();
     speaking = true;
-    const u = new SpeechSynthesisUtterance(item.text);
-    const voice = cachedVoice || pickVoice();
-    if (voice) {
-      u.voice = voice;
-      u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
-      cachedVoice = voice;
-    } else {
-      u.lang = 'en-GB';
-    }
-    u.rate = 0.80;
-    u.onend = () => {
-      speaking = false;
-      if (item.onEnd) item.onEnd();
-      speakNext();
+    const run = () => {
+      const u = new SpeechSynthesisUtterance(item.text);
+      const voice = cachedVoice || pickVoice();
+      if (voice) {
+        u.voice = voice;
+        u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
+        cachedVoice = voice;
+      } else {
+        u.lang = 'en-GB';
+      }
+      u.rate = 0.80;
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        finishUtterance(item);
+      };
+      u.onend = settle;
+      u.onerror = settle;
+      // Hard timeout so hung speech cannot block UI forever
+      utterTimer = setTimeout(settle, 8000);
+      try {
+        window.speechSynthesis.speak(u);
+      } catch (e) {
+        settle();
+      }
     };
-    u.onerror = () => {
-      speaking = false;
-      if (item.onEnd) item.onEnd();
-      speakNext();
-    };
-    window.speechSynthesis.speak(u);
+    cancelGate.then(run);
   }
 
   function speak(text, opts) {
     opts = opts || {};
     if (!voiceOn || !text) return Promise.resolve();
     return new Promise((resolve) => {
-      if (opts.cancel !== false) {
-        // New listen / new click cancels whole queue unless chaining
-      }
       if (!opts.chain) {
         cancelSpeech();
       }
@@ -1261,7 +1401,7 @@
       opts.forEach(opt => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'choice';
+        b.className = 'choice choice-word';
         b.textContent = opt.label;
         b.addEventListener('click', () => answerRec(opt, b, q));
         choices.appendChild(b);
@@ -1274,11 +1414,11 @@
       listen.onclick = () => speak(q.item.label);
       speak(q.item.label);
       const opts = shuffle([q.item, ...shuffle(ITEMS.filter(i => i.id !== q.item.id)).slice(0, 2)]);
-      opts.forEach(opt => {
+      opts.forEach((opt, i) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'choice';
-        b.innerHTML = `<img src="${ART}${opt.img}" alt=""><span>${opt.label}</span>`;
+        b.innerHTML = `<img src="${ART}${opt.img}" alt="Picture ${i + 1}">`;
         b.addEventListener('click', () => answerRec(opt, b, q));
         choices.appendChild(b);
       });
@@ -1359,7 +1499,7 @@
     requestAnimationFrame(syncBarPadding);
   }
 
-  async function answerFol(opt, btn, q) {
+  function answerFol(opt, btn, q) {
     if (state.folLocked) return;
     if (opt.id === q.id) {
       state.folLocked = true;
@@ -1370,39 +1510,104 @@
       $('fol-line').textContent = 'Now, everyone, do it!';
       $('fol-actions').innerHTML = '';
       const token = ++state.advanceToken;
-      // TTS: Well done! then instruction + Now do it!
-      await speakChain(['Well done!', `${q.text} Now do it!`]);
-      if (token !== state.advanceToken) return;
+      // TTS in parallel — never block the We did it! button on onend
+      speakChain(['Well done!', `${q.text} Now do it!`]);
       const delay = reducedMotion ? 400 : 1300;
-      await afterSpeechPause(delay);
-      if (token !== state.advanceToken) return;
-      const did = document.createElement('button');
-      did.type = 'button';
-      did.className = 'btn btn-leaf btn-lg';
-      did.textContent = 'We did it!';
-      did.onclick = () => {
-        addStars(1);
-        if (state.folI >= state.folQs.length - 1) showVictory(3);
-        else {
-          $('fol-actions').innerHTML = '';
-          const next = document.createElement('button');
-          next.type = 'button';
-          next.className = 'btn btn-sky btn-lg';
-          next.textContent = 'Next';
-          next.onclick = () => { state.folI += 1; renderFollow(); };
-          $('fol-actions').appendChild(next);
-          $('fol-line').textContent = 'Well done!';
-          requestAnimationFrame(syncBarPadding);
-        }
+      const hardCap = 2000; // must appear within 2s even if speech hangs
+      const showDid = () => {
+        if (token !== state.advanceToken) return;
+        if ($('fol-actions').querySelector('[data-we-did]')) return;
+        const did = document.createElement('button');
+        did.type = 'button';
+        did.className = 'btn btn-leaf btn-lg';
+        did.dataset.weDid = '1';
+        did.textContent = 'We did it!';
+        did.onclick = () => {
+          addStars(1);
+          if (state.folI >= state.folQs.length - 1) showVictory(3);
+          else {
+            $('fol-actions').innerHTML = '';
+            const next = document.createElement('button');
+            next.type = 'button';
+            next.className = 'btn btn-sky btn-lg';
+            next.textContent = 'Next';
+            next.onclick = () => { state.folI += 1; renderFollow(); };
+            $('fol-actions').appendChild(next);
+            $('fol-line').textContent = 'Well done!';
+            requestAnimationFrame(syncBarPadding);
+          }
+        };
+        $('fol-actions').appendChild(did);
+        requestAnimationFrame(syncBarPadding);
       };
-      $('fol-actions').appendChild(did);
-      requestAnimationFrame(syncBarPadding);
+      setTimeout(showDid, delay);
+      setTimeout(showDid, hardCap);
     } else {
       btn.classList.add('wrong');
       speak('Oops! Look carefully and try again.');
       $('fol-line').textContent = 'Oops! Look carefully and try again.';
       setTimeout(() => btn.classList.remove('wrong'), 700);
     }
+  }
+
+  function buildSpinnerItems() {
+    const box = $('spin-items');
+    box.innerHTML = '';
+    SPINNER_SEGMENTS.forEach((seg, i) => {
+      const mid = i * 60 + 30;
+      const item = document.createElement('div');
+      item.className = 'spin-item';
+      item.style.setProperty('--mid', mid + 'deg');
+
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'spin-part spin-part-icon';
+      const img = document.createElement('img');
+      img.src = ART + seg.icon;
+      img.alt = '';
+      img.draggable = false;
+      iconWrap.appendChild(img);
+
+      const lab = document.createElement('div');
+      lab.className = 'spin-part spin-part-lab';
+      lab.innerHTML = seg.lines.join('<br>');
+
+      item.appendChild(iconWrap);
+      item.appendChild(lab);
+      box.appendChild(item);
+    });
+  }
+
+  function setWheelAngle(deg, animate) {
+    const wheel = $('spin-wheel');
+    if (!animate || reducedMotion) {
+      wheel.style.transition = 'none';
+      wheel.style.setProperty('--spin', deg + 'deg');
+      // force reflow then restore transition for next spin
+      void wheel.offsetWidth;
+      if (!reducedMotion) {
+        wheel.style.transition = '';
+      }
+    } else {
+      wheel.style.transition = '';
+      wheel.style.setProperty('--spin', deg + 'deg');
+    }
+    state.spinAngle = deg;
+  }
+
+  function angleToCentreSlice(idx) {
+    // Positive clockwise CSS rotate that places slice centre under 12 o'clock pointer
+    const centre = idx * 60 + 30;
+    return (360 - centre) % 360;
+  }
+
+  function nextForwardAngle(idx) {
+    const landing = angleToCentreSlice(idx);
+    const cur = state.spinAngle;
+    const curMod = ((cur % 360) + 360) % 360;
+    let delta = (landing - curMod + 360) % 360;
+    // Always add at least ~5 full turns forwards
+    if (delta < 0.01) delta = 360;
+    return cur + 5 * 360 + delta;
   }
 
   function startSpinner() {
@@ -1413,17 +1618,14 @@
     state.view = 'spinner';
     state.spinning = false;
     state.spinItem = null;
-    const labels = $('spin-labels');
-    labels.innerHTML = '';
-    SPINNER_SEGMENTS.forEach((seg, i) => {
-      const span = document.createElement('span');
-      span.textContent = seg.label;
-      const angle = i * 60 + 30;
-      span.style.transform = `rotate(${angle}deg) translate(0, -8px)`;
-      labels.appendChild(span);
-    });
+    state.spinSeg = null;
+    buildSpinnerItems();
+    // Rest: Look at (slice 0) centred under pointer — not on a boundary
+    setWheelAngle(angleToCentreSlice(0), false);
     $('spin-text').textContent = 'Touch the wheel!';
     $('spin-art').classList.add('hidden');
+    $('spin-result').style.borderColor = '#482808';
+    $('spin-result').classList.remove('win-pulse');
     $('spin-line').textContent = "Let's move!";
     requestAnimationFrame(syncBarPadding);
   }
@@ -1433,34 +1635,51 @@
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  $('spin-go').addEventListener('click', () => {
+  function runSpin() {
     if (state.spinning) return;
     state.spinning = true;
     const idx = Math.floor(Math.random() * SPINNER_SEGMENTS.length);
     const seg = SPINNER_SEGMENTS[idx];
     const item = pickSpinAction(seg.kind);
     state.spinItem = item;
-    const extra = 5 * 360;
-    const target = extra + (360 - (idx * 60 + 30));
-    state.spinAngle = target;
+    state.spinSeg = seg;
+    const target = nextForwardAngle(idx);
     const wheel = $('spin-wheel');
     if (reducedMotion) {
-      wheel.style.transition = 'none';
-      wheel.style.transform = `rotate(${target}deg)`;
-      finishSpin(item);
+      setWheelAngle(target, false);
+      finishSpin(item, seg);
     } else {
-      wheel.style.transition = 'transform 2.2s cubic-bezier(0.12, 0.75, 0.12, 1)';
-      wheel.style.transform = `rotate(${target}deg)`;
-      setTimeout(() => finishSpin(item), 2300);
+      setWheelAngle(target, true);
+      const onDone = (ev) => {
+        if (ev && ev.propertyName && ev.propertyName !== '--spin' && ev.propertyName !== 'transform') return;
+        wheel.removeEventListener('transitionend', onDone);
+        finishSpin(item, seg);
+      };
+      wheel.addEventListener('transitionend', onDone);
+      // Fallback if transitionend does not fire for @property in some browsers
+      setTimeout(() => {
+        if (state.spinning) finishSpin(item, seg);
+      }, 2400);
     }
-  });
+  }
 
-  function finishSpin(item) {
+  $('spin-go').addEventListener('click', runSpin);
+
+  function finishSpin(item, seg) {
+    if (!state.spinning) return;
     state.spinning = false;
     $('spin-text').textContent = item.text;
     $('spin-art').src = ART + item.img;
     $('spin-art').classList.remove('hidden');
     $('spin-line').textContent = item.text;
+    if (seg) {
+      $('spin-result').style.borderColor = seg.color;
+      if (!reducedMotion) {
+        $('spin-result').classList.remove('win-pulse');
+        void $('spin-result').offsetWidth;
+        $('spin-result').classList.add('win-pulse');
+      }
+    }
     speak(item.text);
     requestAnimationFrame(syncBarPadding);
   }
@@ -1473,7 +1692,7 @@
     addStars(1);
     $('spin-line').textContent = 'Well done!';
   });
-  $('spin-wheel').addEventListener('click', () => $('spin-go').click());
+  $('spin-wheel').addEventListener('click', runSpin);
 
   function showVictory(part) {
     cancelSpeech();
