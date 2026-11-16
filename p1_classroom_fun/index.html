@@ -78,7 +78,7 @@
       background: #fff; border-color: #cbd5e1; color: var(--ink);
       box-shadow: 0 3px 0 rgba(15,23,42,0.08);
     }
-    .btn-lg { min-height: 80px; padding: 0.75rem 1.4rem; font-size: 1.25rem; border-radius: 1.15rem; }
+    .btn-lg { min-height: 80px; padding: 0.75rem 1.4rem; font-size: 1.55rem; border-radius: 1.15rem; }
     .mode-badge {
       background: #e0f2fe; border: 2px solid #7dd3fc; color: #0c4a6e;
       padding: 0.4rem 0.9rem; border-radius: 999px; font-weight: 800; font-size: 1rem;
@@ -132,7 +132,7 @@
 
     .progress-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem 0.9rem;
-      margin: 0.35rem 0 0.65rem; font-size: 1.15rem;
+      margin: 0.35rem 0 0.65rem; font-size: clamp(1.2rem, 2.2vw, 1.6rem);
     }
     .slots { display: flex; gap: 0.4rem; }
     .slot {
@@ -148,7 +148,8 @@
     }
     .scene-col { display: flex; flex-direction: column; min-height: 0; }
     .scene-label {
-      text-align: center; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 700;
+      text-align: center; font-family: 'Fredoka', sans-serif;
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 700;
       margin-bottom: 0.35rem; color: #0f172a;
     }
     .scene-frame {
@@ -207,7 +208,7 @@
     }
     .bottom-bar .line {
       font-family: 'Fredoka', sans-serif; font-weight: 700;
-      font-size: clamp(1.25rem, 2.8vw, 1.85rem);
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
       text-align: center; max-width: min(920px, 68vw); line-height: 1.2;
     }
     .bottom-bar .actions { display: flex; gap: 0.55rem; flex-wrap: wrap; justify-content: center; }
@@ -217,8 +218,8 @@
       background: #fff; border: 3px solid #94a3b8; border-radius: 1.2rem;
       padding: 0.85rem 1rem; text-align: center;
     }
-    .prompt-box .prompt-label { color: var(--muted); font-size: 1rem; margin: 0 0 0.25rem; }
-    .prompt-box .prompt-main { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.4rem, 3vw, 2rem); }
+    .prompt-box .prompt-label { color: var(--muted); font-size: clamp(1.2rem, 2.2vw, 1.6rem); margin: 0 0 0.25rem; }
+    .prompt-box .prompt-main { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
     .prompt-art {
       width: min(360px, 70vw); height: min(280px, 36vh); margin: 0.35rem auto 0;
       object-fit: contain; display: block;
@@ -229,6 +230,7 @@
       padding: 0.75rem; font-size: 1.2rem; font-weight: 800; color: var(--ink);
       box-shadow: 0 8px 0 #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
     }
+    .choice.choice-word { font-size: clamp(1.8rem, 3.6vw, 2.7rem); font-family: 'Fredoka', sans-serif; font-weight: 700; }
     .choice img { width: 100%; max-height: 160px; object-fit: contain; }
     .choice.correct { background: #dcfce7; border-color: #16a34a; box-shadow: 0 8px 0 #15803d; }
     .choice.wrong { background: #ffe4e6; border-color: #e11d48; box-shadow: 0 8px 0 #be123c; }
@@ -241,7 +243,7 @@
       box-shadow: 0 8px 0 rgba(217,119,6,0.25); gap: 0.45rem;
     }
     .flash-card img { width: min(220px, 100%); height: 150px; object-fit: contain; }
-    .flash-card span { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.35rem; }
+    .flash-card span { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.7rem, 3.2vw, 2.3rem); }
 
     .spinner-stage { display: grid; place-items: center; gap: 0.85rem; padding-bottom: 0.5rem; }
     .spinner-badge {
@@ -265,7 +267,7 @@
     }
     .spin-labels {
       position: absolute; inset: 0; pointer-events: none;
-      font-family: 'Fredoka', sans-serif; font-size: clamp(0.72rem, 2vw, 0.95rem); font-weight: 700;
+      font-family: 'Fredoka', sans-serif; font-size: clamp(1.1rem, 2.4vw, 1.55rem); font-weight: 700;
     }
     .spin-labels span {
       position: absolute; left: 50%; top: 50%; width: 44%; text-align: center;
@@ -282,7 +284,7 @@
       text-align: center; background: #fff; border: 4px solid #38bdf8; border-radius: 1.2rem;
       padding: 0.85rem 1.1rem; min-width: min(520px, 90vw);
     }
-    .spin-result h3 { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.5rem, 3.2vw, 2.1rem); }
+    .spin-result h3 { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
     .spin-result img { width: min(280px, 60vw); height: 180px; object-fit: contain; margin-top: 0.4rem; }
 
     @media (max-height: 800px) {
@@ -293,7 +295,7 @@
       .wheel-wrap { width: min(300px, 42vw); }
       .spin-result { min-width: 0; width: min(320px, 46vw); padding: 0.55rem 0.75rem; }
       .spin-result img { width: min(160px, 36vw); height: 160px; }
-      .spin-result h3 { font-size: clamp(1.1rem, 2.4vw, 1.45rem); }
+      .spin-result h3 { font-size: clamp(1.35rem, 2.8vw, 1.9rem); }
     }
 
     .victory {
@@ -766,25 +768,49 @@
     });
   }
 
+  let cancelGate = Promise.resolve();
+  let utterTimer = null;
+
   function cancelSpeech() {
     speakQueue = [];
     speaking = false;
     pendingSpeak = null;
     if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
     if (window.speechSynthesis) window.speechSynthesis.cancel();
+    // Chrome cancel race: brief beat before next speak()
+    cancelGate = new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  function finishUtterance(item) {
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    speaking = false;
+    if (item && item.onEnd) {
+      const cb = item.onEnd;
+      item.onEnd = null;
+      cb();
+    }
+    speakNext();
   }
 
   function speakNext() {
     if (!voiceOn || speaking) return;
     if (!speakQueue.length) return;
-    if (!window.speechSynthesis) return;
+    if (!window.speechSynthesis) {
+      // drain queue so promises resolve
+      while (speakQueue.length) {
+        const item = speakQueue.shift();
+        if (item.onEnd) item.onEnd();
+      }
+      return;
+    }
     refreshVoiceCache();
     const voices = window.speechSynthesis.getVoices() || [];
     if (!voices.length && !voicesReady) {
       if (!voicesWaitTimer) {
         voicesWaitTimer = setTimeout(() => {
           voicesWaitTimer = null;
-          voicesReady = true; // timeout: speak with whatever is available
+          voicesReady = true;
           speakNext();
         }, 1000);
       }
@@ -792,36 +818,40 @@
     }
     const item = speakQueue.shift();
     speaking = true;
-    const u = new SpeechSynthesisUtterance(item.text);
-    const voice = cachedVoice || pickVoice();
-    if (voice) {
-      u.voice = voice;
-      u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
-      cachedVoice = voice;
-    } else {
-      u.lang = 'en-GB';
-    }
-    u.rate = 0.80;
-    u.onend = () => {
-      speaking = false;
-      if (item.onEnd) item.onEnd();
-      speakNext();
+    const run = () => {
+      const u = new SpeechSynthesisUtterance(item.text);
+      const voice = cachedVoice || pickVoice();
+      if (voice) {
+        u.voice = voice;
+        u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
+        cachedVoice = voice;
+      } else {
+        u.lang = 'en-GB';
+      }
+      u.rate = 0.80;
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        finishUtterance(item);
+      };
+      u.onend = settle;
+      u.onerror = settle;
+      // Hard timeout so hung speech cannot block UI forever
+      utterTimer = setTimeout(settle, 8000);
+      try {
+        window.speechSynthesis.speak(u);
+      } catch (e) {
+        settle();
+      }
     };
-    u.onerror = () => {
-      speaking = false;
-      if (item.onEnd) item.onEnd();
-      speakNext();
-    };
-    window.speechSynthesis.speak(u);
+    cancelGate.then(run);
   }
 
   function speak(text, opts) {
     opts = opts || {};
     if (!voiceOn || !text) return Promise.resolve();
     return new Promise((resolve) => {
-      if (opts.cancel !== false) {
-        // New listen / new click cancels whole queue unless chaining
-      }
       if (!opts.chain) {
         cancelSpeech();
       }
@@ -1261,7 +1291,7 @@
       opts.forEach(opt => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'choice';
+        b.className = 'choice choice-word';
         b.textContent = opt.label;
         b.addEventListener('click', () => answerRec(opt, b, q));
         choices.appendChild(b);
@@ -1274,11 +1304,11 @@
       listen.onclick = () => speak(q.item.label);
       speak(q.item.label);
       const opts = shuffle([q.item, ...shuffle(ITEMS.filter(i => i.id !== q.item.id)).slice(0, 2)]);
-      opts.forEach(opt => {
+      opts.forEach((opt, i) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'choice';
-        b.innerHTML = `<img src="${ART}${opt.img}" alt=""><span>${opt.label}</span>`;
+        b.innerHTML = `<img src="${ART}${opt.img}" alt="Picture ${i + 1}">`;
         b.addEventListener('click', () => answerRec(opt, b, q));
         choices.appendChild(b);
       });
@@ -1359,7 +1389,7 @@
     requestAnimationFrame(syncBarPadding);
   }
 
-  async function answerFol(opt, btn, q) {
+  function answerFol(opt, btn, q) {
     if (state.folLocked) return;
     if (opt.id === q.id) {
       state.folLocked = true;
@@ -1370,33 +1400,38 @@
       $('fol-line').textContent = 'Now, everyone, do it!';
       $('fol-actions').innerHTML = '';
       const token = ++state.advanceToken;
-      // TTS: Well done! then instruction + Now do it!
-      await speakChain(['Well done!', `${q.text} Now do it!`]);
-      if (token !== state.advanceToken) return;
+      // TTS in parallel — never block the We did it! button on onend
+      speakChain(['Well done!', `${q.text} Now do it!`]);
       const delay = reducedMotion ? 400 : 1300;
-      await afterSpeechPause(delay);
-      if (token !== state.advanceToken) return;
-      const did = document.createElement('button');
-      did.type = 'button';
-      did.className = 'btn btn-leaf btn-lg';
-      did.textContent = 'We did it!';
-      did.onclick = () => {
-        addStars(1);
-        if (state.folI >= state.folQs.length - 1) showVictory(3);
-        else {
-          $('fol-actions').innerHTML = '';
-          const next = document.createElement('button');
-          next.type = 'button';
-          next.className = 'btn btn-sky btn-lg';
-          next.textContent = 'Next';
-          next.onclick = () => { state.folI += 1; renderFollow(); };
-          $('fol-actions').appendChild(next);
-          $('fol-line').textContent = 'Well done!';
-          requestAnimationFrame(syncBarPadding);
-        }
+      const hardCap = 2000; // must appear within 2s even if speech hangs
+      const showDid = () => {
+        if (token !== state.advanceToken) return;
+        if ($('fol-actions').querySelector('[data-we-did]')) return;
+        const did = document.createElement('button');
+        did.type = 'button';
+        did.className = 'btn btn-leaf btn-lg';
+        did.dataset.weDid = '1';
+        did.textContent = 'We did it!';
+        did.onclick = () => {
+          addStars(1);
+          if (state.folI >= state.folQs.length - 1) showVictory(3);
+          else {
+            $('fol-actions').innerHTML = '';
+            const next = document.createElement('button');
+            next.type = 'button';
+            next.className = 'btn btn-sky btn-lg';
+            next.textContent = 'Next';
+            next.onclick = () => { state.folI += 1; renderFollow(); };
+            $('fol-actions').appendChild(next);
+            $('fol-line').textContent = 'Well done!';
+            requestAnimationFrame(syncBarPadding);
+          }
+        };
+        $('fol-actions').appendChild(did);
+        requestAnimationFrame(syncBarPadding);
       };
-      $('fol-actions').appendChild(did);
-      requestAnimationFrame(syncBarPadding);
+      setTimeout(showDid, delay);
+      setTimeout(showDid, hardCap);
     } else {
       btn.classList.add('wrong');
       speak('Oops! Look carefully and try again.');
