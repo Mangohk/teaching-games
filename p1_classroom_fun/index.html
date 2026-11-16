@@ -316,31 +316,33 @@
       pointer-events: none;
       z-index: 2;
     }
-    .spin-item-face {
+    /* Icon and label are independent: each at its own radius on the slice midline.
+       Never one flex column — that flips icon/label order on the bottom half. */
+    .spin-part {
       position: absolute;
       left: 50%;
       top: 50%;
-      width: clamp(4.2rem, 24cqw, 5.2rem);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0.12rem;
       transform-origin: center center;
-      /* mid-line: icon outward, label inward; keep upright via counter-rotation */
       transform:
         translate(-50%, -50%)
         rotate(var(--mid))
-        translateY(-31cqw)
+        translateY(calc(-1 * var(--rad)))
         rotate(calc(0deg - var(--mid) - var(--spin)));
     }
-    .spin-item-face img {
+    .spin-part-icon {
+      --rad: 36cqw; /* farther out, just inside outer ring */
       width: clamp(64px, 22cqw, 72px);
       height: clamp(64px, 22cqw, 72px);
-      object-fit: contain;
-      flex: 0 0 auto;
     }
-    .spin-item-face .spin-lab {
+    .spin-part-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .spin-part-lab {
+      --rad: 22cqw; /* farther in; clear of hub and neighbour two-line words */
+      width: clamp(4rem, 24cqw, 5.2rem);
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: clamp(1.1rem, 6.4cqw, 1.25rem);
@@ -395,7 +397,7 @@
       .wheel-wrap { width: min(400px, 40vw); }
       .spin-result { width: min(360px, 38vw); min-width: 340px; }
       .spin-result img { width: 340px; height: 340px; max-width: 100%; }
-      .spin-item-face img { width: clamp(72px, 22cqw, 96px); height: clamp(72px, 22cqw, 96px); }
+      .spin-part-icon { width: clamp(72px, 22cqw, 96px); height: clamp(72px, 22cqw, 96px); }
     }
     @media (prefers-reduced-motion: reduce) {
       .spin-wheel { transition: none !important; }
@@ -1556,18 +1558,21 @@
       const item = document.createElement('div');
       item.className = 'spin-item';
       item.style.setProperty('--mid', mid + 'deg');
-      const face = document.createElement('div');
-      face.className = 'spin-item-face';
+
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'spin-part spin-part-icon';
       const img = document.createElement('img');
       img.src = ART + seg.icon;
       img.alt = '';
       img.draggable = false;
+      iconWrap.appendChild(img);
+
       const lab = document.createElement('div');
-      lab.className = 'spin-lab';
+      lab.className = 'spin-part spin-part-lab';
       lab.innerHTML = seg.lines.join('<br>');
-      face.appendChild(img);
-      face.appendChild(lab);
-      item.appendChild(face);
+
+      item.appendChild(iconWrap);
+      item.appendChild(lab);
       box.appendChild(item);
     });
   }
