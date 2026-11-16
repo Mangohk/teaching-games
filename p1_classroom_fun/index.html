@@ -273,13 +273,14 @@
       transform: translateX(-50%);
       height: clamp(40px, 15cqw, 52px);
       width: auto;
-      z-index: 6;
+      z-index: 20;
       pointer-events: none;
       filter: drop-shadow(0 2px 0 rgba(72, 40, 8, 0.25));
     }
     .spin-wheel {
       --spin: 330deg;
       position: relative;
+      z-index: 1;
       width: 100%; height: 100%;
       border-radius: 50%;
       border: 10px solid #482808;
@@ -330,7 +331,7 @@
       transform:
         translate(-50%, -50%)
         rotate(var(--mid))
-        translateY(-52cqw)
+        translateY(-31cqw)
         rotate(calc(0deg - var(--mid) - var(--spin)));
     }
     .spin-item-face img {
