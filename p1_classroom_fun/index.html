@@ -245,57 +245,160 @@
     .flash-card img { width: min(220px, 100%); height: 150px; object-fit: contain; }
     .flash-card span { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.7rem, 3.2vw, 2.3rem); }
 
+    @property --spin {
+      syntax: '<angle>';
+      inherits: true;
+      initial-value: 330deg;
+    }
     .spinner-stage { display: grid; place-items: center; gap: 0.85rem; padding-bottom: 0.5rem; }
     .spinner-badge {
       background: #ecfccb; border: 2px solid #65a30d; color: #365314;
       padding: 0.35rem 0.8rem; border-radius: 999px; font-weight: 800;
     }
     .spinner-row {
-      display: flex; flex-direction: column; align-items: center; gap: 0.85rem; width: 100%;
+      display: flex; flex-direction: row; justify-content: center; align-items: center;
+      gap: 1rem; width: 100%; flex-wrap: wrap;
     }
-    .wheel-wrap { position: relative; width: min(420px, 78vw); aspect-ratio: 1; }
+    .wheel-wrap {
+      position: relative;
+      width: min(380px, 42vw, 46vh);
+      aspect-ratio: 1;
+      container-type: size;
+      flex: 0 0 auto;
+    }
+    .spin-pointer {
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: clamp(40px, 15cqw, 52px);
+      width: auto;
+      z-index: 6;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 0 rgba(72, 40, 8, 0.25));
+    }
     .spin-wheel {
-      width: 100%; height: 100%; border-radius: 50%;
-      border: 8px solid #0f172a;
+      --spin: 330deg;
+      position: relative;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      border: 10px solid #482808;
       background: conic-gradient(
-        #38bdf8 0 60deg, #4ade80 60deg 120deg, #fbbf24 120deg 180deg,
-        #fb7185 180deg 240deg, #a3e635 240deg 300deg, #67e8f9 300deg 360deg
+        #7DD6FA 0 60deg,
+        #7396DC 60deg 120deg,
+        #F0C838 120deg 180deg,
+        #E48066 180deg 240deg,
+        #20B8BD 240deg 300deg,
+        #E09848 300deg 360deg
       );
-      transition: transform 2.2s cubic-bezier(0.12, 0.75, 0.12, 1);
-      box-shadow: inset 0 0 0 6px rgba(255,255,255,0.35), 0 12px 0 rgba(15,23,42,0.15);
-      display: grid; place-items: center;
+      box-shadow:
+        inset 0 0 0 6px #FFEDC4,
+        0 10px 0 rgba(72, 40, 8, 0.18);
+      transform: rotate(var(--spin));
+      transition: --spin 2.2s cubic-bezier(0.12, 0.75, 0.12, 1);
+      cursor: pointer;
     }
-    .spin-labels {
-      position: absolute; inset: 0; pointer-events: none;
-      font-family: 'Fredoka', sans-serif; font-size: clamp(1.1rem, 2.4vw, 1.55rem); font-weight: 700;
+    .spin-hub {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 18%; height: 18%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #482808;
+      box-shadow: inset 0 0 0 3px #FFEDC4;
+      z-index: 3;
+      pointer-events: none;
     }
-    .spin-labels span {
-      position: absolute; left: 50%; top: 50%; width: 44%; text-align: center;
-      transform-origin: left center; color: #0f172a; text-shadow: 0 1px 0 #fff;
+    .spin-item {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
     }
-    .pointer {
-      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 14px solid transparent; border-right: 14px solid transparent;
-      border-top: 28px solid #e11d48; z-index: 2;
-      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.2));
+    .spin-item-face {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: clamp(4.2rem, 24cqw, 5.2rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.12rem;
+      transform-origin: center center;
+      /* mid-line: icon outward, label inward; keep upright via counter-rotation */
+      transform:
+        translate(-50%, -50%)
+        rotate(var(--mid))
+        translateY(-52cqw)
+        rotate(calc(0deg - var(--mid) - var(--spin)));
+    }
+    .spin-item-face img {
+      width: clamp(64px, 22cqw, 72px);
+      height: clamp(64px, 22cqw, 72px);
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+    .spin-item-face .spin-lab {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.1rem, 6.4cqw, 1.25rem);
+      line-height: 1.05;
+      color: #482808;
+      text-align: center;
+      text-shadow: 0 1px 0 rgba(255, 237, 196, 0.9);
     }
     .spin-result {
-      text-align: center; background: #fff; border: 4px solid #38bdf8; border-radius: 1.2rem;
-      padding: 0.85rem 1.1rem; min-width: min(520px, 90vw);
+      text-align: center;
+      background: #FFEDC4;
+      border: 5px solid #482808;
+      border-radius: 1.2rem;
+      padding: 0.75rem 1rem;
+      width: min(360px, 46vw);
+      flex: 0 0 auto;
+      box-shadow: 0 8px 0 rgba(72, 40, 8, 0.12);
     }
-    .spin-result h3 { margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
-    .spin-result img { width: min(280px, 60vw); height: 180px; object-fit: contain; margin-top: 0.4rem; }
-
+    .spin-result.win-pulse {
+      animation: winPulse 0.7s ease;
+    }
+    @keyframes winPulse {
+      0% { box-shadow: 0 0 0 0 rgba(72, 40, 8, 0.0); }
+      40% { box-shadow: 0 0 0 6px rgba(72, 40, 8, 0.18); }
+      100% { box-shadow: 0 8px 0 rgba(72, 40, 8, 0.12); }
+    }
+    .spin-result h3 {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+      color: #482808;
+      line-height: 1.15;
+    }
+    .spin-result img {
+      width: min(340px, 100%);
+      height: min(340px, 36vh, 100%);
+      aspect-ratio: 1;
+      object-fit: contain;
+      margin-top: 0.45rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
     @media (max-height: 800px) {
-      .spinner-row {
-        flex-direction: row; justify-content: center; align-items: center; gap: 1rem;
-        flex-wrap: wrap;
-      }
       .wheel-wrap { width: min(300px, 42vw); }
-      .spin-result { min-width: 0; width: min(320px, 46vw); padding: 0.55rem 0.75rem; }
-      .spin-result img { width: min(160px, 36vw); height: 160px; }
+      .spin-result { width: 320px; padding: 0.55rem 0.7rem; }
+      .spin-result img { width: 320px; height: 320px; max-height: none; }
       .spin-result h3 { font-size: clamp(1.35rem, 2.8vw, 1.9rem); }
+    }
+    @media (min-height: 801px) {
+      .wheel-wrap { width: min(400px, 40vw); }
+      .spin-result { width: min(360px, 38vw); min-width: 340px; }
+      .spin-result img { width: 340px; height: 340px; max-width: 100%; }
+      .spin-item-face img { width: clamp(72px, 22cqw, 96px); height: clamp(72px, 22cqw, 96px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .spin-wheel { transition: none !important; }
+      .spin-result.win-pulse { animation: none; }
     }
 
     .victory {
@@ -451,9 +554,11 @@
         <div class="spinner-badge">Class time! Let's move!</div>
         <div class="spinner-row">
           <div class="wheel-wrap">
-            <div class="pointer" aria-hidden="true"></div>
-            <div class="spin-wheel" id="spin-wheel"></div>
-            <div class="spin-labels" id="spin-labels"></div>
+            <img class="spin-pointer" src="./art/spinner-pointer.png" alt="" width="512" height="512">
+            <div class="spin-wheel" id="spin-wheel" aria-label="Class Spinner">
+              <div class="spin-hub" aria-hidden="true"></div>
+              <div id="spin-items"></div>
+            </div>
           </div>
           <div class="spin-result" id="spin-result">
             <h3 id="spin-text">Touch the wheel!</h3>
@@ -678,13 +783,15 @@
   ];
 
   const SPINNER_SEGMENTS = [
-    { label: 'Look at', kind: 'look' },
-    { label: 'Point to', kind: 'point' },
-    { label: 'Open', kind: 'open' },
-    { label: 'Close', kind: 'close' },
-    { label: 'Sit down', kind: 'sit' },
-    { label: 'Stand up', kind: 'stand' }
+    { label: 'Look at', lines: ['Look', 'at'], kind: 'look', color: '#7DD6FA', icon: 'spin-icon-look.png' },
+    { label: 'Point to', lines: ['Point', 'to'], kind: 'point', color: '#7396DC', icon: 'spin-icon-point.png' },
+    { label: 'Open', lines: ['Open'], kind: 'open', color: '#F0C838', icon: 'spin-icon-open.png' },
+    { label: 'Close', lines: ['Close'], kind: 'close', color: '#E48066', icon: 'spin-icon-close.png' },
+    { label: 'Sit down', lines: ['Sit', 'down'], kind: 'sit', color: '#20B8BD', icon: 'spin-icon-sit.png' },
+    { label: 'Stand up', lines: ['Stand', 'up'], kind: 'stand', color: '#E09848', icon: 'spin-icon-stand.png' }
   ];
+  // Slice i occupies [i*60, (i+1)*60) from 12 o'clock; centre at i*60+30.
+  // Wheel --spin brings that centre under the fixed pointer when --spin = -(centre) mod 360.
 
   let voiceOn = true;
   let stars = 0;
@@ -1440,6 +1547,63 @@
     }
   }
 
+  function buildSpinnerItems() {
+    const box = $('spin-items');
+    box.innerHTML = '';
+    SPINNER_SEGMENTS.forEach((seg, i) => {
+      const mid = i * 60 + 30;
+      const item = document.createElement('div');
+      item.className = 'spin-item';
+      item.style.setProperty('--mid', mid + 'deg');
+      const face = document.createElement('div');
+      face.className = 'spin-item-face';
+      const img = document.createElement('img');
+      img.src = ART + seg.icon;
+      img.alt = '';
+      img.draggable = false;
+      const lab = document.createElement('div');
+      lab.className = 'spin-lab';
+      lab.innerHTML = seg.lines.join('<br>');
+      face.appendChild(img);
+      face.appendChild(lab);
+      item.appendChild(face);
+      box.appendChild(item);
+    });
+  }
+
+  function setWheelAngle(deg, animate) {
+    const wheel = $('spin-wheel');
+    if (!animate || reducedMotion) {
+      wheel.style.transition = 'none';
+      wheel.style.setProperty('--spin', deg + 'deg');
+      // force reflow then restore transition for next spin
+      void wheel.offsetWidth;
+      if (!reducedMotion) {
+        wheel.style.transition = '';
+      }
+    } else {
+      wheel.style.transition = '';
+      wheel.style.setProperty('--spin', deg + 'deg');
+    }
+    state.spinAngle = deg;
+  }
+
+  function angleToCentreSlice(idx) {
+    // Positive clockwise CSS rotate that places slice centre under 12 o'clock pointer
+    const centre = idx * 60 + 30;
+    return (360 - centre) % 360;
+  }
+
+  function nextForwardAngle(idx) {
+    const landing = angleToCentreSlice(idx);
+    const cur = state.spinAngle;
+    const curMod = ((cur % 360) + 360) % 360;
+    let delta = (landing - curMod + 360) % 360;
+    // Always add at least ~5 full turns forwards
+    if (delta < 0.01) delta = 360;
+    return cur + 5 * 360 + delta;
+  }
+
   function startSpinner() {
     cancelSpeech();
     hideAllViews();
@@ -1448,17 +1612,14 @@
     state.view = 'spinner';
     state.spinning = false;
     state.spinItem = null;
-    const labels = $('spin-labels');
-    labels.innerHTML = '';
-    SPINNER_SEGMENTS.forEach((seg, i) => {
-      const span = document.createElement('span');
-      span.textContent = seg.label;
-      const angle = i * 60 + 30;
-      span.style.transform = `rotate(${angle}deg) translate(0, -8px)`;
-      labels.appendChild(span);
-    });
+    state.spinSeg = null;
+    buildSpinnerItems();
+    // Rest: Look at (slice 0) centred under pointer — not on a boundary
+    setWheelAngle(angleToCentreSlice(0), false);
     $('spin-text').textContent = 'Touch the wheel!';
     $('spin-art').classList.add('hidden');
+    $('spin-result').style.borderColor = '#482808';
+    $('spin-result').classList.remove('win-pulse');
     $('spin-line').textContent = "Let's move!";
     requestAnimationFrame(syncBarPadding);
   }
@@ -1468,34 +1629,51 @@
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  $('spin-go').addEventListener('click', () => {
+  function runSpin() {
     if (state.spinning) return;
     state.spinning = true;
     const idx = Math.floor(Math.random() * SPINNER_SEGMENTS.length);
     const seg = SPINNER_SEGMENTS[idx];
     const item = pickSpinAction(seg.kind);
     state.spinItem = item;
-    const extra = 5 * 360;
-    const target = extra + (360 - (idx * 60 + 30));
-    state.spinAngle = target;
+    state.spinSeg = seg;
+    const target = nextForwardAngle(idx);
     const wheel = $('spin-wheel');
     if (reducedMotion) {
-      wheel.style.transition = 'none';
-      wheel.style.transform = `rotate(${target}deg)`;
-      finishSpin(item);
+      setWheelAngle(target, false);
+      finishSpin(item, seg);
     } else {
-      wheel.style.transition = 'transform 2.2s cubic-bezier(0.12, 0.75, 0.12, 1)';
-      wheel.style.transform = `rotate(${target}deg)`;
-      setTimeout(() => finishSpin(item), 2300);
+      setWheelAngle(target, true);
+      const onDone = (ev) => {
+        if (ev && ev.propertyName && ev.propertyName !== '--spin' && ev.propertyName !== 'transform') return;
+        wheel.removeEventListener('transitionend', onDone);
+        finishSpin(item, seg);
+      };
+      wheel.addEventListener('transitionend', onDone);
+      // Fallback if transitionend does not fire for @property in some browsers
+      setTimeout(() => {
+        if (state.spinning) finishSpin(item, seg);
+      }, 2400);
     }
-  });
+  }
 
-  function finishSpin(item) {
+  $('spin-go').addEventListener('click', runSpin);
+
+  function finishSpin(item, seg) {
+    if (!state.spinning) return;
     state.spinning = false;
     $('spin-text').textContent = item.text;
     $('spin-art').src = ART + item.img;
     $('spin-art').classList.remove('hidden');
     $('spin-line').textContent = item.text;
+    if (seg) {
+      $('spin-result').style.borderColor = seg.color;
+      if (!reducedMotion) {
+        $('spin-result').classList.remove('win-pulse');
+        void $('spin-result').offsetWidth;
+        $('spin-result').classList.add('win-pulse');
+      }
+    }
     speak(item.text);
     requestAnimationFrame(syncBarPadding);
   }
@@ -1508,7 +1686,7 @@
     addStars(1);
     $('spin-line').textContent = 'Well done!';
   });
-  $('spin-wheel').addEventListener('click', () => $('spin-go').click());
+  $('spin-wheel').addEventListener('click', runSpin);
 
   function showVictory(part) {
     cancelSpeech();
