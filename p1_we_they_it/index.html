@@ -589,10 +589,6 @@
     if (el) el.innerHTML = html;
   }
 
-  function restoreStem() {
-    setSentence(stem);
-  }
-
   function renderQuestionShell() {
     playBody.innerHTML =
       '<div class="well-wrap"><div class="art-well"><img id="art-img" src="" alt="Photo"></div></div>' +
@@ -658,7 +654,7 @@
       firstTry = false;
       setSentence('Try again!');
       await speak('Try again!');
-      restoreStem();
+      // Keep Try again! on the board until the next card choice (do not restore stem).
       if (missCount >= 2) {
         const correct = playBody.querySelector('.word-card[data-word="' + item.answer + '"]');
         if (correct) correct.classList.add('hint-ring');
