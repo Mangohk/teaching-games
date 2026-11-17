@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>He or She?</title>
+  <link rel="stylesheet" href="./vendor/fonts/fonts.css">
+  <style>
+    :root {
+      --cream: #FFEDC4;
+      --ink: #482808;
+      --he: #2F6FED;
+      --he-dark: #1E4FB8;
+      --she: #A85A3A;
+      --she-dark: #7A3D28;
+      --panel: #FFF8E7;
+      --ok: #1F7A3F;
+      --warn: #B45309;
+      --top-h: 72px;
+      --bottom-h: 104px;
+      --sentence-h: 124px;
+      --fs-pronoun: 56px;
+      --fs-sentence: 36px;
+      --fs-btn: 28px;
+      --fs-title: 64px;
+      --fs-prompt: 28px;
+      --target-w: 300px;
+      --target-h: 400px;
+      --target2-w: 260px;
+      --target2-h: 360px;
+      --rail-btn-w: 280px;
+      --rail-btn-h: 128px;
+      --hit: 96px;
+    }
+    @media (min-width: 1600px) {
+      :root {
+        --fs-pronoun: 80px;
+        --fs-sentence: 54px;
+        --fs-btn: 42px;
+        --fs-title: 96px;
+        --fs-prompt: 42px;
+        --target-w: 420px;
+        --target-h: 540px;
+        --target2-w: 364px;
+        --target2-h: 504px;
+        --rail-btn-w: 392px;
+        --rail-btn-h: 180px;
+        --hit: 120px;
+        --top-h: 96px;
+        --bottom-h: 146px;
+        --sentence-h: 174px;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Nunito', 'Fredoka', sans-serif;
+      font-weight: 800;
+      color: var(--ink);
+      background: var(--cream);
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+    }
+    body.shooting-cursor, body.shooting-cursor button.pronoun-btn,
+    body.shooting-cursor .person-frame.p2 {
+      cursor: url('./art/prop-star-wand.png') 16 16, crosshair;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      color: inherit;
+    }
+    button:focus-visible {
+      outline: 4px solid var(--he);
+      outline-offset: 3px;
+    }
+    .hidden { display: none !important; }
+    .app {
+      min-height: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--cream);
+    }
+
+    /* —— Home —— */
+    .home {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.1rem;
+      padding: 2rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+    .home h1 {
+      margin: 0 0 0.35rem;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-title);
+      line-height: 1.05;
+      color: var(--ink);
+    }
+    .home .hint {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+      font-weight: 700;
+      opacity: 0.88;
+    }
+    .home-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      width: min(420px, 92vw);
+    }
+    .home-btn {
+      min-width: 360px;
+      min-height: 96px;
+      width: 100%;
+      border-radius: 1.35rem;
+      border: 5px solid var(--ink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      box-shadow: 0 6px 0 rgba(72, 40, 8, 0.18);
+    }
+    .home-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(72, 40, 8, 0.18); }
+    .home-btn.primary { background: var(--he); color: #fff; }
+    .home-btn.secondary { background: #fff; color: var(--ink); }
+    .home-btn.ghost {
+      background: rgba(255,255,255,0.55);
+      color: var(--ink);
+      opacity: 0.72;
+    }
+    .home-btn.ghost:disabled { cursor: not-allowed; }
+    .teacher-note {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      opacity: 0.55;
+      max-width: 28rem;
+    }
+
+    /* —— Shared chrome —— */
+    .topbar {
+      flex: 0 0 auto;
+      min-height: var(--top-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.45rem 1rem;
+      background: rgba(255, 248, 231, 0.96);
+      border-bottom: 4px solid var(--ink);
+    }
+    .brand {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+      color: var(--ink);
+    }
+    .top-right { display: flex; align-items: center; gap: 0.55rem; }
+    .icon-btn {
+      min-width: 56px; min-height: 56px;
+      border-radius: 0.85rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      font-size: 1.35rem;
+      font-weight: 800;
+      box-shadow: 0 3px 0 rgba(72,40,8,0.12);
+    }
+    .stars {
+      min-width: 72px; min-height: 56px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.85rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    .stars img { width: 28px; height: 28px; object-fit: contain; }
+
+    .stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0.65rem 1rem 0;
+    }
+
+    .sentence {
+      flex: 0 0 auto;
+      min-height: var(--sentence-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: 0.35rem auto 0.55rem;
+      width: min(980px, 96%);
+      padding: 0.55rem 1.1rem;
+      background: var(--panel);
+      border: 5px solid var(--ink);
+      border-radius: 1.25rem;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-sentence);
+      line-height: 1.2;
+      color: var(--ink);
+    }
+    .sentence .soft { opacity: 0.55; }
+
+    .bottombar {
+      flex: 0 0 auto;
+      min-height: var(--bottom-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.55rem 1.1rem;
+      background: rgba(255, 248, 231, 0.98);
+      border-top: 4px solid var(--ink);
+    }
+    .prompt {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-prompt);
+      line-height: 1.15;
+      max-width: 70%;
+    }
+    .btn-next {
+      min-width: var(--hit);
+      min-height: var(--hit);
+      padding: 0.55rem 1.6rem;
+      border-radius: 1.15rem;
+      border: 5px solid var(--ink);
+      background: var(--he);
+      color: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      box-shadow: 0 5px 0 rgba(72,40,8,0.16);
+    }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-next:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(72,40,8,0.16); }
+
+    /* —— Part 1 three columns —— */
+    .p1-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr minmax(var(--target-w), 1.15fr) 1fr;
+      align-items: center;
+      gap: 0.75rem;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+    .rail {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pronoun-btn {
+      width: var(--rail-btn-w);
+      height: var(--rail-btn-h);
+      max-width: 92%;
+      border-radius: 1.4rem;
+      border: 5px solid var(--ink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-pronoun);
+      color: #fff;
+      box-shadow: 0 7px 0 rgba(72,40,8,0.18);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+    }
+    .pronoun-btn .mark {
+      width: 0.55em; height: 0.55em;
+      border: 4px solid #fff;
+      flex: 0 0 auto;
+    }
+    .pronoun-btn.he { background: var(--he); }
+    .pronoun-btn.he .mark { border-radius: 0.2em; background: rgba(255,255,255,0.25); }
+    .pronoun-btn.she { background: var(--she); }
+    .pronoun-btn.she .mark { border-radius: 50%; background: rgba(255,255,255,0.25); }
+    .pronoun-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 3px 0 rgba(72,40,8,0.18); }
+    .pronoun-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .pronoun-btn.wrong-flash {
+      animation: wrongPulse 0.45s ease;
+    }
+    @keyframes wrongPulse {
+      0%, 100% { filter: none; }
+      40% { filter: brightness(0.85); }
+    }
+
+    .person-frame {
+      position: relative;
+      width: var(--target-w);
+      height: var(--target-h);
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--cream);
+      border: 5px solid var(--ink);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .person-frame img.char {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      display: block;
+    }
+    .person-frame.enter {
+      animation: enterIn 0.7s ease-out both;
+    }
+    @keyframes enterIn {
+      from { transform: translateX(-18vw); opacity: 0.2; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .sticker {
+      position: absolute;
+      width: clamp(56px, 18%, 88px);
+      height: clamp(56px, 18%, 88px);
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 3;
+      filter: drop-shadow(0 2px 0 rgba(72,40,8,0.25));
+    }
+    .sticker.pop { animation: starPop 0.45s ease both; }
+    @keyframes starPop {
+      0% { transform: scale(0.2); opacity: 0; }
+      70% { transform: scale(1.12); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* —— Part 2 two targets —— */
+    .p2-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: center;
+      justify-items: center;
+      width: min(1100px, 100%);
+      margin: 0 auto;
+    }
+    .person-frame.p2 {
+      width: var(--target2-w);
+      height: var(--target2-h);
+      cursor: pointer;
+    }
+    .person-frame.p2:focus-visible { outline: 4px solid var(--he); outline-offset: 4px; }
+    .person-frame.p2.wrong-flash { animation: wrongPulse 0.45s ease; }
+
+    /* —— Warm-up —— */
+    .warmup {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .warmup .card {
+      width: min(420px, 90vw);
+      background: var(--panel);
+      border: 5px solid var(--ink);
+      border-radius: 1.35rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .warmup .card img {
+      width: min(280px, 70vw);
+      height: auto;
+      aspect-ratio: 3 / 4;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 0.75rem;
+    }
+    .warmup .card p {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-size: var(--fs-sentence);
+      font-weight: 700;
+    }
+
+    /* —— Part 3 My class —— */
+    .p3 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      padding: 0.5rem 1rem;
+    }
+    .p3-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .p3 .person-frame {
+      width: min(var(--target2-w), 42vw);
+      height: min(var(--target2-h), 52vh);
+    }
+
+    .fly-star {
+      position: fixed;
+      width: 64px; height: 64px;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 80;
+      transition: transform 0.45s ease, opacity 0.45s ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .person-frame.enter { animation: none; }
+      .sticker.pop { animation: none; }
+      .pronoun-btn.wrong-flash, .person-frame.p2.wrong-flash { animation: none; }
+      .fly-star { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- HOME -->
+    <section class="home" id="view-home">
+      <h1>He or She?</h1>
+      <p class="hint">Shoot He or She with a star sticker.</p>
+      <div class="home-stack">
+        <button type="button" class="home-btn primary" id="btn-play">Play</button>
+        <button type="button" class="home-btn secondary" id="btn-listen">Listen</button>
+        <button type="button" class="home-btn secondary" id="btn-warmup">Warm-up</button>
+        <button type="button" class="home-btn ghost" id="btn-myclass" disabled title="Unlock after Part 1">My class</button>
+      </div>
+      <p class="teacher-note">Teacher: Part 3 is optional. More examples stay in this note only.</p>
+    </section>
+
+    <!-- PLAY SHELL -->
+    <section class="hidden" id="view-play" style="display:none;flex:1;flex-direction:column;min-height:0;">
+      <header class="topbar">
+        <div class="brand">He or She?</div>
+        <div class="top-right">
+          <button type="button" class="icon-btn" id="btn-home" aria-label="Home">⌂</button>
+          <button type="button" class="icon-btn" id="btn-voice" aria-pressed="true" title="Voice">Voice ON</button>
+          <div class="stars" aria-live="polite">
+            <img src="./art/prop-star-sticker.png" alt="" width="28" height="28">
+            <span id="star-count">0</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="stage" id="stage">
+        <!-- filled by mode -->
+      </div>
+
+      <footer class="bottombar">
+        <div class="prompt" id="prompt">Look at the picture. Shoot He or She.</div>
+        <button type="button" class="btn-next" id="btn-next" disabled>Next</button>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+(function () {
+  'use strict';
+
+  const ART = './art/';
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Locked sentences — do not invent new lines.
+  const LINE = {
+    boy: 'He is a boy.',
+    girl: 'She is a girl.',
+    heTeacher: 'He is a teacher.',
+    sheTeacher: 'She is a teacher.'
+  };
+
+  /**
+   * First-play order (PLAY-DESIGN §5.3–5.4 style).
+   * He always left / She always right. Part 1: 8 look-and-shoot.
+   * Part 2: 6 listen-and-shoot pairs.
+   */
+  const PART1 = [
+    { img: 'h1-boy-run.png', gender: 'he', line: LINE.boy },
+    { img: 's1-girl-run.png', gender: 'she', line: LINE.girl },
+    { img: 'h2-boy-read.png', gender: 'he', line: LINE.boy },
+    { img: 's2-girl-read.png', gender: 'she', line: LINE.girl },
+    { img: 'h5-teacher-book.png', gender: 'he', line: LINE.heTeacher },
+    { img: 's5-teacher-book.png', gender: 'she', line: LINE.sheTeacher },
+    { img: 'h4-boy-kick.png', gender: 'he', line: LINE.boy },
+    { img: 's4-girl-kick.png', gender: 'she', line: LINE.girl }
+  ];
+
+  const PART2 = [
+    { left: 'h1-boy-run.png', right: 's1-girl-run.png', answer: 'he', line: LINE.boy },
+    { left: 'h2-boy-read.png', right: 's2-girl-read.png', answer: 'she', line: LINE.girl },
+    { left: 'h3-boy-draw.png', right: 's3-girl-draw.png', answer: 'he', line: LINE.boy },
+    { left: 'h4-boy-kick.png', right: 's4-girl-kick.png', answer: 'she', line: LINE.girl },
+    { left: 'h5-teacher-book.png', right: 's5-teacher-book.png', answer: 'he', line: LINE.heTeacher },
+    { left: 'h6-teacher-wave.png', right: 's6-teacher-wave.png', answer: 'she', line: LINE.sheTeacher }
+  ];
+
+  const WARMUP = [
+    { img: 'h2-boy-read.png', line: LINE.boy },
+    { img: 's2-girl-read.png', line: LINE.girl }
+  ];
+
+  const PART3 = [
+    {
+      img: 'p3-boy-car.png',
+      intro: 'Jim is my friend.',
+      has: 'He has a car.',
+      gender: 'he'
+    },
+    {
+      img: 'p3-teacher-books.png',
+      intro: 'Miss So is my class teacher.',
+      has: 'She has ten books.',
+      gender: 'she'
+    }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const viewHome = $('view-home');
+  const viewPlay = $('view-play');
+  const stage = $('stage');
+  const promptEl = $('prompt');
+  const nextBtn = $('btn-next');
+  const starCount = $('star-count');
+  const voiceBtn = $('btn-voice');
+
+  let stars = 0;
+  let voiceOn = true;
+  let mode = null; // warmup | part1 | part2 | part3
+  let idx = 0;
+  let answered = false;
+  let firstTry = true;
+  let unlockedMyClass = false;
+  let afterPart1Offer = false;
+
+  // —— TTS (en-GB, rate 0.80) ——
+  let cachedVoice = null;
+  let voicesReady = false;
+  let voicesWaitTimer = null;
+  let speakQueue = [];
+  let speaking = false;
+  let cancelGate = Promise.resolve();
+  let utterTimer = null;
+
+  function pickVoice() {
+    if (!window.speechSynthesis) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    const named = /libby|serena|martha|susan|hazel|kate|google uk english female/i;
+    let v = voices.find(x => /en-GB/i.test(x.lang) && named.test(x.name));
+    if (!v) v = voices.find(x => /en-GB/i.test(x.lang));
+    if (!v) v = voices.find(x => /en-AU|en-IE/i.test(x.lang));
+    if (!v) v = voices.find(x => /^en/i.test(x.lang));
+    return v || null;
+  }
+  function refreshVoiceCache() {
+    if (!window.speechSynthesis) return;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return;
+    voicesReady = true;
+    if (cachedVoice) {
+      const still = voices.some(v => v.voiceURI === cachedVoice.voiceURI && v.name === cachedVoice.name);
+      if (still) return;
+    }
+    cachedVoice = pickVoice();
+  }
+  function initVoices() {
+    if (!window.speechSynthesis) return;
+    refreshVoiceCache();
+    window.speechSynthesis.addEventListener('voiceschanged', () => {
+      refreshVoiceCache();
+      if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
+      speakNext();
+    });
+  }
+  function cancelSpeech() {
+    speakQueue = [];
+    speaking = false;
+    if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    cancelGate = new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  function finishUtterance(item) {
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    speaking = false;
+    if (item && item.onEnd) {
+      const cb = item.onEnd;
+      item.onEnd = null;
+      cb();
+    }
+    speakNext();
+  }
+  function speakNext() {
+    if (!voiceOn || speaking) return;
+    if (!speakQueue.length) return;
+    if (!window.speechSynthesis) {
+      while (speakQueue.length) {
+        const item = speakQueue.shift();
+        if (item.onEnd) item.onEnd();
+      }
+      return;
+    }
+    refreshVoiceCache();
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length && !voicesReady) {
+      if (!voicesWaitTimer) {
+        voicesWaitTimer = setTimeout(() => {
+          voicesWaitTimer = null;
+          voicesReady = true;
+          speakNext();
+        }, 1000);
+      }
+      return;
+    }
+    const item = speakQueue.shift();
+    speaking = true;
+    const run = () => {
+      const u = new SpeechSynthesisUtterance(item.text);
+      const voice = cachedVoice || pickVoice();
+      if (voice) {
+        u.voice = voice;
+        u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
+        cachedVoice = voice;
+      } else {
+        u.lang = 'en-GB';
+      }
+      u.rate = 0.80;
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        finishUtterance(item);
+      };
+      u.onend = settle;
+      u.onerror = settle;
+      utterTimer = setTimeout(settle, 9000);
+      try { window.speechSynthesis.speak(u); } catch (e) { settle(); }
+    };
+    cancelGate.then(run);
+  }
+  function speak(text, opts) {
+    opts = opts || {};
+    if (!voiceOn || !text) return Promise.resolve();
+    return new Promise((resolve) => {
+      if (!opts.chain) cancelSpeech();
+      speakQueue.push({ text, onEnd: () => resolve() });
+      speakNext();
+    });
+  }
+  function speakChain(parts) {
+    if (!voiceOn || !parts || !parts.length) return Promise.resolve();
+    cancelSpeech();
+    return new Promise((resolve) => {
+      parts.forEach((text, i) => {
+        speakQueue.push({ text, onEnd: i === parts.length - 1 ? () => resolve() : null });
+      });
+      speakNext();
+    });
+  }
+
+  function addStar() {
+    stars += 1;
+    starCount.textContent = String(stars);
+  }
+
+  function showHome() {
+    cancelSpeech();
+    mode = null;
+    document.body.classList.remove('shooting-cursor');
+    viewPlay.classList.add('hidden');
+    viewPlay.style.display = 'none';
+    viewHome.classList.remove('hidden');
+    const mc = $('btn-myclass');
+    mc.disabled = !unlockedMyClass;
+    mc.classList.toggle('ghost', !unlockedMyClass);
+  }
+
+  function showPlay() {
+    viewHome.classList.add('hidden');
+    viewPlay.classList.remove('hidden');
+    viewPlay.style.display = 'flex';
+    document.body.classList.add('shooting-cursor');
+  }
+
+  function setNextEnabled(on) {
+    nextBtn.disabled = !on;
+  }
+
+  function stickStar(frame, xPct, yPct) {
+    const img = document.createElement('img');
+    img.className = 'sticker' + (reducedMotion ? '' : ' pop');
+    img.src = ART + 'prop-star-sticker.png';
+    img.alt = '';
+    img.style.left = (xPct == null ? 62 : xPct) + '%';
+    img.style.top = (yPct == null ? 18 : yPct) + '%';
+    frame.appendChild(img);
+  }
+
+  function flyStickerTo(frame, fromEl) {
+    if (reducedMotion) {
+      stickStar(frame);
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      const fly = document.createElement('img');
+      fly.className = 'fly-star';
+      fly.src = ART + 'prop-star-sticker.png';
+      fly.alt = '';
+      document.body.appendChild(fly);
+      const from = (fromEl || nextBtn).getBoundingClientRect();
+      const to = frame.getBoundingClientRect();
+      const x0 = from.left + from.width / 2 - 32;
+      const y0 = from.top + from.height / 2 - 32;
+      const x1 = to.left + to.width * 0.62 - 32;
+      const y1 = to.top + to.height * 0.18 - 32;
+      fly.style.left = '0';
+      fly.style.top = '0';
+      fly.style.transform = `translate(${x0}px, ${y0}px) scale(0.7)`;
+      requestAnimationFrame(() => {
+        fly.style.transform = `translate(${x1}px, ${y1}px) scale(1)`;
+      });
+      setTimeout(() => {
+        fly.remove();
+        stickStar(frame);
+        resolve();
+      }, 480);
+    });
+  }
+
+  // —— Warm-up (not shooting) ——
+  function startWarmup() {
+    mode = 'warmup';
+    idx = 0;
+    showPlay();
+    promptEl.textContent = "Let's listen.";
+    setNextEnabled(true);
+    renderWarmup();
+  }
+  function renderWarmup() {
+    answered = true;
+    firstTry = true;
+    const item = WARMUP[idx];
+    stage.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'warmup';
+    wrap.innerHTML = `
+      <div class="card">
+        <img src="${ART}${item.img}" alt="">
+        <p>${item.line}</p>
+      </div>`;
+    stage.appendChild(wrap);
+    speak(item.line);
+    setNextEnabled(true);
+  }
+
+  // —— Part 1 ——
+  function startPart1() {
+    mode = 'part1';
+    idx = 0;
+    afterPart1Offer = false;
+    showPlay();
+    promptEl.textContent = 'Look at the picture. Shoot He or She.';
+    renderPart1();
+  }
+  function renderPart1() {
+    answered = false;
+    firstTry = true;
+    setNextEnabled(false);
+    const item = PART1[idx];
+    stage.innerHTML = '';
+
+    const sentence = document.createElement('div');
+    sentence.className = 'sentence';
+    sentence.id = 'sentence';
+    sentence.innerHTML = '<span class="soft">…</span>';
+
+    const grid = document.createElement('div');
+    grid.className = 'p1-grid';
+    grid.innerHTML = `
+      <div class="rail">
+        <button type="button" class="pronoun-btn he" data-choice="he" aria-label="He"><span class="mark" aria-hidden="true"></span>He</button>
+      </div>
+      <div class="rail">
+        <div class="person-frame${reducedMotion ? '' : ' enter'}" id="target">
+          <img class="char" src="${ART}${item.img}" alt="">
+        </div>
+      </div>
+      <div class="rail">
+        <button type="button" class="pronoun-btn she" data-choice="she" aria-label="She"><span class="mark" aria-hidden="true"></span>She</button>
+      </div>`;
+
+    stage.appendChild(grid);
+    stage.appendChild(sentence);
+
+    grid.querySelectorAll('.pronoun-btn').forEach((btn) => {
+      btn.addEventListener('click', () => onPart1Choice(btn.getAttribute('data-choice'), btn));
+    });
+  }
+
+  async function onPart1Choice(choice, btn) {
+    if (answered) return;
+    const item = PART1[idx];
+    const frame = $('target');
+    if (choice !== item.gender) {
+      btn.classList.add('wrong-flash');
+      setTimeout(() => btn.classList.remove('wrong-flash'), 450);
+      $('sentence').textContent = 'Try again!';
+      firstTry = false;
+      await speak('Try again!');
+      return;
+    }
+    answered = true;
+    gridDisable('.pronoun-btn');
+    await flyStickerTo(frame, btn);
+    const praise = 'Yes! ' + item.line;
+    $('sentence').textContent = praise;
+    if (firstTry) addStar();
+    await speak(praise);
+    setNextEnabled(true);
+  }
+
+  function gridDisable(sel) {
+    stage.querySelectorAll(sel).forEach((b) => { b.disabled = true; });
+  }
+
+  // —— Part 2 ——
+  function startPart2() {
+    mode = 'part2';
+    idx = 0;
+    showPlay();
+    promptEl.textContent = 'Listen. Shoot the picture.';
+    renderPart2();
+  }
+  function renderPart2() {
+    answered = false;
+    firstTry = true;
+    setNextEnabled(false);
+    const item = PART2[idx];
+    stage.innerHTML = '';
+
+    const sentence = document.createElement('div');
+    sentence.className = 'sentence';
+    sentence.id = 'sentence';
+    sentence.textContent = item.line;
+
+    const grid = document.createElement('div');
+    grid.className = 'p2-grid';
+    grid.innerHTML = `
+      <button type="button" class="person-frame p2${reducedMotion ? '' : ' enter'}" data-side="he" aria-label="He picture">
+        <img class="char" src="${ART}${item.left}" alt="">
+      </button>
+      <button type="button" class="person-frame p2${reducedMotion ? '' : ' enter'}" data-side="she" aria-label="She picture">
+        <img class="char" src="${ART}${item.right}" alt="">
+      </button>`;
+
+    stage.appendChild(grid);
+    stage.appendChild(sentence);
+
+    grid.querySelectorAll('.person-frame').forEach((el) => {
+      el.addEventListener('click', () => onPart2Choice(el.getAttribute('data-side'), el));
+    });
+    speak(item.line);
+  }
+
+  async function onPart2Choice(side, el) {
+    if (answered) return;
+    const item = PART2[idx];
+    if (side !== item.answer) {
+      el.classList.add('wrong-flash');
+      setTimeout(() => el.classList.remove('wrong-flash'), 450);
+      firstTry = false;
+      await speak('Try again!');
+      return;
+    }
+    answered = true;
+    stage.querySelectorAll('.person-frame').forEach((b) => { b.disabled = true; b.style.pointerEvents = 'none'; });
+    await flyStickerTo(el, el);
+    const praise = 'Yes! ' + item.line;
+    $('sentence').textContent = praise;
+    if (firstTry) addStar();
+    await speak(praise);
+    setNextEnabled(true);
+  }
+
+  // —— Part 3 My class ——
+  function startPart3() {
+    mode = 'part3';
+    idx = 0;
+    showPlay();
+    promptEl.textContent = 'Look at the picture. Shoot He or She.';
+    renderPart3();
+  }
+  function renderPart3() {
+    answered = false;
+    firstTry = true;
+    setNextEnabled(false);
+    const item = PART3[idx];
+    stage.innerHTML = '';
+
+    const sentence = document.createElement('div');
+    sentence.className = 'sentence';
+    sentence.id = 'sentence';
+    sentence.innerHTML = `<span class="soft">${item.intro}</span>`;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'p3';
+    wrap.innerHTML = `
+      <div class="p3-row">
+        <div class="rail">
+          <button type="button" class="pronoun-btn he" data-choice="he" aria-label="He"><span class="mark" aria-hidden="true"></span>He</button>
+        </div>
+        <div class="person-frame${reducedMotion ? '' : ' enter'}" id="target">
+          <img class="char" src="${ART}${item.img}" alt="">
+        </div>
+        <div class="rail">
+          <button type="button" class="pronoun-btn she" data-choice="she" aria-label="She"><span class="mark" aria-hidden="true"></span>She</button>
+        </div>
+      </div>`;
+
+    stage.appendChild(wrap);
+    stage.appendChild(sentence);
+
+    wrap.querySelectorAll('.pronoun-btn').forEach((btn) => {
+      btn.addEventListener('click', () => onPart3Choice(btn.getAttribute('data-choice'), btn));
+    });
+  }
+
+  async function onPart3Choice(choice, btn) {
+    if (answered) return;
+    const item = PART3[idx];
+    const frame = $('target');
+    if (choice !== item.gender) {
+      btn.classList.add('wrong-flash');
+      setTimeout(() => btn.classList.remove('wrong-flash'), 450);
+      firstTry = false;
+      await speak('Try again!');
+      return;
+    }
+    answered = true;
+    gridDisable('.pronoun-btn');
+    await flyStickerTo(frame, btn);
+    if (firstTry) addStar();
+    // Three separate utterances: Yes! → intro → has
+    $('sentence').textContent = 'Yes!';
+    await speak('Yes!');
+    $('sentence').textContent = item.intro;
+    await speak(item.intro, { chain: true });
+    $('sentence').innerHTML = item.intro + '<br>' + item.has;
+    await speak(item.has, { chain: true });
+    setNextEnabled(true);
+  }
+
+  // —— Next / navigation ——
+  function onNext() {
+    if (mode === 'warmup') {
+      if (idx < WARMUP.length - 1) {
+        idx += 1;
+        renderWarmup();
+      } else {
+        showHome();
+      }
+      return;
+    }
+    if (mode === 'part1') {
+      if (idx < PART1.length - 1) {
+        idx += 1;
+        renderPart1();
+      } else {
+        unlockedMyClass = true;
+        afterPart1Offer = true;
+        mode = 'part1-done';
+        stage.innerHTML = '';
+        const wrap = document.createElement('div');
+        wrap.className = 'warmup';
+        wrap.innerHTML = `<div class="card"><p>Well done!</p><p style="font-size:1.25rem;margin-top:0.55rem;">Stars: ${stars}</p>
+          <div style="display:flex;flex-direction:column;gap:0.65rem;margin-top:1rem;">
+            <button type="button" class="home-btn primary" id="offer-p2">Part 2</button>
+            <button type="button" class="home-btn secondary" id="offer-home">Home</button>
+          </div></div>`;
+        stage.appendChild(wrap);
+        promptEl.textContent = 'Part 2 is optional.';
+        setNextEnabled(false);
+        wrap.querySelector('#offer-p2').addEventListener('click', () => startPart2());
+        wrap.querySelector('#offer-home').addEventListener('click', () => showHome());
+      }
+      return;
+    }
+    if (mode === 'part2') {
+      if (idx < PART2.length - 1) {
+        idx += 1;
+        renderPart2();
+      } else {
+        stage.innerHTML = `<div class="warmup"><div class="card"><p>Well done!</p><p style="font-size:1.2rem;margin-top:0.6rem;">Stars: ${stars}</p></div></div>`;
+        promptEl.textContent = 'Finished Part 2.';
+        mode = 'part2-done';
+        setNextEnabled(true);
+      }
+      return;
+    }
+    if (mode === 'part2-done') {
+      showHome();
+      return;
+    }
+    if (mode === 'part3') {
+      if (idx < PART3.length - 1) {
+        idx += 1;
+        renderPart3();
+      } else {
+        stage.innerHTML = `<div class="warmup"><div class="card"><p>Well done!</p><p style="font-size:1.2rem;margin-top:0.6rem;">Stars: ${stars}</p></div></div>`;
+        promptEl.textContent = 'Finished My class.';
+        mode = 'part3-done';
+        setNextEnabled(true);
+      }
+      return;
+    }
+    if (mode === 'part3-done') {
+      showHome();
+    }
+  }
+
+  // Listen = speak title + sample lines
+  async function onListen() {
+    await speakChain([
+      'He or She?',
+      LINE.boy,
+      LINE.girl,
+      LINE.heTeacher,
+      LINE.sheTeacher
+    ]);
+  }
+
+  // Play: Part 1 first; if Part 1 done this session, Part 2
+  function onPlay() {
+    startPart1();
+  }
+
+  $('btn-play').addEventListener('click', onPlay);
+  $('btn-listen').addEventListener('click', onListen);
+  $('btn-warmup').addEventListener('click', startWarmup);
+  $('btn-myclass').addEventListener('click', () => {
+    if (!unlockedMyClass) return;
+    startPart3();
+  });
+  $('btn-home').addEventListener('click', showHome);
+  nextBtn.addEventListener('click', onNext);
+  voiceBtn.addEventListener('click', () => {
+    voiceOn = !voiceOn;
+    voiceBtn.textContent = voiceOn ? 'Voice ON' : 'Voice OFF';
+    voiceBtn.setAttribute('aria-pressed', voiceOn ? 'true' : 'false');
+    if (!voiceOn) cancelSpeech();
+  });
+
+  initVoices();
+})();
+  </script>
+</body>
+</html>
