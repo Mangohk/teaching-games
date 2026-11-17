@@ -11,13 +11,14 @@
       --ink: #482808;
       --card: #1F5EA0;
       --panel: #FFF8E7;
+      /* Stack totals 800 with gap budget 12 (3×4) and bottom tall enough for 96px Next */
       --top-h: 56px;
       --well-h: 400px;
       --well-min-w: 712px;
-      --sentence-h: 124px;
-      --cards-h: 120px;
-      --bottom-h: 88px;
-      --gap: 12px;
+      --sentence-h: 120px;
+      --cards-h: 112px;
+      --bottom-h: 100px;
+      --gap: 4px;
       --safe: 24px;
       --card-gap: 24px;
       --fs-word: 56px;
@@ -27,15 +28,18 @@
       --fs-title: 56px;
       --home-btn-w: 360px;
       --home-btn-h: 96px;
+      --btn-bar-h: 96px;
     }
     @media (min-width: 1600px) {
       :root {
+        /* Stack totals 1080 with gap budget 12 */
         --top-h: 80px;
         --well-h: 540px;
         --well-min-w: 960px;
-        --sentence-h: 168px;
-        --cards-h: 168px;
-        --bottom-h: 112px;
+        --sentence-h: 160px;
+        --cards-h: 156px;
+        --bottom-h: 132px;
+        --gap: 4px;
         --safe: 32px;
         --card-gap: 32px;
         --fs-word: 80px;
@@ -45,6 +49,7 @@
         --fs-title: 80px;
         --home-btn-w: 500px;
         --home-btn-h: 128px;
+        --btn-bar-h: 112px;
       }
     }
     *, *::before, *::after { box-sizing: border-box; }
@@ -83,21 +88,27 @@
       font-size: var(--fs-title);
       line-height: 1.15;
     }
-    .home .hint {
-      margin: 0 0 0.4rem;
-      font-size: var(--fs-chrome);
-      font-weight: 700;
-      line-height: 1.4;
-      max-width: 36rem;
-    }
     .home-stack {
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      gap: 0.85rem;
       width: min(var(--home-btn-w), 92vw);
     }
+    .home-entry {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.35rem;
+    }
+    .home-entry .entry-hint {
+      margin: 0;
+      font-size: var(--fs-chrome);
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+    }
     .home-btn {
-      min-width: var(--home-btn-w);
+      min-width: 0;
       min-height: var(--home-btn-h);
       width: 100%;
       border-radius: 1.3rem;
@@ -164,6 +175,13 @@
       line-height: 1;
     }
 
+    .play-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
     .well-wrap {
       flex: 0 0 var(--well-h);
       height: var(--well-h);
@@ -171,7 +189,7 @@
       align-items: center;
       justify-content: center;
       padding: 0 var(--safe);
-      margin-top: var(--gap);
+      margin-top: 0; /* top bar border separates; keeps gap budget for lower rows */
     }
     .art-well {
       width: min(100%, calc(var(--well-h) * 16 / 9));
@@ -197,7 +215,7 @@
       flex: 0 0 var(--sentence-h);
       height: var(--sentence-h);
       margin: var(--gap) var(--safe) 0;
-      padding: 0.35rem 1rem;
+      padding: 0.25rem 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -208,7 +226,7 @@
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: var(--fs-sentence);
-      line-height: 1.35;
+      line-height: 1.3;
     }
 
     .cards-row {
@@ -237,14 +255,20 @@
     }
     .word-card:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(72, 40, 8, 0.16); }
     .word-card:disabled { opacity: 0.55; cursor: not-allowed; }
+    /* Static ring with cream gap from the 5px border — readable from the back of the room */
     .word-card.hint-ring {
-      box-shadow: 0 0 0 6px var(--ink), 0 5px 0 rgba(72, 40, 8, 0.16) !important;
+      box-shadow:
+        0 0 0 8px var(--cream),
+        0 0 0 18px var(--ink),
+        0 5px 0 rgba(72, 40, 8, 0.16) !important;
     }
+    .cards-row.count-1 .word-card { flex: 0 0 min(420px, 100%); max-width: min(420px, 100%); }
     .cards-row.count-3 .word-card { flex-basis: 0; }
     .cards-row.count-4 .word-card { flex-basis: 0; }
 
     .bottombar {
       flex: 0 0 var(--bottom-h);
+      height: var(--bottom-h);
       min-height: var(--bottom-h);
       margin-top: var(--gap);
       display: flex;
@@ -263,9 +287,12 @@
       max-width: 70%;
     }
     .btn-bar {
-      min-width: 120px;
-      min-height: 64px;
-      padding: 0.4rem 1.35rem;
+      flex: 0 0 auto;
+      min-width: 140px;
+      width: auto;
+      min-height: var(--btn-bar-h);
+      height: var(--btn-bar-h);
+      padding: 0 1.35rem;
       border-radius: 1.05rem;
       border: 5px solid var(--ink);
       background: var(--card);
@@ -333,11 +360,19 @@
   <div class="app" id="app">
     <section class="home" id="view-home">
       <h1>We, They or It?</h1>
-      <p class="hint" id="home-hint">Look at the picture. Touch We, They or It.</p>
       <div class="home-stack">
-        <button type="button" class="home-btn primary" id="btn-play" data-hint="Look at the picture. Touch We, They or It.">Play</button>
-        <button type="button" class="home-btn secondary" id="btn-review" data-hint="Look at the picture. Touch I, You, We or They.">Let's review.</button>
-        <button type="button" class="home-btn secondary" id="btn-warmup" data-hint="Let's listen.">Warm-up</button>
+        <div class="home-entry">
+          <button type="button" class="home-btn primary" id="btn-play">Play</button>
+          <p class="entry-hint">Look at the picture. Touch We, They or It.</p>
+        </div>
+        <div class="home-entry">
+          <button type="button" class="home-btn secondary" id="btn-review">Let's review.</button>
+          <p class="entry-hint">Look at the picture. Touch I, You, We or They.</p>
+        </div>
+        <div class="home-entry">
+          <button type="button" class="home-btn secondary" id="btn-warmup">Warm-up</button>
+          <p class="entry-hint">Let's listen.</p>
+        </div>
       </div>
     </section>
 
@@ -358,7 +393,7 @@
         </div>
       </header>
 
-      <div id="play-body" class="play-body" style="flex:1;display:flex;flex-direction:column;min-height:0;"></div>
+      <div id="play-body" class="play-body"></div>
     </section>
   </div>
 
@@ -533,7 +568,7 @@
     if (!text) return Promise.resolve();
     if (!voiceOn) {
       // Keep short feedback visible even without audio (avoids Yes! flash-skip).
-      const hold = /^(Yes!|Try again!|Well done!)$/.test(text) ? 450 : 0;
+      const hold = /^(Yes!|Try again!|Well done!)$/.test(text) ? 700 : 0;
       return hold ? new Promise((r) => setTimeout(r, hold)) : Promise.resolve();
     }
     return new Promise((resolve) => {
@@ -652,6 +687,7 @@
     if (word !== item.answer) {
       missCount += 1;
       firstTry = false;
+      canChoose = false;
       setSentence('Try again!');
       await speak('Try again!');
       // Keep Try again! on the board until the next card choice (do not restore stem).
@@ -659,6 +695,7 @@
         const correct = playBody.querySelector('.word-card[data-word="' + item.answer + '"]');
         if (correct) correct.classList.add('hint-ring');
       }
+      canChoose = true;
       return;
     }
     answered = true;
@@ -792,46 +829,41 @@
     if ($('c-home')) $('c-home').addEventListener('click', showHome);
   }
 
-  // —— Warm-up ——
+  // —— Warm-up (same locked stack as main play) ——
   function startWarmup() {
     mode = 'warmup';
     idx = 0;
+    answered = false;
     showPlay('We, They or It?');
     renderWarmup();
   }
   function renderWarmup() {
     const item = WARMUP[idx];
     hornText = item.lines[0];
-    playBody.innerHTML = '';
-    const wrap = document.createElement('div');
-    wrap.className = 'center-wrap';
     const nextLabel = idx < WARMUP.length - 1 ? 'Next' : 'Play';
-    wrap.innerHTML =
-      '<div class="well-wrap" style="width:100%;flex:0 0 auto;height:auto;max-height:var(--well-h);">' +
-      '<div class="art-well" style="height:min(var(--well-h),42vh);"><img src="' + ART + item.img + '" alt="Photo"></div></div>' +
-      '<button type="button" class="word-card" id="warm-card" style="max-width:min(420px,90vw);min-height:var(--cards-h);width:min(420px,90vw);" aria-label="Listen">' +
-      item.label + '</button>' +
-      '<div class="sentence" id="warm-line" style="width:min(920px,92vw);margin:0;"></div>' +
-      '<p class="prompt" style="max-width:none;">Let\'s listen.</p>' +
-      '<div class="card-actions" style="width:min(var(--home-btn-w),92vw);">' +
-      '<button type="button" class="home-btn ' + (idx < WARMUP.length - 1 ? 'secondary' : 'primary') + '" id="warm-go">' + nextLabel + '</button>' +
-      '</div>';
-    playBody.appendChild(wrap);
-    const lineEl = $('warm-line');
+    playBody.innerHTML =
+      '<div class="well-wrap"><div class="art-well"><img id="art-img" src="' + ART + item.img + '" alt="Photo"></div></div>' +
+      '<div class="sentence" id="sentence" aria-live="polite"></div>' +
+      '<div class="cards-row count-1" id="cards-row">' +
+      '<button type="button" class="word-card" id="warm-card" data-word="' + item.label + '" aria-label="Listen">' + item.label + '</button>' +
+      '</div>' +
+      '<footer class="bottombar">' +
+      '<div class="prompt" id="prompt">Let\'s listen.</div>' +
+      '<button type="button" class="btn-bar" id="btn-next">' + nextLabel + '</button>' +
+      '</footer>';
     const playCard = async () => {
       if (item.lines.length === 1) {
-        lineEl.textContent = item.lines[0];
+        setSentence(item.lines[0]);
         await speak(item.lines[0]);
       } else {
-        lineEl.textContent = item.lines[0];
+        setSentence(item.lines[0]);
         await speak(item.lines[0]);
-        lineEl.innerHTML = item.lines[0] + '<br>' + item.lines[1];
+        setSentence(item.lines[0] + '<br>' + item.lines[1]);
         await speak(item.lines[1], { chain: true });
       }
     };
     $('warm-card').addEventListener('click', playCard);
-    playCard();
-    $('warm-go').addEventListener('click', () => {
+    $('btn-next').addEventListener('click', () => {
       if (idx < WARMUP.length - 1) {
         idx += 1;
         renderWarmup();
@@ -839,6 +871,7 @@
         startPart1(false);
       }
     });
+    playCard();
   }
 
   function onHorn() {
@@ -854,12 +887,6 @@
   }
 
   // Home
-  ['btn-play', 'btn-review', 'btn-warmup'].forEach((id) => {
-    const el = $(id);
-    const apply = () => { $('home-hint').textContent = el.getAttribute('data-hint'); };
-    el.addEventListener('mouseenter', apply);
-    el.addEventListener('focus', apply);
-  });
   $('btn-play').addEventListener('click', () => startPart1(false));
   $('btn-review').addEventListener('click', () => startReview(false));
   $('btn-warmup').addEventListener('click', startWarmup);
