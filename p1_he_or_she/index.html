@@ -987,6 +987,7 @@
     if (side !== item.answer) {
       missCount += 1;
       firstTry = false;
+      setSentence('Try again!');
       await speak('Try again!');
       if (missCount >= 2) {
         const correct = playArea.querySelector('[data-side="' + item.answer + '"]');
