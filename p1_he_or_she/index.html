@@ -9,46 +9,51 @@
     :root {
       --cream: #FFEDC4;
       --ink: #482808;
-      --he: #2F6FED;
-      --he-dark: #1E4FB8;
-      --she: #A85A3A;
-      --she-dark: #7A3D28;
+      --he: #1F5EA0;
+      --she: #A2501E;
       --panel: #FFF8E7;
-      --ok: #1F7A3F;
-      --warn: #B45309;
-      --top-h: 72px;
-      --bottom-h: 104px;
+      --star-yellow: #F0C838;
+      --top-h: 64px;
+      --play-h: 508px;
       --sentence-h: 124px;
-      --fs-pronoun: 56px;
+      --bottom-h: 104px;
+      --fs-word: 56px;
       --fs-sentence: 36px;
       --fs-btn: 28px;
-      --fs-title: 64px;
-      --fs-prompt: 28px;
+      --fs-chrome: 22px;
+      --fs-title: 56px;
       --target-w: 300px;
       --target-h: 400px;
       --target2-w: 260px;
       --target2-h: 360px;
-      --rail-btn-w: 280px;
-      --rail-btn-h: 128px;
-      --hit: 96px;
+      --rail-w: 280px;
+      --rail-h: 128px;
+      --home-btn-min-w: 360px;
+      --home-btn-min-h: 96px;
+      --gap: 24px;
+      --safe: 24px;
     }
     @media (min-width: 1600px) {
       :root {
-        --fs-pronoun: 80px;
-        --fs-sentence: 54px;
-        --fs-btn: 42px;
-        --fs-title: 96px;
-        --fs-prompt: 42px;
+        --top-h: 88px;
+        --play-h: 688px;
+        --sentence-h: 168px;
+        --bottom-h: 136px;
+        --fs-word: 80px;
+        --fs-sentence: 52px;
+        --fs-btn: 40px;
+        --fs-chrome: 28px;
+        --fs-title: 80px;
         --target-w: 420px;
         --target-h: 540px;
-        --target2-w: 364px;
-        --target2-h: 504px;
-        --rail-btn-w: 392px;
-        --rail-btn-h: 180px;
-        --hit: 120px;
-        --top-h: 96px;
-        --bottom-h: 146px;
-        --sentence-h: 174px;
+        --target2-w: 360px;
+        --target2-h: 500px;
+        --rail-w: 400px;
+        --rail-h: 168px;
+        --home-btn-min-w: 500px;
+        --home-btn-min-h: 128px;
+        --gap: 32px;
+        --safe: 32px;
       }
     }
     *, *::before, *::after { box-sizing: border-box; }
@@ -59,31 +64,18 @@
       font-weight: 800;
       color: var(--ink);
       background: var(--cream);
+      letter-spacing: 0.03em;
       user-select: none;
       -webkit-user-select: none;
       overflow: hidden;
     }
-    body.shooting-cursor, body.shooting-cursor button.pronoun-btn,
-    body.shooting-cursor .person-frame.p2 {
-      cursor: url('./art/prop-star-wand.png') 16 16, crosshair;
-    }
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      color: inherit;
-    }
+    button { font-family: inherit; cursor: pointer; color: inherit; }
     button:focus-visible {
       outline: 4px solid var(--he);
       outline-offset: 3px;
     }
     .hidden { display: none !important; }
-    .app {
-      min-height: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      background: var(--cream);
-    }
+    .app { height: 100%; display: flex; flex-direction: column; background: var(--cream); }
 
     /* —— Home —— */
     .home {
@@ -92,211 +84,223 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1.1rem;
-      padding: 2rem 1.5rem 2.5rem;
+      gap: 0.85rem;
+      padding: var(--safe);
       text-align: center;
     }
     .home h1 {
-      margin: 0 0 0.35rem;
+      margin: 0;
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: var(--fs-title);
-      line-height: 1.05;
+      line-height: 1.15;
       color: var(--ink);
     }
     .home .hint {
-      margin: 0 0 0.75rem;
-      font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+      margin: 0 0 0.5rem;
+      font-size: var(--fs-chrome);
       font-weight: 700;
-      opacity: 0.88;
+      line-height: 1.4;
+      max-width: 36rem;
     }
     .home-stack {
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
-      width: min(420px, 92vw);
+      gap: 0.75rem;
+      width: min(var(--home-btn-min-w), 92vw);
     }
     .home-btn {
-      min-width: 360px;
-      min-height: 96px;
+      min-width: var(--home-btn-min-w);
+      min-height: var(--home-btn-min-h);
       width: 100%;
       border-radius: 1.35rem;
       border: 5px solid var(--ink);
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: var(--fs-btn);
-      box-shadow: 0 6px 0 rgba(72, 40, 8, 0.18);
+      box-shadow: 0 6px 0 rgba(72, 40, 8, 0.16);
     }
-    .home-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(72, 40, 8, 0.18); }
+    .home-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 rgba(72, 40, 8, 0.16); }
     .home-btn.primary { background: var(--he); color: #fff; }
     .home-btn.secondary { background: #fff; color: var(--ink); }
     .home-btn.ghost {
-      background: rgba(255,255,255,0.55);
+      background: rgba(255, 255, 255, 0.5);
       color: var(--ink);
-      opacity: 0.72;
-    }
-    .home-btn.ghost:disabled { cursor: not-allowed; }
-    .teacher-note {
-      margin-top: 0.4rem;
-      font-size: 0.85rem;
-      font-weight: 700;
       opacity: 0.55;
+    }
+    .teacher-note {
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      opacity: 0.5;
       max-width: 28rem;
     }
 
-    /* —— Shared chrome —— */
+    /* —— Chrome —— */
     .topbar {
-      flex: 0 0 auto;
-      min-height: var(--top-h);
+      flex: 0 0 var(--top-h);
+      height: var(--top-h);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 0.45rem 1rem;
-      background: rgba(255, 248, 231, 0.96);
+      padding: 0 var(--safe);
+      background: var(--panel);
       border-bottom: 4px solid var(--ink);
     }
     .brand {
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
-      font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+      font-size: var(--fs-sentence);
       color: var(--ink);
+      line-height: 1.1;
     }
-    .top-right { display: flex; align-items: center; gap: 0.55rem; }
+    .top-right { display: flex; align-items: center; gap: 0.5rem; }
     .icon-btn {
-      min-width: 56px; min-height: 56px;
+      min-width: 56px;
+      min-height: 56px;
+      width: 56px;
+      height: 56px;
       border-radius: 0.85rem;
       border: 4px solid var(--ink);
       background: #fff;
-      font-size: 1.35rem;
-      font-weight: 800;
-      box-shadow: 0 3px 0 rgba(72,40,8,0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      box-shadow: 0 3px 0 rgba(72, 40, 8, 0.12);
     }
+    .icon-btn svg { width: 28px; height: 28px; fill: var(--ink); }
+    .icon-btn.voice-off { opacity: 0.55; }
     .stars {
-      min-width: 72px; min-height: 56px;
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;
-      padding: 0.35rem 0.75rem;
+      min-height: 56px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.7rem;
       border-radius: 0.85rem;
       border: 4px solid var(--ink);
       background: #fff;
       font-family: 'Fredoka', sans-serif;
-      font-size: 1.35rem;
+      font-size: var(--fs-chrome);
       font-weight: 700;
     }
     .stars img { width: 28px; height: 28px; object-fit: contain; }
 
-    .stage {
+    .play-shell {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-height: 0;
-      padding: 0.65rem 1rem 0;
     }
-
+    .play-area {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: var(--play-h);
+      max-height: var(--play-h);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.4rem var(--safe) 0;
+    }
     .sentence {
-      flex: 0 0 auto;
-      min-height: var(--sentence-h);
+      flex: 0 0 var(--sentence-h);
+      height: var(--sentence-h);
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      margin: 0.35rem auto 0.55rem;
-      width: min(980px, 96%);
-      padding: 0.55rem 1.1rem;
+      margin: 0 var(--safe);
+      padding: 0.4rem 1rem;
       background: var(--panel);
       border: 5px solid var(--ink);
-      border-radius: 1.25rem;
+      border-radius: 1.15rem;
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: var(--fs-sentence);
-      line-height: 1.2;
+      line-height: 1.35;
       color: var(--ink);
     }
-    .sentence .soft { opacity: 0.55; }
-
+    .sentence .muted { opacity: 0.45; }
     .bottombar {
-      flex: 0 0 auto;
+      flex: 0 0 var(--bottom-h);
       min-height: var(--bottom-h);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.55rem 1.1rem;
-      background: rgba(255, 248, 231, 0.98);
+      padding: 0.4rem var(--safe);
+      background: var(--panel);
       border-top: 4px solid var(--ink);
     }
     .prompt {
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
-      font-size: var(--fs-prompt);
-      line-height: 1.15;
-      max-width: 70%;
+      font-size: var(--fs-chrome);
+      line-height: 1.25;
+      max-width: 68%;
     }
-    .btn-next {
-      min-width: var(--hit);
-      min-height: var(--hit);
-      padding: 0.55rem 1.6rem;
-      border-radius: 1.15rem;
+    .btn-bar {
+      min-width: 120px;
+      min-height: 72px;
+      padding: 0.45rem 1.4rem;
+      border-radius: 1.1rem;
       border: 5px solid var(--ink);
       background: var(--he);
       color: #fff;
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: var(--fs-btn);
-      box-shadow: 0 5px 0 rgba(72,40,8,0.16);
+      box-shadow: 0 5px 0 rgba(72, 40, 8, 0.16);
     }
-    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-next:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(72,40,8,0.16); }
+    .btn-bar:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-bar:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(72, 40, 8, 0.16); }
+    .btn-bar.secondary { background: #fff; color: var(--ink); }
 
-    /* —— Part 1 three columns —— */
+    /* —— Part 1 / 3 grid —— */
     .p1-grid {
       flex: 1;
-      min-height: 0;
       display: grid;
-      grid-template-columns: 1fr minmax(var(--target-w), 1.15fr) 1fr;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      gap: 0.75rem;
-      width: min(1180px, 100%);
+      gap: var(--gap);
+      width: 100%;
+      max-width: 1180px;
       margin: 0 auto;
+      min-height: 0;
     }
-    .rail {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .pronoun-btn {
-      width: var(--rail-btn-w);
-      height: var(--rail-btn-h);
-      max-width: 92%;
-      border-radius: 1.4rem;
+    .rail { display: flex; align-items: center; justify-content: center; }
+    .word-btn {
+      width: var(--rail-w);
+      height: var(--rail-h);
+      max-width: 100%;
+      border-radius: 1.35rem;
       border: 5px solid var(--ink);
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
-      font-size: var(--fs-pronoun);
+      font-size: var(--fs-word);
       color: #fff;
-      box-shadow: 0 7px 0 rgba(72,40,8,0.18);
+      box-shadow: 0 7px 0 rgba(72, 40, 8, 0.16);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
+      gap: 0.4rem;
+      position: relative;
     }
-    .pronoun-btn .mark {
-      width: 0.55em; height: 0.55em;
+    .word-btn .glyph {
+      width: 0.5em;
+      height: 0.5em;
       border: 4px solid #fff;
       flex: 0 0 auto;
     }
-    .pronoun-btn.he { background: var(--he); }
-    .pronoun-btn.he .mark { border-radius: 0.2em; background: rgba(255,255,255,0.25); }
-    .pronoun-btn.she { background: var(--she); }
-    .pronoun-btn.she .mark { border-radius: 50%; background: rgba(255,255,255,0.25); }
-    .pronoun-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 3px 0 rgba(72,40,8,0.18); }
-    .pronoun-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .pronoun-btn.wrong-flash {
-      animation: wrongPulse 0.45s ease;
-    }
-    @keyframes wrongPulse {
-      0%, 100% { filter: none; }
-      40% { filter: brightness(0.85); }
+    .word-btn.he { background: var(--he); }
+    .word-btn.he .glyph { border-radius: 0.18em; background: rgba(255,255,255,0.2); }
+    .word-btn.she { background: var(--she); }
+    .word-btn.she .glyph { border-radius: 50%; background: rgba(255,255,255,0.2); }
+    .word-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 3px 0 rgba(72, 40, 8, 0.16); }
+    .word-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .hint-ring {
+      box-shadow: 0 0 0 6px var(--ink), 0 7px 0 rgba(72, 40, 8, 0.16) !important;
     }
 
     .person-frame {
@@ -304,10 +308,9 @@
       width: var(--target-w);
       height: var(--target-h);
       max-width: 100%;
-      margin: 0 auto;
       background: var(--cream);
       border: 5px solid var(--ink);
-      border-radius: 1.25rem;
+      border-radius: 1.2rem;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -317,146 +320,165 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      object-position: center bottom;
+      object-position: center center;
       display: block;
+      pointer-events: none;
     }
-    .person-frame.enter {
-      animation: enterIn 0.7s ease-out both;
+    .person-frame.entering {
+      pointer-events: none;
+      animation: enterSlide 0.85s ease-out both;
     }
-    @keyframes enterIn {
-      from { transform: translateX(-18vw); opacity: 0.2; }
+    .person-frame.from-left { --enter-x: -22vw; }
+    .person-frame.from-right { --enter-x: 22vw; }
+    @keyframes enterSlide {
+      from { transform: translateX(var(--enter-x, -22vw)); opacity: 0.25; }
       to { transform: translateX(0); opacity: 1; }
+    }
+    .person-frame.ready { pointer-events: auto; }
+    .person-frame.hint-ring {
+      box-shadow: 0 0 0 6px var(--ink);
+    }
+    .tag {
+      position: absolute;
+      left: 50%;
+      bottom: 4%;
+      transform: translateX(-50%);
+      background: var(--panel);
+      border: 3px solid var(--ink);
+      border-radius: 0.7rem;
+      padding: 0.15rem 0.7rem;
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      z-index: 4;
     }
     .sticker {
       position: absolute;
-      width: clamp(56px, 18%, 88px);
-      height: clamp(56px, 18%, 88px);
+      width: clamp(72px, 22%, 96px);
+      height: clamp(72px, 22%, 96px);
       object-fit: contain;
       pointer-events: none;
-      z-index: 3;
-      filter: drop-shadow(0 2px 0 rgba(72,40,8,0.25));
+      z-index: 5;
+      filter: drop-shadow(0 2px 0 rgba(72, 40, 8, 0.2));
     }
-    .sticker.pop { animation: starPop 0.45s ease both; }
+    .sticker.pop { animation: starPop 0.4s ease both; }
     @keyframes starPop {
       0% { transform: scale(0.2); opacity: 0; }
-      70% { transform: scale(1.12); opacity: 1; }
+      70% { transform: scale(1.1); opacity: 1; }
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* —— Part 2 two targets —— */
+    /* —— Part 2 —— */
     .p2-grid {
       flex: 1;
-      min-height: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
+      gap: max(64px, var(--gap));
       align-items: center;
       justify-items: center;
-      width: min(1100px, 100%);
+      width: 100%;
+      max-width: 1100px;
       margin: 0 auto;
+      min-height: 0;
     }
     .person-frame.p2 {
       width: var(--target2-w);
       height: var(--target2-h);
       cursor: pointer;
+      padding: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      font: inherit;
     }
-    .person-frame.p2:focus-visible { outline: 4px solid var(--he); outline-offset: 4px; }
-    .person-frame.p2.wrong-flash { animation: wrongPulse 0.45s ease; }
+    .person-frame.p2:disabled { cursor: not-allowed; }
 
-    /* —— Warm-up —— */
-    .warmup {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      padding: 1rem;
-    }
-    .warmup .card {
-      width: min(420px, 90vw);
-      background: var(--panel);
-      border: 5px solid var(--ink);
-      border-radius: 1.35rem;
-      padding: 1rem;
-      text-align: center;
-    }
-    .warmup .card img {
-      width: min(280px, 70vw);
-      height: auto;
-      aspect-ratio: 3 / 4;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 0.75rem;
-    }
-    .warmup .card p {
-      margin: 0;
-      font-family: 'Fredoka', sans-serif;
-      font-size: var(--fs-sentence);
-      font-weight: 700;
-    }
-
-    /* —— Part 3 My class —— */
-    .p3 {
+    /* —— Warm-up / celebrate —— */
+    .center-wrap {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 0.85rem;
-      padding: 0.5rem 1rem;
+      min-height: 0;
     }
-    .p3-row {
+    .card {
+      width: min(420px, 90vw);
+      background: var(--panel);
+      border: 5px solid var(--ink);
+      border-radius: 1.3rem;
+      padding: 0.85rem 1rem 1rem;
+      text-align: center;
+    }
+    .card img {
+      width: min(360px, 78vw);
+      height: auto;
+      aspect-ratio: 3 / 4;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 0.65rem;
+      background: var(--cream);
+      border-radius: 0.8rem;
+    }
+    .card p {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-size: var(--fs-sentence);
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .card-actions {
       display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: flex-end;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-top: 0.85rem;
+      width: min(var(--home-btn-min-w), 100%);
+      margin-left: auto;
+      margin-right: auto;
     }
-    .p3 .person-frame {
-      width: min(var(--target2-w), 42vw);
-      height: min(var(--target2-h), 52vh);
-    }
+    .card-actions .home-btn { min-width: 0; }
 
     .fly-star {
       position: fixed;
-      width: 64px; height: 64px;
+      width: 80px;
+      height: 80px;
       object-fit: contain;
       pointer-events: none;
-      z-index: 80;
-      transition: transform 0.45s ease, opacity 0.45s ease;
+      z-index: 90;
+      transition: transform 0.38s ease, opacity 0.38s ease;
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .person-frame.enter { animation: none; }
+      .person-frame.entering { animation: none; }
       .sticker.pop { animation: none; }
-      .pronoun-btn.wrong-flash, .person-frame.p2.wrong-flash { animation: none; }
       .fly-star { transition: none; }
     }
   </style>
 </head>
 <body>
   <div class="app" id="app">
-    <!-- HOME -->
     <section class="home" id="view-home">
       <h1>He or She?</h1>
-      <p class="hint">Shoot He or She with a star sticker.</p>
+      <p class="hint" id="home-hint">Look at the picture. Shoot He or She.</p>
       <div class="home-stack">
-        <button type="button" class="home-btn primary" id="btn-play">Play</button>
-        <button type="button" class="home-btn secondary" id="btn-listen">Listen</button>
-        <button type="button" class="home-btn secondary" id="btn-warmup">Warm-up</button>
-        <button type="button" class="home-btn ghost" id="btn-myclass" disabled title="Unlocks after Part 1">My class</button>
+        <button type="button" class="home-btn primary" id="btn-play" data-hint="Look at the picture. Shoot He or She.">Play</button>
+        <button type="button" class="home-btn secondary" id="btn-listen-entry" data-hint="Listen. Shoot the picture.">Listen</button>
+        <button type="button" class="home-btn secondary" id="btn-warmup" data-hint="Let's listen.">Warm-up</button>
+        <button type="button" class="home-btn secondary" id="btn-myclass" data-hint="Look at the picture. Shoot He or She.">My class</button>
       </div>
-      <p class="teacher-note">Teacher: Part 3 is optional. More examples stay in this note only.</p>
+      <p class="teacher-note">Teacher note: Part 3 is optional. More examples stay in this note only.</p>
     </section>
 
-    <!-- PLAY SHELL -->
-    <section class="hidden" id="view-play" style="display:none;flex:1;flex-direction:column;min-height:0;">
+    <section class="play-shell hidden" id="view-play">
       <header class="topbar">
-        <div class="brand">He or She?</div>
+        <div class="brand" id="play-title">He or She?</div>
         <div class="top-right">
-          <button type="button" class="icon-btn" id="btn-home" aria-label="Home">⌂</button>
-          <button type="button" class="icon-btn" id="btn-voice" aria-pressed="true" title="Voice">Voice ON</button>
+          <button type="button" class="icon-btn" id="btn-horn" aria-label="Listen" title="Listen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM16 3.2v2.1a7.8 7.8 0 0 1 0 13.4v2.1A9.9 9.9 0 0 0 16 3.2z"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-voice" aria-pressed="true" aria-label="Voice ON" title="Voice">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v8a3 3 0 1 0 6 0V6a3 3 0 0 0-3-3zm-7 8a1 1 0 0 1 2 0 5 5 0 0 0 10 0 1 1 0 1 1 2 0 7 7 0 0 1-6 6.9V21h3a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h3v-3.1A7 7 0 0 1 5 11z"/></svg>
+          </button>
           <div class="stars" aria-live="polite">
             <img src="./art/prop-star-sticker.png" alt="" width="28" height="28">
             <span id="star-count">0</span>
@@ -464,13 +486,11 @@
         </div>
       </header>
 
-      <div class="stage" id="stage">
-        <!-- filled by mode -->
-      </div>
-
+      <div class="play-area" id="play-area"></div>
+      <div class="sentence" id="sentence" aria-live="polite"><span class="muted">…</span></div>
       <footer class="bottombar">
         <div class="prompt" id="prompt">Look at the picture. Shoot He or She.</div>
-        <button type="button" class="btn-next" id="btn-next" disabled>Next</button>
+        <button type="button" class="btn-bar" id="btn-next" disabled>Next</button>
       </footer>
     </section>
   </div>
@@ -482,7 +502,6 @@
   const ART = './art/';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Locked sentences — do not invent new lines.
   const LINE = {
     boy: 'He is a boy.',
     girl: 'She is a girl.',
@@ -490,70 +509,73 @@
     sheTeacher: 'She is a teacher.'
   };
 
-  /**
-   * First-play order (PLAY-DESIGN §5.3–5.4 style).
-   * He always left / She always right. Part 1: 8 look-and-shoot.
-   * Part 2: 6 listen-and-shoot pairs.
-   */
+  // PLAY-DESIGN §5.4 first-play Part 1: H1,S1,H2,S5,H5,S2,H3,S3
   const PART1 = [
-    { img: 'h1-boy-run.png', gender: 'he', line: LINE.boy },
-    { img: 's1-girl-run.png', gender: 'she', line: LINE.girl },
-    { img: 'h2-boy-read.png', gender: 'he', line: LINE.boy },
-    { img: 's2-girl-read.png', gender: 'she', line: LINE.girl },
-    { img: 'h5-teacher-book.png', gender: 'he', line: LINE.heTeacher },
-    { img: 's5-teacher-book.png', gender: 'she', line: LINE.sheTeacher },
-    { img: 'h4-boy-kick.png', gender: 'he', line: LINE.boy },
-    { img: 's4-girl-kick.png', gender: 'she', line: LINE.girl }
+    { id: 'H1', img: 'h1-boy-run.png', gender: 'he', line: LINE.boy },
+    { id: 'S1', img: 's1-girl-run.png', gender: 'she', line: LINE.girl },
+    { id: 'H2', img: 'h2-boy-read.png', gender: 'he', line: LINE.boy },
+    { id: 'S5', img: 's5-teacher-book.png', gender: 'she', line: LINE.sheTeacher },
+    { id: 'H5', img: 'h5-teacher-book.png', gender: 'he', line: LINE.heTeacher },
+    { id: 'S2', img: 's2-girl-read.png', gender: 'she', line: LINE.girl },
+    { id: 'H3', img: 'h3-boy-draw.png', gender: 'he', line: LINE.boy },
+    { id: 'S3', img: 's3-girl-draw.png', gender: 'she', line: LINE.girl }
   ];
 
+  // PLAY-DESIGN §5.4 first-play Part 2 (L/R may swap people; answer side named)
   const PART2 = [
-    { left: 'h1-boy-run.png', right: 's1-girl-run.png', answer: 'he', line: LINE.boy },
-    { left: 'h2-boy-read.png', right: 's2-girl-read.png', answer: 'she', line: LINE.girl },
-    { left: 'h3-boy-draw.png', right: 's3-girl-draw.png', answer: 'he', line: LINE.boy },
-    { left: 'h4-boy-kick.png', right: 's4-girl-kick.png', answer: 'she', line: LINE.girl },
-    { left: 'h5-teacher-book.png', right: 's5-teacher-book.png', answer: 'he', line: LINE.heTeacher },
-    { left: 'h6-teacher-wave.png', right: 's6-teacher-wave.png', answer: 'she', line: LINE.sheTeacher }
+    { left: 'h1-boy-run.png', right: 's1-girl-run.png', answer: 'right', line: LINE.girl },
+    { left: 's2-girl-read.png', right: 'h2-boy-read.png', answer: 'right', line: LINE.boy },
+    { left: 'h5-teacher-book.png', right: 's5-teacher-book.png', answer: 'left', line: LINE.heTeacher },
+    { left: 's3-girl-draw.png', right: 'h3-boy-draw.png', answer: 'left', line: LINE.girl },
+    { left: 'h4-boy-kick.png', right: 's4-girl-kick.png', answer: 'left', line: LINE.boy },
+    { left: 'h6-teacher-wave.png', right: 's6-teacher-wave.png', answer: 'right', line: LINE.sheTeacher }
   ];
 
   const WARMUP = [
-    { img: 'h2-boy-read.png', line: LINE.boy },
-    { img: 's2-girl-read.png', line: LINE.girl }
+    { img: 'h2-boy-read.png', say: 'He.', line: LINE.boy },
+    { img: 's2-girl-read.png', say: 'She.', line: LINE.girl }
   ];
 
   const PART3 = [
     {
       img: 'p3-boy-car.png',
+      gender: 'he',
       intro: 'Jim is my friend.',
-      has: 'He has a car.',
-      gender: 'he'
+      has: 'He has a car.'
     },
     {
       img: 'p3-teacher-books.png',
+      gender: 'she',
       intro: 'Miss So is my class teacher.',
-      has: 'She has ten books.',
-      gender: 'she'
+      has: 'She has ten books.'
     }
   ];
 
   const $ = (id) => document.getElementById(id);
   const viewHome = $('view-home');
   const viewPlay = $('view-play');
-  const stage = $('stage');
+  const playArea = $('play-area');
+  const sentenceEl = $('sentence');
   const promptEl = $('prompt');
   const nextBtn = $('btn-next');
   const starCount = $('star-count');
+  const playTitle = $('play-title');
+  const hornBtn = $('btn-horn');
   const voiceBtn = $('btn-voice');
 
   let stars = 0;
   let voiceOn = true;
-  let mode = null; // warmup | part1 | part2 | part3
+  let mode = null;
   let idx = 0;
   let answered = false;
   let firstTry = true;
-  let unlockedMyClass = false;
-  let afterPart1Offer = false;
+  let missCount = 0;
+  let canShoot = false;
+  let enterSide = 'left';
+  let hornText = 'He or She?';
+  let currentPool = null;
 
-  // —— TTS (en-GB, rate 0.80) ——
+  // —— TTS ——
   let cachedVoice = null;
   let voicesReady = false;
   let voicesWaitTimer = null;
@@ -567,10 +589,10 @@
     const voices = window.speechSynthesis.getVoices() || [];
     if (!voices.length) return null;
     const named = /libby|serena|martha|susan|hazel|kate|google uk english female/i;
-    let v = voices.find(x => /en-GB/i.test(x.lang) && named.test(x.name));
-    if (!v) v = voices.find(x => /en-GB/i.test(x.lang));
-    if (!v) v = voices.find(x => /en-AU|en-IE/i.test(x.lang));
-    if (!v) v = voices.find(x => /^en/i.test(x.lang));
+    let v = voices.find((x) => /en-GB/i.test(x.lang) && named.test(x.name));
+    if (!v) v = voices.find((x) => /en-GB/i.test(x.lang));
+    if (!v) v = voices.find((x) => /en-AU|en-IE/i.test(x.lang));
+    if (!v) v = voices.find((x) => /^en/i.test(x.lang));
     return v || null;
   }
   function refreshVoiceCache() {
@@ -579,7 +601,7 @@
     if (!voices.length) return;
     voicesReady = true;
     if (cachedVoice) {
-      const still = voices.some(v => v.voiceURI === cachedVoice.voiceURI && v.name === cachedVoice.name);
+      const still = voices.some((v) => v.voiceURI === cachedVoice.voiceURI && v.name === cachedVoice.name);
       if (still) return;
     }
     cachedVoice = pickVoice();
@@ -684,36 +706,35 @@
     starCount.textContent = String(stars);
   }
 
-  function showHome() {
-    cancelSpeech();
-    mode = null;
-    document.body.classList.remove('shooting-cursor');
-    viewPlay.classList.add('hidden');
-    viewPlay.style.display = 'none';
-    viewHome.classList.remove('hidden');
-    const mc = $('btn-myclass');
-    mc.disabled = !unlockedMyClass;
-    mc.classList.toggle('ghost', !unlockedMyClass);
-  }
-
-  function showPlay() {
-    viewHome.classList.add('hidden');
-    viewPlay.classList.remove('hidden');
-    viewPlay.style.display = 'flex';
-    document.body.classList.add('shooting-cursor');
-  }
-
   function setNextEnabled(on) {
     nextBtn.disabled = !on;
   }
 
-  function stickStar(frame, xPct, yPct) {
+  function setSentence(html) {
+    sentenceEl.innerHTML = html;
+  }
+
+  function showHome() {
+    cancelSpeech();
+    mode = null;
+    canShoot = false;
+    viewPlay.classList.add('hidden');
+    viewHome.classList.remove('hidden');
+  }
+
+  function showPlay(title) {
+    viewHome.classList.add('hidden');
+    viewPlay.classList.remove('hidden');
+    playTitle.textContent = title || 'He or She?';
+  }
+
+  function stickStar(frame) {
     const img = document.createElement('img');
     img.className = 'sticker' + (reducedMotion ? '' : ' pop');
     img.src = ART + 'prop-star-sticker.png';
     img.alt = '';
-    img.style.left = (xPct == null ? 62 : xPct) + '%';
-    img.style.top = (yPct == null ? 18 : yPct) + '%';
+    img.style.left = '58%';
+    img.style.top = '12%';
     frame.appendChild(img);
   }
 
@@ -728,176 +749,258 @@
       fly.src = ART + 'prop-star-sticker.png';
       fly.alt = '';
       document.body.appendChild(fly);
-      const from = (fromEl || nextBtn).getBoundingClientRect();
+      const from = (fromEl || frame).getBoundingClientRect();
       const to = frame.getBoundingClientRect();
-      const x0 = from.left + from.width / 2 - 32;
-      const y0 = from.top + from.height / 2 - 32;
-      const x1 = to.left + to.width * 0.62 - 32;
-      const y1 = to.top + to.height * 0.18 - 32;
+      const x0 = from.left + from.width / 2 - 40;
+      const y0 = from.top + from.height / 2 - 40;
+      const x1 = to.left + to.width * 0.62 - 40;
+      const y1 = to.top + to.height * 0.18 - 40;
       fly.style.left = '0';
       fly.style.top = '0';
-      fly.style.transform = `translate(${x0}px, ${y0}px) scale(0.7)`;
+      fly.style.transform = 'translate(' + x0 + 'px,' + y0 + 'px) scale(0.65)';
       requestAnimationFrame(() => {
-        fly.style.transform = `translate(${x1}px, ${y1}px) scale(1)`;
+        fly.style.transform = 'translate(' + x1 + 'px,' + y1 + 'px) scale(1)';
       });
       setTimeout(() => {
         fly.remove();
         stickStar(frame);
         resolve();
-      }, 480);
+      }, 400);
     });
   }
 
-  // —— Warm-up (not shooting) ——
+  function afterEnter(frame, ms) {
+    canShoot = false;
+    if (reducedMotion) {
+      frame.classList.remove('entering');
+      frame.classList.add('ready');
+      canShoot = true;
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      const done = () => {
+        frame.classList.remove('entering');
+        frame.classList.add('ready');
+        canShoot = true;
+        resolve();
+      };
+      frame.addEventListener('animationend', done, { once: true });
+      setTimeout(done, ms || 900);
+    });
+  }
+
+  function shufflePool(base, kind) {
+    // Play again: shuffle with no 3 same gender in a row; Part 3 order fixed
+    if (kind === 'part3') return PART3.slice();
+    const arr = base.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    // Fix 3-in-a-row same gender for part1
+    if (kind === 'part1') {
+      for (let n = 0; n < 40; n++) {
+        let bad = false;
+        for (let i = 0; i < arr.length - 2; i++) {
+          if (arr[i].gender === arr[i + 1].gender && arr[i].gender === arr[i + 2].gender) {
+            bad = true;
+            const j = (i + 3) % arr.length;
+            const tmp = arr[i + 2]; arr[i + 2] = arr[j]; arr[j] = tmp;
+          }
+        }
+        if (!bad) break;
+      }
+    }
+    return arr;
+  }
+
+  // —— Warm-up ——
   function startWarmup() {
     mode = 'warmup';
     idx = 0;
-    showPlay();
+    showPlay('He or She?');
     promptEl.textContent = "Let's listen.";
-    setNextEnabled(true);
+    nextBtn.classList.add('hidden');
     renderWarmup();
   }
   function renderWarmup() {
     answered = true;
-    firstTry = true;
+    canShoot = false;
+    hornText = WARMUP[idx].say;
     const item = WARMUP[idx];
-    stage.innerHTML = '';
+    playArea.innerHTML = '';
     const wrap = document.createElement('div');
-    wrap.className = 'warmup';
-    wrap.innerHTML = `
-      <div class="card">
-        <img src="${ART}${item.img}" alt="">
-        <p>${item.line}</p>
-      </div>`;
-    stage.appendChild(wrap);
-    speak(item.line);
-    setNextEnabled(true);
+    wrap.className = 'center-wrap';
+    wrap.innerHTML =
+      '<button type="button" class="card" id="warm-card" aria-label="Listen">' +
+      '<img src="' + ART + item.img + '" alt="">' +
+      '<p id="warm-line">' + item.say + '</p></button>' +
+      '<div class="card-actions">' +
+      (idx < WARMUP.length - 1
+        ? '<button type="button" class="home-btn secondary" id="warm-next">Next</button>'
+        : '<button type="button" class="home-btn primary" id="warm-play">Play</button>') +
+      '</div>';
+    playArea.appendChild(wrap);
+    setSentence('<span class="muted">…</span>');
+    const playCard = async () => {
+      setSentence(item.say);
+      $('warm-line').textContent = item.say;
+      await speak(item.say);
+      setSentence(item.line);
+      $('warm-line').textContent = item.line;
+      await speak(item.line, { chain: true });
+    };
+    $('warm-card').addEventListener('click', playCard);
+    playCard();
+    if ($('warm-next')) {
+      $('warm-next').addEventListener('click', () => {
+        idx += 1;
+        renderWarmup();
+      });
+    }
+    if ($('warm-play')) {
+      $('warm-play').addEventListener('click', () => startPart1(false));
+    }
   }
 
   // —— Part 1 ——
-  function startPart1() {
+  function startPart1(again) {
     mode = 'part1';
     idx = 0;
-    afterPart1Offer = false;
-    showPlay();
+    currentPool = again ? shufflePool(PART1, 'part1') : PART1.slice();
+    nextBtn.classList.remove('hidden');
+    showPlay('He or She?');
     promptEl.textContent = 'Look at the picture. Shoot He or She.';
     renderPart1();
   }
   function renderPart1() {
     answered = false;
     firstTry = true;
+    missCount = 0;
     setNextEnabled(false);
-    const item = PART1[idx];
-    stage.innerHTML = '';
-
-    const sentence = document.createElement('div');
-    sentence.className = 'sentence';
-    sentence.id = 'sentence';
-    sentence.innerHTML = '<span class="soft">…</span>';
-
+    enterSide = enterSide === 'left' ? 'right' : 'left';
+    const item = currentPool[idx];
+    hornText = 'He or She?';
+    playArea.innerHTML = '';
     const grid = document.createElement('div');
     grid.className = 'p1-grid';
-    grid.innerHTML = `
-      <div class="rail">
-        <button type="button" class="pronoun-btn he" data-choice="he" aria-label="He"><span class="mark" aria-hidden="true"></span>He</button>
-      </div>
-      <div class="rail">
-        <div class="person-frame${reducedMotion ? '' : ' enter'}" id="target">
-          <img class="char" src="${ART}${item.img}" alt="">
-        </div>
-      </div>
-      <div class="rail">
-        <button type="button" class="pronoun-btn she" data-choice="she" aria-label="She"><span class="mark" aria-hidden="true"></span>She</button>
-      </div>`;
-
-    stage.appendChild(grid);
-    stage.appendChild(sentence);
-
-    grid.querySelectorAll('.pronoun-btn').forEach((btn) => {
+    grid.innerHTML =
+      '<div class="rail"><button type="button" class="word-btn he" data-choice="he" aria-label="He"><span class="glyph" aria-hidden="true"></span>He</button></div>' +
+      '<div class="rail"><div class="person-frame from-' + enterSide + (reducedMotion ? ' ready' : ' entering') + '" id="target">' +
+      '<img class="char" src="' + ART + item.img + '" alt="Photo"></div></div>' +
+      '<div class="rail"><button type="button" class="word-btn she" data-choice="she" aria-label="She"><span class="glyph" aria-hidden="true"></span>She</button></div>';
+    playArea.appendChild(grid);
+    setSentence('<span class="muted">He or She?</span>');
+    const frame = $('target');
+    afterEnter(frame).then(() => speak('He or She?'));
+    grid.querySelectorAll('.word-btn').forEach((btn) => {
       btn.addEventListener('click', () => onPart1Choice(btn.getAttribute('data-choice'), btn));
     });
   }
-
   async function onPart1Choice(choice, btn) {
-    if (answered) return;
-    const item = PART1[idx];
+    if (!canShoot || answered) return;
+    const item = currentPool[idx];
     const frame = $('target');
     if (choice !== item.gender) {
-      btn.classList.add('wrong-flash');
-      setTimeout(() => btn.classList.remove('wrong-flash'), 450);
-      $('sentence').textContent = 'Try again!';
+      missCount += 1;
       firstTry = false;
+      setSentence('Try again!');
       await speak('Try again!');
+      if (missCount >= 2) {
+        const correct = playArea.querySelector('.word-btn.' + item.gender);
+        if (correct) correct.classList.add('hint-ring');
+      }
       return;
     }
     answered = true;
-    gridDisable('.pronoun-btn');
+    canShoot = false;
+    playArea.querySelectorAll('.word-btn').forEach((b) => { b.disabled = true; });
     await flyStickerTo(frame, btn);
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.textContent = item.gender === 'he' ? 'He' : 'She';
+    frame.appendChild(tag);
     const praise = 'Yes! ' + item.line;
-    $('sentence').textContent = praise;
+    setSentence(praise);
     if (firstTry) addStar();
     await speak(praise);
     setNextEnabled(true);
   }
 
-  function gridDisable(sel) {
-    stage.querySelectorAll(sel).forEach((b) => { b.disabled = true; });
-  }
-
   // —— Part 2 ——
-  function startPart2() {
+  function startPart2(again) {
     mode = 'part2';
     idx = 0;
-    showPlay();
+    currentPool = again ? shufflePool(PART2, 'part2') : PART2.slice();
+    nextBtn.classList.remove('hidden');
+    showPlay('He or She?');
     promptEl.textContent = 'Listen. Shoot the picture.';
     renderPart2();
   }
   function renderPart2() {
     answered = false;
     firstTry = true;
+    missCount = 0;
     setNextEnabled(false);
-    const item = PART2[idx];
-    stage.innerHTML = '';
-
-    const sentence = document.createElement('div');
-    sentence.className = 'sentence';
-    sentence.id = 'sentence';
-    sentence.textContent = item.line;
-
+    const item = currentPool[idx];
+    hornText = item.line;
+    playArea.innerHTML = '';
     const grid = document.createElement('div');
     grid.className = 'p2-grid';
-    grid.innerHTML = `
-      <button type="button" class="person-frame p2${reducedMotion ? '' : ' enter'}" data-side="he" aria-label="He picture">
-        <img class="char" src="${ART}${item.left}" alt="">
-      </button>
-      <button type="button" class="person-frame p2${reducedMotion ? '' : ' enter'}" data-side="she" aria-label="She picture">
-        <img class="char" src="${ART}${item.right}" alt="">
-      </button>`;
-
-    stage.appendChild(grid);
-    stage.appendChild(sentence);
-
-    grid.querySelectorAll('.person-frame').forEach((el) => {
+    const leftCls = 'person-frame p2 from-left' + (reducedMotion ? ' ready' : ' entering');
+    const rightCls = 'person-frame p2 from-right' + (reducedMotion ? ' ready' : ' entering');
+    grid.innerHTML =
+      '<button type="button" class="' + leftCls + '" data-side="left" aria-label="Photo">' +
+      '<img class="char" src="' + ART + item.left + '" alt=""></button>' +
+      '<button type="button" class="' + rightCls + '" data-side="right" aria-label="Photo">' +
+      '<img class="char" src="' + ART + item.right + '" alt=""></button>';
+    playArea.appendChild(grid);
+    setSentence(item.line);
+    const frames = grid.querySelectorAll('.person-frame');
+    canShoot = false;
+    const markReady = (frame) => new Promise((resolve) => {
+      if (reducedMotion) {
+        frame.classList.remove('entering');
+        frame.classList.add('ready');
+        resolve();
+        return;
+      }
+      const done = () => {
+        frame.classList.remove('entering');
+        frame.classList.add('ready');
+        resolve();
+      };
+      frame.addEventListener('animationend', done, { once: true });
+      setTimeout(done, 900);
+    });
+    Promise.all([markReady(frames[0]), markReady(frames[1])]).then(() => {
+      canShoot = true;
+      speak(item.line);
+    });
+    frames.forEach((el) => {
       el.addEventListener('click', () => onPart2Choice(el.getAttribute('data-side'), el));
     });
-    speak(item.line);
   }
-
   async function onPart2Choice(side, el) {
-    if (answered) return;
-    const item = PART2[idx];
+    if (!canShoot || answered) return;
+    const item = currentPool[idx];
     if (side !== item.answer) {
-      el.classList.add('wrong-flash');
-      setTimeout(() => el.classList.remove('wrong-flash'), 450);
+      missCount += 1;
       firstTry = false;
       await speak('Try again!');
+      if (missCount >= 2) {
+        const correct = playArea.querySelector('[data-side="' + item.answer + '"]');
+        if (correct) correct.classList.add('hint-ring');
+      }
       return;
     }
     answered = true;
-    stage.querySelectorAll('.person-frame').forEach((b) => { b.disabled = true; b.style.pointerEvents = 'none'; });
+    canShoot = false;
+    playArea.querySelectorAll('.person-frame').forEach((b) => { b.disabled = true; });
     await flyStickerTo(el, el);
+    el.classList.add('hint-ring');
     const praise = 'Yes! ' + item.line;
-    $('sentence').textContent = praise;
+    setSentence(praise);
     if (firstTry) addStar();
     await speak(praise);
     setNextEnabled(true);
@@ -907,180 +1010,178 @@
   function startPart3() {
     mode = 'part3';
     idx = 0;
-    showPlay();
+    currentPool = PART3.slice();
+    nextBtn.classList.remove('hidden');
+    showPlay('My class');
     promptEl.textContent = 'Look at the picture. Shoot He or She.';
     renderPart3();
   }
   function renderPart3() {
     answered = false;
     firstTry = true;
+    missCount = 0;
     setNextEnabled(false);
-    const item = PART3[idx];
-    stage.innerHTML = '';
-
-    const sentence = document.createElement('div');
-    sentence.className = 'sentence';
-    sentence.id = 'sentence';
-    sentence.innerHTML = `<span class="soft">${item.intro}</span>`;
-
-    const wrap = document.createElement('div');
-    wrap.className = 'p3';
-    wrap.innerHTML = `
-      <div class="p3-row">
-        <div class="rail">
-          <button type="button" class="pronoun-btn he" data-choice="he" aria-label="He"><span class="mark" aria-hidden="true"></span>He</button>
-        </div>
-        <div class="person-frame${reducedMotion ? '' : ' enter'}" id="target">
-          <img class="char" src="${ART}${item.img}" alt="">
-        </div>
-        <div class="rail">
-          <button type="button" class="pronoun-btn she" data-choice="she" aria-label="She"><span class="mark" aria-hidden="true"></span>She</button>
-        </div>
-      </div>`;
-
-    stage.appendChild(wrap);
-    stage.appendChild(sentence);
-
-    wrap.querySelectorAll('.pronoun-btn').forEach((btn) => {
+    enterSide = enterSide === 'left' ? 'right' : 'left';
+    const item = currentPool[idx];
+    hornText = 'He or She?';
+    playArea.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'p1-grid';
+    grid.innerHTML =
+      '<div class="rail"><button type="button" class="word-btn he" data-choice="he" aria-label="He"><span class="glyph" aria-hidden="true"></span>He</button></div>' +
+      '<div class="rail"><div class="person-frame from-' + enterSide + (reducedMotion ? ' ready' : ' entering') + '" id="target">' +
+      '<img class="char" src="' + ART + item.img + '" alt="Photo"></div></div>' +
+      '<div class="rail"><button type="button" class="word-btn she" data-choice="she" aria-label="She"><span class="glyph" aria-hidden="true"></span>She</button></div>';
+    playArea.appendChild(grid);
+    setSentence('<span class="muted">He or She?</span>');
+    afterEnter($('target')).then(() => speak('He or She?'));
+    grid.querySelectorAll('.word-btn').forEach((btn) => {
       btn.addEventListener('click', () => onPart3Choice(btn.getAttribute('data-choice'), btn));
     });
   }
-
   async function onPart3Choice(choice, btn) {
-    if (answered) return;
-    const item = PART3[idx];
+    if (!canShoot || answered) return;
+    const item = currentPool[idx];
     const frame = $('target');
     if (choice !== item.gender) {
-      btn.classList.add('wrong-flash');
-      setTimeout(() => btn.classList.remove('wrong-flash'), 450);
+      missCount += 1;
       firstTry = false;
+      setSentence('Try again!');
       await speak('Try again!');
+      if (missCount >= 2) {
+        const correct = playArea.querySelector('.word-btn.' + item.gender);
+        if (correct) correct.classList.add('hint-ring');
+      }
       return;
     }
     answered = true;
-    gridDisable('.pronoun-btn');
+    canShoot = false;
+    playArea.querySelectorAll('.word-btn').forEach((b) => { b.disabled = true; });
     await flyStickerTo(frame, btn);
     if (firstTry) addStar();
-    // Three separate utterances: Yes! → intro → has
-    $('sentence').textContent = 'Yes!';
+    setSentence('Yes!');
     await speak('Yes!');
-    $('sentence').textContent = item.intro;
+    setSentence(item.intro);
     await speak(item.intro, { chain: true });
-    $('sentence').innerHTML = item.intro + '<br>' + item.has;
+    setSentence(item.intro + '<br>' + item.has);
     await speak(item.has, { chain: true });
     setNextEnabled(true);
   }
 
-  // —— Next / navigation ——
-  function onNext() {
-    if (mode === 'warmup') {
-      if (idx < WARMUP.length - 1) {
-        idx += 1;
-        renderWarmup();
-      } else {
-        showHome();
-      }
-      return;
+  function showCelebrate(kind) {
+    canShoot = false;
+    setNextEnabled(false);
+    nextBtn.classList.add('hidden');
+    setSentence('Well done!');
+    promptEl.textContent = 'Well done!';
+    playArea.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'center-wrap';
+    let actions = '';
+    if (kind === 'part1') {
+      actions =
+        '<button type="button" class="home-btn primary" id="c-listen">Listen</button>' +
+        '<button type="button" class="home-btn secondary" id="c-again">Play again</button>' +
+        '<button type="button" class="home-btn secondary" id="c-home">Home</button>';
+    } else if (kind === 'part2') {
+      actions =
+        '<button type="button" class="home-btn primary" id="c-myclass">My class</button>' +
+        '<button type="button" class="home-btn secondary" id="c-again">Play again</button>' +
+        '<button type="button" class="home-btn secondary" id="c-home">Home</button>';
+    } else {
+      actions =
+        '<button type="button" class="home-btn primary" id="c-again">Play again</button>' +
+        '<button type="button" class="home-btn secondary" id="c-home">Home</button>';
     }
+    wrap.innerHTML =
+      '<div class="card"><p>Well done!</p><p style="font-size:var(--fs-chrome);margin-top:0.45rem;">Stars: ' +
+      stars + '</p><div class="card-actions">' + actions + '</div></div>';
+    playArea.appendChild(wrap);
+    speak('Well done!');
+    if ($('c-listen')) $('c-listen').addEventListener('click', () => startPart2(false));
+    if ($('c-myclass')) $('c-myclass').addEventListener('click', () => startPart3());
+    if ($('c-again')) {
+      $('c-again').addEventListener('click', () => {
+        if (kind === 'part1') startPart1(true);
+        else if (kind === 'part2') startPart2(true);
+        else startPart1(true);
+      });
+    }
+    if ($('c-home')) $('c-home').addEventListener('click', showHome);
+  }
+
+  function onNext() {
+    if (!answered && mode !== 'warmup') return;
     if (mode === 'part1') {
-      if (idx < PART1.length - 1) {
+      if (idx < currentPool.length - 1) {
         idx += 1;
         renderPart1();
       } else {
-        unlockedMyClass = true;
-        afterPart1Offer = true;
-        mode = 'part1-done';
-        stage.innerHTML = '';
-        const wrap = document.createElement('div');
-        wrap.className = 'warmup';
-        wrap.innerHTML = `<div class="card"><p>Well done!</p><p style="font-size:1.25rem;margin-top:0.55rem;">Stars: ${stars}</p>
-          <div style="display:flex;flex-direction:column;gap:0.65rem;margin-top:1rem;">
-            <button type="button" class="home-btn primary" id="offer-p2">Part 2</button>
-            <button type="button" class="home-btn secondary" id="offer-home">Home</button>
-          </div></div>`;
-        stage.appendChild(wrap);
-        promptEl.textContent = 'Part 2 is optional.';
-        setNextEnabled(false);
-        wrap.querySelector('#offer-p2').addEventListener('click', () => startPart2());
-        wrap.querySelector('#offer-home').addEventListener('click', () => showHome());
+        mode = 'celebrate';
+        showCelebrate('part1');
       }
       return;
     }
     if (mode === 'part2') {
-      if (idx < PART2.length - 1) {
+      if (idx < currentPool.length - 1) {
         idx += 1;
         renderPart2();
       } else {
-        stage.innerHTML = `<div class="warmup"><div class="card"><p>Well done!</p><p style="font-size:1.2rem;margin-top:0.6rem;">Stars: ${stars}</p></div></div>`;
-        promptEl.textContent = 'Finished Part 2.';
-        mode = 'part2-done';
-        setNextEnabled(true);
+        mode = 'celebrate';
+        showCelebrate('part2');
       }
-      return;
-    }
-    if (mode === 'part2-done') {
-      showHome();
       return;
     }
     if (mode === 'part3') {
-      if (idx < PART3.length - 1) {
+      if (idx < currentPool.length - 1) {
         idx += 1;
         renderPart3();
       } else {
-        stage.innerHTML = `<div class="warmup"><div class="card"><p>Well done!</p><p style="font-size:1.2rem;margin-top:0.6rem;">Stars: ${stars}</p></div></div>`;
-        promptEl.textContent = 'Finished My class.';
-        mode = 'part3-done';
-        setNextEnabled(true);
+        mode = 'celebrate';
+        showCelebrate('part3');
       }
-      return;
-    }
-    if (mode === 'part3-done') {
-      showHome();
     }
   }
 
-  // Listen = speak title + sample lines
-  async function onListen() {
-    await speakChain([
-      'He or She?',
-      LINE.boy,
-      LINE.girl,
-      LINE.heTeacher,
-      LINE.sheTeacher
-    ]);
+  function onHorn() {
+    if (!hornText) return;
+    speak(hornText);
   }
 
-  // Play: Part 1 first; if Part 1 done this session, Part 2
-  function onPlay() {
-    startPart1();
+  // Home hint updates on focus/hover
+  function bindHomeHints() {
+    ['btn-play', 'btn-listen-entry', 'btn-warmup', 'btn-myclass'].forEach((id) => {
+      const el = $(id);
+      const apply = () => { $('home-hint').textContent = el.getAttribute('data-hint'); };
+      el.addEventListener('mouseenter', apply);
+      el.addEventListener('focus', apply);
+    });
   }
 
-  $('btn-play').addEventListener('click', onPlay);
-  $('btn-listen').addEventListener('click', onListen);
+  $('btn-play').addEventListener('click', () => startPart1(false));
+  $('btn-listen-entry').addEventListener('click', () => startPart2(false));
   $('btn-warmup').addEventListener('click', startWarmup);
-  $('btn-myclass').addEventListener('click', () => {
-    if (!unlockedMyClass) return;
-    startPart3();
-  });
-  $('btn-home').addEventListener('click', showHome);
+  $('btn-myclass').addEventListener('click', startPart3);
   nextBtn.addEventListener('click', onNext);
+  hornBtn.addEventListener('click', onHorn);
   voiceBtn.addEventListener('click', () => {
     voiceOn = !voiceOn;
-    voiceBtn.textContent = voiceOn ? 'Voice ON' : 'Voice OFF';
+    voiceBtn.classList.toggle('voice-off', !voiceOn);
     voiceBtn.setAttribute('aria-pressed', voiceOn ? 'true' : 'false');
+    voiceBtn.setAttribute('aria-label', voiceOn ? 'Voice ON' : 'Voice OFF');
     if (!voiceOn) cancelSpeech();
   });
 
   function preloadArt() {
-    const names = [
+    [
       'h1-boy-run.png','h2-boy-read.png','h3-boy-draw.png','h4-boy-kick.png',
       's1-girl-run.png','s2-girl-read.png','s3-girl-draw.png','s4-girl-kick.png',
       'h5-teacher-book.png','h6-teacher-wave.png','s5-teacher-book.png','s6-teacher-wave.png',
       'prop-star-wand.png','prop-star-sticker.png','p3-boy-car.png','p3-teacher-books.png'
-    ];
-    names.forEach((n) => { const i = new Image(); i.src = ART + n; });
+    ].forEach((n) => { const i = new Image(); i.src = ART + n; });
   }
 
+  bindHomeHints();
   initVoices();
   preloadArt();
 })();
