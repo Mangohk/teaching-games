@@ -445,7 +445,7 @@
         <button type="button" class="home-btn primary" id="btn-play">Play</button>
         <button type="button" class="home-btn secondary" id="btn-listen">Listen</button>
         <button type="button" class="home-btn secondary" id="btn-warmup">Warm-up</button>
-        <button type="button" class="home-btn ghost" id="btn-myclass" disabled title="Unlock after Part 1">My class</button>
+        <button type="button" class="home-btn ghost" id="btn-myclass" disabled title="Unlocks after Part 1">My class</button>
       </div>
       <p class="teacher-note">Teacher: Part 3 is optional. More examples stay in this note only.</p>
     </section>
@@ -1071,7 +1071,18 @@
     if (!voiceOn) cancelSpeech();
   });
 
+  function preloadArt() {
+    const names = [
+      'h1-boy-run.png','h2-boy-read.png','h3-boy-draw.png','h4-boy-kick.png',
+      's1-girl-run.png','s2-girl-read.png','s3-girl-draw.png','s4-girl-kick.png',
+      'h5-teacher-book.png','h6-teacher-wave.png','s5-teacher-book.png','s6-teacher-wave.png',
+      'prop-star-wand.png','prop-star-sticker.png','p3-boy-car.png','p3-teacher-books.png'
+    ];
+    names.forEach((n) => { const i = new Image(); i.src = ART + n; });
+  }
+
   initVoices();
+  preloadArt();
 })();
   </script>
 </body>
