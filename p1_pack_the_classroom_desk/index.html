@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primary 1 English: Pack the Classroom Desk!</title>
+  <link rel="stylesheet" href="./vendor/tailwind.css">
+  <link rel="stylesheet" href="./vendor/fonts/fonts.css">
+
+  <style>
+    /* Custom Japanese pastel picture-book theme & smartboard touch animations */
+    :root {
+      --bg-cream: #FFFDF7;
+      --bg-sky: #EBF6FF;
+      --desk-wood: #F5D5A7;
+      --desk-border: #D9A76A;
+      --ink-dark: #2D3748;
+      --accent-blue: #3B82F6;
+      --accent-orange: #F97316;
+      --accent-red: #EF4444;
+      --accent-green: #10B981;
+      --accent-yellow: #FACC15;
+    }
+
+    body {
+      font-family: 'Nunito', 'Comic Sans MS', sans-serif;
+      background: linear-gradient(180deg, #EBF6FF 0%, #FFFDF7 60%, #FDF3E1 100%);
+      color: var(--ink-dark);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-display {
+      font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    /* Picture-book soft card border & shadow */
+    .storybook-card {
+      background: #FFFFFF;
+      border: 4px solid #CBD5E1;
+      box-shadow: 0 8px 0 #CBD5E1, 0 14px 24px rgba(45, 55, 72, 0.08);
+      border-radius: 28px;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.2s ease;
+    }
+
+    .storybook-btn {
+      border-bottom-width: 6px;
+      transition: transform 0.12s ease, border-bottom-width 0.12s ease, filter 0.15s ease;
+    }
+
+    .storybook-btn:active:not(:disabled) {
+      transform: translateY(4px);
+      border-bottom-width: 2px;
+    }
+
+    /* Stationary hover glow for Part 1 countable SVG items (prevents wobbling/shifting on cursor hover) */
+    .countable-unit-hover {
+      cursor: pointer;
+    }
+    .countable-unit-hover:hover {
+      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.55));
+    }
+
+    /* Countable item pop animation (triggered only on click) */
+    @keyframes itemBouncePop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.16); }
+      75% { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+
+    .counted-pop {
+      animation: itemBouncePop 0.36s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      filter: drop-shadow(0 6px 10px rgba(250, 204, 21, 0.55));
+    }
+
+    /* Gentle wiggle for scaffolding hint */
+    @keyframes gentleWiggle {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-1deg); }
+      40% { transform: translateX(8px) rotate(1deg); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    .wiggle-hint {
+      animation: gentleWiggle 0.45s ease-in-out;
+    }
+
+    /* Star pop-in animation */
+    @keyframes starEarn {
+      0% { transform: scale(0.4) rotate(-30deg); }
+      60% { transform: scale(1.35) rotate(12deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .star-earned {
+      animation: starEarn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Confetti canvas overlay */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    /* Classroom wooden desk surface */
+    .wooden-desk {
+      background: linear-gradient(180deg, #F8DFB8 0%, #EBC288 100%);
+      border-top: 6px solid #D69E59;
+      box-shadow: inset 0 6px 12px rgba(255, 255, 255, 0.55);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Confetti Overlay for Celebration -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Top Header & Cooperative Class Star Progress Bar -->
+  <header class="w-full max-w-6xl mx-auto px-3 sm:px-6 pt-3 sm:pt-4">
+    <div class="bg-white/95 backdrop-blur border-4 border-sky-200 rounded-3xl px-4 py-3 shadow-md flex flex-col lg:flex-row items-center justify-between gap-3">
+      
+      <!-- Title & Cooperative Mission Badge -->
+      <div class="flex items-center gap-3">
+        <a href="../index.html" class="storybook-btn shrink-0 bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-950 font-display font-bold text-sm sm:text-base px-3 py-2.5 rounded-2xl no-underline flex items-center gap-1.5" title="Back to Teaching Games" aria-label="Back to Teaching Games">🏠 Home</a>
+        <!-- Friendly Classroom Boy Helper Avatar SVG -->
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-100 border-3 border-amber-300 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+          <svg viewBox="0 0 100 100" class="w-14 h-14">
+            <circle cx="50" cy="50" r="46" fill="#FEF3C7"/>
+            <path d="M20 96 C20 76, 80 76, 80 96 Z" fill="#EF4444"/>
+            <path d="M24 86 L76 86" stroke="#FFFFFF" stroke-width="5"/>
+            <path d="M21 94 L79 94" stroke="#FFFFFF" stroke-width="5"/>
+            <rect x="43" y="64" width="14" height="14" rx="5" fill="#FCD5B5"/>
+            <circle cx="50" cy="46" r="24" fill="#FDE0C8" stroke="#334155" stroke-width="2.5"/>
+            <path d="M26 44 C25 22, 75 22, 74 44 C70 32, 58 29, 50 32 C42 29, 30 32, 26 44 Z" fill="#3B2F2F" stroke="#334155" stroke-width="2.5"/>
+            <circle cx="41" cy="46" r="3.2" fill="#1E293B"/>
+            <circle cx="59" cy="46" r="3.2" fill="#1E293B"/>
+            <circle cx="42" cy="45" r="1" fill="#FFFFFF"/>
+            <circle cx="60" cy="45" r="1" fill="#FFFFFF"/>
+            <ellipse cx="35" cy="52" rx="4" ry="2.5" fill="#FCA5A5" opacity="0.8"/>
+            <ellipse cx="65" cy="52" rx="4" ry="2.5" fill="#FCA5A5" opacity="0.8"/>
+            <path d="M43 55 Q50 62 57 55" fill="none" stroke="#334155" stroke-width="2.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <span class="inline-block text-xs sm:text-sm font-extrabold uppercase tracking-wider text-sky-600 bg-sky-100 px-3 py-0.5 rounded-full">
+            Primary 1 Team Mission
+          </span>
+          <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 leading-tight">
+            Help Pack the Classroom Desk Together!
+          </h1>
+        </div>
+      </div>
+
+      <!-- Cooperative 12-Star Progress Meter + Audio Controls -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <div class="bg-amber-50 border-3 border-amber-300 rounded-2xl px-3 py-2 flex items-center gap-1.5" aria-label="Class Star Progress">
+          <span class="text-xs sm:text-sm font-extrabold text-amber-800 mr-1">Class Stars:</span>
+          <div id="star-track" class="flex flex-wrap items-center gap-0.5 max-w-[240px] sm:max-w-none">
+            <!-- 12 stars injected by JS -->
+          </div>
+          <span id="star-count-label" class="ml-1.5 text-sm sm:text-base font-extrabold text-amber-900">0/12</span>
+        </div>
+
+        <!-- Mute / Unmute Button -->
+        <button id="sound-toggle-btn" onclick="toggleSound()" class="storybook-btn bg-sky-100 hover:bg-sky-200 border-2 border-sky-400 text-sky-800 font-bold px-3.5 py-2.5 rounded-2xl flex items-center gap-1.5 text-sm sm:text-base cursor-pointer" title="Toggle Sound">
+          <span id="sound-icon" class="text-xl">🔊</span>
+          <span id="sound-label" class="hidden sm:inline">Sound On</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Four Classroom Activity Mode Tabs -->
+    <nav class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mt-3" role="tablist">
+      <button id="tab-learn" onclick="switchMode('learn')" class="storybook-btn bg-emerald-500 border-emerald-700 text-white font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>👀</span>
+        <span>1. Look & Listen</span>
+      </button>
+      <button id="tab-quiz" onclick="switchMode('quiz')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-amber-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>🎒</span>
+        <span>2. Class Pack Challenge</span>
+      </button>
+      <button id="tab-match" onclick="switchMode('match')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-purple-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>🔢</span>
+        <span>3. Count & Match</span>
+      </button>
+      <button id="tab-wheel" onclick="switchMode('wheel')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-pink-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>🎡</span>
+        <span>4. Spin & Speak Wheel</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Interactive Smartboard Workspace -->
+  <main class="flex-grow w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 flex flex-col">
+
+    <!-- ===================================================================== -->
+    <!-- MODE 1: LOOK & LISTEN (Bug-Free Vocabulary & Tap-to-Count Stage)      -->
+    <!-- ===================================================================== -->
+    <section id="mode-learn" class="flex-grow flex flex-col justify-between gap-4">
+      <div class="storybook-card p-4 sm:p-6 flex-grow flex flex-col justify-between relative overflow-hidden">
+        
+        <!-- Top Item Selector Pills (Quick Jump for Teacher) -->
+        <div id="learn-pills" class="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-2">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Prompt Banner & Count Together Toggle -->
+        <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+          <span id="learn-hint-badge" class="inline-block bg-amber-100 text-amber-900 border-2 border-amber-300 font-bold text-sm sm:text-base px-4 py-1 rounded-full">
+            👆 Tap each object to count aloud one by one!
+          </span>
+          <button onclick="resetLearnCount()" class="bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-sky-900 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full cursor-pointer">
+            🔄 Reset Count
+          </button>
+        </div>
+
+        <!-- Interactive SVG Stage -->
+        <div id="learn-stage-box" onclick="handleLearnStageBackgroundClick()" class="my-2 flex-grow flex flex-col items-center justify-center min-h-[230px] sm:min-h-[270px] bg-gradient-to-b from-sky-50/70 to-amber-50/50 rounded-3xl border-3 border-dashed border-sky-200 p-4 relative cursor-pointer">
+          <!-- Live Counting Bubble -->
+          <div id="count-bubble" class="hidden absolute top-3 right-3 bg-yellow-300 border-3 border-amber-500 text-amber-950 font-display text-2xl sm:text-3xl w-14 h-14 rounded-full flex items-center justify-center shadow-md z-10">
+            1
+          </div>
+
+          <div id="learn-svg-stage" class="w-full max-w-3xl flex items-center justify-center">
+            <!-- Custom countable SVG rendered here -->
+          </div>
+        </div>
+
+        <!-- Color-Coded Sentence Frame Display -->
+        <div id="learn-sentence-card" class="bg-slate-50 border-3 border-slate-200 rounded-2xl p-3 sm:p-4 text-center transition-all duration-300">
+          <p id="learn-question" class="text-base sm:text-xl font-bold text-slate-500 mb-1">
+            What is it?
+          </p>
+          <div id="learn-sentence" class="font-display text-3xl sm:text-5xl font-bold tracking-wide text-slate-800 my-1 transition-transform duration-300">
+            <!-- Color-coded sentence injected here -->
+          </div>
+          <!-- Grammar Legend -->
+          <div class="flex flex-wrap justify-center gap-3 sm:gap-5 mt-2 text-xs sm:text-sm font-bold text-slate-600">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> <b class="text-blue-600">a</b> (one item) / before other letters</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span> <b class="text-orange-600">an</b> (before a, e, i, o, u)</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span> <b class="text-red-600">-s</b> (2 or more items)</span>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation & Audio Controls -->
+        <div class="grid grid-cols-3 gap-3 mt-4">
+          <button onclick="prevLearnItem()" class="storybook-btn bg-slate-100 hover:bg-slate-200 border-2 border-slate-400 text-slate-800 font-display text-base sm:text-xl py-3 rounded-2xl cursor-pointer">
+            ⬅️ Previous
+          </button>
+          <button onclick="speakCurrentLearnItem()" class="storybook-btn bg-amber-400 hover:bg-amber-300 border-2 border-amber-600 text-amber-950 font-display text-base sm:text-2xl py-3 rounded-2xl flex items-center justify-center gap-2 cursor-pointer shadow">
+            <span>🔊</span>
+            <span>Listen & Repeat</span>
+          </button>
+          <button onclick="nextLearnItem()" class="storybook-btn bg-sky-500 hover:bg-sky-400 border-2 border-sky-700 text-white font-display text-base sm:text-xl py-3 rounded-2xl cursor-pointer">
+            Next ➡️
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- MODE 2: CLASS PACK CHALLENGE (Expanded Number & Stationery Variations)-->
+    <!-- ===================================================================== -->
+    <section id="mode-quiz" class="hidden flex-grow flex flex-col justify-between gap-4">
+      <div class="storybook-card p-4 sm:p-6 flex-grow flex flex-col justify-between">
+        
+        <!-- Question Prompt Header -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2 bg-sky-50 border-3 border-sky-200 rounded-2xl px-4 py-3">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🤔</span>
+            <div>
+              <span class="text-xs font-extrabold uppercase text-sky-600 tracking-wider">Question <span id="quiz-progress-num">1</span> of 8</span>
+              <h2 id="quiz-question-text" class="font-display text-2xl sm:text-3xl text-slate-800">
+                What is it?
+              </h2>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="initQuizMode()" class="storybook-btn bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-900 font-bold px-3 py-2 rounded-xl text-sm cursor-pointer">
+              🎲 New questions
+            </button>
+            <button onclick="speakQuizPrompt()" class="storybook-btn bg-white hover:bg-sky-100 border-2 border-sky-400 text-sky-800 font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer">
+              <span>🔊</span>
+              <span>Hear Question</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Classroom Desk Display Stage -->
+        <div class="my-3 flex-grow flex flex-col items-center justify-center min-h-[210px] sm:min-h-[250px] bg-gradient-to-b from-amber-50/40 to-amber-100/60 rounded-3xl border-3 border-amber-200 p-4 relative">
+          <div id="quiz-svg-stage" class="w-full max-w-3xl flex items-center justify-center cursor-pointer" onclick="speakQuizPrompt()">
+            <!-- Target dynamic SVG rendered here -->
+          </div>
+          <!-- Gentle Teacher Scaffolding Feedback Banner -->
+          <div id="quiz-feedback" class="hidden mt-3 px-5 py-2.5 rounded-2xl font-bold text-base sm:text-xl text-center shadow-sm">
+          </div>
+        </div>
+
+        <!-- 3 Big Touch-Friendly Sentence Frame Choices -->
+        <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          <!-- 3 option buttons generated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- MODE 3: COUNT & MATCH (Expanded Randomized Number & Stationery Pairs) -->
+    <!-- ===================================================================== -->
+    <section id="mode-match" class="hidden flex-grow flex flex-col justify-between gap-4">
+      <div class="storybook-card p-4 sm:p-6 flex-grow flex flex-col justify-between relative">
+        
+        <!-- Round Header -->
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <span id="match-round-badge" class="bg-purple-100 text-purple-800 border-2 border-purple-300 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full">
+              Round 1 of 2
+            </span>
+            <h2 class="font-display text-xl sm:text-2xl text-slate-800 mt-1">
+              Count the pictures on the left, then tap the matching words on the right!
+            </h2>
+          </div>
+          <button onclick="initMatchMode()" class="storybook-btn bg-purple-100 hover:bg-purple-200 border-2 border-purple-400 text-purple-900 font-bold px-4 py-2 rounded-xl text-sm cursor-pointer">
+            🎲 New game
+          </button>
+        </div>
+
+        <!-- Matching Arena with SVG Line Overlay -->
+        <div id="match-arena" class="relative flex-grow grid grid-cols-2 gap-4 sm:gap-12 items-center py-2">
+          <!-- SVG Canvas for glowing connection lines -->
+          <svg id="match-lines-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+
+          <!-- Left Column: 4 Dynamic Countable Pictures -->
+          <div id="match-left-col" class="flex flex-col gap-3 z-20">
+            <!-- Left picture cards injected here -->
+          </div>
+
+          <!-- Right Column: 4 Phrase Cards -->
+          <div id="match-right-col" class="flex flex-col gap-3 z-20">
+            <!-- Right phrase cards injected here -->
+          </div>
+        </div>
+
+        <!-- Round Complete / Next Round Banner -->
+        <div id="match-round-footer" class="hidden mt-3 text-center">
+          <button id="match-next-round-btn" onclick="nextMatchRound()" class="storybook-btn bg-purple-600 hover:bg-purple-500 border-2 border-purple-800 text-white font-display text-xl sm:text-2xl px-8 py-3 rounded-2xl shadow-lg cursor-pointer">
+            Great! Go to Round 2 ➡️
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- MODE 4: SPIN & SPEAK WHEEL (Dual Interactive Smartboard Wheels)       -->
+    <!-- ===================================================================== -->
+    <section id="mode-wheel" class="hidden flex-grow flex flex-col justify-between gap-4">
+      <div class="storybook-card p-4 sm:p-6 flex-grow flex flex-col justify-between gap-4">
+        
+        <!-- Top Instruction & Master Spin Button -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3 bg-pink-50 border-3 border-pink-200 rounded-2xl px-4 py-3">
+          <div>
+            <span class="bg-pink-200 text-pink-900 font-extrabold text-xs sm:text-sm px-3 py-0.5 rounded-full">
+              🎡 Speaking Challenge • Numbers 1–10 + Stationery
+            </span>
+            <h2 class="font-display text-xl sm:text-2xl text-slate-800 mt-1">
+              Spin the wheels, count the picture, and read it aloud together!
+            </h2>
+          </div>
+          <button id="spin-both-btn" onclick="spinBothWheels()" class="storybook-btn bg-gradient-to-r from-pink-500 to-amber-500 hover:from-pink-400 hover:to-amber-400 border-2 border-pink-700 text-white font-display text-lg sm:text-2xl px-6 py-3 rounded-2xl shadow-lg cursor-pointer shrink-0">
+            🎡 SPIN BOTH WHEELS!
+          </button>
+        </div>
+
+        <!-- Dual Wheels + Visual Prompt Stage -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center my-auto">
+          
+          <!-- Left Wheel: Numbers 1 to 10 (4 cols) -->
+          <div class="lg:col-span-4 flex flex-col items-center bg-sky-50/70 border-3 border-sky-200 rounded-3xl p-3">
+            <span class="font-display text-lg text-sky-800 mb-1">1. Number Wheel (1–10)</span>
+            <div class="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
+              <!-- Top Pointer Triangle -->
+              <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-red-500 drop-shadow"></div>
+              <canvas id="number-wheel-canvas" width="320" height="320" class="w-full h-full rounded-full shadow-md"></canvas>
+            </div>
+            <button id="spin-num-btn" onclick="spinSingleWheel('number')" class="mt-2 storybook-btn bg-sky-500 hover:bg-sky-400 border-2 border-sky-700 text-white font-display text-base px-4 py-1.5 rounded-xl cursor-pointer">
+              🔄 Spin Number
+            </button>
+          </div>
+
+          <!-- Center Stage: Landed Quantity Visual & Read-Aloud Reveal (4 cols) -->
+          <div class="lg:col-span-4 flex flex-col items-center justify-between bg-amber-50 border-3 border-amber-300 rounded-3xl p-4 min-h-[290px] text-center">
+            <span class="text-xs font-extrabold tracking-wider text-amber-800 bg-amber-200/80 px-3 py-1 rounded-full">
+              🗣️ Say it together.
+            </span>
+
+            <!-- Dynamic SVG Group of the Landed Number + Item -->
+            <div id="wheel-visual-result" class="my-2 flex-grow flex flex-col items-center justify-center w-full">
+              <p class="font-display text-xl text-slate-500">Tap "SPIN BOTH WHEELS!" to start!</p>
+            </div>
+
+            <!-- Read Aloud Prompt / Answer Reveal Box -->
+            <div id="wheel-answer-box" class="w-full">
+              <div id="wheel-hidden-prompt" class="bg-white border-2 border-dashed border-amber-400 rounded-2xl p-3">
+                <p class="font-display text-lg sm:text-xl text-slate-700 mb-2">
+                  Class: Say it aloud first! 🗣️
+                </p>
+                <button id="wheel-reveal-btn" onclick="revealWheelAnswer()" disabled class="storybook-btn bg-emerald-500 disabled:opacity-40 hover:bg-emerald-400 border-2 border-emerald-700 text-white font-display text-base sm:text-lg px-5 py-2 rounded-xl cursor-pointer w-full">
+                  👀 Reveal Answer & Listen (+1 ⭐)
+                </button>
+              </div>
+
+              <div id="wheel-revealed-card" class="hidden bg-emerald-50 border-3 border-emerald-400 rounded-2xl p-3">
+                <div id="wheel-revealed-phrase" class="font-display text-2xl sm:text-3xl text-slate-800 mb-2">
+                  <!-- Color-coded phrase -->
+                </div>
+                <button onclick="speakWheelResult()" class="storybook-btn bg-amber-400 hover:bg-amber-300 border-2 border-amber-600 text-amber-950 font-display text-base px-4 py-1.5 rounded-xl cursor-pointer">
+                  🔊 Listen Again
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Wheel: 8 Stationery Items (4 cols) -->
+          <div class="lg:col-span-4 flex flex-col items-center bg-purple-50/70 border-3 border-purple-200 rounded-3xl p-3">
+            <span class="font-display text-lg text-purple-800 mb-1">2. Stationery Wheel (8 Items)</span>
+            <div class="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
+              <!-- Top Pointer Triangle -->
+              <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-red-500 drop-shadow"></div>
+              <canvas id="item-wheel-canvas" width="320" height="320" class="w-full h-full rounded-full shadow-md"></canvas>
+            </div>
+            <button id="spin-item-btn" onclick="spinSingleWheel('item')" class="mt-2 storybook-btn bg-purple-500 hover:bg-purple-400 border-2 border-purple-700 text-white font-display text-base px-4 py-1.5 rounded-xl cursor-pointer">
+              🔄 Spin Item
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Classroom Wooden Desk Visual Footer -->
+  <footer class="wooden-desk w-full py-2.5 px-4 text-center">
+    <p class="text-xs sm:text-sm font-extrabold text-amber-950/80">
+      🏫 Primary 1 English Smartboard Activity • Singular: <em>"It is a / an..."</em> • Plural: <em>"They are..."</em>
+    </p>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- CELEBRATION MODAL (When all 12 Class Stars are earned)                -->
+  <!-- ===================================================================== -->
+  <div id="celebration-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="storybook-card bg-gradient-to-b from-amber-50 to-white border-4 border-amber-400 max-w-xl w-full p-6 sm:p-8 text-center relative">
+      <div class="text-6xl sm:text-7xl mb-2">🎉🌟🎒</div>
+      <h2 class="font-display text-3xl sm:text-5xl text-amber-600 mb-2">
+        Awesome Job, Primary 1!
+      </h2>
+      <p class="font-display text-2xl sm:text-3xl text-slate-800 mb-4">
+        Our Desk is Ready!
+      </p>
+      <p class="text-base sm:text-lg font-bold text-slate-600 mb-6">
+        You practised numbers 1 to 10 and all 8 stationery items together to earn 12 out of 12 Class Stars!
+      </p>
+
+      <!-- Mini Showcase of All 8 Packed Items -->
+      <div class="bg-amber-100/70 border-2 border-amber-300 rounded-2xl p-3 mb-6 grid grid-cols-4 gap-2 text-xs font-extrabold text-slate-700">
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">🖊️ pen</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">✏️ pencil</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">🌈 coloured pencil</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">🧽 eraser</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">📏 ruler</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">📕 book</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">👝 pencil case</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm">🧴 glue stick</div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="closeCelebrationAndPlayAgain()" class="storybook-btn bg-emerald-500 hover:bg-emerald-400 border-2 border-emerald-700 text-white font-display text-xl sm:text-2xl px-8 py-3.5 rounded-2xl shadow-lg cursor-pointer">
+          🔄 Play Again
+        </button>
+        <button onclick="closeCelebrationOnly()" class="storybook-btn bg-sky-100 hover:bg-sky-200 border-2 border-sky-400 text-sky-900 font-display text-lg sm:text-xl px-6 py-3.5 rounded-2xl cursor-pointer">
+          Keep Exploring
+        </button>
+        <a href="../index.html" class="storybook-btn bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-display text-lg sm:text-xl px-6 py-3.5 rounded-2xl no-underline inline-flex items-center justify-center" title="Back to Teaching Games" aria-label="Back to Teaching Games">🏠 Home</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT: DATA, DYNAMIC QUANTITY SVGs, AUDIO ENGINE & 4 GAME MODES  -->
+  <!-- ===================================================================== -->
+  <script>
+    /**
+     * 1. BASE STATIONERY DEFINITIONS (All 8 Classroom Stationery Types)
+     */
+    const STATIONERY_TYPES = [
+      {
+        id: 'pen',
+        singularNoun: 'pen',
+        pluralNoun: 'pens',
+        article: 'a',
+        emoji: '🖊️',
+        wheelColor: '#BAE6FD',
+        defaultCount: 1
+      },
+      {
+        id: 'pencils',
+        singularNoun: 'pencil',
+        pluralNoun: 'pencils',
+        article: 'a',
+        emoji: '✏️',
+        wheelColor: '#FEF08A',
+        defaultCount: 3
+      },
+      {
+        id: 'coloured_pencils',
+        singularNoun: 'coloured pencil',
+        pluralNoun: 'coloured pencils',
+        article: 'a',
+        emoji: '🌈',
+        wheelColor: '#FBCFE8',
+        defaultCount: 10
+      },
+      {
+        id: 'eraser',
+        singularNoun: 'eraser',
+        pluralNoun: 'erasers',
+        article: 'an',
+        emoji: '🧽',
+        wheelColor: '#DDD6FE',
+        defaultCount: 1
+      },
+      {
+        id: 'ruler',
+        singularNoun: 'ruler',
+        pluralNoun: 'rulers',
+        article: 'a',
+        emoji: '📏',
+        wheelColor: '#FDE68A',
+        defaultCount: 1
+      },
+      {
+        id: 'book',
+        singularNoun: 'book',
+        pluralNoun: 'books',
+        article: 'a',
+        emoji: '📕',
+        wheelColor: '#FECACA',
+        defaultCount: 1
+      },
+      {
+        id: 'pencil_case',
+        singularNoun: 'pencil case',
+        pluralNoun: 'pencil cases',
+        article: 'a',
+        emoji: '👝',
+        wheelColor: '#A7F3D0',
+        defaultCount: 1
+      },
+      {
+        id: 'glue_sticks',
+        singularNoun: 'glue stick',
+        pluralNoun: 'glue sticks',
+        article: 'a',
+        emoji: '🧴',
+        wheelColor: '#E9D5FF',
+        defaultCount: 2
+      }
+    ];
+
+    const NUMBER_WORDS = [
+      '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'
+    ];
+
+    /**
+     * a / an follows the first letter, the same rule as the on-screen key.
+     * a, e, i, o, u → an. Every other letter → a.
+     * Among the 8 stationery words, only "eraser" starts with one of those letters.
+     */
+    function articleForNoun(noun) {
+      const first = String(noun).trim().charAt(0).toLowerCase();
+      return 'aeiou'.includes(first) ? 'an' : 'a';
+    }
+
+    /**
+     * Helper: Build a complete grammatical item descriptor for ANY stationery + quantity (1 to 10)
+     * useArticleForOne: true -> "a pen" / "an eraser"; false -> "one pen" / "one eraser" (for wheel read-aloud)
+     */
+    function buildItemChallenge(typeId, count, useArticleForOne = true) {
+      const base = STATIONERY_TYPES.find(t => t.id === typeId);
+      const isPlural = count > 1;
+      const numWord = NUMBER_WORDS[count];
+      const article = articleForNoun(base.singularNoun);
+
+      let phrase = '';
+      let sentence = '';
+      if (!isPlural) {
+        phrase = useArticleForOne ? `${article} ${base.singularNoun}` : `one ${base.singularNoun}`;
+        sentence = useArticleForOne
+          ? `It is ${article} ${base.singularNoun}.`
+          : `It is one ${base.singularNoun}.`;
+      } else {
+        phrase = `${numWord} ${base.pluralNoun}`;
+        sentence = `They are ${numWord} ${base.pluralNoun}.`;
+      }
+
+      // Two wrong answers: wrong a/an, or wrong It is / They are / singular-plural noun
+      let distractors = [];
+      if (!isPlural) {
+        const wrongArticle = article === 'an' ? 'a' : 'an';
+        distractors = [
+          `It is ${wrongArticle} ${base.singularNoun}.`,
+          `They are ${base.pluralNoun}.`
+        ];
+      } else {
+        distractors = [
+          `It is ${numWord} ${base.pluralNoun}.`,
+          `They are ${numWord} ${base.singularNoun}.`
+        ];
+      }
+
+      return {
+        key: `${typeId}_${count}`,
+        typeId,
+        base,
+        count,
+        isPlural,
+        numWord,
+        article,
+        phrase,
+        sentence,
+        question: isPlural ? 'What are they?' : 'What is it?',
+        distractors
+      };
+    }
+
+    /**
+     * Hint matches the wrong option the pupil actually chose.
+     * The same sentence is shown on screen and spoken aloud.
+     */
+    function hintForChosenAnswer(challenge, chosenText) {
+      const chosen = String(chosenText).replace(/\s+/g, ' ').trim();
+      const noun = challenge.base.singularNoun;
+      const letter = noun.trim().charAt(0).toLowerCase();
+      const correct = challenge.sentence;
+      const [firstDistractor, secondDistractor] = challenge.distractors;
+
+      if (!challenge.isPlural && chosen === firstDistractor) {
+        return `${noun} starts with ${letter}. Use "${challenge.article}". It is ${challenge.article} ${noun}.`;
+      }
+      if (!challenge.isPlural && chosen === secondDistractor) {
+        return `There is one ${noun}. Use "It is", not "They are". ${correct}`;
+      }
+      if (challenge.isPlural && chosen === firstDistractor) {
+        return `There is more than one. Use "They are", not "It is". ${correct}`;
+      }
+      if (challenge.isPlural && chosen === secondDistractor) {
+        return `There is more than one. Add s. ${correct}`;
+      }
+      return correct;
+    }
+
+    // The 8 core curriculum items for Part 1: Look & Listen
+    const CORE_PART1_ITEMS = STATIONERY_TYPES.map(t => buildItemChallenge(t.id, t.defaultCount, true));
+
+    /**
+     * 2. DYNAMIC QUANTITY SVG GENERATOR (Renders ANY count 1..10 of ANY of the 8 stationery types)
+     * Every individual item is wrapped in <g class="countable-unit"> so students can tap 1-by-1!
+     */
+    function getSingleUnitInnerSVG(typeId, unitIndex = 0) {
+      const rainbowColors = [
+        '#EF4444', '#F97316', '#FACC15', '#84CC16', '#10B981',
+        '#06B6D4', '#3B82F6', '#6366F1', '#A855F7', '#EC4899'
+      ];
+
+      switch (typeId) {
+        case 'pen':
+          return `
+            <g transform="rotate(-18)">
+              <rect x="-10" y="-44" width="20" height="72" rx="7" fill="#3B82F6" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-10" y="10" width="20" height="16" fill="#93C5FD" stroke="#1E293B" stroke-width="3"/>
+              <polygon points="-10,28 0,48 10,28" fill="#F8FAFC" stroke="#1E293B" stroke-width="3" stroke-linejoin="round"/>
+              <polygon points="-3.5,41 0,49 3.5,41" fill="#1D4ED8"/>
+              <rect x="-7" y="-51" width="14" height="8" rx="3" fill="#60A5FA" stroke="#1E293B" stroke-width="2.5"/>
+              <line x1="-4" y1="-34" x2="-4" y2="4" stroke="#DBEAFE" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+          `;
+
+        case 'pencils':
+          return `
+            <g>
+              <rect x="-10" y="-48" width="20" height="13" rx="4" fill="#F472B6" stroke="#1E293B" stroke-width="2.8"/>
+              <rect x="-10" y="-36" width="20" height="8" fill="#E2E8F0" stroke="#1E293B" stroke-width="2.8"/>
+              <rect x="-10" y="-28" width="20" height="56" fill="#FACC15" stroke="#1E293B" stroke-width="2.8"/>
+              <line x1="-3.5" y1="-28" x2="-3.5" y2="28" stroke="#FEF08A" stroke-width="2.5"/>
+              <polygon points="-10,28 0,48 10,28" fill="#FDE68A" stroke="#1E293B" stroke-width="2.8" stroke-linejoin="round"/>
+              <polygon points="-3.5,40 0,48 3.5,40" fill="#334155"/>
+            </g>
+          `;
+
+        case 'coloured_pencils': {
+          const color = rainbowColors[unitIndex % rainbowColors.length];
+          return `
+            <g>
+              <polygon points="-10,-26 0,-48 10,-26" fill="#FDE68A" stroke="#1E293B" stroke-width="2.6" stroke-linejoin="round"/>
+              <polygon points="-4,-39 0,-48 4,-39" fill="${color}"/>
+              <rect x="-10" y="-26" width="20" height="72" rx="3" fill="${color}" stroke="#1E293B" stroke-width="2.6"/>
+              <line x1="-3.5" y1="-22" x2="-3.5" y2="40" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="2.4" stroke-linecap="round"/>
+            </g>
+          `;
+        }
+
+        case 'eraser':
+          return `
+            <g>
+              <rect x="-34" y="-20" width="68" height="40" rx="9" fill="#FFFFFF" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-18" y="-21" width="44" height="42" rx="3" fill="#3B82F6" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-12" y="-9" width="32" height="10" rx="3" fill="#DBEAFE"/>
+              <circle cx="-26" cy="-3" r="2" fill="#1E293B"/>
+              <circle cx="-26" cy="6" r="2" fill="#1E293B"/>
+            </g>
+          `;
+
+        case 'ruler':
+          return `
+            <g transform="rotate(-12)">
+              <rect x="-52" y="-16" width="104" height="32" rx="6" fill="#FBBF24" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-48" y="-13" width="96" height="7" rx="3" fill="#FDE68A" opacity="0.75"/>
+              <line x1="-38" y1="-16" x2="-38" y2="-5" stroke="#1E293B" stroke-width="2.4"/>
+              <line x1="-22" y1="-16" x2="-22" y2="-8" stroke="#1E293B" stroke-width="2.4"/>
+              <line x1="-6" y1="-16" x2="-6" y2="-4" stroke="#1E293B" stroke-width="2.4"/>
+              <line x1="10" y1="-16" x2="10" y2="-8" stroke="#1E293B" stroke-width="2.4"/>
+              <line x1="26" y1="-16" x2="26" y2="-5" stroke="#1E293B" stroke-width="2.4"/>
+              <line x1="40" y1="-16" x2="40" y2="-8" stroke="#1E293B" stroke-width="2.4"/>
+            </g>
+          `;
+
+        case 'book':
+          return `
+            <g>
+              <rect x="-28" y="-34" width="58" height="68" rx="7" fill="#FEF3C7" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-31" y="-37" width="54" height="68" rx="7" fill="#EF4444" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-31" y="-37" width="11" height="68" rx="4" fill="#DC2626" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-12" y="-22" width="28" height="18" rx="4" fill="#FEF9C3" stroke="#1E293B" stroke-width="2.2"/>
+              <circle cx="2" cy="12" r="7" fill="#FACC15" stroke="#1E293B" stroke-width="2"/>
+            </g>
+          `;
+
+        case 'pencil_case':
+          return `
+            <g>
+              <rect x="-46" y="-22" width="92" height="44" rx="16" fill="#10B981" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-36" y="-2" width="72" height="20" rx="8" fill="#34D399" stroke="#1E293B" stroke-width="2.4"/>
+              <line x1="-40" y1="-10" x2="40" y2="-10" stroke="#FEF08A" stroke-width="3.2" stroke-dasharray="5 3"/>
+              <circle cx="37" cy="-10" r="5" fill="#FACC15" stroke="#1E293B" stroke-width="2.2"/>
+            </g>
+          `;
+
+        case 'glue_sticks':
+          return `
+            <g>
+              <rect x="-15" y="-44" width="30" height="18" rx="5" fill="#8B5CF6" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-17" y="-26" width="34" height="56" rx="3" fill="#FFFFFF" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-17" y="-12" width="34" height="24" fill="#DDD6FE" stroke="#1E293B" stroke-width="2.2"/>
+              <circle cx="0" cy="0" r="6" fill="#8B5CF6"/>
+              <rect x="-18" y="30" width="36" height="12" rx="4" fill="#7C3AED" stroke="#1E293B" stroke-width="3"/>
+            </g>
+          `;
+      }
+    }
+
+    /**
+     * Renders an SVG group containing `count` (1 to 10) clearly spaced items of `typeId`
+     */
+    function renderDynamicQuantitySVG(typeId, count, interactive = false, compact = false) {
+      const safeCount = Math.max(1, Math.min(10, count));
+      const unitClass = interactive
+        ? 'countable-unit countable-unit-hover'
+        : 'countable-unit';
+
+      // Tall skinny items fit comfortably in 1 row up to 10; wider items wrap cleanly into 2 rows of 5
+      const tallItems = ['pen', 'pencils', 'coloured_pencils', 'glue_sticks'];
+      const isTall = tallItems.includes(typeId);
+
+      // Single item centerpiece scale
+      if (safeCount === 1) {
+        const sizeClass = compact ? 'w-28 h-20' : 'w-56 sm:w-64 h-40 sm:h-48';
+        return `
+          <svg viewBox="0 0 180 140" class="${sizeClass} overflow-visible">
+            <g class="${unitClass}" data-index="1" transform="translate(90, 70) scale(1.28)">
+              ${getSingleUnitInnerSVG(typeId, 0)}
+            </g>
+          </svg>
+        `;
+      }
+
+      if (isTall) {
+        const cols = safeCount <= 6 ? safeCount : Math.ceil(safeCount / 2);
+        const rows = safeCount <= 6 ? 1 : 2;
+        const cellW = 68;
+        const cellH = 108;
+        const vbW = Math.max(220, cols * cellW + 30);
+        const vbH = rows === 1 ? 130 : 235;
+        const scale = rows === 1 ? 1.05 : 0.94;
+
+        let unitsMarkup = '';
+        for (let i = 0; i < safeCount; i++) {
+          const r = rows === 1 ? 0 : Math.floor(i / cols);
+          const c = rows === 1 ? i : i % cols;
+          const itemsInThisRow = rows === 1 ? safeCount : (r === 0 ? cols : safeCount - cols);
+          const rowStartX = (vbW - (itemsInThisRow - 1) * cellW) / 2;
+          const x = rowStartX + c * cellW;
+          const y = rows === 1 ? 66 : (58 + r * cellH);
+
+          unitsMarkup += `
+            <g class="${unitClass}" data-index="${i + 1}" transform="translate(${x}, ${y}) scale(${scale})">
+              ${getSingleUnitInnerSVG(typeId, i)}
+            </g>
+          `;
+        }
+
+        const sizeClass = compact
+          ? 'w-36 h-20'
+          : (rows === 1 ? 'w-full max-w-xl h-40 sm:h-48' : 'w-full max-w-xl h-48 sm:h-56');
+
+        return `
+          <svg viewBox="0 0 ${vbW} ${vbH}" class="${sizeClass} overflow-visible">
+            ${unitsMarkup}
+          </svg>
+        `;
+      } else {
+        // Wide items: eraser, ruler, book, pencil_case
+        const cols = safeCount <= 3 ? safeCount : Math.ceil(safeCount / 2);
+        const rows = safeCount <= 3 ? 1 : 2;
+        const cellW = 116;
+        const cellH = 92;
+        const vbW = Math.max(240, cols * cellW + 24);
+        const vbH = rows === 1 ? 125 : 210;
+        const scale = safeCount <= 3 ? 0.96 : 0.82;
+
+        let unitsMarkup = '';
+        for (let i = 0; i < safeCount; i++) {
+          const r = rows === 1 ? 0 : Math.floor(i / cols);
+          const c = rows === 1 ? i : i % cols;
+          const itemsInThisRow = rows === 1 ? safeCount : (r === 0 ? cols : safeCount - cols);
+          const rowStartX = (vbW - (itemsInThisRow - 1) * cellW) / 2;
+          const x = rowStartX + c * cellW;
+          const y = rows === 1 ? 64 : (54 + r * cellH);
+
+          unitsMarkup += `
+            <g class="${unitClass}" data-index="${i + 1}" transform="translate(${x}, ${y}) scale(${scale})">
+              ${getSingleUnitInnerSVG(typeId, i)}
+            </g>
+          `;
+        }
+
+        const sizeClass = compact
+          ? 'w-36 h-20'
+          : (rows === 1 ? 'w-full max-w-xl h-40 sm:h-48' : 'w-full max-w-2xl h-48 sm:h-56');
+
+        return `
+          <svg viewBox="0 0 ${vbW} ${vbH}" class="${sizeClass} overflow-visible">
+            ${unitsMarkup}
+          </svg>
+        `;
+      }
+    }
+
+    /**
+     * 3. COLOR-CODED SENTENCE & PHRASE FORMATTER
+     * Highlights "a" in blue, "an" in orange, and plural "-s" in red.
+     */
+    function formatColorCodedSentence(challenge) {
+      if (!challenge.isPlural) {
+        const articleColor = challenge.article === 'an'
+          ? 'text-orange-500 underline decoration-orange-300'
+          : 'text-blue-600 underline decoration-blue-300';
+        return `It is <span class="${articleColor}">${challenge.article}</span> ${challenge.base.singularNoun}.`;
+      } else {
+        const pluralWithRedS = challenge.base.pluralNoun.replace(/s$/, '<span class="text-red-500 underline decoration-red-300">s</span>');
+        return `They are ${challenge.numWord} ${pluralWithRedS}.`;
+      }
+    }
+
+    function formatColorCodedPhrase(challenge, showOneOrArticle = 'article') {
+      if (!challenge.isPlural) {
+        if (showOneOrArticle === 'one') {
+          const articleColor = challenge.article === 'an' ? 'text-orange-500' : 'text-blue-600';
+          const noun = challenge.base.singularNoun;
+          return `<span class="inline-flex flex-col items-center gap-1"><span>It is one ${noun}.</span><span>It is <span class="${articleColor} font-extrabold">${challenge.article}</span> ${noun}.</span></span>`;
+        }
+        const articleColor = challenge.article === 'an' ? 'text-orange-500' : 'text-blue-600';
+        return `<span class="inline-flex items-baseline gap-2"><span><span class="${articleColor} font-extrabold">${challenge.article}</span></span><span>${challenge.base.singularNoun}</span></span>`;
+      } else {
+        const pluralWithRedS = challenge.base.pluralNoun.replace(/s$/, '<span class="text-red-500 font-extrabold">s</span>');
+        return `<span class="inline-flex items-baseline gap-2"><span>${challenge.numWord}</span><span>${pluralWithRedS}</span></span>`;
+      }
+    }
+
+    /**
+     * 4. RELIABLE WEB AUDIO API & WEB SPEECH API ENGINE (Never freezes or hangs)
+     */
+    let isMuted = false;
+    let audioCtx = null;
+    let preferredVoice = null;
+    let speechWatchdog = null;
+
+    function loadPreferredVoice() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return;
+      preferredVoice =
+        voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) ||
+        voices.find(v => v.lang.startsWith('en-GB')) ||
+        voices.find(v => v.lang.startsWith('en-US')) ||
+        voices.find(v => v.lang.startsWith('en')) ||
+        voices[0];
+    }
+
+    if ('speechSynthesis' in window) {
+      loadPreferredVoice();
+      window.speechSynthesis.onvoiceschanged = loadPreferredVoice;
+    }
+
+    function getAudioContext() {
+      try {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) audioCtx = new AudioContext();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        // Graceful fallback if audio context is blocked
+      }
+      return audioCtx;
+    }
+
+    // Unlock audio & speech engines on first user tap anywhere
+    document.addEventListener('pointerdown', () => {
+      getAudioContext();
+      loadPreferredVoice();
+    }, { once: true });
+
+    function toggleSound() {
+      isMuted = !isMuted;
+      document.getElementById('sound-icon').textContent = isMuted ? '🔇' : '🔊';
+      document.getElementById('sound-label').textContent = isMuted ? 'Sound Off' : 'Sound On';
+      if (isMuted && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+    }
+
+    // Gentle marimba/bell pop for counting items 1..10
+    function playPopSound(pitchStep = 0) {
+      if (isMuted) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98, 1760.00];
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(scale[pitchStep % scale.length], ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    // Subtle wheel click/tick sound while spinning
+    function playWheelTickSound() {
+      if (isMuted) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(720, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(340, ctx.currentTime + 0.04);
+
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.05);
+      } catch (e) {}
+    }
+
+    // Cheerful ascending chime when earning a Class Star
+    function playSuccessChime() {
+      if (isMuted) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      try {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          const start = ctx.currentTime + idx * 0.09;
+          osc.frequency.setValueAtTime(freq, start);
+
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.exponentialRampToValueAtTime(0.2, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 0.38);
+        });
+      } catch (e) {}
+    }
+
+    // Soft wooden "bonk" for gentle retry prompt
+    function playGentleTryAgain() {
+      if (isMuted) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(240, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.22);
+
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.26);
+      } catch (e) {}
+    }
+
+    // Celebratory fanfare when all 12 stars are filled
+    function playVictoryFanfare() {
+      if (isMuted) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      try {
+        const melody = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+        const times = [0, 0.12, 0.24, 0.36, 0.52, 0.66];
+        melody.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          const start = ctx.currentTime + times[idx];
+          osc.frequency.setValueAtTime(freq, start);
+
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.exponentialRampToValueAtTime(0.25, start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.45);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 0.48);
+        });
+      } catch (e) {}
+    }
+
+    // Non-blocking Web Speech API Pronunciation with queue cancellation & watchdog
+    function speakText(text) {
+      if (isMuted || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        if (speechWatchdog) clearTimeout(speechWatchdog);
+
+        const utter = new SpeechSynthesisUtterance(text);
+        if (!preferredVoice) loadPreferredVoice();
+        if (preferredVoice) utter.voice = preferredVoice;
+        utter.lang = 'en-GB';
+        utter.rate = 0.80;
+        utter.pitch = 1.1;
+
+        // Safety watchdog prevents Chrome/Safari TTS queue from ever getting stuck
+        speechWatchdog = setTimeout(() => {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }, 6500);
+
+        utter.onend = () => { if (speechWatchdog) clearTimeout(speechWatchdog); };
+        utter.onerror = () => { if (speechWatchdog) clearTimeout(speechWatchdog); };
+
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        // Silent fallback so UI never stalls
+      }
+    }
+
+    /**
+     * 5. COOPERATIVE CLASS STAR TRACKER (12 Stars Total)
+     */
+    const TOTAL_STARS = 12;
+    const earnedStarsSet = new Set();
+
+    function renderStarTrack() {
+      const track = document.getElementById('star-track');
+      track.innerHTML = '';
+      for (let i = 0; i < TOTAL_STARS; i++) {
+        const isFilled = i < earnedStarsSet.size;
+        const span = document.createElement('span');
+        span.className = `text-base sm:text-xl transition-all ${isFilled ? 'star-earned scale-100 opacity-100' : 'opacity-30 grayscale'}`;
+        span.textContent = '⭐';
+        track.appendChild(span);
+      }
+      document.getElementById('star-count-label').textContent = `${earnedStarsSet.size}/${TOTAL_STARS}`;
+    }
+
+    function awardClassStar(uniqueKey) {
+      const prevSize = earnedStarsSet.size;
+      earnedStarsSet.add(uniqueKey);
+      renderStarTrack();
+
+      if (earnedStarsSet.size === TOTAL_STARS && prevSize < TOTAL_STARS) {
+        setTimeout(() => {
+          triggerCelebration();
+        }, 700);
+      }
+    }
+
+    /**
+     * 6. MODE NAVIGATION (Parts 1, 2, 3, and 4)
+     */
+    let currentMode = 'learn';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      const modes = ['learn', 'quiz', 'match', 'wheel'];
+      modes.forEach(m => {
+        const section = document.getElementById(`mode-${m}`);
+        const tab = document.getElementById(`tab-${m}`);
+        if (m === mode) {
+          section.classList.remove('hidden');
+          tab.className = 'storybook-btn bg-emerald-500 border-emerald-700 text-white font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer';
+        } else {
+          section.classList.add('hidden');
+          tab.className = 'storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-amber-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer';
+        }
+      });
+
+      if (mode === 'learn') {
+        renderLearnStage();
+      } else if (mode === 'quiz') {
+        initQuizMode();
+      } else if (mode === 'match') {
+        initMatchMode();
+      } else if (mode === 'wheel') {
+        initWheelMode();
+      }
+    }
+
+    /**
+     * 7. PART 1 LOGIC: LOOK & LISTEN (Bug-Free Flashcards + Tap-to-Count)
+     */
+    let learnIndex = 0;
+    let currentTapCount = 0;
+
+    function renderLearnPills() {
+      const container = document.getElementById('learn-pills');
+      container.innerHTML = CORE_PART1_ITEMS.map((item, idx) => {
+        const active = idx === learnIndex;
+        return `
+          <button onclick="selectLearnItem(${idx})" class="px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold border-2 transition cursor-pointer ${
+            active
+              ? 'bg-sky-500 border-sky-700 text-white shadow-sm'
+              : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-sky-100'
+          }">
+            ${item.phrase}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectLearnItem(idx) {
+      learnIndex = idx;
+      renderLearnStage();
+      speakCurrentLearnItem();
+    }
+
+    function prevLearnItem() {
+      learnIndex = (learnIndex - 1 + CORE_PART1_ITEMS.length) % CORE_PART1_ITEMS.length;
+      renderLearnStage();
+      speakCurrentLearnItem();
+    }
+
+    function nextLearnItem() {
+      learnIndex = (learnIndex + 1) % CORE_PART1_ITEMS.length;
+      renderLearnStage();
+      speakCurrentLearnItem();
+    }
+
+    function resetLearnCount() {
+      currentTapCount = 0;
+      const bubble = document.getElementById('count-bubble');
+      bubble.classList.add('hidden');
+      const sentenceCard = document.getElementById('learn-sentence-card');
+      const sentenceEl = document.getElementById('learn-sentence');
+      if (sentenceCard) {
+        sentenceCard.className = 'bg-slate-50 border-3 border-slate-200 rounded-2xl p-3 sm:p-4 text-center transition-all duration-300';
+      }
+      if (sentenceEl) {
+        sentenceEl.classList.remove('scale-105');
+      }
+      const units = document.querySelectorAll('#learn-svg-stage .countable-unit');
+      units.forEach(u => {
+        delete u.dataset.counted;
+        u.classList.remove('counted-pop');
+        const badge = u.querySelector('.unit-num-tag');
+        if (badge) badge.remove();
+      });
+    }
+
+    // Tapping empty stage space reads the whole sentence aloud cleanly
+    function handleLearnStageBackgroundClick() {
+      speakCurrentLearnItem();
+    }
+
+    function renderLearnStage() {
+      const item = CORE_PART1_ITEMS[learnIndex];
+      currentTapCount = 0;
+      renderLearnPills();
+
+      const bubble = document.getElementById('count-bubble');
+      bubble.classList.add('hidden');
+
+      const sentenceCard = document.getElementById('learn-sentence-card');
+      const sentenceEl = document.getElementById('learn-sentence');
+      if (sentenceCard) {
+        sentenceCard.className = 'bg-slate-50 border-3 border-slate-200 rounded-2xl p-3 sm:p-4 text-center transition-all duration-300';
+      }
+      if (sentenceEl) {
+        sentenceEl.classList.remove('scale-105');
+      }
+
+      const stage = document.getElementById('learn-svg-stage');
+      stage.innerHTML = renderDynamicQuantitySVG(item.typeId, item.count, true, false);
+
+      document.getElementById('learn-question').textContent = item.question;
+      sentenceEl.innerHTML = formatColorCodedSentence(item);
+
+      // Attach reliable cumulative click-to-count listeners on each individual SVG sub-item
+      const units = stage.querySelectorAll('.countable-unit');
+      units.forEach((unit) => {
+        unit.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent triggering background click
+
+          // If all items were already counted, tapping again starts a fresh 1..N count
+          if (currentTapCount >= item.count) {
+            resetLearnCount();
+          }
+
+          // Prevent double-counting an already counted item; replay its assigned number instead
+          if (unit.dataset.counted === 'true') {
+            const existingNum = parseInt(unit.dataset.assignedCount || '1', 10);
+            const numberWords = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+            unit.classList.remove('counted-pop');
+            void unit.offsetWidth;
+            unit.classList.add('counted-pop');
+            playPopSound(existingNum - 1);
+            speakText(`${numberWords[existingNum - 1]}!`);
+            return;
+          }
+
+          // Increment cumulative running count (1, 2, 3, ...) in whatever order the user taps
+          currentTapCount += 1;
+          unit.dataset.counted = 'true';
+          unit.dataset.assignedCount = String(currentTapCount);
+
+          bubble.textContent = currentTapCount;
+          bubble.classList.remove('hidden');
+
+          // Bounce animation on tapped item
+          unit.classList.remove('counted-pop');
+          void unit.offsetWidth;
+          unit.classList.add('counted-pop');
+
+          // Display the cumulative count number badge directly on the tapped SVG item
+          const oldTag = unit.querySelector('.unit-num-tag');
+          if (oldTag) oldTag.remove();
+          const tagGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          tagGroup.setAttribute('class', 'unit-num-tag');
+          tagGroup.innerHTML = `
+            <circle cx="0" cy="-42" r="15" fill="#FACC15" stroke="#1E293B" stroke-width="2.5"/>
+            <text x="0" y="-36" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="bold" font-size="17" fill="#1E293B">${currentTapCount}</text>
+          `;
+          unit.appendChild(tagGroup);
+
+          playPopSound(currentTapCount - 1);
+          const numberWords = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+
+          if (currentTapCount === item.count) {
+            // Highlight the full target sentence card once all items are counted
+            if (sentenceCard) {
+              sentenceCard.className = 'bg-amber-100 border-3 border-amber-400 rounded-2xl p-3 sm:p-4 text-center shadow-md transition-all duration-300';
+            }
+            if (sentenceEl) {
+              sentenceEl.classList.add('scale-105');
+            }
+            playSuccessChime();
+            speakText(`${numberWords[currentTapCount - 1]}! ${item.sentence}`);
+            awardClassStar(`part1_${item.typeId}`);
+          } else {
+            speakText(`${numberWords[currentTapCount - 1]}!`);
+          }
+        });
+      });
+    }
+
+    function speakCurrentLearnItem() {
+      const item = CORE_PART1_ITEMS[learnIndex];
+      speakText(`${item.question} ${item.sentence}`);
+    }
+
+    /**
+     * 8. PART 2 LOGIC: CLASS PACK CHALLENGE (Expanded Variations 1..10 across all 8 Stationery Items)
+     */
+    const EXPANDED_VARIATION_POOL = [
+      { typeId: 'pen', count: 4 },              // four pens
+      { typeId: 'eraser', count: 1 },           // an eraser
+      { typeId: 'ruler', count: 6 },            // six rulers
+      { typeId: 'book', count: 2 },             // two books
+      { typeId: 'pencil_case', count: 5 },      // five pencil cases
+      { typeId: 'glue_sticks', count: 1 },      // a glue stick
+      { typeId: 'pencils', count: 8 },          // eight pencils
+      { typeId: 'coloured_pencils', count: 7 }, // seven coloured pencils
+      { typeId: 'pen', count: 1 },              // a pen
+      { typeId: 'eraser', count: 3 },           // three erasers
+      { typeId: 'glue_sticks', count: 9 },      // nine glue sticks
+      { typeId: 'book', count: 10 },            // ten books
+      { typeId: 'ruler', count: 1 },            // a ruler
+      { typeId: 'pencil_case', count: 2 },      // two pencil cases
+      { typeId: 'pencils', count: 5 },          // five pencils
+      { typeId: 'coloured_pencils', count: 4 }  // four coloured pencils
+    ];
+
+    let quizQueue = [];
+    let quizIndex = 0;
+    let quizAnswered = false;
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function initQuizMode() {
+      // Pick 8 varied questions covering all 8 stationery items with mixed numbers 1..10
+      const shuffledPool = shuffleArray(EXPANDED_VARIATION_POOL);
+      const selected = [];
+      const usedTypes = new Set();
+
+      // Ensure every stationery type appears at least once in the 8-question session
+      for (const entry of shuffledPool) {
+        if (!usedTypes.has(entry.typeId) && selected.length < 8) {
+          selected.push(buildItemChallenge(entry.typeId, entry.count, true));
+          usedTypes.add(entry.typeId);
+        }
+      }
+      quizQueue = shuffleArray(selected);
+      quizIndex = 0;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      quizAnswered = false;
+      const item = quizQueue[quizIndex];
+      document.getElementById('quiz-progress-num').textContent = quizIndex + 1;
+      document.getElementById('quiz-question-text').textContent = item.question;
+      document.getElementById('quiz-svg-stage').innerHTML = renderDynamicQuantitySVG(item.typeId, item.count, false, false);
+
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.add('hidden');
+
+      const choices = shuffleArray([
+        { text: item.sentence, correct: true, item },
+        { text: item.distractors[0], correct: false },
+        { text: item.distractors[1], correct: false }
+      ]);
+
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = choices.map((choice) => `
+        <button onclick="handleQuizAnswer(this, ${choice.correct})" class="storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 text-slate-800 font-display text-lg sm:text-2xl py-4 sm:py-5 px-4 rounded-2xl shadow-md cursor-pointer transition">
+          ${choice.text}
+        </button>
+      `).join('');
+
+      speakText(item.question);
+    }
+
+    function speakQuizPrompt() {
+      const item = quizQueue[quizIndex];
+      speakText(item.question);
+    }
+
+    function handleQuizAnswer(btnEl, isCorrect) {
+      if (quizAnswered) return;
+      const item = quizQueue[quizIndex];
+      const feedback = document.getElementById('quiz-feedback');
+
+      if (isCorrect) {
+        quizAnswered = true;
+        btnEl.className = 'storybook-btn bg-emerald-500 border-3 border-emerald-700 text-white font-display text-lg sm:text-2xl py-4 sm:py-5 px-4 rounded-2xl shadow-lg scale-105';
+        btnEl.innerHTML = `✅ ${formatColorCodedSentence(item).replace(/text-(blue|orange|red)-\d+/g, 'text-yellow-200')}`;
+
+        feedback.className = 'mt-3 px-5 py-2.5 rounded-2xl font-bold text-base sm:text-xl text-center bg-emerald-100 border-2 border-emerald-400 text-emerald-900 flex flex-wrap items-center justify-center gap-3';
+        feedback.innerHTML = `
+          <span>🌟 Awesome! "${item.sentence}" (+1 Class Star!)</span>
+          <button onclick="advanceQuiz()" class="storybook-btn bg-emerald-600 hover:bg-emerald-500 border-2 border-emerald-800 text-white font-display text-base sm:text-lg px-5 py-1.5 rounded-xl cursor-pointer">
+            Next Item ➡️
+          </button>
+        `;
+        feedback.classList.remove('hidden');
+
+        playSuccessChime();
+        speakText(`Great job! ${item.sentence}`);
+        awardClassStar(`part2_${item.key}`);
+      } else {
+        btnEl.classList.remove('wiggle-hint');
+        void btnEl.offsetWidth;
+        btnEl.classList.add('wiggle-hint', 'bg-amber-50', 'border-amber-400', 'text-amber-900');
+
+        const hint = hintForChosenAnswer(item, btnEl.textContent);
+        feedback.className = 'mt-3 px-5 py-2.5 rounded-2xl font-bold text-base sm:text-lg text-center bg-amber-100 border-2 border-amber-400 text-amber-950';
+        feedback.textContent = hint;
+        feedback.classList.remove('hidden');
+
+        playGentleTryAgain();
+        speakText(hint);
+      }
+    }
+
+    function advanceQuiz() {
+      quizIndex = (quizIndex + 1) % quizQueue.length;
+      renderQuizQuestion();
+    }
+
+    /**
+     * 9. PART 3 LOGIC: COUNT & MATCH (Expanded Randomized Number & Stationery Pairs)
+     */
+    let matchRound = 1; // 1 or 2
+    let matchSessionItems = []; // 8 varied items split into 2 rounds of 4
+    let matchItems = [];
+    let selectedLeftKey = null;
+    let matchedKeys = new Set();
+
+    function initMatchMode() {
+      // Generate 8 fresh varied combinations covering all 8 stationery items
+      const shuffledTypes = shuffleArray(STATIONERY_TYPES);
+      const numberChoices = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+
+      matchSessionItems = shuffledTypes.map((type, idx) => {
+        // Ensure at least 2 singular items ("an eraser", "a ruler", etc.) and 6 varied plurals
+        let count = numberChoices[idx];
+        if (idx === 0) count = 1; // Guarantee an article item (e.g., an eraser or a pen)
+        if (idx === 1 && count === 1) count = 4;
+        return buildItemChallenge(type.id, count, true);
+      });
+
+      matchRound = 1;
+      setupMatchRound();
+    }
+
+    function nextMatchRound() {
+      if (matchRound === 1) {
+        matchRound = 2;
+        setupMatchRound();
+      } else {
+        // Generate a brand-new random mix when replaying
+        initMatchMode();
+      }
+    }
+
+    function setupMatchRound() {
+      selectedLeftKey = null;
+      matchedKeys.clear();
+      document.getElementById('match-round-footer').classList.add('hidden');
+      document.getElementById('match-round-badge').textContent = `Round ${matchRound} of 2`;
+      document.getElementById('match-lines-svg').innerHTML = '';
+
+      matchItems = matchRound === 1
+        ? matchSessionItems.slice(0, 4)
+        : matchSessionItems.slice(4, 8);
+
+      const leftOrder = shuffleArray(matchItems);
+      const rightOrder = shuffleArray(matchItems);
+
+      const leftCol = document.getElementById('match-left-col');
+      const rightCol = document.getElementById('match-right-col');
+
+      leftCol.innerHTML = leftOrder.map(item => `
+        <button id="match-left-${item.key}" onclick="selectMatchLeft('${item.key}')" class="storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-sm">
+          ${renderDynamicQuantitySVG(item.typeId, item.count, false, true)}
+        </button>
+      `).join('');
+
+      rightCol.innerHTML = rightOrder.map(item => `
+        <button id="match-right-${item.key}" onclick="selectMatchRight('${item.key}')" class="storybook-btn bg-white hover:bg-purple-50 border-3 border-slate-300 rounded-2xl p-3 sm:p-4 font-display text-lg sm:text-2xl text-slate-800 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-sm">
+          ${formatColorCodedPhrase(item, 'article')}
+        </button>
+      `).join('');
+    }
+
+    function selectMatchLeft(key) {
+      if (matchedKeys.has(key)) return;
+      selectedLeftKey = key;
+      playPopSound(2);
+
+      matchItems.forEach(item => {
+        const el = document.getElementById(`match-left-${item.key}`);
+        if (matchedKeys.has(item.key)) return;
+        if (item.key === key) {
+          el.className = 'storybook-btn bg-sky-100 border-3 border-sky-500 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-md scale-105';
+        } else {
+          el.className = 'storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-sm';
+        }
+      });
+    }
+
+    function selectMatchRight(rightKey) {
+      if (matchedKeys.has(rightKey)) return;
+
+      const tappedItem = matchItems.find(i => i.key === rightKey);
+      if (!selectedLeftKey) {
+        speakText(tappedItem.phrase);
+        const rightEl = document.getElementById(`match-right-${rightKey}`);
+        rightEl.classList.remove('wiggle-hint');
+        void rightEl.offsetWidth;
+        rightEl.classList.add('wiggle-hint');
+        return;
+      }
+
+      if (selectedLeftKey === rightKey) {
+        matchedKeys.add(rightKey);
+        const leftEl = document.getElementById(`match-left-${rightKey}`);
+        const rightEl = document.getElementById(`match-right-${rightKey}`);
+
+        leftEl.className = 'storybook-btn bg-emerald-100 border-3 border-emerald-500 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] opacity-95';
+        rightEl.className = 'storybook-btn bg-emerald-500 border-3 border-emerald-700 text-white rounded-2xl p-3 sm:p-4 font-display text-lg sm:text-2xl flex items-center justify-center min-h-[92px] sm:min-h-[108px]';
+        rightEl.innerHTML = `✅ ${tappedItem.phrase}`;
+
+        selectedLeftKey = null;
+        drawAllMatchLines();
+        playSuccessChime();
+        speakText(tappedItem.sentence);
+        awardClassStar(`part3_${rightKey}`);
+
+        if (matchedKeys.size === matchItems.length) {
+          const footer = document.getElementById('match-round-footer');
+          const nextBtn = document.getElementById('match-next-round-btn');
+          nextBtn.textContent = matchRound === 1 ? 'Awesome! Go to Round 2 ➡️' : '🎲 New game';
+          footer.classList.remove('hidden');
+        }
+      } else {
+        playGentleTryAgain();
+        const rightEl = document.getElementById(`match-right-${rightKey}`);
+        rightEl.classList.remove('wiggle-hint');
+        void rightEl.offsetWidth;
+        rightEl.classList.add('wiggle-hint', 'border-amber-400', 'bg-amber-50');
+        setTimeout(() => {
+          if (!matchedKeys.has(rightKey)) {
+            rightEl.classList.remove('border-amber-400', 'bg-amber-50');
+          }
+        }, 600);
+        speakText(`Count the picture again! Is that ${tappedItem.phrase}?`);
+      }
+    }
+
+    function drawAllMatchLines() {
+      const svg = document.getElementById('match-lines-svg');
+      const arenaRect = document.getElementById('match-arena').getBoundingClientRect();
+      svg.innerHTML = '';
+
+      matchedKeys.forEach(key => {
+        const leftEl = document.getElementById(`match-left-${key}`);
+        const rightEl = document.getElementById(`match-right-${key}`);
+        if (!leftEl || !rightEl) return;
+
+        const lRect = leftEl.getBoundingClientRect();
+        const rRect = rightEl.getBoundingClientRect();
+
+        const x1 = lRect.right - arenaRect.left;
+        const y1 = lRect.top + lRect.height / 2 - arenaRect.top;
+        const x2 = rRect.left - arenaRect.left;
+        const y2 = rRect.top + rRect.height / 2 - arenaRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', '#10B981');
+        line.setAttribute('stroke-width', '6');
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (currentMode === 'match') drawAllMatchLines();
+    });
+
+    /**
+     * 10. PART 4 LOGIC: SPIN & SPEAK WHEEL (Dual Interactive Smartboard Wheels)
+     */
+    const WHEEL_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const NUM_WHEEL_COLORS = [
+      '#FCA5A5', '#FDBA74', '#FDE047', '#BEF264', '#6EE7B7',
+      '#67E8F9', '#93C5FD', '#C4B5FD', '#F0ABFC', '#F9A8D4'
+    ];
+
+    let numWheelAngle = 0; // radians
+    let itemWheelAngle = 0; // radians
+    let isSpinningNum = false;
+    let isSpinningItem = false;
+    let currentWheelNumber = 1;
+    let currentWheelTypeId = 'eraser';
+    let currentWheelChallenge = null;
+
+    function initWheelMode() {
+      drawNumberWheel(numWheelAngle);
+      drawItemWheel(itemWheelAngle);
+    }
+
+    function drawNumberWheel(angleOffset) {
+      const canvas = document.getElementById('number-wheel-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = cx - 10;
+      const sliceAngle = (2 * Math.PI) / WHEEL_NUMBERS.length;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      WHEEL_NUMBERS.forEach((num, i) => {
+        const start = angleOffset + i * sliceAngle;
+        const end = start + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+        ctx.fillStyle = NUM_WHEEL_COLORS[i];
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#334155';
+        ctx.stroke();
+
+        // Draw crisp number label
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#1E293B';
+        ctx.font = 'bold 28px Fredoka, Comic Sans MS, sans-serif';
+        ctx.fillText(String(num), radius - 22, 10);
+        ctx.restore();
+      });
+
+      // Center hub
+      ctx.beginPath();
+      ctx.arc(cx, cy, 24, 0, 2 * Math.PI);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#334155';
+      ctx.stroke();
+    }
+
+    function drawItemWheel(angleOffset) {
+      const canvas = document.getElementById('item-wheel-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = cx - 10;
+      const sliceAngle = (2 * Math.PI) / STATIONERY_TYPES.length;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      STATIONERY_TYPES.forEach((item, i) => {
+        const start = angleOffset + i * sliceAngle;
+        const end = start + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+        ctx.fillStyle = item.wheelColor;
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#334155';
+        ctx.stroke();
+
+        // Draw clear emoji picture + crisp label inside segment
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + sliceAngle / 2);
+        ctx.textAlign = 'center';
+        ctx.font = '32px sans-serif';
+        ctx.fillText(item.emoji, radius * 0.68, 10);
+        ctx.restore();
+      });
+
+      // Center hub
+      ctx.beginPath();
+      ctx.arc(cx, cy, 24, 0, 2 * Math.PI);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#334155';
+      ctx.stroke();
+    }
+
+    function getLandedIndex(angleOffset, totalSlices) {
+      const sliceAngle = (2 * Math.PI) / totalSlices;
+      // Top pointer is at -PI / 2 (12 o'clock)
+      const pointerAngle = (3 * Math.PI) / 2;
+      const normalized = ((pointerAngle - angleOffset) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      return Math.floor(normalized / sliceAngle) % totalSlices;
+    }
+
+    function spinSingleWheel(target) {
+      if ((target === 'number' && isSpinningNum) || (target === 'item' && isSpinningItem)) return;
+
+      // Reset reveal state while spinning
+      document.getElementById('wheel-hidden-prompt').classList.remove('hidden');
+      document.getElementById('wheel-revealed-card').classList.add('hidden');
+      document.getElementById('wheel-reveal-btn').disabled = true;
+
+      const duration = 2200 + Math.random() * 600;
+      const extraSpins = (4 + Math.floor(Math.random() * 3)) * 2 * Math.PI + Math.random() * 2 * Math.PI;
+      const startTime = performance.now();
+      const startAngle = target === 'number' ? numWheelAngle : itemWheelAngle;
+      let lastTickSlice = -1;
+
+      if (target === 'number') isSpinningNum = true;
+      if (target === 'item') isSpinningItem = true;
+
+      function animateWheel(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Smooth cubic ease-out deceleration
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentAngle = startAngle + extraSpins * easeOut;
+
+        if (target === 'number') {
+          numWheelAngle = currentAngle;
+          drawNumberWheel(numWheelAngle);
+          const idx = getLandedIndex(numWheelAngle, WHEEL_NUMBERS.length);
+          if (idx !== lastTickSlice) {
+            lastTickSlice = idx;
+            playWheelTickSound();
+          }
+        } else {
+          itemWheelAngle = currentAngle;
+          drawItemWheel(itemWheelAngle);
+          const idx = getLandedIndex(itemWheelAngle, STATIONERY_TYPES.length);
+          if (idx !== lastTickSlice) {
+            lastTickSlice = idx;
+            playWheelTickSound();
+          }
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animateWheel);
+        } else {
+          if (target === 'number') {
+            isSpinningNum = false;
+            const idx = getLandedIndex(numWheelAngle, WHEEL_NUMBERS.length);
+            currentWheelNumber = WHEEL_NUMBERS[idx];
+          } else {
+            isSpinningItem = false;
+            const idx = getLandedIndex(itemWheelAngle, STATIONERY_TYPES.length);
+            currentWheelTypeId = STATIONERY_TYPES[idx].id;
+          }
+
+          if (!isSpinningNum && !isSpinningItem) {
+            onWheelsStopped();
+          }
+        }
+      }
+
+      requestAnimationFrame(animateWheel);
+    }
+
+    function spinBothWheels() {
+      if (isSpinningNum || isSpinningItem) return;
+      spinSingleWheel('number');
+      spinSingleWheel('item');
+    }
+
+    function onWheelsStopped() {
+      playPopSound(4);
+      currentWheelChallenge = buildItemChallenge(currentWheelTypeId, currentWheelNumber, false);
+
+      // Render the exact landed quantity of stationery SVGs in the center stage!
+      const visualBox = document.getElementById('wheel-visual-result');
+      visualBox.innerHTML = `
+        <div class="mb-1 inline-flex items-center gap-2 bg-white border-2 border-amber-300 px-3 py-0.5 rounded-full text-sm font-extrabold text-amber-900">
+          <span>Number: ${currentWheelNumber}</span>
+          <span>•</span>
+          <span>Item: ${currentWheelChallenge.base.singularNoun}</span>
+        </div>
+        ${renderDynamicQuantitySVG(currentWheelTypeId, currentWheelNumber, false, false)}
+      `;
+
+      document.getElementById('wheel-reveal-btn').disabled = false;
+      speakText('Read it aloud together!');
+    }
+
+    function revealWheelAnswer() {
+      if (!currentWheelChallenge) return;
+      document.getElementById('wheel-hidden-prompt').classList.add('hidden');
+      document.getElementById('wheel-revealed-card').classList.remove('hidden');
+
+      const phraseEl = document.getElementById('wheel-revealed-phrase');
+      phraseEl.innerHTML = formatColorCodedPhrase(currentWheelChallenge, 'one');
+
+      playSuccessChime();
+      speakWheelResult();
+      awardClassStar(`part4_${currentWheelChallenge.key}`);
+    }
+
+    function speakWheelResult() {
+      if (!currentWheelChallenge) return;
+      if (!currentWheelChallenge.isPlural) {
+        speakText(`One ${currentWheelChallenge.base.singularNoun}! It is ${currentWheelChallenge.article} ${currentWheelChallenge.base.singularNoun}.`);
+      } else {
+        speakText(`${currentWheelChallenge.phrase}! They are ${currentWheelChallenge.phrase}.`);
+      }
+    }
+
+    /**
+     * 11. CELEBRATION SCREEN & CONFETTI ANIMATION
+     */
+    let confettiAnimId = null;
+
+    function triggerCelebration() {
+      document.getElementById('celebration-modal').classList.remove('hidden');
+      playVictoryFanfare();
+      speakText('Awesome job, Primary 1! Our desk is ready!');
+      startConfetti();
+    }
+
+    function closeCelebrationOnly() {
+      document.getElementById('celebration-modal').classList.add('hidden');
+      stopConfetti();
+    }
+
+    function closeCelebrationAndPlayAgain() {
+      document.getElementById('celebration-modal').classList.add('hidden');
+      stopConfetti();
+      earnedStarsSet.clear();
+      renderStarTrack();
+      switchMode('learn');
+    }
+
+    function startConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#A855F7', '#EC4899'];
+      const particles = Array.from({ length: 110 }).map(() => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: 8 + Math.random() * 8,
+        h: 10 + Math.random() * 10,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedY: 2.5 + Math.random() * 3.5,
+        speedX: (Math.random() - 0.5) * 2,
+        rot: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 8
+      }));
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rot += p.rotSpeed;
+          if (p.y > canvas.height) {
+            p.y = -20;
+            p.x = Math.random() * canvas.width;
+          }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        confettiAnimId = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function stopConfetti() {
+      if (confettiAnimId) {
+        cancelAnimationFrame(confettiAnimId);
+        confettiAnimId = null;
+      }
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    /**
+     * 12. INITIALIZE APP ON LOAD
+     */
+    window.onload = function () {
+      renderStarTrack();
+      switchMode('learn');
+    };
+  </script>
+</body>
+</html>
