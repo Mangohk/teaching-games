@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quest Complete!</title>
+  <link rel="stylesheet" href="./vendor/fonts/fonts.css">
+  <style>
+    /* Locked boards: 1280×800 and 1920×1080.
+       Option text inset is the measured flat panel: 18px / 27px.
+       Picture wells contain place art; they are not cropped with cover. */
+    :root { color-scheme: light; }
+    #stage {
+      --top: 56px;
+      --well-w: 1232px;
+      --well-h: 336px;
+      --stem-h: 120px;
+      --opt-h: 168px;
+      --bot-h: 88px;
+      --side: 24px;
+      --gap-card: 16px;
+      --card-w: 296px;
+      --card-h: 168px;
+      --l2-w: 608px;
+      --fs-main: 56px;
+      --lh-main: 68px;
+      --fs-sent: 36px;
+      --fs-btn: 28px;
+      --fs-chrome: 22px;
+      --fs-letter: 22px;
+      --pad: 18px;
+      --home-h: 96px;
+      --home-w: 280px;
+    }
+    #stage[data-canvas="1920"] {
+      --top: 80px;
+      --well-w: 1848px;
+      --well-h: 444px;
+      --stem-h: 160px;
+      --opt-h: 252px;
+      --bot-h: 112px;
+      --side: 36px;
+      --gap-card: 24px;
+      --card-w: 444px;
+      --card-h: 252px;
+      --l2-w: 912px;
+      --fs-main: 80px;
+      --lh-main: 96px;
+      --fs-sent: 52px;
+      --fs-btn: 40px;
+      --fs-chrome: 28px;
+      --fs-letter: 28px;
+      --pad: 27px;
+      --home-h: 144px;
+      --home-w: 420px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: #56C7FF;
+      color: #000;
+      font-family: Fredoka, Nunito, sans-serif;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    button { font-family: inherit; }
+    button:focus-visible { outline: 4px solid #000; outline-offset: 3px; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    #fit { position: relative; width: 100%; height: 100%; }
+    #stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1280px;
+      height: 800px;
+      transform-origin: center center;
+      background: #F2F8FD;
+      overflow: hidden;
+    }
+    #stage[data-canvas="1920"] { width: 1920px; height: 1080px; }
+    .screen { position: relative; width: 100%; height: 100%; }
+    .bleed {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: fill;
+      pointer-events: none;
+    }
+    #btn-play {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      line-height: 1;
+      cursor: pointer;
+      border-radius: 999px;
+    }
+    #stage[data-canvas="1280"] #btn-play { left: 760px; top: 640px; width: 280px; height: 96px; }
+    #stage[data-canvas="1920"] #btn-play { left: 1140px; top: 900px; width: 420px; height: 144px; }
+    #btn-play:active { transform: translateY(2px); }
+    .home-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--home-w);
+      height: var(--home-h);
+      padding: 0 28px;
+      border: 4px solid #000;
+      border-radius: 999px;
+      background: #385C4D;
+      color: #fff;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      line-height: 1;
+      cursor: pointer;
+    }
+    .home-primary:active { transform: translateY(2px); }
+    #map-home {
+      position: absolute;
+      left: 50%;
+      z-index: 3;
+      transform: translateX(-50%);
+    }
+    #stage[data-canvas="1280"] #map-home { bottom: 24px; }
+    #stage[data-canvas="1920"] #map-home { bottom: 36px; }
+    #map-home:active { transform: translateX(-50%) translateY(2px); }
+    .hot {
+      position: absolute;
+      z-index: 2;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .hot:hover, .hot:focus-visible { outline: 3px solid #000; outline-offset: 1px; }
+    .hot-stamp {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      height: 92%;
+      width: auto;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    #screen-play {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #F2F8FD;
+    }
+    .topbar {
+      flex: 0 0 var(--top);
+      height: var(--top);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--side);
+      background: #F2F8FD;
+    }
+    .plaque { height: 100%; width: auto; display: block; }
+    .tools { display: flex; align-items: center; gap: 12px; }
+    .stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      font-weight: 700;
+      font-size: var(--fs-chrome);
+      line-height: 1;
+    }
+    #star-img {
+      width: calc(var(--fs-chrome) + 14px);
+      height: calc(var(--fs-chrome) + 14px);
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+    .tool-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(var(--top) - 12px);
+      padding: 0 16px;
+      border: 3px solid #000;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tool-btn:active { transform: translateY(2px); }
+    .well {
+      flex: 0 0 var(--well-h);
+      width: var(--well-w);
+      height: var(--well-h);
+      margin: 0 auto;
+      position: relative;
+      background-color: #F2F8FD;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      outline: 4px solid #000;
+      overflow: hidden;
+    }
+    .verb-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
+    }
+    .well-stamp {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 26%;
+      height: auto;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .stem {
+      flex: 0 0 var(--stem-h);
+      width: var(--well-w);
+      height: var(--stem-h);
+      margin: 0 auto;
+      background: #F2F8FD;
+      border: 4px solid #000;
+      border-radius: 20px;
+    }
+    .stem-inner {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 18px;
+    }
+    .yell, .prompt { margin: 0; }
+    .yell {
+      font-weight: 700;
+      font-size: var(--fs-sent);
+      line-height: 1.15;
+    }
+    .prompt.big {
+      font-weight: 700;
+      font-size: var(--fs-main);
+      line-height: var(--lh-main);
+      letter-spacing: 0;
+    }
+    .prompt.sent {
+      font-weight: 600;
+      font-size: var(--fs-sent);
+      line-height: 1.25;
+    }
+    .prompt.sent strong { font-weight: 700; }
+    .gap {
+      display: inline-block;
+      min-width: 3.2em;
+      border-bottom: 4px solid #000;
+      transform: translateY(-0.05em);
+      margin: 0 0.15em;
+    }
+    .fill { text-decoration: underline; text-underline-offset: 0.12em; }
+    .arrow { font-family: "DejaVu Sans", "Segoe UI Symbol", sans-serif; padding: 0 0.15em; }
+    .options-slot { position: relative; flex: 0 0 var(--opt-h); height: var(--opt-h); }
+    #clear-actions { position: absolute; inset: 0; }
+    .options {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap-card);
+      padding: 0 var(--side);
+    }
+    .opt {
+      position: relative;
+      width: var(--card-w);
+      height: var(--card-h);
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background-color: transparent;
+      background-image: var(--stone-default);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 100% 100%;
+      color: #000;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: var(--fs-main);
+      line-height: var(--lh-main);
+      letter-spacing: 0;
+    }
+    .opt.l2 { width: var(--l2-w); }
+    .opt.wrong { background-image: var(--stone-wrong); }
+    .opt.locked { background-image: var(--stone-locked); }
+    .opt.selected, .opt.reveal { background-image: var(--stone-selected); }
+    .opt:disabled { cursor: default; }
+    .opt .word {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: var(--pad);
+      text-align: center;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .letter {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-size: var(--fs-letter);
+      line-height: 1;
+      font-weight: 700;
+      pointer-events: none;
+    }
+    #stage[data-canvas="1920"] .letter { top: 10px; left: 16px; }
+    .bottom {
+      flex: 0 0 var(--bot-h);
+      height: var(--bot-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 var(--side);
+    }
+    .instruction {
+      margin: 0;
+      font-weight: 700;
+      font-size: var(--fs-sent);
+      line-height: 1.15;
+    }
+    .next {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      min-width: 200px;
+      height: 72px;
+      padding: 0 28px;
+      border: 4px solid #000;
+      border-radius: 999px;
+      background: #385C4D;
+      color: #fff;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      line-height: 1;
+      cursor: pointer;
+    }
+    #stage[data-canvas="1920"] .next { min-width: 280px; height: 96px; }
+    .next:disabled { opacity: 0.45; cursor: default; }
+    .next:active:not(:disabled) { transform: translateY(2px); }
+    @media (prefers-reduced-motion: reduce) {
+      .well-stamp, .opt, .home-primary, .tool-btn, .next, #btn-play { animation: none !important; transition: none !important; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .well-stamp { animation: stamp-pop 0.4s ease-out; }
+    }
+    @keyframes stamp-pop {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div id="fit">
+    <div id="stage" data-canvas="1280">
+      <section id="screen-title" class="screen">
+        <h1 class="sr-only">Quest Complete!</h1>
+        <img id="title-img" class="bleed" alt="" width="1280" height="800" draggable="false">
+        <button type="button" id="btn-play">Play</button>
+      </section>
+
+      <section id="screen-map" class="screen" hidden>
+        <img id="map-img" class="bleed" alt="Coral Island and Pine Island" width="1280" height="800" draggable="false">
+        <div id="hotspots"></div>
+        <button type="button" id="map-home" class="home-primary">Home</button>
+      </section>
+
+      <section id="screen-play" class="screen" hidden>
+        <header class="topbar">
+          <img id="plaque" class="plaque" alt="" draggable="false">
+          <div class="tools">
+            <span class="stat">
+              <img id="star-img" src="./art/star-badge.png" alt="" draggable="false">
+              <span id="star-count">0</span>
+            </span>
+            <span class="stat" id="progress">1 / 10</span>
+            <button type="button" class="tool-btn" id="btn-listen">Listen</button>
+            <button type="button" class="tool-btn" id="btn-home">Home</button>
+          </div>
+        </header>
+        <div id="well" class="well">
+          <img id="verb-img" class="verb-img" alt="" hidden draggable="false">
+          <img id="well-stamp" class="well-stamp" src="./art/map-stamp-complete.png" alt="" hidden draggable="false">
+        </div>
+        <div class="stem">
+          <div class="stem-inner">
+            <p id="yell" class="yell" hidden></p>
+            <p id="prompt" class="prompt big"></p>
+          </div>
+        </div>
+        <div class="options-slot">
+          <div id="options" class="options"></div>
+          <div id="clear-actions" class="options" hidden>
+            <button type="button" id="btn-done-home" class="home-primary">Home</button>
+          </div>
+        </div>
+        <footer class="bottom">
+          <p id="instruction" class="instruction"></p>
+          <button type="button" class="next" id="btn-next" disabled>Next</button>
+        </footer>
+      </section>
+      <div id="live" class="sr-only" aria-live="polite"></div>
+    </div>
+  </div>
+  <script src="./game-data.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var stage = document.getElementById('stage');
+      var titleScreen = document.getElementById('screen-title');
+      var mapScreen = document.getElementById('screen-map');
+      var playScreen = document.getElementById('screen-play');
+      var titleImg = document.getElementById('title-img');
+      var mapImg = document.getElementById('map-img');
+      var hotspots = document.getElementById('hotspots');
+      var plaque = document.getElementById('plaque');
+      var well = document.getElementById('well');
+      var verbImg = document.getElementById('verb-img');
+      var wellStamp = document.getElementById('well-stamp');
+      var yell = document.getElementById('yell');
+      var promptEl = document.getElementById('prompt');
+      var optionsEl = document.getElementById('options');
+      var clearActions = document.getElementById('clear-actions');
+      var instruction = document.getElementById('instruction');
+      var progressEl = document.getElementById('progress');
+      var starCount = document.getElementById('star-count');
+      var nextBtn = document.getElementById('btn-next');
+      var live = document.getElementById('live');
+
+      var STORE = 'quest-complete-progress-v1';
+      var L1 = 'Choose the correct past participle.';
+      var L2 = 'Read the sentence. Choose have or has.';
+      var TIME_WORD = /\b(already|just|yet|ever|never|always|for|since)\b/gi;
+
+      var state = {
+        screen: 'title',
+        place: null,
+        q: 0,
+        misses: 0,
+        stars: 0,
+        solved: false,
+        token: 0
+      };
+      var canvasNow = 0;
+      var cachedVoice = null;
+
+      function artCanvas() {
+        return stage.dataset.canvas === '1920' ? 1920 : 1280;
+      }
+
+      function chooseCanvas() {
+        var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        return scale >= 0.9 ? 1920 : 1280;
+      }
+
+      function loadProgress() {
+        try {
+          return JSON.parse(localStorage.getItem(STORE)) || {};
+        } catch (err) {
+          return {};
+        }
+      }
+
+      function saveProgress(data) {
+        try { localStorage.setItem(STORE, JSON.stringify(data)); } catch (err) { /* ignore */ }
+      }
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"']/g, function (ch) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+        });
+      }
+
+      function boldTime(text) {
+        return escapeHtml(text).replace(TIME_WORD, '<strong>$1</strong>');
+      }
+
+      function sentenceHtml(sentence, fill) {
+        var parts = sentence.split('____');
+        var gap = fill
+          ? '<strong class="fill">' + escapeHtml(fill) + '</strong>'
+          : '<span class="gap"></span>';
+        return parts.map(boldTime).join(gap);
+      }
+
+      function answerSpeech(item, place) {
+        if (place.level === 1) return item.base === 'read' ? 'red' : item.pp;
+        var filled = item.sentence.replace('____', item.aux);
+        if (item.base === 'read') return filled.replace(/\bread\b/g, 'red');
+        return filled;
+      }
+
+      function promptSpeech(item, place) {
+        if (place.level === 1) return item.base;
+        var spoken = item.sentence.replace('____', 'blank');
+        if (item.base === 'read') spoken = spoken.replace(/\bread\b/g, 'red');
+        return spoken;
+      }
+
+      function pickVoice() {
+        if (!window.speechSynthesis) return null;
+        var voices = window.speechSynthesis.getVoices() || [];
+        var voice = voices.filter(function (v) { return /en-GB/i.test(v.lang); })[0];
+        if (!voice) voice = voices.filter(function (v) { return /^en/i.test(v.lang); })[0];
+        return voice || null;
+      }
+
+      function speak(text) {
+        return new Promise(function (resolve) {
+          if (!text || !window.speechSynthesis) { resolve(); return; }
+          var synth = window.speechSynthesis;
+          var utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'en-GB';
+          var voice = cachedVoice || pickVoice();
+          if (voice) {
+            try {
+              utter.voice = voice;
+              cachedVoice = voice;
+            } catch (err) {
+              cachedVoice = null;
+            }
+          }
+          utter.rate = 0.92;
+          var settled = false;
+          var timer = setTimeout(finish, 12000);
+          function finish() {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            resolve();
+          }
+          utter.onend = finish;
+          utter.onerror = function (ev) {
+            if (ev && ev.error === 'interrupted') return;
+            finish();
+          };
+          var start = function () {
+            try { synth.speak(utter); } catch (err) { finish(); }
+          };
+          if (synth.speaking || synth.pending) {
+            try { synth.cancel(); } catch (err) { /* ignore */ }
+            setTimeout(start, 60);
+          } else {
+            start();
+          }
+        });
+      }
+
+      function stopSpeech() {
+        state.token += 1;
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+      }
+
+      function showScreen(name) {
+        titleScreen.hidden = name !== 'title';
+        mapScreen.hidden = name !== 'map';
+        playScreen.hidden = name !== 'play' && name !== 'clear';
+      }
+
+      function applyStones() {
+        var size = artCanvas() === 1920 ? '444x252' : '296x168';
+        ['default', 'selected', 'locked', 'wrong'].forEach(function (name) {
+          stage.style.setProperty('--stone-' + name, 'url("./art/option-stone-' + name + '-' + size + '.png")');
+        });
+      }
+
+      function setWell(place, item, complete) {
+        well.style.backgroundImage = 'url("./art/bg-' + place.slug + '-well-1920x540.png")';
+        var showVerb = !!(item && item.art && state.screen !== 'clear');
+        if (showVerb) {
+          var size = artCanvas() === 1920 ? '1848x444' : '1232x336';
+          var file = place.level === 1
+            ? 'l1-' + item.art + '-' + (complete ? 'complete' : 'incomplete')
+            : 'l2-' + item.art + '-result';
+          verbImg.src = './art/' + file + '-well-' + size + '.png';
+          verbImg.hidden = false;
+        } else {
+          verbImg.hidden = true;
+        }
+        wellStamp.hidden = !(complete && !showVerb);
+      }
+
+      function renderHotspots() {
+        var key = String(artCanvas());
+        var saved = loadProgress();
+        hotspots.innerHTML = '';
+        mapImg.src = key === '1920' ? './art/map-overview.png' : './art/map-overview-1280x800.png';
+        QC.places.forEach(function (place) {
+          var box = place.box[key];
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'hot';
+          btn.style.left = box[0] + 'px';
+          btn.style.top = box[1] + 'px';
+          btn.style.width = box[2] + 'px';
+          btn.style.height = box[3] + 'px';
+          btn.setAttribute('aria-label', place.name);
+          if (saved[place.slug] && saved[place.slug].done) {
+            var stamp = document.createElement('img');
+            stamp.className = 'hot-stamp';
+            stamp.src = './art/map-stamp-complete.png';
+            stamp.alt = '';
+            stamp.draggable = false;
+            btn.appendChild(stamp);
+          }
+          btn.addEventListener('click', function () { openStage(place); });
+          hotspots.appendChild(btn);
+        });
+      }
+
+      function renderChrome() {
+        if (!state.place) return;
+        var place = state.place;
+        var item = state.screen === 'clear' ? null : QC.item(place.route, state.q);
+        plaque.src = './art/topbar-' + place.slug + '-' + artCanvas() + '.png';
+        plaque.alt = place.name;
+        setWell(place, item, state.solved || state.screen === 'clear');
+        progressEl.textContent = (state.screen === 'clear' ? 10 : state.q + 1) + ' / 10';
+        starCount.textContent = String(state.stars);
+      }
+
+      function showPrompt(item, place) {
+        yell.textContent = '';
+        yell.hidden = true;
+        promptEl.hidden = false;
+        if (place.level === 1) {
+          promptEl.className = 'prompt big';
+          promptEl.textContent = item.base;
+        } else {
+          promptEl.className = 'prompt sent';
+          promptEl.innerHTML = sentenceHtml(item.sentence, '');
+        }
+      }
+
+      function makeOpt(word, index, letter) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt';
+        btn.dataset.i = String(index);
+        if (letter) {
+          var mark = document.createElement('span');
+          mark.className = 'letter';
+          mark.textContent = letter;
+          btn.appendChild(mark);
+        }
+        var label = document.createElement('span');
+        label.className = 'word';
+        label.textContent = word;
+        btn.appendChild(label);
+        btn.addEventListener('click', function () { onPick(index, word); });
+        return btn;
+      }
+
+      function renderOptions(item, place) {
+        optionsEl.innerHTML = '';
+        if (place.level === 1) {
+          item.options.forEach(function (word, index) {
+            optionsEl.appendChild(makeOpt(word, index, 'ABCD'[index]));
+          });
+        } else {
+          var pair = item.cap ? ['Have', 'Has'] : ['have', 'has'];
+          pair.forEach(function (word, index) {
+            var btn = makeOpt(word, index, '');
+            btn.classList.add('l2');
+            optionsEl.appendChild(btn);
+          });
+        }
+      }
+
+      function renderQuestion() {
+        var place = state.place;
+        var item = QC.item(place.route, state.q);
+        state.screen = 'play';
+        optionsEl.hidden = false;
+        clearActions.hidden = true;
+        nextBtn.hidden = false;
+        nextBtn.disabled = true;
+        instruction.textContent = place.level === 1 ? L1 : L2;
+        showPrompt(item, place);
+        renderOptions(item, place);
+        renderChrome();
+        live.textContent = '';
+      }
+
+      function correctButton(item, place) {
+        if (place.level === 1) return optionsEl.querySelector('[data-i="' + item.answer + '"]');
+        var want = item.aux.toLowerCase();
+        return Array.prototype.filter.call(optionsEl.querySelectorAll('.opt'), function (el) {
+          return el.querySelector('.word').textContent.toLowerCase() === want;
+        })[0];
+      }
+
+      function showTryAgain() {
+        var my = ++state.token;
+        yell.textContent = 'Try again!';
+        yell.hidden = false;
+        promptEl.hidden = true;
+        live.textContent = 'Try again!';
+        setTimeout(function () {
+          if (my !== state.token || state.solved) return;
+          yell.textContent = '';
+          yell.hidden = true;
+          promptEl.hidden = false;
+          if (live.textContent === 'Try again!') live.textContent = '';
+        }, 900);
+      }
+
+      function onPick(index, word) {
+        if (state.solved || state.screen !== 'play' || !state.place) return;
+        var place = state.place;
+        var item = QC.item(place.route, state.q);
+        var right = place.level === 1 ? index === item.answer : word.toLowerCase() === item.aux.toLowerCase();
+        var btn = optionsEl.querySelector('[data-i="' + index + '"]');
+        if (!right) {
+          if (btn) btn.classList.add('wrong');
+          state.misses += 1;
+          showTryAgain();
+          if (state.misses >= 2) {
+            var reveal = correctButton(item, place);
+            if (reveal) reveal.classList.add('reveal');
+          }
+          return;
+        }
+        state.solved = true;
+        state.token += 1;
+        if (state.misses === 0) state.stars += 1;
+        Array.prototype.forEach.call(optionsEl.querySelectorAll('.opt'), function (el) {
+          var idx = Number(el.dataset.i);
+          var isRight = place.level === 1
+            ? idx === item.answer
+            : el.querySelector('.word').textContent.toLowerCase() === item.aux.toLowerCase();
+          el.disabled = true;
+          el.classList.remove('reveal');
+          if (isRight) el.classList.add('selected');
+          else if (!el.classList.contains('wrong')) el.classList.add('locked');
+        });
+        yell.textContent = 'Yes!';
+        yell.hidden = false;
+        promptEl.hidden = false;
+        promptEl.className = 'prompt sent';
+        if (place.level === 1) {
+          promptEl.innerHTML = escapeHtml(item.base) + ' <span class="arrow" aria-hidden="true">\u2192</span> ' + escapeHtml(item.pp);
+        } else {
+          promptEl.innerHTML = sentenceHtml(item.sentence, item.aux);
+        }
+        setWell(place, item, true);
+        starCount.textContent = String(state.stars);
+        nextBtn.disabled = true;
+        var said = answerSpeech(item, place);
+        var heard = state.token;
+        live.textContent = 'Yes! ' + said;
+        var unlock = function () {
+          if (heard !== state.token) return;
+          if (state.solved && state.screen === 'play') nextBtn.disabled = false;
+        };
+        speak(said).then(unlock, unlock);
+      }
+
+      function showClear() {
+        state.screen = 'clear';
+        state.token += 1;
+        var saved = loadProgress();
+        var prev = saved[state.place.slug] || {};
+        saved[state.place.slug] = {
+          done: true,
+          stars: Math.max(prev.stars || 0, state.stars)
+        };
+        saveProgress(saved);
+        optionsEl.hidden = true;
+        clearActions.hidden = false;
+        nextBtn.hidden = true;
+        instruction.textContent = '';
+        yell.textContent = 'Well done!';
+        yell.hidden = false;
+        promptEl.hidden = true;
+        promptEl.textContent = '';
+        live.textContent = 'Well done!';
+        renderChrome();
+        speak('Well done!');
+      }
+
+      function onNext() {
+        if (!state.solved || state.screen !== 'play') return;
+        stopSpeech();
+        if (state.q >= 9) {
+          showClear();
+          return;
+        }
+        state.q += 1;
+        state.misses = 0;
+        state.solved = false;
+        renderQuestion();
+      }
+
+      function openStage(place) {
+        stopSpeech();
+        state.place = place;
+        state.q = 0;
+        state.misses = 0;
+        state.stars = 0;
+        state.solved = false;
+        state.screen = 'play';
+        showScreen('play');
+        renderQuestion();
+      }
+
+      function goMap() {
+        stopSpeech();
+        state.screen = 'map';
+        state.solved = false;
+        showScreen('map');
+        renderHotspots();
+      }
+
+      function goTitle() {
+        stopSpeech();
+        state.screen = 'title';
+        showScreen('title');
+        titleImg.src = artCanvas() === 1920 ? './art/title-screen.png' : './art/title-screen-1280x800.png';
+      }
+
+      function refreshArt() {
+        applyStones();
+        titleImg.src = artCanvas() === 1920 ? './art/title-screen.png' : './art/title-screen-1280x800.png';
+        renderHotspots();
+        if (state.screen === 'play' || state.screen === 'clear') renderChrome();
+      }
+
+      function fit() {
+        var canvas = chooseCanvas();
+        var width = canvas === 1920 ? 1920 : 1280;
+        var height = canvas === 1920 ? 1080 : 800;
+        var scale = Math.min(window.innerWidth / width, window.innerHeight / height);
+        stage.dataset.canvas = String(canvas);
+        stage.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+        if (canvas !== canvasNow) {
+          canvasNow = canvas;
+          refreshArt();
+        }
+      }
+
+      document.getElementById('btn-play').addEventListener('click', function () {
+        state.screen = 'map';
+        showScreen('map');
+        renderHotspots();
+      });
+      document.getElementById('map-home').addEventListener('click', goTitle);
+      document.getElementById('btn-home').addEventListener('click', goMap);
+      document.getElementById('btn-done-home').addEventListener('click', goMap);
+      document.getElementById('btn-listen').addEventListener('click', function () {
+        if (state.screen === 'clear') { speak('Well done!'); return; }
+        if (state.screen !== 'play' || !state.place) return;
+        var item = QC.item(state.place.route, state.q);
+        var revealed = state.solved || state.misses >= 2;
+        speak(revealed ? answerSpeech(item, state.place) : promptSpeech(item, state.place));
+      });
+      nextBtn.addEventListener('click', onNext);
+      if (window.speechSynthesis) {
+        cachedVoice = pickVoice();
+        window.speechSynthesis.addEventListener('voiceschanged', function () {
+          cachedVoice = pickVoice();
+        });
+      }
+      window.addEventListener('resize', fit);
+      fit();
+      showScreen('title');
+    })();
+  </script>
+</body>
+</html>
