@@ -91,8 +91,10 @@
     .home-stack {
       display: flex;
       flex-direction: column;
+      align-items: stretch;
       gap: 0.85rem;
-      width: min(var(--home-btn-w), 92vw);
+      width: max-content;
+      max-width: 94vw;
     }
     .home-entry {
       display: flex;
@@ -102,13 +104,14 @@
     }
     .home-entry .entry-hint {
       margin: 0;
-      font-size: var(--fs-chrome);
+      font-size: min(var(--fs-chrome), 4.1vw);
       font-weight: 700;
-      line-height: 1.3;
+      line-height: 1.25;
       text-align: center;
+      white-space: nowrap;
     }
     .home-btn {
-      min-width: 0;
+      min-width: min(var(--home-btn-w), 94vw);
       min-height: var(--home-btn-h);
       width: 100%;
       border-radius: 1.3rem;
@@ -135,13 +138,36 @@
       background: var(--panel);
       border-bottom: 4px solid var(--ink);
     }
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
     .brand {
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
       font-size: var(--fs-sentence);
       line-height: 1.1;
+      min-width: 0;
+      white-space: nowrap;
     }
-    .top-right { display: flex; align-items: center; gap: 0.45rem; }
+    .home-chip {
+      flex: 0 0 auto;
+      height: calc(var(--top-h) - 12px);
+      padding: 0 0.95rem;
+      border-radius: 0.8rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-chrome);
+      line-height: 1;
+      box-shadow: 0 3px 0 rgba(72, 40, 8, 0.12);
+    }
+    .home-chip:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(72, 40, 8, 0.12); }
+    .top-right { display: flex; align-items: center; gap: 0.45rem; flex: 0 0 auto; }
     .icon-btn {
       min-width: calc(var(--top-h) - 8px); min-height: calc(var(--top-h) - 8px);
       width: calc(var(--top-h) - 8px); height: calc(var(--top-h) - 8px);
@@ -352,6 +378,7 @@
     @media (prefers-reduced-motion: reduce) {
       .word-card:active:not(:disabled),
       .home-btn:active,
+      .home-chip:active,
       .btn-bar:active:not(:disabled) { transform: none; }
     }
   </style>
@@ -378,7 +405,10 @@
 
     <section class="play-shell hidden" id="view-play">
       <header class="topbar">
-        <div class="brand" id="play-title">We, They or It?</div>
+        <div class="top-left">
+          <button type="button" class="home-chip" id="btn-activity-home">Home</button>
+          <div class="brand" id="play-title">We, They or It?</div>
+        </div>
         <div class="top-right">
           <button type="button" class="icon-btn" id="btn-horn" aria-label="Listen" title="Listen">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM16 3.2v2.1a7.8 7.8 0 0 1 0 13.4v2.1A9.9 9.9 0 0 0 16 3.2z"/></svg>
@@ -451,20 +481,30 @@
   let prompt = '';
   let hornText = '';
   let answered = false;
-  let firstTry = true;
   let missCount = 0;
   let canChoose = false;
   let speechDone = true;
   let againShuffle = false;
+  let runToken = 0;
+  let cardToken = 0;
 
   // —— TTS ——
+  const SPEECH_START_MS = 1200;
+  const SPEECH_CAP_MS = 6000;
+  const SPEECH_HOLD_MS = 700;
+  const VOICE_WAIT_MS = 800;
+  const FEEDBACK_LINE = /^(Yes!|Try again!|Well done!)$/;
   let cachedVoice = null;
   let voicesReady = false;
   let voicesWaitTimer = null;
   let speakQueue = [];
   let speaking = false;
+  let inflight = null;
+  let speechGen = 0;
+  let speechBroken = false;
   let cancelGate = Promise.resolve();
   let utterTimer = null;
+  let startWatchTimer = null;
 
   function pickVoice() {
     if (!window.speechSynthesis) return null;
@@ -497,32 +537,54 @@
       speakNext();
     });
   }
-  function cancelSpeech() {
-    speakQueue = [];
-    speaking = false;
+  function clearSpeechTimers() {
     if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
     if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
-    cancelGate = new Promise((resolve) => setTimeout(resolve, 80));
+    if (startWatchTimer) { clearTimeout(startWatchTimer); startWatchTimer = null; }
   }
-  function finishUtterance(item) {
-    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
-    speaking = false;
-    if (item && item.onEnd) {
+  function releaseItem(item) {
+    if (!item || item.done) return;
+    item.done = true;
+    if (item.onEnd) {
       const cb = item.onEnd;
       item.onEnd = null;
       cb();
     }
+  }
+  function cancelSpeech() {
+    speechGen += 1;
+    const queued = speakQueue.splice(0);
+    const current = inflight;
+    inflight = null;
+    speaking = false;
+    clearSpeechTimers();
+    if (window.speechSynthesis) {
+      try { window.speechSynthesis.cancel(); } catch (e) { /* already stopped */ }
+    }
+    queued.forEach(releaseItem);
+    releaseItem(current);
+    cancelGate = new Promise((resolve) => setTimeout(resolve, 80));
+  }
+  function finishUtterance(item) {
+    if (!item || item.gen !== speechGen) return;
+    clearSpeechTimers();
+    speaking = false;
+    if (inflight === item) inflight = null;
+    releaseItem(item);
     speakNext();
+  }
+  function drainUnavailable() {
+    speechBroken = true;
+    speaking = false;
+    inflight = null;
+    const pending = speakQueue.splice(0);
+    pending.forEach(releaseItem);
   }
   function speakNext() {
     if (speaking) return;
     if (!speakQueue.length) return;
-    if (!voiceOn || !window.speechSynthesis) {
-      while (speakQueue.length) {
-        const item = speakQueue.shift();
-        if (item.onEnd) item.onEnd();
-      }
+    if (!voiceOn || !window.speechSynthesis || speechBroken) {
+      drainUnavailable();
       return;
     }
     refreshVoiceCache();
@@ -532,56 +594,86 @@
         voicesWaitTimer = setTimeout(() => {
           voicesWaitTimer = null;
           voicesReady = true;
-          speakNext();
-        }, 800);
+          if (!speakQueue.length) return;
+          const ready = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
+          if (!ready.length) drainUnavailable();
+          else speakNext();
+        }, VOICE_WAIT_MS);
       }
+      return;
+    }
+    if (!voices.length) {
+      drainUnavailable();
       return;
     }
     const item = speakQueue.shift();
     speaking = true;
+    inflight = item;
     const run = () => {
-      const u = new SpeechSynthesisUtterance(item.text);
-      const voice = cachedVoice || pickVoice();
-      if (voice) {
-        u.voice = voice;
-        u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
-        cachedVoice = voice;
-      } else {
-        u.lang = 'en-GB';
-      }
-      u.rate = 0.80;
+      if (item.gen !== speechGen || item.done) return;
       let settled = false;
-      const settle = () => {
-        if (settled) return;
+      const settle = (broken) => {
+        if (settled || item.gen !== speechGen) return;
         settled = true;
+        if (broken) speechBroken = true;
         finishUtterance(item);
       };
-      u.onend = settle;
-      u.onerror = settle;
-      utterTimer = setTimeout(settle, 9000);
-      try { window.speechSynthesis.speak(u); } catch (e) { settle(); }
+      try {
+        const u = new SpeechSynthesisUtterance(item.text);
+        const voice = cachedVoice || pickVoice();
+        if (voice) {
+          try {
+            u.voice = voice;
+            u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
+            cachedVoice = voice;
+          } catch (e) {
+            cachedVoice = null;
+            u.lang = 'en-GB';
+          }
+        } else {
+          u.lang = 'en-GB';
+        }
+        u.rate = 0.80;
+        u.onend = () => settle(false);
+        u.onerror = () => settle(true);
+        utterTimer = setTimeout(() => settle(true), SPEECH_CAP_MS);
+        window.speechSynthesis.speak(u);
+        startWatchTimer = setTimeout(() => {
+          if (settled || item.gen !== speechGen) return;
+          const synth = window.speechSynthesis;
+          if (!synth || (!synth.speaking && !synth.pending)) settle(true);
+        }, SPEECH_START_MS);
+      } catch (e) {
+        settle(true);
+      }
     };
     cancelGate.then(run);
+  }
+  function holdBrief(text) {
+    const hold = FEEDBACK_LINE.test(text) ? SPEECH_HOLD_MS : 0;
+    return hold ? new Promise((r) => setTimeout(r, hold)) : Promise.resolve();
   }
   function speak(text, opts) {
     opts = opts || {};
     if (!text) return Promise.resolve();
-    if (!voiceOn) {
-      // Keep short feedback visible even without audio (avoids Yes! flash-skip).
-      const hold = /^(Yes!|Try again!|Well done!)$/.test(text) ? 700 : 0;
-      return hold ? new Promise((r) => setTimeout(r, hold)) : Promise.resolve();
+    if (!voiceOn || !window.speechSynthesis || speechBroken) {
+      if (!opts.chain) cancelSpeech();
+      return holdBrief(text);
     }
     return new Promise((resolve) => {
       if (!opts.chain) cancelSpeech();
-      speakQueue.push({ text, onEnd: () => resolve() });
+      speakQueue.push({ text, gen: speechGen, done: false, onEnd: () => resolve() });
       speakNext();
     });
   }
   async function speakParts(parts) {
     if (!parts || !parts.length) return;
+    const token = runToken;
+    const myCard = cardToken;
     cancelSpeech();
-    if (!voiceOn) return;
+    if (!voiceOn || !window.speechSynthesis || speechBroken) return;
     for (let i = 0; i < parts.length; i++) {
+      if (token !== runToken || myCard !== cardToken) return;
       await speak(parts[i], { chain: i > 0 });
     }
   }
@@ -591,10 +683,22 @@
     starCount.textContent = String(stars);
   }
 
-  function showHome() {
+  function resetStars() {
+    stars = 0;
+    starCount.textContent = '0';
+  }
+
+  function bumpRun() {
+    runToken += 1;
+    cardToken += 1;
     cancelSpeech();
+  }
+
+  function showHome() {
+    bumpRun();
     mode = null;
     canChoose = false;
+    resetStars();
     viewPlay.classList.add('hidden');
     viewHome.classList.remove('hidden');
   }
@@ -668,7 +772,6 @@
   function loadQuestion() {
     const item = pool[idx];
     answered = false;
-    firstTry = true;
     missCount = 0;
     speechDone = true;
     setNextEnabled(false);
@@ -683,13 +786,14 @@
 
   async function onChoose(word, btn) {
     if (!canChoose || answered) return;
+    const token = runToken;
     const item = pool[idx];
     if (word !== item.answer) {
       missCount += 1;
-      firstTry = false;
       canChoose = false;
       setSentence('Try again!');
       await speak('Try again!');
+      if (token !== runToken) return;
       // Keep Try again! on the board until the next card choice (do not restore stem).
       if (missCount >= 2) {
         const correct = playBody.querySelector('.word-card[data-word="' + item.answer + '"]');
@@ -700,20 +804,24 @@
     }
     answered = true;
     lockCards();
-    if (firstTry) addStar();
+    // One star for the first correct answer on this item, including after a miss.
+    addStar();
     speechDone = false;
     setNextEnabled(false);
     setSentence('Yes!');
     await speak('Yes!');
+    if (token !== runToken) return;
     if (item.lines.length === 1) {
       setSentence(item.lines[0]);
       await speak(item.lines[0], { chain: true });
     } else {
       setSentence(item.lines[0]);
       await speak(item.lines[0], { chain: true });
+      if (token !== runToken) return;
       setSentence(item.lines[0] + '<br>' + item.lines[1]);
       await speak(item.lines[1], { chain: true });
     }
+    if (token !== runToken) return;
     speechDone = true;
     setNextEnabled(true);
   }
@@ -749,6 +857,8 @@
   }
 
   function startPart1(again) {
+    bumpRun();
+    resetStars();
     mode = 'part1';
     againShuffle = !!again;
     pool = again ? shuffleInPlace(PART1) : PART1.slice();
@@ -762,6 +872,8 @@
   }
 
   function startReview1(again) {
+    bumpRun();
+    resetStars();
     mode = 'review1';
     pool = again ? shuffleInPlace(REVIEW_G1) : REVIEW_G1.slice();
     idx = 0;
@@ -774,6 +886,7 @@
   }
 
   function startReview2() {
+    bumpRun();
     mode = 'review2';
     pool = againShuffle ? shuffleInPlace(REVIEW_G2) : REVIEW_G2.slice();
     idx = 0;
@@ -791,9 +904,9 @@
   }
 
   function showCelebrate(kind) {
+    bumpRun();
     canChoose = false;
     speechDone = true;
-    cancelSpeech();
     playBody.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'center-wrap';
@@ -831,6 +944,8 @@
 
   // —— Warm-up (same locked stack as main play) ——
   function startWarmup() {
+    bumpRun();
+    resetStars();
     mode = 'warmup';
     idx = 0;
     answered = false;
@@ -838,8 +953,11 @@
     renderWarmup();
   }
   function renderWarmup() {
+    cardToken += 1;
+    const myCard = cardToken;
     const item = WARMUP[idx];
     hornText = item.lines[0];
+    cancelSpeech();
     const nextLabel = idx < WARMUP.length - 1 ? 'Next' : 'Play';
     playBody.innerHTML =
       '<div class="well-wrap"><div class="art-well"><img id="art-img" src="' + ART + item.img + '" alt="Photo"></div></div>' +
@@ -858,6 +976,7 @@
       } else {
         setSentence(item.lines[0]);
         await speak(item.lines[0]);
+        if (myCard !== cardToken) return;
         setSentence(item.lines[0] + '<br>' + item.lines[1]);
         await speak(item.lines[1], { chain: true });
       }
@@ -890,6 +1009,7 @@
   $('btn-play').addEventListener('click', () => startPart1(false));
   $('btn-review').addEventListener('click', () => startReview(false));
   $('btn-warmup').addEventListener('click', startWarmup);
+  $('btn-activity-home').addEventListener('click', showHome);
   hornBtn.addEventListener('click', onHorn);
   voiceBtn.addEventListener('click', () => {
     voiceOn = !voiceOn;
@@ -903,6 +1023,8 @@
         speechDone = true;
         setNextEnabled(true);
       }
+    } else {
+      speechBroken = false;
     }
   });
 
