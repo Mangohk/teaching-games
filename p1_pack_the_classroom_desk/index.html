@@ -116,6 +116,76 @@
       border-top: 6px solid #D69E59;
       box-shadow: inset 0 6px 12px rgba(255, 255, 255, 0.55);
     }
+
+    /* Vendored Tailwind has no arbitrary sizes, nowrap, or xl: text utilities. */
+    .board-shell {
+      width: 100%;
+      max-width: 72rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .mission-title {
+      font-size: 1.45rem;
+      line-height: 1.05;
+      font-weight: 700;
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem 1rem;
+    }
+    .title-block { flex: 1 1 100%; min-width: 0; }
+    .star-tools { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .star-face { font-size: 1.25rem; line-height: 1; }
+    .mission-line {
+      display: block;
+      white-space: nowrap;
+    }
+    .keep-line { white-space: nowrap; }
+    .read-label { font-size: 1.05rem; }
+    .wheel-sentence { font-size: 1.7rem; line-height: 1.2; }
+    .pic-single { width: 15rem; height: 12rem; }
+    .pic-row, .pic-grid { width: 100%; max-width: 48rem; height: 12rem; }
+    .pic-grid { height: 15rem; }
+    .pic-wheel { width: 100%; max-width: 22rem; height: 7.5rem; }
+    .pic-match { width: 100%; height: 8.75rem; }
+    .pic-match-tall { width: 100%; height: 10.25rem; }
+    .match-slot { min-height: 9.25rem; }
+    .learn-stage { min-height: 9.25rem; }
+    .eraser-chip { width: 2.5rem; height: 1.15rem; display: block; }
+    @media (min-width: 640px) {
+      .mission-title { font-size: 1.8rem; }
+      .star-face { font-size: 1.35rem; }
+      .read-label { font-size: 1.15rem; }
+      .wheel-sentence { font-size: 1.85rem; }
+      .pic-single { width: 14rem; height: 8.5rem; }
+      .pic-row { height: 13rem; }
+      .pic-grid { height: 16rem; }
+      .pic-wheel { height: 8.25rem; }
+    }
+    @media (min-width: 1280px) {
+      .board-shell { max-width: 76rem; }
+      .read-label { font-size: 1.28rem; }
+    }
+    @media (min-width: 1600px) {
+      .board-shell { max-width: 90rem; }
+      .title-block { flex-basis: auto; }
+      .mission-title { font-size: 2.05rem; }
+      .star-face { font-size: 1.45rem; }
+      .read-label { font-size: 1.45rem; }
+      .wheel-sentence { font-size: 2.35rem; }
+      .pic-single { width: 22rem; height: 17rem; }
+      .pic-row { height: 16rem; }
+      .pic-grid { height: 19rem; }
+      .pic-wheel { height: 11rem; max-width: 28rem; }
+      .pic-match { height: 10.5rem; }
+      .pic-match-tall { height: 12.5rem; }
+    }
+    @media (max-width: 720px) {
+      .mission-line { white-space: normal; }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -124,12 +194,12 @@
   <canvas id="confetti-canvas"></canvas>
 
   <!-- Top Header & Cooperative Class Star Progress Bar -->
-  <header class="w-full max-w-6xl mx-auto px-3 sm:px-6 pt-3 sm:pt-4">
-    <div class="bg-white/95 backdrop-blur border-4 border-sky-200 rounded-3xl px-4 py-3 shadow-md flex flex-col lg:flex-row items-center justify-between gap-3">
+  <header class="board-shell w-full px-3 sm:px-6 pt-2 sm:pt-3">
+    <div class="top-bar bg-white/95 backdrop-blur border-4 border-sky-200 rounded-3xl px-4 py-2 shadow-md">
       
       <!-- Title & Cooperative Mission Badge -->
-      <div class="flex items-center gap-3">
-        <a href="../index.html" class="storybook-btn shrink-0 bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-950 font-display font-bold text-sm sm:text-base px-3 py-2.5 rounded-2xl no-underline flex items-center gap-1.5" title="Back to Teaching Games" aria-label="Back to Teaching Games">🏠 Home</a>
+      <div class="title-block flex items-center gap-3">
+        <a href="../index.html" class="storybook-btn shrink-0 bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-950 font-display font-bold text-base sm:text-lg px-3 py-2.5 rounded-2xl no-underline flex items-center gap-1.5" title="Back to Teaching Games" aria-label="Back to Teaching Games">🏠 Home</a>
         <!-- Friendly Classroom Boy Helper Avatar SVG -->
         <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-100 border-3 border-amber-300 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
           <svg viewBox="0 0 100 100" class="w-14 h-14">
@@ -150,27 +220,28 @@
           </svg>
         </div>
         <div>
-          <span class="inline-block text-xs sm:text-sm font-extrabold uppercase tracking-wider text-sky-600 bg-sky-100 px-3 py-0.5 rounded-full">
+          <span class="inline-block text-sm sm:text-base font-extrabold uppercase tracking-wider text-sky-600 bg-sky-100 px-3 py-0.5 rounded-full">
             Primary 1 Team Mission
           </span>
-          <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 leading-tight">
-            Help Pack the Classroom Desk Together!
+          <h1 class="mission-title text-slate-800">
+            <span class="mission-line">Help Pack the Classroom Desk</span>
+            <span class="mission-line text-sky-600">Together!</span>
           </h1>
         </div>
       </div>
 
       <!-- Cooperative 12-Star Progress Meter + Audio Controls -->
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <div class="bg-amber-50 border-3 border-amber-300 rounded-2xl px-3 py-2 flex items-center gap-1.5" aria-label="Class Star Progress">
-          <span class="text-xs sm:text-sm font-extrabold text-amber-800 mr-1">Class Stars:</span>
-          <div id="star-track" class="flex flex-wrap items-center gap-0.5 max-w-[240px] sm:max-w-none">
+      <div class="star-tools">
+        <div class="bg-amber-50 border-3 border-amber-300 rounded-2xl px-3 py-2 flex flex-nowrap items-center gap-2 shrink-0" aria-label="Class Star Progress">
+          <span class="text-sm sm:text-base font-extrabold text-amber-800 keep-line">Class Stars:</span>
+          <div id="star-track" class="flex items-center gap-0.5 keep-line">
             <!-- 12 stars injected by JS -->
           </div>
-          <span id="star-count-label" class="ml-1.5 text-sm sm:text-base font-extrabold text-amber-900">0/12</span>
+          <span id="star-count-label" class="text-lg sm:text-xl font-extrabold text-amber-900 keep-line">0/12</span>
         </div>
 
         <!-- Mute / Unmute Button -->
-        <button id="sound-toggle-btn" onclick="toggleSound()" class="storybook-btn bg-sky-100 hover:bg-sky-200 border-2 border-sky-400 text-sky-800 font-bold px-3.5 py-2.5 rounded-2xl flex items-center gap-1.5 text-sm sm:text-base cursor-pointer" title="Toggle Sound">
+        <button id="sound-toggle-btn" onclick="toggleSound()" class="storybook-btn bg-sky-100 hover:bg-sky-200 border-2 border-sky-400 text-sky-800 font-bold px-3.5 py-2.5 rounded-2xl flex items-center gap-1.5 text-base sm:text-lg cursor-pointer" title="Toggle Sound">
           <span id="sound-icon" class="text-xl">🔊</span>
           <span id="sound-label" class="hidden sm:inline">Sound On</span>
         </button>
@@ -179,33 +250,33 @@
 
     <!-- Four Classroom Activity Mode Tabs -->
     <nav class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mt-3" role="tablist">
-      <button id="tab-learn" onclick="switchMode('learn')" class="storybook-btn bg-emerald-500 border-emerald-700 text-white font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+      <button id="tab-learn" onclick="switchMode('learn')" class="storybook-btn bg-emerald-500 border-emerald-700 text-white font-display text-base sm:text-lg xl:text-xl py-3 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
         <span>👀</span>
-        <span>1. Look & Listen</span>
+        <span class="keep-line">1. Look & Listen</span>
       </button>
-      <button id="tab-quiz" onclick="switchMode('quiz')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-amber-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+      <button id="tab-quiz" onclick="switchMode('quiz')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-amber-50 font-display text-base sm:text-lg xl:text-xl py-3 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
         <span>🎒</span>
-        <span>2. Class Pack Challenge</span>
+        <span class="keep-line">2. Class Pack Challenge</span>
       </button>
-      <button id="tab-match" onclick="switchMode('match')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-purple-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+      <button id="tab-match" onclick="switchMode('match')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-purple-50 font-display text-base sm:text-lg xl:text-xl py-3 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
         <span>🔢</span>
-        <span>3. Count & Match</span>
+        <span class="keep-line">3. Count & Match</span>
       </button>
-      <button id="tab-wheel" onclick="switchMode('wheel')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-pink-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
+      <button id="tab-wheel" onclick="switchMode('wheel')" class="storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-pink-50 font-display text-base sm:text-lg xl:text-xl py-3 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer">
         <span>🎡</span>
-        <span>4. Spin & Speak Wheel</span>
+        <span class="keep-line">4. Spin & Speak Wheel</span>
       </button>
     </nav>
   </header>
 
   <!-- Main Interactive Smartboard Workspace -->
-  <main class="flex-grow w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 flex flex-col">
+  <main class="board-shell flex-grow w-full px-3 sm:px-6 py-2 flex flex-col">
 
     <!-- ===================================================================== -->
     <!-- MODE 1: LOOK & LISTEN (Bug-Free Vocabulary & Tap-to-Count Stage)      -->
     <!-- ===================================================================== -->
     <section id="mode-learn" class="flex-grow flex flex-col justify-between gap-4">
-      <div class="storybook-card p-4 sm:p-6 flex-grow flex flex-col justify-between relative overflow-hidden">
+      <div class="storybook-card p-3 sm:p-4 flex-grow flex flex-col justify-between relative overflow-hidden">
         
         <!-- Top Item Selector Pills (Quick Jump for Teacher) -->
         <div id="learn-pills" class="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-2">
@@ -214,16 +285,16 @@
 
         <!-- Prompt Banner & Count Together Toggle -->
         <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
-          <span id="learn-hint-badge" class="inline-block bg-amber-100 text-amber-900 border-2 border-amber-300 font-bold text-sm sm:text-base px-4 py-1 rounded-full">
+          <span id="learn-hint-badge" class="inline-block bg-amber-100 text-amber-900 border-2 border-amber-300 font-bold text-base sm:text-lg px-4 py-1.5 rounded-full">
             👆 Tap each object to count aloud one by one!
           </span>
-          <button onclick="resetLearnCount()" class="bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-sky-900 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full cursor-pointer">
+          <button onclick="resetLearnCount()" class="bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-sky-900 font-extrabold text-sm sm:text-base px-3 py-1.5 rounded-full cursor-pointer">
             🔄 Reset Count
           </button>
         </div>
 
         <!-- Interactive SVG Stage -->
-        <div id="learn-stage-box" onclick="handleLearnStageBackgroundClick()" class="my-2 flex-grow flex flex-col items-center justify-center min-h-[230px] sm:min-h-[270px] bg-gradient-to-b from-sky-50/70 to-amber-50/50 rounded-3xl border-3 border-dashed border-sky-200 p-4 relative cursor-pointer">
+        <div id="learn-stage-box" onclick="handleLearnStageBackgroundClick(event)" class="learn-stage my-2 flex-grow flex flex-col items-center justify-center bg-gradient-to-b from-sky-50/70 to-amber-50/50 rounded-3xl border-3 border-dashed border-sky-200 p-3 relative cursor-pointer">
           <!-- Live Counting Bubble -->
           <div id="count-bubble" class="hidden absolute top-3 right-3 bg-yellow-300 border-3 border-amber-500 text-amber-950 font-display text-2xl sm:text-3xl w-14 h-14 rounded-full flex items-center justify-center shadow-md z-10">
             1
@@ -236,17 +307,17 @@
 
         <!-- Color-Coded Sentence Frame Display -->
         <div id="learn-sentence-card" class="bg-slate-50 border-3 border-slate-200 rounded-2xl p-3 sm:p-4 text-center transition-all duration-300">
-          <p id="learn-question" class="text-base sm:text-xl font-bold text-slate-500 mb-1">
+          <p id="learn-question" class="text-lg sm:text-2xl font-bold text-slate-500 mb-1">
             What is it?
           </p>
-          <div id="learn-sentence" class="font-display text-3xl sm:text-5xl font-bold tracking-wide text-slate-800 my-1 transition-transform duration-300">
+          <div id="learn-sentence" class="font-display text-3xl sm:text-5xl 2xl:text-6xl font-bold tracking-wide text-slate-800 my-1 transition-transform duration-300">
             <!-- Color-coded sentence injected here -->
           </div>
           <!-- Grammar Legend -->
-          <div class="flex flex-wrap justify-center gap-3 sm:gap-5 mt-2 text-xs sm:text-sm font-bold text-slate-600">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> <b class="text-blue-600">a</b> (one item) / before other letters</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span> <b class="text-orange-600">an</b> (before a, e, i, o, u)</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span> <b class="text-red-600">-s</b> (2 or more items)</span>
+          <div class="read-label flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2 font-bold text-slate-600">
+            <span class="flex items-center gap-1.5 keep-line"><span class="w-4 h-4 rounded-full bg-blue-500 inline-block"></span> <b class="text-blue-600">a</b> (one item) / before other letters</span>
+            <span class="flex items-center gap-1.5 keep-line"><span class="w-4 h-4 rounded-full bg-orange-500 inline-block"></span> <b class="text-orange-600">an</b> (before a, e, i, o, u)</span>
+            <span class="flex items-center gap-1.5 keep-line"><span class="w-4 h-4 rounded-full bg-red-500 inline-block"></span> <b class="text-red-600">-s</b> (2 or more items)</span>
           </div>
         </div>
 
@@ -277,17 +348,17 @@
           <div class="flex items-center gap-3">
             <span class="text-3xl">🤔</span>
             <div>
-              <span class="text-xs font-extrabold uppercase text-sky-600 tracking-wider">Question <span id="quiz-progress-num">1</span> of 8</span>
-              <h2 id="quiz-question-text" class="font-display text-2xl sm:text-3xl text-slate-800">
+              <span class="read-label font-extrabold uppercase text-sky-600 tracking-wide">Question <span id="quiz-progress-num">1</span> of 8</span>
+              <h2 id="quiz-question-text" class="font-display text-3xl sm:text-4xl text-slate-800 leading-tight">
                 What is it?
               </h2>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="initQuizMode()" class="storybook-btn bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-900 font-bold px-3 py-2 rounded-xl text-sm cursor-pointer">
+            <button onclick="initQuizMode()" class="storybook-btn bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-900 font-bold px-3 py-2 rounded-xl text-base cursor-pointer">
               🎲 New questions
             </button>
-            <button onclick="speakQuizPrompt()" class="storybook-btn bg-white hover:bg-sky-100 border-2 border-sky-400 text-sky-800 font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer">
+            <button onclick="speakQuizPrompt()" class="storybook-btn bg-white hover:bg-sky-100 border-2 border-sky-400 text-sky-800 font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer text-base sm:text-lg">
               <span>🔊</span>
               <span>Hear Question</span>
             </button>
@@ -320,14 +391,14 @@
         <!-- Round Header -->
         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
-            <span id="match-round-badge" class="bg-purple-100 text-purple-800 border-2 border-purple-300 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full">
+            <span id="match-round-badge" class="read-label bg-purple-100 text-purple-800 border-2 border-purple-300 font-extrabold px-3 py-1 rounded-full">
               Round 1 of 2
             </span>
-            <h2 class="font-display text-xl sm:text-2xl text-slate-800 mt-1">
+            <h2 class="font-display text-xl sm:text-2xl xl:text-3xl text-slate-800 mt-1 leading-tight">
               Count the pictures on the left, then tap the matching words on the right!
             </h2>
           </div>
-          <button onclick="initMatchMode()" class="storybook-btn bg-purple-100 hover:bg-purple-200 border-2 border-purple-400 text-purple-900 font-bold px-4 py-2 rounded-xl text-sm cursor-pointer">
+          <button onclick="initMatchMode()" class="storybook-btn bg-purple-100 hover:bg-purple-200 border-2 border-purple-400 text-purple-900 font-bold px-4 py-2 rounded-xl text-base cursor-pointer">
             🎲 New game
           </button>
         </div>
@@ -366,10 +437,10 @@
         <!-- Top Instruction & Master Spin Button -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-3 bg-pink-50 border-3 border-pink-200 rounded-2xl px-4 py-3">
           <div>
-            <span class="bg-pink-200 text-pink-900 font-extrabold text-xs sm:text-sm px-3 py-0.5 rounded-full">
+            <span class="bg-pink-200 text-pink-900 font-extrabold text-sm sm:text-base px-3 py-1 rounded-full">
               🎡 Speaking Challenge • Numbers 1–10 + Stationery
             </span>
-            <h2 class="font-display text-xl sm:text-2xl text-slate-800 mt-1">
+            <h2 class="font-display text-xl sm:text-2xl xl:text-3xl text-slate-800 mt-1 leading-tight">
               Spin the wheels, count the picture, and read it aloud together!
             </h2>
           </div>
@@ -383,44 +454,44 @@
           
           <!-- Left Wheel: Numbers 1 to 10 (4 cols) -->
           <div class="lg:col-span-4 flex flex-col items-center bg-sky-50/70 border-3 border-sky-200 rounded-3xl p-3">
-            <span class="font-display text-lg text-sky-800 mb-1">1. Number Wheel (1–10)</span>
+            <span class="font-display text-lg sm:text-xl text-sky-800 mb-1">1. Number Wheel (1–10)</span>
             <div class="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
               <!-- Top Pointer Triangle -->
               <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-red-500 drop-shadow"></div>
               <canvas id="number-wheel-canvas" width="320" height="320" class="w-full h-full rounded-full shadow-md"></canvas>
             </div>
-            <button id="spin-num-btn" onclick="spinSingleWheel('number')" class="mt-2 storybook-btn bg-sky-500 hover:bg-sky-400 border-2 border-sky-700 text-white font-display text-base px-4 py-1.5 rounded-xl cursor-pointer">
+            <button id="spin-num-btn" onclick="spinSingleWheel('number')" class="mt-2 storybook-btn bg-sky-500 hover:bg-sky-400 border-2 border-sky-700 text-white font-display text-base sm:text-lg px-4 py-2 rounded-xl cursor-pointer">
               🔄 Spin Number
             </button>
           </div>
 
           <!-- Center Stage: Landed Quantity Visual & Read-Aloud Reveal (4 cols) -->
           <div class="lg:col-span-4 flex flex-col items-center justify-between bg-amber-50 border-3 border-amber-300 rounded-3xl p-4 min-h-[290px] text-center">
-            <span class="text-xs font-extrabold tracking-wider text-amber-800 bg-amber-200/80 px-3 py-1 rounded-full">
+            <span class="text-sm sm:text-base font-extrabold tracking-wide text-amber-800 bg-amber-200/80 px-3 py-1 rounded-full">
               🗣️ Say it together.
             </span>
 
             <!-- Dynamic SVG Group of the Landed Number + Item -->
             <div id="wheel-visual-result" class="my-2 flex-grow flex flex-col items-center justify-center w-full">
-              <p class="font-display text-xl text-slate-500">Tap "SPIN BOTH WHEELS!" to start!</p>
+              <p class="font-display text-xl sm:text-2xl text-slate-500">Tap "SPIN BOTH WHEELS!" to start!</p>
             </div>
 
             <!-- Read Aloud Prompt / Answer Reveal Box -->
             <div id="wheel-answer-box" class="w-full">
               <div id="wheel-hidden-prompt" class="bg-white border-2 border-dashed border-amber-400 rounded-2xl p-3">
-                <p class="font-display text-lg sm:text-xl text-slate-700 mb-2">
+                <p class="font-display text-xl sm:text-2xl text-slate-700 mb-2 leading-tight">
                   Class: Say it aloud first! 🗣️
                 </p>
-                <button id="wheel-reveal-btn" onclick="revealWheelAnswer()" disabled class="storybook-btn bg-emerald-500 disabled:opacity-40 hover:bg-emerald-400 border-2 border-emerald-700 text-white font-display text-base sm:text-lg px-5 py-2 rounded-xl cursor-pointer w-full">
+                <button id="wheel-reveal-btn" onclick="revealWheelAnswer()" disabled class="storybook-btn bg-emerald-500 disabled:opacity-40 hover:bg-emerald-400 border-2 border-emerald-700 text-white font-display text-lg sm:text-xl px-5 py-2.5 rounded-xl cursor-pointer w-full">
                   👀 Reveal Answer & Listen (+1 ⭐)
                 </button>
               </div>
 
               <div id="wheel-revealed-card" class="hidden bg-emerald-50 border-3 border-emerald-400 rounded-2xl p-3">
-                <div id="wheel-revealed-phrase" class="font-display text-2xl sm:text-3xl text-slate-800 mb-2">
-                  <!-- Color-coded phrase -->
+                <div id="wheel-revealed-phrase" class="wheel-sentence font-display text-slate-800 mb-2">
+                  <!-- Color-coded sentence -->
                 </div>
-                <button onclick="speakWheelResult()" class="storybook-btn bg-amber-400 hover:bg-amber-300 border-2 border-amber-600 text-amber-950 font-display text-base px-4 py-1.5 rounded-xl cursor-pointer">
+                <button onclick="speakWheelResult()" class="storybook-btn bg-amber-400 hover:bg-amber-300 border-2 border-amber-600 text-amber-950 font-display text-base sm:text-lg px-4 py-2 rounded-xl cursor-pointer">
                   🔊 Listen Again
                 </button>
               </div>
@@ -429,13 +500,13 @@
 
           <!-- Right Wheel: 8 Stationery Items (4 cols) -->
           <div class="lg:col-span-4 flex flex-col items-center bg-purple-50/70 border-3 border-purple-200 rounded-3xl p-3">
-            <span class="font-display text-lg text-purple-800 mb-1">2. Stationery Wheel (8 Items)</span>
+            <span class="font-display text-lg sm:text-xl text-purple-800 mb-1 keep-line">2. Stationery Wheel (8 Items)</span>
             <div class="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
               <!-- Top Pointer Triangle -->
               <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-red-500 drop-shadow"></div>
               <canvas id="item-wheel-canvas" width="320" height="320" class="w-full h-full rounded-full shadow-md"></canvas>
             </div>
-            <button id="spin-item-btn" onclick="spinSingleWheel('item')" class="mt-2 storybook-btn bg-purple-500 hover:bg-purple-400 border-2 border-purple-700 text-white font-display text-base px-4 py-1.5 rounded-xl cursor-pointer">
+            <button id="spin-item-btn" onclick="spinSingleWheel('item')" class="mt-2 storybook-btn bg-purple-500 hover:bg-purple-400 border-2 border-purple-700 text-white font-display text-base sm:text-lg px-4 py-2 rounded-xl cursor-pointer">
               🔄 Spin Item
             </button>
           </div>
@@ -448,7 +519,7 @@
 
   <!-- Classroom Wooden Desk Visual Footer -->
   <footer class="wooden-desk w-full py-2.5 px-4 text-center">
-    <p class="text-xs sm:text-sm font-extrabold text-amber-950/80">
+    <p class="read-label font-extrabold text-amber-950/80">
       🏫 Primary 1 English Smartboard Activity • Singular: <em>"It is a / an..."</em> • Plural: <em>"They are..."</em>
     </p>
   </footer>
@@ -457,24 +528,32 @@
   <!-- CELEBRATION MODAL (When all 12 Class Stars are earned)                -->
   <!-- ===================================================================== -->
   <div id="celebration-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="storybook-card bg-gradient-to-b from-amber-50 to-white border-4 border-amber-400 max-w-xl w-full p-6 sm:p-8 text-center relative">
+    <div class="storybook-card bg-gradient-to-b from-amber-50 to-white border-4 border-amber-400 max-w-2xl w-full p-6 sm:p-8 text-center relative">
       <div class="text-6xl sm:text-7xl mb-2">🎉🌟🎒</div>
-      <h2 class="font-display text-3xl sm:text-5xl text-amber-600 mb-2">
-        Awesome Job, Primary 1!
+      <h2 class="font-display text-3xl sm:text-5xl text-amber-600 mb-2 leading-tight">
+        <span class="mission-line">Awesome Job,</span>
+        <span class="mission-line">Primary 1!</span>
       </h2>
       <p class="font-display text-2xl sm:text-3xl text-slate-800 mb-4">
         Our Desk is Ready!
       </p>
-      <p class="text-base sm:text-lg font-bold text-slate-600 mb-6">
+      <p class="text-lg sm:text-xl font-bold text-slate-600 mb-6">
         You practised numbers 1 to 10 and all 8 stationery items together to earn 12 out of 12 Class Stars!
       </p>
 
       <!-- Mini Showcase of All 8 Packed Items -->
-      <div class="bg-amber-100/70 border-2 border-amber-300 rounded-2xl p-3 mb-6 grid grid-cols-4 gap-2 text-xs font-extrabold text-slate-700">
+      <div class="bg-amber-100/70 border-2 border-amber-300 rounded-2xl p-3 mb-6 grid grid-cols-4 gap-2 text-sm sm:text-base font-extrabold text-slate-700">
         <div class="bg-white rounded-xl p-1.5 shadow-sm">🖊️ pen</div>
         <div class="bg-white rounded-xl p-1.5 shadow-sm">✏️ pencil</div>
         <div class="bg-white rounded-xl p-1.5 shadow-sm">🌈 coloured pencil</div>
-        <div class="bg-white rounded-xl p-1.5 shadow-sm">🧽 eraser</div>
+        <div class="bg-white rounded-xl p-1.5 shadow-sm flex flex-col items-center justify-center gap-0.5 leading-tight">
+          <svg viewBox="0 0 72 36" class="eraser-chip" aria-hidden="true">
+            <rect x="2" y="6" width="54" height="22" rx="5" fill="#FB7185" stroke="#1E293B" stroke-width="2"/>
+            <rect x="22" y="6" width="14" height="22" fill="#FFFFFF" stroke="#1E293B" stroke-width="2"/>
+            <ellipse cx="62" cy="28" rx="6" ry="3" fill="#FECDD3" stroke="#1E293B" stroke-width="1.4"/>
+          </svg>
+          <span>eraser</span>
+        </div>
         <div class="bg-white rounded-xl p-1.5 shadow-sm">📏 ruler</div>
         <div class="bg-white rounded-xl p-1.5 shadow-sm">📕 book</div>
         <div class="bg-white rounded-xl p-1.5 shadow-sm">👝 pencil case</div>
@@ -718,13 +797,19 @@
         }
 
         case 'eraser':
+          // Chunky pink classroom rubber with a paper sleeve and rubbings.
+          // No screen and no buttons — those read as a handheld console.
           return `
-            <g>
-              <rect x="-34" y="-20" width="68" height="40" rx="9" fill="#FFFFFF" stroke="#1E293B" stroke-width="3"/>
-              <rect x="-18" y="-21" width="44" height="42" rx="3" fill="#3B82F6" stroke="#1E293B" stroke-width="3"/>
-              <rect x="-12" y="-9" width="32" height="10" rx="3" fill="#DBEAFE"/>
-              <circle cx="-26" cy="-3" r="2" fill="#1E293B"/>
-              <circle cx="-26" cy="6" r="2" fill="#1E293B"/>
+            <g transform="rotate(-8)">
+              <path d="M-30 16 L-22 34 L32 34 L40 16 Z" fill="#E11D48" stroke="#1E293B" stroke-width="3" stroke-linejoin="round"/>
+              <rect x="-36" y="-22" width="72" height="42" rx="8" fill="#FB7185" stroke="#1E293B" stroke-width="3"/>
+              <rect x="-10" y="-22" width="20" height="42" fill="#FFFFFF" stroke="#1E293B" stroke-width="2.6"/>
+              <line x1="-5" y1="-10" x2="5" y2="-10" stroke="#FB7185" stroke-width="2.8" stroke-linecap="round"/>
+              <line x1="-5" y1="-1" x2="5" y2="-1" stroke="#38BDF8" stroke-width="2.8" stroke-linecap="round"/>
+              <line x1="-5" y1="8" x2="5" y2="8" stroke="#FB7185" stroke-width="2.8" stroke-linecap="round"/>
+              <rect x="-30" y="-16" width="14" height="6" rx="3" fill="#FFE4E6"/>
+              <ellipse cx="44" cy="30" rx="6.5" ry="3.4" fill="#FECDD3" stroke="#1E293B" stroke-width="2"/>
+              <ellipse cx="54" cy="24" rx="3.6" ry="2.1" fill="#FFF1F2" stroke="#1E293B" stroke-width="1.6"/>
             </g>
           `;
 
@@ -785,92 +870,108 @@
         ? 'countable-unit countable-unit-hover'
         : 'countable-unit';
 
-      // Tall skinny items fit comfortably in 1 row up to 10; wider items wrap cleanly into 2 rows of 5
       const tallItems = ['pen', 'pencils', 'coloured_pencils', 'glue_sticks'];
       const isTall = tallItems.includes(typeId);
 
-      // Single item centerpiece scale
+      // Transparent rect is the tap target, so pupils need not hit the ink.
+      function unitMarkup(i, x, y, scale, hitW, hitH) {
+        return `
+          <g class="${unitClass}" data-index="${i + 1}" transform="translate(${x}, ${y}) scale(${scale})">
+            <rect x="${-hitW / 2}" y="${-hitH / 2}" width="${hitW}" height="${hitH}" fill="transparent"></rect>
+            ${getSingleUnitInnerSVG(typeId, i)}
+          </g>
+        `;
+      }
+
       if (safeCount === 1) {
-        const sizeClass = compact ? 'w-28 h-20' : 'w-56 sm:w-64 h-40 sm:h-48';
+        const sizeClass = compact === 'wheel' ? 'pic-wheel' : (compact ? 'pic-match' : 'pic-single');
+        const scale = compact ? 1.15 : 1.22;
+        const hitW = compact ? 150 : 170;
+        const hitH = compact ? 110 : 140;
         return `
-          <svg viewBox="0 0 180 140" class="${sizeClass} overflow-visible">
-            <g class="${unitClass}" data-index="1" transform="translate(90, 70) scale(1.28)">
-              ${getSingleUnitInnerSVG(typeId, 0)}
-            </g>
+          <svg viewBox="0 0 220 170" class="${sizeClass}" preserveAspectRatio="xMidYMid meet">
+            ${unitMarkup(0, 110, 88, scale, hitW / scale, hitH / scale)}
           </svg>
         `;
       }
 
-      if (isTall) {
-        const cols = safeCount <= 6 ? safeCount : Math.ceil(safeCount / 2);
-        const rows = safeCount <= 6 ? 1 : 2;
-        const cellW = 68;
-        const cellH = 108;
-        const vbW = Math.max(220, cols * cellW + 30);
-        const vbH = rows === 1 ? 130 : 235;
-        const scale = rows === 1 ? 1.05 : 0.94;
-
-        let unitsMarkup = '';
-        for (let i = 0; i < safeCount; i++) {
-          const r = rows === 1 ? 0 : Math.floor(i / cols);
-          const c = rows === 1 ? i : i % cols;
-          const itemsInThisRow = rows === 1 ? safeCount : (r === 0 ? cols : safeCount - cols);
-          const rowStartX = (vbW - (itemsInThisRow - 1) * cellW) / 2;
-          const x = rowStartX + c * cellW;
-          const y = rows === 1 ? 66 : (58 + r * cellH);
-
-          unitsMarkup += `
-            <g class="${unitClass}" data-index="${i + 1}" transform="translate(${x}, ${y}) scale(${scale})">
-              ${getSingleUnitInnerSVG(typeId, i)}
-            </g>
-          `;
+      // Arrangements a P.1 class can check at a glance.
+      // Count & Match cards are wide and short, so high counts stay in one or two rows.
+      let cols;
+      let rows;
+      if (compact) {
+        if (safeCount <= 6) {
+          cols = safeCount;
+          rows = 1;
+        } else if (safeCount === 7) {
+          cols = 4;
+          rows = 2;
+        } else if (safeCount === 8 && isTall) {
+          cols = 8;
+          rows = 1;
+        } else if (safeCount === 8) {
+          cols = 4;
+          rows = 2;
+        } else if (safeCount === 9) {
+          cols = 5;
+          rows = 2;
+        } else {
+          cols = 5;
+          rows = 2;
         }
-
-        const sizeClass = compact
-          ? 'w-36 h-20'
-          : (rows === 1 ? 'w-full max-w-xl h-40 sm:h-48' : 'w-full max-w-xl h-48 sm:h-56');
-
-        return `
-          <svg viewBox="0 0 ${vbW} ${vbH}" class="${sizeClass} overflow-visible">
-            ${unitsMarkup}
-          </svg>
-        `;
+      } else if (safeCount === 9) {
+        cols = 3;
+        rows = 3;
+      } else if (safeCount === 8) {
+        cols = 4;
+        rows = 2;
+      } else if (safeCount === 7 || safeCount === 10) {
+        cols = safeCount === 7 ? 4 : 5;
+        rows = 2;
+      } else if (safeCount === 6 && !isTall) {
+        cols = 3;
+        rows = 2;
+      } else if (isTall || safeCount <= 4) {
+        cols = safeCount;
+        rows = 1;
       } else {
-        // Wide items: eraser, ruler, book, pencil_case
-        const cols = safeCount <= 3 ? safeCount : Math.ceil(safeCount / 2);
-        const rows = safeCount <= 3 ? 1 : 2;
-        const cellW = 116;
-        const cellH = 92;
-        const vbW = Math.max(240, cols * cellW + 24);
-        const vbH = rows === 1 ? 125 : 210;
-        const scale = safeCount <= 3 ? 0.96 : 0.82;
-
-        let unitsMarkup = '';
-        for (let i = 0; i < safeCount; i++) {
-          const r = rows === 1 ? 0 : Math.floor(i / cols);
-          const c = rows === 1 ? i : i % cols;
-          const itemsInThisRow = rows === 1 ? safeCount : (r === 0 ? cols : safeCount - cols);
-          const rowStartX = (vbW - (itemsInThisRow - 1) * cellW) / 2;
-          const x = rowStartX + c * cellW;
-          const y = rows === 1 ? 64 : (54 + r * cellH);
-
-          unitsMarkup += `
-            <g class="${unitClass}" data-index="${i + 1}" transform="translate(${x}, ${y}) scale(${scale})">
-              ${getSingleUnitInnerSVG(typeId, i)}
-            </g>
-          `;
-        }
-
-        const sizeClass = compact
-          ? 'w-36 h-20'
-          : (rows === 1 ? 'w-full max-w-xl h-40 sm:h-48' : 'w-full max-w-2xl h-48 sm:h-56');
-
-        return `
-          <svg viewBox="0 0 ${vbW} ${vbH}" class="${sizeClass} overflow-visible">
-            ${unitsMarkup}
-          </svg>
-        `;
+        cols = Math.ceil(safeCount / 2);
+        rows = 2;
       }
+
+      const cellW = isTall ? (rows === 1 ? 78 : 84) : (rows >= 3 ? 112 : 124);
+      const cellH = isTall ? (rows === 1 ? 128 : 112) : (rows >= 3 ? 100 : 96);
+      const scale = rows >= 3 ? 0.88 : (rows === 2 ? 0.9 : 1);
+      const vbW = Math.max(220, cols * cellW + 48);
+      const vbH = rows * cellH + 36;
+
+      let unitsMarkup = '';
+      for (let i = 0; i < safeCount; i++) {
+        const r = Math.floor(i / cols);
+        const c = i % cols;
+        const itemsInThisRow = Math.min(cols, safeCount - r * cols);
+        const rowStartX = (vbW - (itemsInThisRow - 1) * cellW) / 2;
+        const x = rowStartX + c * cellW;
+        const y = 18 + cellH / 2 + r * cellH;
+        unitsMarkup += unitMarkup(i, x, y, scale, (cellW * 0.94) / scale, (cellH * 0.94) / scale);
+      }
+
+      let sizeClass;
+      if (compact === 'wheel') {
+        sizeClass = 'pic-wheel';
+      } else if (compact) {
+        sizeClass = rows === 1 ? 'pic-match' : 'pic-match-tall';
+      } else if (rows === 1) {
+        sizeClass = 'pic-row';
+      } else {
+        sizeClass = 'pic-grid';
+      }
+
+      return `
+        <svg viewBox="0 0 ${vbW} ${vbH}" class="${sizeClass} overflow-visible" preserveAspectRatio="xMidYMid meet">
+          ${unitsMarkup}
+        </svg>
+      `;
     }
 
     /**
@@ -890,18 +991,20 @@
     }
 
     function formatColorCodedPhrase(challenge, showOneOrArticle = 'article') {
+      const articleColor = challenge.article === 'an' ? 'text-orange-500' : 'text-blue-600';
       if (!challenge.isPlural) {
         if (showOneOrArticle === 'one') {
-          const articleColor = challenge.article === 'an' ? 'text-orange-500' : 'text-blue-600';
           const noun = challenge.base.singularNoun;
-          return `<span class="inline-flex flex-col items-center gap-1"><span>It is one ${noun}.</span><span>It is <span class="${articleColor} font-extrabold">${challenge.article}</span> ${noun}.</span></span>`;
+          return `<span class="inline-flex flex-col items-center gap-1 leading-tight"><span>It is one ${noun}.</span><span>It is <span class="${articleColor} font-extrabold">${challenge.article}</span> ${noun}.</span></span>`;
         }
-        const articleColor = challenge.article === 'an' ? 'text-orange-500' : 'text-blue-600';
         return `<span class="inline-flex items-baseline gap-2"><span><span class="${articleColor} font-extrabold">${challenge.article}</span></span><span>${challenge.base.singularNoun}</span></span>`;
-      } else {
-        const pluralWithRedS = challenge.base.pluralNoun.replace(/s$/, '<span class="text-red-500 font-extrabold">s</span>');
-        return `<span class="inline-flex items-baseline gap-2"><span>${challenge.numWord}</span><span>${pluralWithRedS}</span></span>`;
       }
+      const pluralWithRedS = challenge.base.pluralNoun.replace(/s$/, '<span class="text-red-500 font-extrabold">s</span>');
+      // Wheel reveal asks for a full sentence at every quantity, not a bare phrase.
+      if (showOneOrArticle === 'one') {
+        return `<span class="leading-tight">They are ${challenge.numWord} ${pluralWithRedS}.</span>`;
+      }
+      return `<span class="inline-flex items-baseline gap-2"><span>${challenge.numWord}</span><span>${pluralWithRedS}</span></span>`;
     }
 
     /**
@@ -1120,20 +1223,27 @@
     const TOTAL_STARS = 12;
     const earnedStarsSet = new Set();
 
+    function shownStarCount() {
+      return Math.min(earnedStarsSet.size, TOTAL_STARS);
+    }
+
     function renderStarTrack() {
       const track = document.getElementById('star-track');
+      const shown = shownStarCount();
       track.innerHTML = '';
       for (let i = 0; i < TOTAL_STARS; i++) {
-        const isFilled = i < earnedStarsSet.size;
+        const isFilled = i < shown;
         const span = document.createElement('span');
-        span.className = `text-base sm:text-xl transition-all ${isFilled ? 'star-earned scale-100 opacity-100' : 'opacity-30 grayscale'}`;
+        span.className = `star-face transition-all ${isFilled ? 'star-earned scale-100 opacity-100' : 'opacity-30 grayscale'}`;
         span.textContent = '⭐';
         track.appendChild(span);
       }
-      document.getElementById('star-count-label').textContent = `${earnedStarsSet.size}/${TOTAL_STARS}`;
+      document.getElementById('star-count-label').textContent = `${shown}/${TOTAL_STARS}`;
     }
 
     function awardClassStar(uniqueKey) {
+      // Same award moments still call this. Extra reveals after 12 do not raise the meter.
+      if (earnedStarsSet.size >= TOTAL_STARS || earnedStarsSet.has(uniqueKey)) return;
       const prevSize = earnedStarsSet.size;
       earnedStarsSet.add(uniqueKey);
       renderStarTrack();
@@ -1158,10 +1268,10 @@
         const tab = document.getElementById(`tab-${m}`);
         if (m === mode) {
           section.classList.remove('hidden');
-          tab.className = 'storybook-btn bg-emerald-500 border-emerald-700 text-white font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer';
+          tab.className = 'storybook-btn bg-emerald-500 border-emerald-700 text-white font-display text-base sm:text-lg xl:text-xl py-3 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer';
         } else {
           section.classList.add('hidden');
-          tab.className = 'storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-amber-50 font-display text-sm sm:text-lg py-2.5 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer';
+          tab.className = 'storybook-btn bg-white border-slate-300 text-slate-700 hover:bg-amber-50 font-display text-base sm:text-lg xl:text-xl py-3 px-2 sm:px-3 rounded-2xl shadow flex items-center justify-center gap-1.5 cursor-pointer';
         }
       });
 
@@ -1187,7 +1297,7 @@
       container.innerHTML = CORE_PART1_ITEMS.map((item, idx) => {
         const active = idx === learnIndex;
         return `
-          <button onclick="selectLearnItem(${idx})" class="px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold border-2 transition cursor-pointer ${
+          <button onclick="selectLearnItem(${idx})" class="px-3 py-1.5 rounded-full text-base sm:text-lg font-extrabold border-2 transition cursor-pointer ${
             active
               ? 'bg-sky-500 border-sky-700 text-white shadow-sm'
               : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-sky-100'
@@ -1237,9 +1347,95 @@
       });
     }
 
-    // Tapping empty stage space reads the whole sentence aloud cleanly
-    function handleLearnStageBackgroundClick() {
-      speakCurrentLearnItem();
+    const LEARN_NUMBER_WORDS = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+
+    function countLearnUnit(unit) {
+      const item = CORE_PART1_ITEMS[learnIndex];
+      const bubble = document.getElementById('count-bubble');
+      const sentenceCard = document.getElementById('learn-sentence-card');
+      const sentenceEl = document.getElementById('learn-sentence');
+
+      // If all items were already counted, tapping again starts a fresh 1..N count
+      if (currentTapCount >= item.count) {
+        resetLearnCount();
+      }
+
+      // Prevent double-counting an already counted item; replay its assigned number instead
+      if (unit.dataset.counted === 'true') {
+        const existingNum = parseInt(unit.dataset.assignedCount || '1', 10);
+        unit.classList.remove('counted-pop');
+        void unit.offsetWidth;
+        unit.classList.add('counted-pop');
+        playPopSound(existingNum - 1);
+        speakText(`${LEARN_NUMBER_WORDS[existingNum - 1]}!`);
+        return;
+      }
+
+      // Increment cumulative running count (1, 2, 3, ...) in whatever order the user taps
+      currentTapCount += 1;
+      unit.dataset.counted = 'true';
+      unit.dataset.assignedCount = String(currentTapCount);
+
+      bubble.textContent = currentTapCount;
+      bubble.classList.remove('hidden');
+
+      unit.classList.remove('counted-pop');
+      void unit.offsetWidth;
+      unit.classList.add('counted-pop');
+
+      const oldTag = unit.querySelector('.unit-num-tag');
+      if (oldTag) oldTag.remove();
+      const tagGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      tagGroup.setAttribute('class', 'unit-num-tag');
+      tagGroup.setAttribute('pointer-events', 'none');
+      tagGroup.innerHTML = `
+        <circle cx="0" cy="-48" r="16" fill="#FACC15" stroke="#1E293B" stroke-width="2.5"/>
+        <text x="0" y="-42" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="bold" font-size="18" fill="#1E293B">${currentTapCount}</text>
+      `;
+      unit.appendChild(tagGroup);
+
+      playPopSound(currentTapCount - 1);
+
+      if (currentTapCount === item.count) {
+        if (sentenceCard) {
+          sentenceCard.className = 'bg-amber-100 border-3 border-amber-400 rounded-2xl p-3 sm:p-4 text-center shadow-md transition-all duration-300';
+        }
+        if (sentenceEl) {
+          sentenceEl.classList.add('scale-105');
+        }
+        playSuccessChime();
+        speakText(`${LEARN_NUMBER_WORDS[currentTapCount - 1]}! ${item.sentence}`);
+        awardClassStar(`part1_${item.typeId}`);
+      } else {
+        speakText(`${LEARN_NUMBER_WORDS[currentTapCount - 1]}!`);
+      }
+    }
+
+    // Empty space in the dashed frame still counts the item it is nearest to.
+    function handleLearnStageBackgroundClick(event) {
+      const stage = document.getElementById('learn-svg-stage');
+      const units = [...stage.querySelectorAll('.countable-unit')];
+      if (!units.length) {
+        speakCurrentLearnItem();
+        return;
+      }
+      if (units.length === 1) {
+        countLearnUnit(units[0]);
+        return;
+      }
+      const x = event.clientX;
+      const y = event.clientY;
+      let best = null;
+      units.forEach((unit) => {
+        const rect = unit.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dist = Math.hypot(x - cx, y - cy);
+        const reach = Math.max(72, Math.max(rect.width, rect.height) * 0.9);
+        if (dist <= reach && (!best || dist < best.dist)) best = { unit, dist };
+      });
+      if (best) countLearnUnit(best.unit);
+      else speakCurrentLearnItem();
     }
 
     function renderLearnStage() {
@@ -1265,70 +1461,10 @@
       document.getElementById('learn-question').textContent = item.question;
       sentenceEl.innerHTML = formatColorCodedSentence(item);
 
-      // Attach reliable cumulative click-to-count listeners on each individual SVG sub-item
-      const units = stage.querySelectorAll('.countable-unit');
-      units.forEach((unit) => {
+      stage.querySelectorAll('.countable-unit').forEach((unit) => {
         unit.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent triggering background click
-
-          // If all items were already counted, tapping again starts a fresh 1..N count
-          if (currentTapCount >= item.count) {
-            resetLearnCount();
-          }
-
-          // Prevent double-counting an already counted item; replay its assigned number instead
-          if (unit.dataset.counted === 'true') {
-            const existingNum = parseInt(unit.dataset.assignedCount || '1', 10);
-            const numberWords = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
-            unit.classList.remove('counted-pop');
-            void unit.offsetWidth;
-            unit.classList.add('counted-pop');
-            playPopSound(existingNum - 1);
-            speakText(`${numberWords[existingNum - 1]}!`);
-            return;
-          }
-
-          // Increment cumulative running count (1, 2, 3, ...) in whatever order the user taps
-          currentTapCount += 1;
-          unit.dataset.counted = 'true';
-          unit.dataset.assignedCount = String(currentTapCount);
-
-          bubble.textContent = currentTapCount;
-          bubble.classList.remove('hidden');
-
-          // Bounce animation on tapped item
-          unit.classList.remove('counted-pop');
-          void unit.offsetWidth;
-          unit.classList.add('counted-pop');
-
-          // Display the cumulative count number badge directly on the tapped SVG item
-          const oldTag = unit.querySelector('.unit-num-tag');
-          if (oldTag) oldTag.remove();
-          const tagGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-          tagGroup.setAttribute('class', 'unit-num-tag');
-          tagGroup.innerHTML = `
-            <circle cx="0" cy="-42" r="15" fill="#FACC15" stroke="#1E293B" stroke-width="2.5"/>
-            <text x="0" y="-36" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="bold" font-size="17" fill="#1E293B">${currentTapCount}</text>
-          `;
-          unit.appendChild(tagGroup);
-
-          playPopSound(currentTapCount - 1);
-          const numberWords = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
-
-          if (currentTapCount === item.count) {
-            // Highlight the full target sentence card once all items are counted
-            if (sentenceCard) {
-              sentenceCard.className = 'bg-amber-100 border-3 border-amber-400 rounded-2xl p-3 sm:p-4 text-center shadow-md transition-all duration-300';
-            }
-            if (sentenceEl) {
-              sentenceEl.classList.add('scale-105');
-            }
-            playSuccessChime();
-            speakText(`${numberWords[currentTapCount - 1]}! ${item.sentence}`);
-            awardClassStar(`part1_${item.typeId}`);
-          } else {
-            speakText(`${numberWords[currentTapCount - 1]}!`);
-          }
+          e.stopPropagation();
+          countLearnUnit(unit);
         });
       });
     }
@@ -1409,7 +1545,7 @@
 
       const optionsContainer = document.getElementById('quiz-options');
       optionsContainer.innerHTML = choices.map((choice) => `
-        <button onclick="handleQuizAnswer(this, ${choice.correct})" class="storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 text-slate-800 font-display text-lg sm:text-2xl py-4 sm:py-5 px-4 rounded-2xl shadow-md cursor-pointer transition">
+        <button onclick="handleQuizAnswer(this, ${choice.correct})" class="storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 text-slate-800 font-display text-xl sm:text-3xl py-4 sm:py-5 px-4 rounded-2xl shadow-md cursor-pointer transition leading-tight">
           ${choice.text}
         </button>
       `).join('');
@@ -1429,7 +1565,7 @@
 
       if (isCorrect) {
         quizAnswered = true;
-        btnEl.className = 'storybook-btn bg-emerald-500 border-3 border-emerald-700 text-white font-display text-lg sm:text-2xl py-4 sm:py-5 px-4 rounded-2xl shadow-lg scale-105';
+        btnEl.className = 'storybook-btn bg-emerald-500 border-3 border-emerald-700 text-white font-display text-xl sm:text-3xl py-4 sm:py-5 px-4 rounded-2xl shadow-lg scale-105 leading-tight';
         btnEl.innerHTML = `✅ ${formatColorCodedSentence(item).replace(/text-(blue|orange|red)-\d+/g, 'text-yellow-200')}`;
 
         feedback.className = 'mt-3 px-5 py-2.5 rounded-2xl font-bold text-base sm:text-xl text-center bg-emerald-100 border-2 border-emerald-400 text-emerald-900 flex flex-wrap items-center justify-center gap-3';
@@ -1518,16 +1654,28 @@
       const rightCol = document.getElementById('match-right-col');
 
       leftCol.innerHTML = leftOrder.map(item => `
-        <button id="match-left-${item.key}" onclick="selectMatchLeft('${item.key}')" class="storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-sm">
+        <button id="match-left-${item.key}" onclick="selectMatchLeft('${item.key}')" class="${matchCardClass('left', 'idle')}">
           ${renderDynamicQuantitySVG(item.typeId, item.count, false, true)}
         </button>
       `).join('');
 
       rightCol.innerHTML = rightOrder.map(item => `
-        <button id="match-right-${item.key}" onclick="selectMatchRight('${item.key}')" class="storybook-btn bg-white hover:bg-purple-50 border-3 border-slate-300 rounded-2xl p-3 sm:p-4 font-display text-lg sm:text-2xl text-slate-800 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-sm">
+        <button id="match-right-${item.key}" onclick="selectMatchRight('${item.key}')" class="${matchCardClass('right', 'idle')}">
           ${formatColorCodedPhrase(item, 'article')}
         </button>
       `).join('');
+    }
+
+    function matchCardClass(side, state) {
+      const frame = 'storybook-btn match-slot rounded-2xl flex items-center justify-center';
+      if (side === 'left') {
+        if (state === 'selected') return `${frame} bg-sky-100 border-3 border-sky-500 p-2 sm:p-3 cursor-pointer shadow-md scale-105`;
+        if (state === 'matched') return `${frame} bg-emerald-100 border-3 border-emerald-500 p-2 sm:p-3 opacity-95`;
+        return `${frame} bg-white hover:bg-sky-50 border-3 border-slate-300 p-2 sm:p-3 cursor-pointer shadow-sm`;
+      }
+      const text = 'p-3 sm:p-4 font-display text-xl sm:text-2xl xl:text-3xl leading-tight';
+      if (state === 'matched') return `${frame} ${text} bg-emerald-500 border-3 border-emerald-700 text-white`;
+      return `${frame} ${text} bg-white hover:bg-purple-50 border-3 border-slate-300 text-slate-800 cursor-pointer shadow-sm`;
     }
 
     function selectMatchLeft(key) {
@@ -1539,9 +1687,9 @@
         const el = document.getElementById(`match-left-${item.key}`);
         if (matchedKeys.has(item.key)) return;
         if (item.key === key) {
-          el.className = 'storybook-btn bg-sky-100 border-3 border-sky-500 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-md scale-105';
+          el.className = matchCardClass('left', 'selected');
         } else {
-          el.className = 'storybook-btn bg-white hover:bg-sky-50 border-3 border-slate-300 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] cursor-pointer shadow-sm';
+          el.className = matchCardClass('left', 'idle');
         }
       });
     }
@@ -1564,8 +1712,8 @@
         const leftEl = document.getElementById(`match-left-${rightKey}`);
         const rightEl = document.getElementById(`match-right-${rightKey}`);
 
-        leftEl.className = 'storybook-btn bg-emerald-100 border-3 border-emerald-500 rounded-2xl p-2 sm:p-3 flex items-center justify-center min-h-[92px] sm:min-h-[108px] opacity-95';
-        rightEl.className = 'storybook-btn bg-emerald-500 border-3 border-emerald-700 text-white rounded-2xl p-3 sm:p-4 font-display text-lg sm:text-2xl flex items-center justify-center min-h-[92px] sm:min-h-[108px]';
+        leftEl.className = matchCardClass('left', 'matched');
+        rightEl.className = matchCardClass('right', 'matched');
         rightEl.innerHTML = `✅ ${tappedItem.phrase}`;
 
         selectedLeftKey = null;
@@ -1682,8 +1830,8 @@
         ctx.rotate(start + sliceAngle / 2);
         ctx.textAlign = 'right';
         ctx.fillStyle = '#1E293B';
-        ctx.font = 'bold 28px Fredoka, Comic Sans MS, sans-serif';
-        ctx.fillText(String(num), radius - 22, 10);
+        ctx.font = 'bold 32px Fredoka, Comic Sans MS, sans-serif';
+        ctx.fillText(String(num), radius - 18, 12);
         ctx.restore();
       });
 
@@ -1722,13 +1870,16 @@
         ctx.strokeStyle = '#334155';
         ctx.stroke();
 
-        // Draw clear emoji picture + crisp label inside segment
         ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate(start + sliceAngle / 2);
         ctx.textAlign = 'center';
-        ctx.font = '32px sans-serif';
-        ctx.fillText(item.emoji, radius * 0.68, 10);
+        if (item.id === 'eraser') {
+          drawWheelEraserIcon(ctx, radius * 0.64, 0);
+        } else {
+          ctx.font = '42px sans-serif';
+          ctx.fillText(item.emoji, radius * 0.66, 14);
+        }
         ctx.restore();
       });
 
@@ -1740,6 +1891,62 @@
       ctx.lineWidth = 4;
       ctx.strokeStyle = '#334155';
       ctx.stroke();
+    }
+
+    function drawWheelEraserIcon(ctx, x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.18);
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#1E293B';
+      ctx.fillStyle = '#E11D48';
+      ctx.beginPath();
+      ctx.moveTo(-28, 14);
+      ctx.lineTo(-20, 28);
+      ctx.lineTo(28, 28);
+      ctx.lineTo(36, 14);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#FB7185';
+      ctx.beginPath();
+      ctx.moveTo(-28, -18);
+      ctx.arcTo(32, -18, 32, 18, 7);
+      ctx.arcTo(32, 18, -32, 18, 7);
+      ctx.arcTo(-32, 18, -32, -18, 7);
+      ctx.arcTo(-32, -18, 32, -18, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(-9, -18, 18, 36);
+      ctx.strokeRect(-9, -18, 18, 36);
+      ctx.lineWidth = 2.6;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#FB7185';
+      ctx.beginPath();
+      ctx.moveTo(-4, -8);
+      ctx.lineTo(4, -8);
+      ctx.stroke();
+      ctx.strokeStyle = '#38BDF8';
+      ctx.beginPath();
+      ctx.moveTo(-4, 0);
+      ctx.lineTo(4, 0);
+      ctx.stroke();
+      ctx.strokeStyle = '#FB7185';
+      ctx.beginPath();
+      ctx.moveTo(-4, 8);
+      ctx.lineTo(4, 8);
+      ctx.stroke();
+      ctx.fillStyle = '#FECDD3';
+      ctx.strokeStyle = '#1E293B';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(40, 24, 6, 3.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
     }
 
     function getLandedIndex(angleOffset, totalSlices) {
@@ -1827,12 +2034,12 @@
       // Render the exact landed quantity of stationery SVGs in the center stage!
       const visualBox = document.getElementById('wheel-visual-result');
       visualBox.innerHTML = `
-        <div class="mb-1 inline-flex items-center gap-2 bg-white border-2 border-amber-300 px-3 py-0.5 rounded-full text-sm font-extrabold text-amber-900">
+        <div class="mb-1 inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 bg-white border-2 border-amber-300 px-3 py-1 rounded-full text-base sm:text-lg font-extrabold text-amber-900">
           <span>Number: ${currentWheelNumber}</span>
           <span>•</span>
           <span>Item: ${currentWheelChallenge.base.singularNoun}</span>
         </div>
-        ${renderDynamicQuantitySVG(currentWheelTypeId, currentWheelNumber, false, false)}
+        ${renderDynamicQuantitySVG(currentWheelTypeId, currentWheelNumber, false, 'wheel')}
       `;
 
       document.getElementById('wheel-reveal-btn').disabled = false;
@@ -1854,10 +2061,11 @@
 
     function speakWheelResult() {
       if (!currentWheelChallenge) return;
+      const noun = currentWheelChallenge.base.singularNoun;
       if (!currentWheelChallenge.isPlural) {
-        speakText(`One ${currentWheelChallenge.base.singularNoun}! It is ${currentWheelChallenge.article} ${currentWheelChallenge.base.singularNoun}.`);
+        speakText(`It is one ${noun}. It is ${currentWheelChallenge.article} ${noun}.`);
       } else {
-        speakText(`${currentWheelChallenge.phrase}! They are ${currentWheelChallenge.phrase}.`);
+        speakText(`They are ${currentWheelChallenge.numWord} ${currentWheelChallenge.base.pluralNoun}.`);
       }
     }
 
