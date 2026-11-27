@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We, They or It?</title>
+  <link rel="stylesheet" href="./vendor/fonts/fonts.css">
+  <style>
+    :root {
+      --cream: #FFEDC4;
+      --ink: #482808;
+      --card: #1F5EA0;
+      --panel: #FFF8E7;
+      /* Stack totals 800 with gap budget 12 (3×4) and bottom tall enough for 96px Next */
+      --top-h: 56px;
+      --well-h: 400px;
+      --well-min-w: 712px;
+      --sentence-h: 120px;
+      --cards-h: 112px;
+      --bottom-h: 100px;
+      --gap: 4px;
+      --safe: 24px;
+      --card-gap: 24px;
+      --fs-word: 56px;
+      --fs-sentence: 36px;
+      --fs-btn: 28px;
+      --fs-chrome: 22px;
+      --fs-title: 56px;
+      --home-btn-w: 360px;
+      --home-btn-h: 96px;
+      --btn-bar-h: 96px;
+    }
+    @media (min-width: 1600px) {
+      :root {
+        /* Stack totals 1080 with gap budget 12 */
+        --top-h: 80px;
+        --well-h: 540px;
+        --well-min-w: 960px;
+        --sentence-h: 160px;
+        --cards-h: 156px;
+        --bottom-h: 132px;
+        --gap: 4px;
+        --safe: 32px;
+        --card-gap: 32px;
+        --fs-word: 80px;
+        --fs-sentence: 52px;
+        --fs-btn: 40px;
+        --fs-chrome: 28px;
+        --fs-title: 80px;
+        --home-btn-w: 500px;
+        --home-btn-h: 128px;
+        --btn-bar-h: 112px;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Nunito', 'Fredoka', sans-serif;
+      font-weight: 800;
+      color: var(--ink);
+      background: var(--cream);
+      letter-spacing: 0.03em;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+    }
+    button { font-family: inherit; cursor: pointer; color: inherit; }
+    button:focus-visible { outline: 4px solid var(--card); outline-offset: 3px; }
+    .hidden { display: none !important; }
+    .app { height: 100%; display: flex; flex-direction: column; background: var(--cream); }
+
+    /* Home */
+    .home {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: var(--safe);
+      text-align: center;
+    }
+    .home h1 {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-title);
+      line-height: 1.15;
+    }
+    .home-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.85rem;
+      width: max-content;
+      max-width: 94vw;
+    }
+    .home-entry {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.35rem;
+    }
+    .home-entry .entry-hint {
+      margin: 0;
+      font-size: min(var(--fs-chrome), 4.1vw);
+      font-weight: 700;
+      line-height: 1.25;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .home-btn {
+      min-width: min(var(--home-btn-w), 94vw);
+      min-height: var(--home-btn-h);
+      width: 100%;
+      border-radius: 1.3rem;
+      border: 5px solid var(--ink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      box-shadow: 0 6px 0 rgba(72, 40, 8, 0.16);
+    }
+    .home-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(72, 40, 8, 0.16); }
+    .home-btn.primary { background: var(--card); color: #fff; }
+    .home-btn.secondary { background: #fff; color: var(--ink); }
+
+    /* Play chrome */
+    .play-shell { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .topbar {
+      flex: 0 0 var(--top-h);
+      height: var(--top-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0 var(--safe);
+      background: var(--panel);
+      border-bottom: 4px solid var(--ink);
+    }
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+    .brand {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-sentence);
+      line-height: 1.1;
+      min-width: 0;
+      white-space: nowrap;
+    }
+    .home-chip {
+      flex: 0 0 auto;
+      height: calc(var(--top-h) - 12px);
+      padding: 0 0.95rem;
+      border-radius: 0.8rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-chrome);
+      line-height: 1;
+      box-shadow: 0 3px 0 rgba(72, 40, 8, 0.12);
+    }
+    .home-chip:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(72, 40, 8, 0.12); }
+    .top-right { display: flex; align-items: center; gap: 0.45rem; flex: 0 0 auto; }
+    .icon-btn {
+      min-width: calc(var(--top-h) - 8px); min-height: calc(var(--top-h) - 8px);
+      width: calc(var(--top-h) - 8px); height: calc(var(--top-h) - 8px);
+      border-radius: 0.8rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      box-shadow: 0 3px 0 rgba(72, 40, 8, 0.12);
+    }
+    .icon-btn svg { width: 55%; height: 55%; fill: var(--ink); }
+    .icon-btn.voice-off { opacity: 0.5; }
+    .stars {
+      min-height: calc(var(--top-h) - 8px);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 0.8rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-size: var(--fs-chrome);
+      font-weight: 700;
+    }
+    .stars .star-glyph {
+      color: #E8A317;
+      font-size: 1.35em;
+      line-height: 1;
+    }
+
+    .play-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .well-wrap {
+      flex: 0 0 var(--well-h);
+      height: var(--well-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 var(--safe);
+      margin-top: 0; /* top bar border separates; keeps gap budget for lower rows */
+    }
+    .art-well {
+      width: min(100%, calc(var(--well-h) * 16 / 9));
+      min-width: min(100%, var(--well-min-w));
+      height: 100%;
+      background: var(--cream);
+      border: 4px solid var(--ink);
+      border-radius: 1rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .art-well img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+    }
+
+    .sentence {
+      flex: 0 0 var(--sentence-h);
+      height: var(--sentence-h);
+      margin: var(--gap) var(--safe) 0;
+      padding: 0.25rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--panel);
+      border: 5px solid var(--ink);
+      border-radius: 1.1rem;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-sentence);
+      line-height: 1.3;
+    }
+
+    .cards-row {
+      flex: 0 0 var(--cards-h);
+      height: var(--cards-h);
+      margin: var(--gap) var(--safe) 0;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: var(--card-gap);
+    }
+    .word-card {
+      flex: 1 1 0;
+      max-width: 100%;
+      border-radius: 1.15rem;
+      border: 5px solid var(--ink);
+      background: var(--card);
+      color: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-word);
+      box-shadow: 0 5px 0 rgba(72, 40, 8, 0.16);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .word-card:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(72, 40, 8, 0.16); }
+    .word-card:disabled { opacity: 0.55; cursor: not-allowed; }
+    /* Static ring with cream gap from the 5px border — readable from the back of the room */
+    .word-card.hint-ring {
+      box-shadow:
+        0 0 0 8px var(--cream),
+        0 0 0 18px var(--ink),
+        0 5px 0 rgba(72, 40, 8, 0.16) !important;
+    }
+    .cards-row.count-1 .word-card { flex: 0 0 min(420px, 100%); max-width: min(420px, 100%); }
+    .cards-row.count-3 .word-card { flex-basis: 0; }
+    .cards-row.count-4 .word-card { flex-basis: 0; }
+
+    .bottombar {
+      flex: 0 0 var(--bottom-h);
+      height: var(--bottom-h);
+      min-height: var(--bottom-h);
+      margin-top: var(--gap);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0 var(--safe);
+      background: var(--panel);
+      border-top: 4px solid var(--ink);
+    }
+    .prompt {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-chrome);
+      line-height: 1.25;
+      max-width: 70%;
+    }
+    .btn-bar {
+      flex: 0 0 auto;
+      min-width: 140px;
+      width: auto;
+      min-height: var(--btn-bar-h);
+      height: var(--btn-bar-h);
+      padding: 0 1.35rem;
+      border-radius: 1.05rem;
+      border: 5px solid var(--ink);
+      background: var(--card);
+      color: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-btn);
+      box-shadow: 0 5px 0 rgba(72, 40, 8, 0.16);
+      visibility: visible;
+    }
+    .btn-bar:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-bar:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(72, 40, 8, 0.16); }
+    .btn-bar.secondary { background: #fff; color: var(--ink); }
+
+    .center-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: var(--safe);
+      min-height: 0;
+    }
+    .card-panel {
+      width: min(480px, 92vw);
+      background: var(--panel);
+      border: 5px solid var(--ink);
+      border-radius: 1.25rem;
+      padding: 0.85rem 1rem 1rem;
+      text-align: center;
+    }
+    .card-panel img {
+      width: min(420px, 85vw);
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      background: var(--cream);
+      border-radius: 0.75rem;
+      display: block;
+      margin: 0 auto 0.6rem;
+    }
+    .card-panel p {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-size: var(--fs-sentence);
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-top: 0.8rem;
+    }
+    .card-actions .home-btn { min-width: 0; width: 100%; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .word-card:active:not(:disabled),
+      .home-btn:active,
+      .home-chip:active,
+      .btn-bar:active:not(:disabled) { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <section class="home" id="view-home">
+      <h1>We, They or It?</h1>
+      <div class="home-stack">
+        <div class="home-entry">
+          <button type="button" class="home-btn primary" id="btn-play">Play</button>
+          <p class="entry-hint">Look at the picture. Touch We, They or It.</p>
+        </div>
+        <div class="home-entry">
+          <button type="button" class="home-btn secondary" id="btn-review">Let's review.</button>
+          <p class="entry-hint">Look at the picture. Touch I, You, We or They.</p>
+        </div>
+        <div class="home-entry">
+          <button type="button" class="home-btn secondary" id="btn-warmup">Warm-up</button>
+          <p class="entry-hint">Let's listen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="play-shell hidden" id="view-play">
+      <header class="topbar">
+        <div class="top-left">
+          <button type="button" class="home-chip" id="btn-activity-home">Home</button>
+          <div class="brand" id="play-title">We, They or It?</div>
+        </div>
+        <div class="top-right">
+          <button type="button" class="icon-btn" id="btn-horn" aria-label="Listen" title="Listen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM16 3.2v2.1a7.8 7.8 0 0 1 0 13.4v2.1A9.9 9.9 0 0 0 16 3.2z"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-voice" aria-pressed="true" aria-label="Voice ON" title="Voice">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v8a3 3 0 1 0 6 0V6a3 3 0 0 0-3-3zm-7 8a1 1 0 0 1 2 0 5 5 0 0 0 10 0 1 1 0 1 1 2 0 7 7 0 0 1-6 6.9V21h3a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h3v-3.1A7 7 0 0 1 5 11z"/></svg>
+          </button>
+          <div class="stars" aria-live="polite">
+            <span class="star-glyph" aria-hidden="true">★</span>
+            <span id="star-count">0</span>
+          </div>
+        </div>
+      </header>
+
+      <div id="play-body" class="play-body"></div>
+    </section>
+  </div>
+
+  <script>
+(function () {
+  'use strict';
+
+  const ART = './art/';
+
+  const PART1 = [
+    { answer: 'We', img: 'we-coloured-pencils.png', lines: ['We have coloured pencils.'] },
+    { answer: 'They', img: 'they-three-footballs.png', lines: ['Jim and Roy are my classmates.', 'They have three footballs.'] },
+    { answer: 'It', img: 'it-joe-ball.png', lines: ['Joe is my dog.', 'It has a ball.'] }
+  ];
+
+  const REVIEW_G1 = [
+    { answer: 'I', img: 'i-pencil.png', lines: ['I have a pencil.'] },
+    { answer: 'You', img: 'you-pencil.png', lines: ['You have a pencil.'] },
+    { answer: 'We', img: 'we-coloured-pencils.png', lines: ['We have coloured pencils.'] },
+    { answer: 'They', img: 'they-three-footballs.png', lines: ['Jim and Roy are my classmates.', 'They have three footballs.'] }
+  ];
+
+  const REVIEW_G2 = [
+    { answer: 'He', img: 'he-tom-pencils.png', lines: ['Tom is my best friend.', 'He has ten coloured pencils.'] },
+    { answer: 'She', img: 'she-missso-books.png', lines: ['Miss So is my class teacher.', 'She has two books.'] },
+    { answer: 'It', img: 'it-joe-ball.png', lines: ['Joe is my dog.', 'It has a ball.'] }
+  ];
+
+  const WARMUP = [
+    { label: 'We', img: 'we-coloured-pencils.png', lines: ['We have coloured pencils.'] },
+    { label: 'They', img: 'they-three-footballs.png', lines: ['They have three footballs.'] },
+    { label: 'It', img: 'it-joe-ball.png', lines: ['Joe is my dog.', 'It has a ball.'] }
+  ];
+
+  const CARDS_P1 = ['We', 'They', 'It'];
+  const CARDS_R1 = ['I', 'You', 'We', 'They'];
+  const CARDS_R2 = ['He', 'She', 'It'];
+
+  const $ = (id) => document.getElementById(id);
+  const viewHome = $('view-home');
+  const viewPlay = $('view-play');
+  const playBody = $('play-body');
+  const playTitle = $('play-title');
+  const starCount = $('star-count');
+  const hornBtn = $('btn-horn');
+  const voiceBtn = $('btn-voice');
+
+  let stars = 0;
+  let voiceOn = true;
+  let mode = null;
+  let pool = [];
+  let idx = 0;
+  let cards = [];
+  let stem = '';
+  let prompt = '';
+  let hornText = '';
+  let answered = false;
+  let missCount = 0;
+  let canChoose = false;
+  let speechDone = true;
+  let againShuffle = false;
+  let runToken = 0;
+  let cardToken = 0;
+
+  // —— TTS ——
+  const SPEECH_START_MS = 1200;
+  const SPEECH_CAP_MS = 6000;
+  const SPEECH_HOLD_MS = 700;
+  const VOICE_WAIT_MS = 800;
+  const FEEDBACK_LINE = /^(Yes!|Try again!|Well done!)$/;
+  let cachedVoice = null;
+  let voicesReady = false;
+  let voicesWaitTimer = null;
+  let speakQueue = [];
+  let speaking = false;
+  let inflight = null;
+  let speechGen = 0;
+  let speechBroken = false;
+  let cancelGate = Promise.resolve();
+  let utterTimer = null;
+  let startWatchTimer = null;
+
+  function pickVoice() {
+    if (!window.speechSynthesis) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    const named = /libby|serena|martha|susan|hazel|kate|google uk english female/i;
+    let v = voices.find((x) => /en-GB/i.test(x.lang) && named.test(x.name));
+    if (!v) v = voices.find((x) => /en-GB/i.test(x.lang));
+    if (!v) v = voices.find((x) => /en-AU|en-IE/i.test(x.lang));
+    if (!v) v = voices.find((x) => /^en/i.test(x.lang));
+    return v || null;
+  }
+  function refreshVoiceCache() {
+    if (!window.speechSynthesis) return;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return;
+    voicesReady = true;
+    if (cachedVoice) {
+      const still = voices.some((v) => v.voiceURI === cachedVoice.voiceURI && v.name === cachedVoice.name);
+      if (still) return;
+    }
+    cachedVoice = pickVoice();
+  }
+  function initVoices() {
+    if (!window.speechSynthesis) return;
+    refreshVoiceCache();
+    window.speechSynthesis.addEventListener('voiceschanged', () => {
+      refreshVoiceCache();
+      if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
+      speakNext();
+    });
+  }
+  function clearSpeechTimers() {
+    if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    if (startWatchTimer) { clearTimeout(startWatchTimer); startWatchTimer = null; }
+  }
+  function releaseItem(item) {
+    if (!item || item.done) return;
+    item.done = true;
+    if (item.onEnd) {
+      const cb = item.onEnd;
+      item.onEnd = null;
+      cb();
+    }
+  }
+  function cancelSpeech() {
+    speechGen += 1;
+    const queued = speakQueue.splice(0);
+    const current = inflight;
+    inflight = null;
+    speaking = false;
+    clearSpeechTimers();
+    if (window.speechSynthesis) {
+      try { window.speechSynthesis.cancel(); } catch (e) { /* already stopped */ }
+    }
+    queued.forEach(releaseItem);
+    releaseItem(current);
+    cancelGate = new Promise((resolve) => setTimeout(resolve, 80));
+  }
+  function finishUtterance(item) {
+    if (!item || item.gen !== speechGen) return;
+    clearSpeechTimers();
+    speaking = false;
+    if (inflight === item) inflight = null;
+    releaseItem(item);
+    speakNext();
+  }
+  function drainUnavailable() {
+    speechBroken = true;
+    speaking = false;
+    inflight = null;
+    const pending = speakQueue.splice(0);
+    pending.forEach(releaseItem);
+  }
+  function speakNext() {
+    if (speaking) return;
+    if (!speakQueue.length) return;
+    if (!voiceOn || !window.speechSynthesis || speechBroken) {
+      drainUnavailable();
+      return;
+    }
+    refreshVoiceCache();
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length && !voicesReady) {
+      if (!voicesWaitTimer) {
+        voicesWaitTimer = setTimeout(() => {
+          voicesWaitTimer = null;
+          voicesReady = true;
+          if (!speakQueue.length) return;
+          const ready = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
+          if (!ready.length) drainUnavailable();
+          else speakNext();
+        }, VOICE_WAIT_MS);
+      }
+      return;
+    }
+    if (!voices.length) {
+      drainUnavailable();
+      return;
+    }
+    const item = speakQueue.shift();
+    speaking = true;
+    inflight = item;
+    const run = () => {
+      if (item.gen !== speechGen || item.done) return;
+      let settled = false;
+      const settle = (broken) => {
+        if (settled || item.gen !== speechGen) return;
+        settled = true;
+        if (broken) speechBroken = true;
+        finishUtterance(item);
+      };
+      try {
+        const u = new SpeechSynthesisUtterance(item.text);
+        const voice = cachedVoice || pickVoice();
+        if (voice) {
+          try {
+            u.voice = voice;
+            u.lang = /en-GB/i.test(voice.lang) ? 'en-GB' : voice.lang;
+            cachedVoice = voice;
+          } catch (e) {
+            cachedVoice = null;
+            u.lang = 'en-GB';
+          }
+        } else {
+          u.lang = 'en-GB';
+        }
+        u.rate = 0.80;
+        u.onend = () => settle(false);
+        u.onerror = () => settle(true);
+        utterTimer = setTimeout(() => settle(true), SPEECH_CAP_MS);
+        window.speechSynthesis.speak(u);
+        startWatchTimer = setTimeout(() => {
+          if (settled || item.gen !== speechGen) return;
+          const synth = window.speechSynthesis;
+          if (!synth || (!synth.speaking && !synth.pending)) settle(true);
+        }, SPEECH_START_MS);
+      } catch (e) {
+        settle(true);
+      }
+    };
+    cancelGate.then(run);
+  }
+  function holdBrief(text) {
+    const hold = FEEDBACK_LINE.test(text) ? SPEECH_HOLD_MS : 0;
+    return hold ? new Promise((r) => setTimeout(r, hold)) : Promise.resolve();
+  }
+  function speak(text, opts) {
+    opts = opts || {};
+    if (!text) return Promise.resolve();
+    if (!voiceOn || !window.speechSynthesis || speechBroken) {
+      if (!opts.chain) cancelSpeech();
+      return holdBrief(text);
+    }
+    return new Promise((resolve) => {
+      if (!opts.chain) cancelSpeech();
+      speakQueue.push({ text, gen: speechGen, done: false, onEnd: () => resolve() });
+      speakNext();
+    });
+  }
+  async function speakParts(parts) {
+    if (!parts || !parts.length) return;
+    const token = runToken;
+    const myCard = cardToken;
+    cancelSpeech();
+    if (!voiceOn || !window.speechSynthesis || speechBroken) return;
+    for (let i = 0; i < parts.length; i++) {
+      if (token !== runToken || myCard !== cardToken) return;
+      await speak(parts[i], { chain: i > 0 });
+    }
+  }
+
+  function addStar() {
+    stars += 1;
+    starCount.textContent = String(stars);
+  }
+
+  function resetStars() {
+    stars = 0;
+    starCount.textContent = '0';
+  }
+
+  function bumpRun() {
+    runToken += 1;
+    cardToken += 1;
+    cancelSpeech();
+  }
+
+  function showHome() {
+    bumpRun();
+    mode = null;
+    canChoose = false;
+    resetStars();
+    viewPlay.classList.add('hidden');
+    viewHome.classList.remove('hidden');
+  }
+
+  function showPlay(title) {
+    viewHome.classList.add('hidden');
+    viewPlay.classList.remove('hidden');
+    playTitle.textContent = title;
+  }
+
+  function shuffleInPlace(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function setNextEnabled(on) {
+    const btn = $('btn-next');
+    if (btn) btn.disabled = !on;
+  }
+
+  function setSentence(html) {
+    const el = $('sentence');
+    if (el) el.innerHTML = html;
+  }
+
+  function renderQuestionShell() {
+    playBody.innerHTML =
+      '<div class="well-wrap"><div class="art-well"><img id="art-img" src="" alt="Photo"></div></div>' +
+      '<div class="sentence" id="sentence" aria-live="polite"></div>' +
+      '<div class="cards-row" id="cards-row"></div>' +
+      '<footer class="bottombar">' +
+      '<div class="prompt" id="prompt"></div>' +
+      '<button type="button" class="btn-bar" id="btn-next" disabled>Next</button>' +
+      '</footer>';
+    $('btn-next').addEventListener('click', onNext);
+  }
+
+  function renderCards(list) {
+    const row = $('cards-row');
+    row.className = 'cards-row count-' + list.length;
+    row.innerHTML = '';
+    list.forEach((word) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'word-card';
+      btn.setAttribute('data-word', word);
+      btn.setAttribute('aria-label', word);
+      btn.textContent = word;
+      btn.addEventListener('click', () => onChoose(word, btn));
+      row.appendChild(btn);
+    });
+  }
+
+  function lockCards() {
+    canChoose = false;
+    playBody.querySelectorAll('.word-card').forEach((b) => { b.disabled = true; });
+  }
+
+  function unlockCards() {
+    canChoose = true;
+    playBody.querySelectorAll('.word-card').forEach((b) => {
+      b.disabled = false;
+      b.classList.remove('hint-ring');
+    });
+  }
+
+  function loadQuestion() {
+    const item = pool[idx];
+    answered = false;
+    missCount = 0;
+    speechDone = true;
+    setNextEnabled(false);
+    $('art-img').src = ART + item.img;
+    setSentence(stem);
+    $('prompt').textContent = prompt;
+    renderCards(cards);
+    unlockCards();
+    hornText = stem;
+    speak(stem);
+  }
+
+  async function onChoose(word, btn) {
+    if (!canChoose || answered) return;
+    const token = runToken;
+    const item = pool[idx];
+    if (word !== item.answer) {
+      missCount += 1;
+      canChoose = false;
+      setSentence('Try again!');
+      await speak('Try again!');
+      if (token !== runToken) return;
+      // Keep Try again! on the board until the next card choice (do not restore stem).
+      if (missCount >= 2) {
+        const correct = playBody.querySelector('.word-card[data-word="' + item.answer + '"]');
+        if (correct) correct.classList.add('hint-ring');
+      }
+      canChoose = true;
+      return;
+    }
+    answered = true;
+    lockCards();
+    // One star for the first correct answer on this item, including after a miss.
+    addStar();
+    speechDone = false;
+    setNextEnabled(false);
+    setSentence('Yes!');
+    await speak('Yes!');
+    if (token !== runToken) return;
+    if (item.lines.length === 1) {
+      setSentence(item.lines[0]);
+      await speak(item.lines[0], { chain: true });
+    } else {
+      setSentence(item.lines[0]);
+      await speak(item.lines[0], { chain: true });
+      if (token !== runToken) return;
+      setSentence(item.lines[0] + '<br>' + item.lines[1]);
+      await speak(item.lines[1], { chain: true });
+    }
+    if (token !== runToken) return;
+    speechDone = true;
+    setNextEnabled(true);
+  }
+
+  function onNext() {
+    if (!answered || !speechDone) return;
+    if (mode === 'part1') {
+      if (idx < pool.length - 1) {
+        idx += 1;
+        loadQuestion();
+      } else {
+        showCelebrate('part1');
+      }
+      return;
+    }
+    if (mode === 'review1') {
+      if (idx < pool.length - 1) {
+        idx += 1;
+        loadQuestion();
+      } else {
+        showCelebrate('review1');
+      }
+      return;
+    }
+    if (mode === 'review2') {
+      if (idx < pool.length - 1) {
+        idx += 1;
+        loadQuestion();
+      } else {
+        showCelebrate('reviewDone');
+      }
+    }
+  }
+
+  function startPart1(again) {
+    bumpRun();
+    resetStars();
+    mode = 'part1';
+    againShuffle = !!again;
+    pool = again ? shuffleInPlace(PART1) : PART1.slice();
+    idx = 0;
+    cards = CARDS_P1.slice();
+    stem = 'We, They or It?';
+    prompt = 'Look at the picture. Touch We, They or It.';
+    showPlay('We, They or It?');
+    renderQuestionShell();
+    loadQuestion();
+  }
+
+  function startReview1(again) {
+    bumpRun();
+    resetStars();
+    mode = 'review1';
+    pool = again ? shuffleInPlace(REVIEW_G1) : REVIEW_G1.slice();
+    idx = 0;
+    cards = CARDS_R1.slice();
+    stem = 'I, You, We or They?';
+    prompt = 'Look at the picture. Touch I, You, We or They.';
+    showPlay("Let's review.");
+    renderQuestionShell();
+    loadQuestion();
+  }
+
+  function startReview2() {
+    bumpRun();
+    mode = 'review2';
+    pool = againShuffle ? shuffleInPlace(REVIEW_G2) : REVIEW_G2.slice();
+    idx = 0;
+    cards = CARDS_R2.slice();
+    stem = 'He, She or It?';
+    prompt = 'Look at the picture. Touch He, She or It.';
+    showPlay("Let's review.");
+    renderQuestionShell();
+    loadQuestion();
+  }
+
+  function startReview(again) {
+    againShuffle = !!again;
+    startReview1(again);
+  }
+
+  function showCelebrate(kind) {
+    bumpRun();
+    canChoose = false;
+    speechDone = true;
+    playBody.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'center-wrap';
+    let actions = '';
+    if (kind === 'part1') {
+      actions =
+        '<button type="button" class="home-btn primary" id="c-review">Let\'s review.</button>' +
+        '<button type="button" class="home-btn secondary" id="c-again">Play again</button>' +
+        '<button type="button" class="home-btn secondary" id="c-home">Home</button>';
+    } else if (kind === 'review1') {
+      actions =
+        '<button type="button" class="home-btn primary" id="c-next">Next</button>' +
+        '<button type="button" class="home-btn secondary" id="c-home">Home</button>';
+    } else {
+      actions =
+        '<button type="button" class="home-btn primary" id="c-again">Play again</button>' +
+        '<button type="button" class="home-btn secondary" id="c-home">Home</button>';
+    }
+    wrap.innerHTML =
+      '<div class="card-panel"><p>Well done!</p>' +
+      '<p style="font-size:var(--fs-chrome);margin-top:0.4rem;">Stars: ' + stars + '</p>' +
+      '<div class="card-actions">' + actions + '</div></div>';
+    playBody.appendChild(wrap);
+    speak('Well done!');
+    if ($('c-review')) $('c-review').addEventListener('click', () => startReview(false));
+    if ($('c-next')) $('c-next').addEventListener('click', () => startReview2());
+    if ($('c-again')) {
+      $('c-again').addEventListener('click', () => {
+        if (kind === 'part1') startPart1(true);
+        else startReview(true);
+      });
+    }
+    if ($('c-home')) $('c-home').addEventListener('click', showHome);
+  }
+
+  // —— Warm-up (same locked stack as main play) ——
+  function startWarmup() {
+    bumpRun();
+    resetStars();
+    mode = 'warmup';
+    idx = 0;
+    answered = false;
+    showPlay('We, They or It?');
+    renderWarmup();
+  }
+  function renderWarmup() {
+    cardToken += 1;
+    const myCard = cardToken;
+    const item = WARMUP[idx];
+    hornText = item.lines[0];
+    cancelSpeech();
+    const nextLabel = idx < WARMUP.length - 1 ? 'Next' : 'Play';
+    playBody.innerHTML =
+      '<div class="well-wrap"><div class="art-well"><img id="art-img" src="' + ART + item.img + '" alt="Photo"></div></div>' +
+      '<div class="sentence" id="sentence" aria-live="polite"></div>' +
+      '<div class="cards-row count-1" id="cards-row">' +
+      '<button type="button" class="word-card" id="warm-card" data-word="' + item.label + '" aria-label="Listen">' + item.label + '</button>' +
+      '</div>' +
+      '<footer class="bottombar">' +
+      '<div class="prompt" id="prompt">Let\'s listen.</div>' +
+      '<button type="button" class="btn-bar" id="btn-next">' + nextLabel + '</button>' +
+      '</footer>';
+    const playCard = async () => {
+      if (item.lines.length === 1) {
+        setSentence(item.lines[0]);
+        await speak(item.lines[0]);
+      } else {
+        setSentence(item.lines[0]);
+        await speak(item.lines[0]);
+        if (myCard !== cardToken) return;
+        setSentence(item.lines[0] + '<br>' + item.lines[1]);
+        await speak(item.lines[1], { chain: true });
+      }
+    };
+    $('warm-card').addEventListener('click', playCard);
+    $('btn-next').addEventListener('click', () => {
+      if (idx < WARMUP.length - 1) {
+        idx += 1;
+        renderWarmup();
+      } else {
+        startPart1(false);
+      }
+    });
+    playCard();
+  }
+
+  function onHorn() {
+    if (mode === 'warmup') {
+      const item = WARMUP[idx];
+      if (!item) return;
+      speakParts(item.lines);
+      return;
+    }
+    if (!hornText) return;
+    // Before answer only: re-read the current-group stem. Never preview targets.
+    if (!answered) speak(hornText);
+  }
+
+  // Home
+  $('btn-play').addEventListener('click', () => startPart1(false));
+  $('btn-review').addEventListener('click', () => startReview(false));
+  $('btn-warmup').addEventListener('click', startWarmup);
+  $('btn-activity-home').addEventListener('click', showHome);
+  hornBtn.addEventListener('click', onHorn);
+  voiceBtn.addEventListener('click', () => {
+    voiceOn = !voiceOn;
+    voiceBtn.classList.toggle('voice-off', !voiceOn);
+    voiceBtn.setAttribute('aria-pressed', voiceOn ? 'true' : 'false');
+    voiceBtn.setAttribute('aria-label', voiceOn ? 'Voice ON' : 'Voice OFF');
+    if (!voiceOn) {
+      cancelSpeech();
+      // If waiting on speech for Next, unlock when voice is turned off mid-praise
+      if (answered && !speechDone) {
+        speechDone = true;
+        setNextEnabled(true);
+      }
+    } else {
+      speechBroken = false;
+    }
+  });
+
+  function preloadArt() {
+    ['we-coloured-pencils.png','they-three-footballs.png','it-joe-ball.png','i-pencil.png','you-pencil.png','he-tom-pencils.png','she-missso-books.png']
+      .forEach((n) => { const i = new Image(); i.src = ART + n; });
+  }
+
+  initVoices();
+  preloadArt();
+})();
+  </script>
+</body>
+</html>
