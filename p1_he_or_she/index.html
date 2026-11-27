@@ -148,6 +148,12 @@
       background: var(--panel);
       border-bottom: 4px solid var(--ink);
     }
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
     .brand {
       font-family: 'Fredoka', sans-serif;
       font-weight: 700;
@@ -155,6 +161,21 @@
       color: var(--ink);
       line-height: 1.1;
     }
+    .bar-home {
+      flex: 0 0 auto;
+      min-height: 56px;
+      padding: 0 0.95rem;
+      border-radius: 0.85rem;
+      border: 4px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: var(--fs-chrome);
+      line-height: 1;
+      box-shadow: 0 3px 0 rgba(72, 40, 8, 0.12);
+    }
+    .bar-home:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(72, 40, 8, 0.12); }
     .top-right { display: flex; align-items: center; gap: 0.5rem; }
     .icon-btn {
       min-width: 56px;
@@ -324,14 +345,15 @@
       display: block;
       pointer-events: none;
     }
-    .person-frame.entering {
-      pointer-events: none;
+    .person-frame.entering { pointer-events: none; }
+    /* Slide the picture inside the card. The card stays between the buttons. */
+    .person-frame.entering .char {
       animation: enterSlide 0.85s ease-out both;
     }
-    .person-frame.from-left { --enter-x: -22vw; }
-    .person-frame.from-right { --enter-x: 22vw; }
+    .person-frame.from-left { --enter-x: -72%; }
+    .person-frame.from-right { --enter-x: 72%; }
     @keyframes enterSlide {
-      from { transform: translateX(var(--enter-x, -22vw)); opacity: 0.25; }
+      from { transform: translateX(var(--enter-x, -72%)); opacity: 0.2; }
       to { transform: translateX(0); opacity: 1; }
     }
     .person-frame.ready { pointer-events: auto; }
@@ -449,7 +471,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .person-frame.entering { animation: none; }
+      .person-frame.entering .char { animation: none; }
       .sticker.pop { animation: none; }
       .fly-star { transition: none; }
     }
@@ -459,19 +481,22 @@
   <div class="app" id="app">
     <section class="home" id="view-home">
       <h1>He or She?</h1>
-      <p class="hint" id="home-hint">Look at the picture. Shoot He or She.</p>
+      <p class="hint" id="home-hint">Look at the picture. Choose He or She.</p>
       <div class="home-stack">
-        <button type="button" class="home-btn primary" id="btn-play" data-hint="Look at the picture. Shoot He or She.">Play</button>
-        <button type="button" class="home-btn secondary" id="btn-listen-entry" data-hint="Listen. Shoot the picture.">Listen</button>
+        <button type="button" class="home-btn primary" id="btn-play" data-hint="Look at the picture. Choose He or She.">Play</button>
+        <button type="button" class="home-btn secondary" id="btn-listen-entry" data-hint="Listen. Choose the picture.">Listen</button>
         <button type="button" class="home-btn secondary" id="btn-warmup" data-hint="Let's listen.">Warm-up</button>
-        <button type="button" class="home-btn secondary" id="btn-myclass" data-hint="Look at the picture. Shoot He or She.">My class</button>
+        <button type="button" class="home-btn secondary" id="btn-myclass" data-hint="Look at the picture. Choose He or She.">My class</button>
       </div>
       <p class="teacher-note">Teacher note: Part 3 is optional. More examples stay in this note only.</p>
     </section>
 
     <section class="play-shell hidden" id="view-play">
       <header class="topbar">
-        <div class="brand" id="play-title">He or She?</div>
+        <div class="top-left">
+          <button type="button" class="bar-home" id="btn-home">Home</button>
+          <div class="brand" id="play-title">He or She?</div>
+        </div>
         <div class="top-right">
           <button type="button" class="icon-btn" id="btn-horn" aria-label="Listen" title="Listen">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM16 3.2v2.1a7.8 7.8 0 0 1 0 13.4v2.1A9.9 9.9 0 0 0 16 3.2z"/></svg>
@@ -489,7 +514,7 @@
       <div class="play-area" id="play-area"></div>
       <div class="sentence" id="sentence" aria-live="polite"><span class="muted">…</span></div>
       <footer class="bottombar">
-        <div class="prompt" id="prompt">Look at the picture. Shoot He or She.</div>
+        <div class="prompt" id="prompt">Look at the picture. Choose He or She.</div>
         <button type="button" class="btn-bar" id="btn-next" disabled>Next</button>
       </footer>
     </section>
@@ -501,6 +526,8 @@
 
   const ART = './art/';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HINT_PLAY = 'Look at the picture. Choose He or She.';
+  const HINT_LISTEN = 'Listen. Choose the picture.';
 
   const LINE = {
     boy: 'He is a boy.',
@@ -568,12 +595,12 @@
   let mode = null;
   let idx = 0;
   let answered = false;
-  let firstTry = true;
   let missCount = 0;
   let canShoot = false;
   let enterSide = 'left';
   let hornText = 'He or She?';
   let currentPool = null;
+  let liveToken = 0;
 
   // —— TTS ——
   let cachedVoice = null;
@@ -583,6 +610,15 @@
   let speaking = false;
   let cancelGate = Promise.resolve();
   let utterTimer = null;
+  let startWatch = null;
+
+  function nextToken() {
+    liveToken += 1;
+    return liveToken;
+  }
+  function stillHere(token) {
+    return token === liveToken;
+  }
 
   function pickVoice() {
     if (!window.speechSynthesis) return null;
@@ -615,16 +651,20 @@
       speakNext();
     });
   }
+  function clearSpeakTimers() {
+    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    if (startWatch) { clearTimeout(startWatch); startWatch = null; }
+  }
   function cancelSpeech() {
     speakQueue = [];
     speaking = false;
     if (voicesWaitTimer) { clearTimeout(voicesWaitTimer); voicesWaitTimer = null; }
-    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    clearSpeakTimers();
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     cancelGate = new Promise((resolve) => setTimeout(resolve, 100));
   }
   function finishUtterance(item) {
-    if (utterTimer) { clearTimeout(utterTimer); utterTimer = null; }
+    clearSpeakTimers();
     speaking = false;
     if (item && item.onEnd) {
       const cb = item.onEnd;
@@ -669,14 +709,27 @@
       }
       u.rate = 0.80;
       let settled = false;
+      let started = false;
       const settle = () => {
         if (settled) return;
         settled = true;
         finishUtterance(item);
       };
+      u.onstart = () => {
+        started = true;
+        if (startWatch) { clearTimeout(startWatch); startWatch = null; }
+      };
       u.onend = settle;
       u.onerror = settle;
-      utterTimer = setTimeout(settle, 9000);
+      // Speech that never starts must not hold Next. A started line still ends on onend.
+      startWatch = setTimeout(() => {
+        if (started || settled) return;
+        cancelGate = new Promise((resolve) => setTimeout(resolve, 80));
+        try { window.speechSynthesis.cancel(); } catch (e) { /* already stopped */ }
+        settle();
+      }, 900);
+      const capMs = Math.min(8000, Math.max(2200, 900 + item.text.length * 110));
+      utterTimer = setTimeout(settle, capMs);
       try { window.speechSynthesis.speak(u); } catch (e) { settle(); }
     };
     cancelGate.then(run);
@@ -715,11 +768,17 @@
   }
 
   function showHome() {
+    nextToken();
     cancelSpeech();
     mode = null;
     canShoot = false;
     viewPlay.classList.add('hidden');
     viewHome.classList.remove('hidden');
+    const hint = $('home-hint');
+    hint.textContent = HINT_PLAY;
+    const active = document.activeElement;
+    if (active && active !== document.body && typeof active.blur === 'function') active.blur();
+    hint.textContent = HINT_PLAY;
   }
 
   function showPlay(title) {
@@ -771,17 +830,23 @@
 
   function afterEnter(frame, ms) {
     canShoot = false;
-    if (reducedMotion) {
+    const token = liveToken;
+    const finish = () => {
+      if (!stillHere(token) || !frame.isConnected) return;
       frame.classList.remove('entering');
       frame.classList.add('ready');
       canShoot = true;
+    };
+    if (reducedMotion) {
+      finish();
       return Promise.resolve();
     }
     return new Promise((resolve) => {
+      let settled = false;
       const done = () => {
-        frame.classList.remove('entering');
-        frame.classList.add('ready');
-        canShoot = true;
+        if (settled) return;
+        settled = true;
+        finish();
         resolve();
       };
       frame.addEventListener('animationend', done, { once: true });
@@ -824,6 +889,7 @@
     renderWarmup();
   }
   function renderWarmup() {
+    const token = nextToken();
     answered = true;
     canShoot = false;
     hornText = WARMUP[idx].say;
@@ -844,10 +910,13 @@
     setSentence('<span class="muted">…</span>');
     const playCard = async () => {
       setSentence(item.say);
-      $('warm-line').textContent = item.say;
+      const warmLine = $('warm-line');
+      if (warmLine) warmLine.textContent = item.say;
       await speak(item.say);
+      if (!stillHere(token)) return;
       setSentence(item.line);
-      $('warm-line').textContent = item.line;
+      const warmLineAfter = $('warm-line');
+      if (warmLineAfter) warmLineAfter.textContent = item.line;
       await speak(item.line, { chain: true });
     };
     $('warm-card').addEventListener('click', playCard);
@@ -870,12 +939,12 @@
     currentPool = again ? shufflePool(PART1, 'part1') : PART1.slice();
     nextBtn.classList.remove('hidden');
     showPlay('He or She?');
-    promptEl.textContent = 'Look at the picture. Shoot He or She.';
+    promptEl.textContent = HINT_PLAY;
     renderPart1();
   }
   function renderPart1() {
+    const token = nextToken();
     answered = false;
-    firstTry = true;
     missCount = 0;
     setNextEnabled(false);
     enterSide = enterSide === 'left' ? 'right' : 'left';
@@ -892,20 +961,23 @@
     playArea.appendChild(grid);
     setSentence('<span class="muted">He or She?</span>');
     const frame = $('target');
-    afterEnter(frame).then(() => speak('He or She?'));
+    afterEnter(frame).then(() => {
+      if (!stillHere(token)) return;
+      speak('He or She?');
+    });
     grid.querySelectorAll('.word-btn').forEach((btn) => {
-      btn.addEventListener('click', () => onPart1Choice(btn.getAttribute('data-choice'), btn));
+      btn.addEventListener('click', () => onPart1Choice(btn.getAttribute('data-choice'), btn, token));
     });
   }
-  async function onPart1Choice(choice, btn) {
-    if (!canShoot || answered) return;
+  async function onPart1Choice(choice, btn, token) {
+    if (!canShoot || answered || !stillHere(token)) return;
     const item = currentPool[idx];
     const frame = $('target');
     if (choice !== item.gender) {
       missCount += 1;
-      firstTry = false;
       setSentence('Try again!');
       await speak('Try again!');
+      if (!stillHere(token)) return;
       if (missCount >= 2) {
         const correct = playArea.querySelector('.word-btn.' + item.gender);
         if (correct) correct.classList.add('hint-ring');
@@ -915,15 +987,17 @@
     answered = true;
     canShoot = false;
     playArea.querySelectorAll('.word-btn').forEach((b) => { b.disabled = true; });
+    addStar();
     await flyStickerTo(frame, btn);
+    if (!stillHere(token)) return;
     const tag = document.createElement('div');
     tag.className = 'tag';
     tag.textContent = item.gender === 'he' ? 'He' : 'She';
     frame.appendChild(tag);
     const praise = 'Yes! ' + item.line;
     setSentence(praise);
-    if (firstTry) addStar();
     await speak(praise);
+    if (!stillHere(token)) return;
     setNextEnabled(true);
   }
 
@@ -934,12 +1008,12 @@
     currentPool = again ? shufflePool(PART2, 'part2') : PART2.slice();
     nextBtn.classList.remove('hidden');
     showPlay('He or She?');
-    promptEl.textContent = 'Listen. Shoot the picture.';
+    promptEl.textContent = HINT_LISTEN;
     renderPart2();
   }
   function renderPart2() {
+    const token = nextToken();
     answered = false;
-    firstTry = true;
     missCount = 0;
     setNextEnabled(false);
     const item = currentPool[idx];
@@ -955,7 +1029,7 @@
       '<button type="button" class="' + rightCls + '" data-side="right" aria-label="Photo">' +
       '<img class="char" src="' + ART + item.right + '" alt=""></button>';
     playArea.appendChild(grid);
-    setSentence(item.line);
+    setSentence('<span class="muted">Listen.</span>');
     const frames = grid.querySelectorAll('.person-frame');
     canShoot = false;
     const markReady = (frame) => new Promise((resolve) => {
@@ -974,21 +1048,22 @@
       setTimeout(done, 900);
     });
     Promise.all([markReady(frames[0]), markReady(frames[1])]).then(() => {
+      if (!stillHere(token)) return;
       canShoot = true;
       speak(item.line);
     });
     frames.forEach((el) => {
-      el.addEventListener('click', () => onPart2Choice(el.getAttribute('data-side'), el));
+      el.addEventListener('click', () => onPart2Choice(el.getAttribute('data-side'), el, token));
     });
   }
-  async function onPart2Choice(side, el) {
-    if (!canShoot || answered) return;
+  async function onPart2Choice(side, el, token) {
+    if (!canShoot || answered || !stillHere(token)) return;
     const item = currentPool[idx];
     if (side !== item.answer) {
       missCount += 1;
-      firstTry = false;
       setSentence('Try again!');
       await speak('Try again!');
+      if (!stillHere(token)) return;
       if (missCount >= 2) {
         const correct = playArea.querySelector('[data-side="' + item.answer + '"]');
         if (correct) correct.classList.add('hint-ring');
@@ -998,12 +1073,14 @@
     answered = true;
     canShoot = false;
     playArea.querySelectorAll('.person-frame').forEach((b) => { b.disabled = true; });
+    addStar();
     await flyStickerTo(el, el);
+    if (!stillHere(token)) return;
     el.classList.add('hint-ring');
     const praise = 'Yes! ' + item.line;
     setSentence(praise);
-    if (firstTry) addStar();
     await speak(praise);
+    if (!stillHere(token)) return;
     setNextEnabled(true);
   }
 
@@ -1014,12 +1091,12 @@
     currentPool = PART3.slice();
     nextBtn.classList.remove('hidden');
     showPlay('My class');
-    promptEl.textContent = 'Look at the picture. Shoot He or She.';
+    promptEl.textContent = HINT_PLAY;
     renderPart3();
   }
   function renderPart3() {
+    const token = nextToken();
     answered = false;
-    firstTry = true;
     missCount = 0;
     setNextEnabled(false);
     enterSide = enterSide === 'left' ? 'right' : 'left';
@@ -1035,20 +1112,23 @@
       '<div class="rail"><button type="button" class="word-btn she" data-choice="she" aria-label="She"><span class="glyph" aria-hidden="true"></span>She</button></div>';
     playArea.appendChild(grid);
     setSentence('<span class="muted">He or She?</span>');
-    afterEnter($('target')).then(() => speak('He or She?'));
+    afterEnter($('target')).then(() => {
+      if (!stillHere(token)) return;
+      speak('He or She?');
+    });
     grid.querySelectorAll('.word-btn').forEach((btn) => {
-      btn.addEventListener('click', () => onPart3Choice(btn.getAttribute('data-choice'), btn));
+      btn.addEventListener('click', () => onPart3Choice(btn.getAttribute('data-choice'), btn, token));
     });
   }
-  async function onPart3Choice(choice, btn) {
-    if (!canShoot || answered) return;
+  async function onPart3Choice(choice, btn, token) {
+    if (!canShoot || answered || !stillHere(token)) return;
     const item = currentPool[idx];
     const frame = $('target');
     if (choice !== item.gender) {
       missCount += 1;
-      firstTry = false;
       setSentence('Try again!');
       await speak('Try again!');
+      if (!stillHere(token)) return;
       if (missCount >= 2) {
         const correct = playArea.querySelector('.word-btn.' + item.gender);
         if (correct) correct.classList.add('hint-ring');
@@ -1058,18 +1138,23 @@
     answered = true;
     canShoot = false;
     playArea.querySelectorAll('.word-btn').forEach((b) => { b.disabled = true; });
+    addStar();
     await flyStickerTo(frame, btn);
-    if (firstTry) addStar();
+    if (!stillHere(token)) return;
     setSentence('Yes!');
     await speak('Yes!');
+    if (!stillHere(token)) return;
     setSentence(item.intro);
     await speak(item.intro, { chain: true });
+    if (!stillHere(token)) return;
     setSentence(item.intro + '<br>' + item.has);
     await speak(item.has, { chain: true });
+    if (!stillHere(token)) return;
     setNextEnabled(true);
   }
 
   function showCelebrate(kind) {
+    nextToken();
     canShoot = false;
     setNextEnabled(false);
     nextBtn.classList.add('hidden');
@@ -1164,6 +1249,7 @@
   $('btn-warmup').addEventListener('click', startWarmup);
   $('btn-myclass').addEventListener('click', startPart3);
   nextBtn.addEventListener('click', onNext);
+  $('btn-home').addEventListener('click', showHome);
   hornBtn.addEventListener('click', onHorn);
   voiceBtn.addEventListener('click', () => {
     voiceOn = !voiceOn;
